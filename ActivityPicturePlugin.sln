@@ -7,18 +7,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaDataExtractor", "MetaDa
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		ST2.1Debug|Any CPU = ST2.1Debug|Any CPU
+		ST2.1Release|Any CPU = ST2.1Release|Any CPU
+		ST3.0Debug|Any CPU = ST3.0Debug|Any CPU
+		ST3.0Release|Any CPU = ST3.0Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST2.1Debug|Any CPU.ActiveCfg = ST2.1Debug|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST2.1Debug|Any CPU.Build.0 = ST2.1Debug|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST2.1Release|Any CPU.ActiveCfg = ST2.1Release|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST2.1Release|Any CPU.Build.0 = ST2.1Release|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Release|Any CPU.Build.0 = ST3.0Release|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST2.1Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST2.1Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST2.1Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST2.1Release|Any CPU.Build.0 = Release|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -51,7 +51,6 @@ namespace ActivityPicturePlugin
 
         public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            //throw new Exception("The method or operation is not implemented.");
         }
 
         public string Version
@@ -64,7 +63,6 @@ namespace ActivityPicturePlugin
 
         public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
         {
-            //throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion
