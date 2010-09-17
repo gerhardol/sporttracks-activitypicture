@@ -168,21 +168,24 @@ set stPlgFile=$(ProjectDir)$(ProjectName)-1.2.x.st$(StPluginVersion)plugin
 REM To move a .st2plugin to common area, create environment variable (or set it below)
 REM set stPlgoutdir=g:\Users\go\dev\web
 
+set ConfigurationType=Debug
+IF "$(ConfigurationName)"=="ST2.1Release" set ConfigurationType=Release
+IF "$(ConfigurationName)"=="ST3.0Release" set ConfigurationType=Release
+
 set StTarget="$(StPluginPath)\Update\%25guid%25\$(ProjectName)"
 IF NOT EXIST %25StTarget%25 mkdir %25StTarget%25
 REM XCOPY depreciated in Vista, use for XP compatibility
 XCOPY  $(TargetDir)*.* "%25StTarget%25" /I/Y/Q/E &lt;NUL:
 
-set Release=No
-IF "$(ConfigurationName)"=="ST2.1Release" set Release=Yes
-IF "$(ConfigurationName)"=="ST3.0Release" set Release=Yes
-IF NOT "%25Release%25"=="Yes" GOTO END
-IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
+copy "$(SolutionDir)\MetaDataExtractor\bin\%25ConfigurationType%25\MetaDataExtractor.dll" "$(TargetDir)"
+
+IF NOT "%25ConfigurationType%25"=="Release" GOTO END
 
 REM generate the plugin.xml file
 ECHO ^&lt;?xml version="1.0" encoding="utf-8" ?^&gt; &gt;  "$(TargetDir)\plugin.xml"
 ECHO ^&lt;plugin id="%25guid%25" minimumCommonVersion="%25StVersion%25" /^&gt; &gt;&gt; "$(TargetDir)\plugin.xml"
 
+IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
 DEL "%25stPlgFile%25"
 "%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25"  "$(TargetDir)*"  -x!*.st2plugin -x!*.tmp -x!*.pdb -x!$(ProjectName).xml
 
