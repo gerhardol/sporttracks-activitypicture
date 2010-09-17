@@ -1,0 +1,874 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ActivityPicturePlugin</name>
+    </assembly>
+    <members>
+        <member name="F:ActivityPicturePlugin.UI.Activities.TimeOffset.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.TimeOffset.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.TimeOffset.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ActivityPicturePlugin.UI.ImportControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.ImportControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.ImportControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ActivityPicturePlugin.Helper.PictureAlbum.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.PictureAlbum.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.PictureAlbum.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.IsPropertyDefined(System.Int32)">
+            <summary> 
+            Checks if current image has specified certain property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <returns>True if image has specified property, False otherwise.</returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetPropertyInt32(System.Int32,System.Int32)">
+            <summary> 
+            Gets specified Int32 property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="DefaultValue">Optional, default 0. Default value returned if property is not present.</param> 
+            <remarks>Value of property or DefaultValue if property is not present.</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetPropertyInt16(System.Int32)">
+            <summary> 
+            Gets specified Int16 property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <remarks>Value of property or DefaultValue if property is not present.</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetPropertyString(System.Int32,System.String)">
+            <summary> 
+            Gets specified string property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="DefaultValue">Optional, default String.Empty. Default value returned if property is not present.</param> 
+            <returns></returns> 
+            <remarks>Value of property or DefaultValue if property is not present.</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetProperty(System.Int32,System.Byte[])">
+            <summary> 
+            Gets specified property in raw form 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="DefaultValue">Optional, default Nothing. Default value returned if property is not present.</param> 
+            <returns></returns> 
+            <remarks>Is recommended to use typed methods (like <see cref="M:ActivityPicturePlugin.Helper.ExifWorks.GetPropertyString(System.Int32,System.String)"/> etc.) instead, when possible.</remarks> 
+            <history> 
+            [altair] 05.09.2005 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetPropertyRational(System.Int32)">
+            <summary> 
+            Gets specified rational property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <returns></returns> 
+            <remarks>Value of property or 0/1 if not present.</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.SetPropertyString(System.Int32,System.String)">
+            <summary> 
+            Sets specified string property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="Value">Value to be set</param> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 12.6.2004 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.SetPropertyInt16(System.Int32,System.Int16)">
+            <summary> 
+            Sets specified Int16 property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="Value">Value to be set</param> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 12.6.2004 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.SetPropertyInt32(System.Int32,System.Int32)">
+            <summary> 
+            Sets specified Int32 property 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="Value">Value to be set</param> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 13.06.2004 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.SetProperty(System.Int32,System.Byte[],ActivityPicturePlugin.Helper.ExifWorks.ExifDataTypes)">
+            <summary> 
+            Sets specified propery in raw form 
+            </summary> 
+            <param name="PID">Property ID</param> 
+            <param name="Data">Raw data</param> 
+            <param name="Type">EXIF data type</param> 
+            <remarks>Is recommended to use typed methods (like <see cref="M:ActivityPicturePlugin.Helper.ExifWorks.SetPropertyString(System.Int32,System.String)"/> etc.) instead, when possible.</remarks> 
+            <history> 
+            [altair] 12.6.2004 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetInt32(System.Byte[])">
+            <summary> 
+            Reads Int32 from EXIF bytearray. 
+            </summary> 
+            <param name="B">EXIF bytearray to process</param> 
+            <returns></returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 05.09.2005 Changed from public shared to private instance method 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetInt16(System.Byte[])">
+            <summary> 
+            Reads Int16 from EXIF bytearray. 
+            </summary> 
+            <param name="B">EXIF bytearray to process</param> 
+            <returns></returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 05.09.2005 Changed from public shared to private instance method 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetString(System.Byte[])">
+            <summary> 
+            Reads string from EXIF bytearray. 
+            </summary> 
+            <param name="B">EXIF bytearray to process</param> 
+            <returns></returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 05.09.2005 Changed from public shared to private instance method 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.GetRational(System.Byte[])">
+            <summary> 
+            Reads rational from EXIF bytearray. 
+            </summary> 
+            <param name="B">EXIF bytearray to process</param> 
+            <returns></returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 05.09.2005 Changed from public shared to private instance method 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.EquipmentMaker">
+            <summary> 
+            Brand of equipment (EXIF EquipMake) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.EquipmentModel">
+            <summary> 
+            Model of equipment (EXIF EquipModel) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Software">
+            <summary> 
+            Software used for processing (EXIF Software) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Orientation">
+            <summary> 
+            Orientation of image (position of row 0, column 0) (EXIF Orientation) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.DateTimeLastModified">
+            <summary> 
+            Time when image was last modified (EXIF DateTime). 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.DateTimeDigitized">
+            <summary> 
+            Time when image was digitized (EXIF DateTimeDigitized). 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Width">
+            <summary> 
+            Image width 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 04.09.2005 Changed output to Int32, load from image instead of EXIF 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Height">
+            <summary> 
+            Image height 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            [altair] 04.09.2005 Changed output to Int32, load from image instead of EXIF 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ResolutionX">
+            <summary> 
+            X resolution in dpi (EXIF XResolution/ResolutionUnit) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ResolutionY">
+            <summary> 
+            Y resolution in dpi (EXIF YResolution/ResolutionUnit) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Title">
+            <summary> 
+            Image title (EXIF ImageTitle) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.UserComment">
+            <summary> 
+            User comment (EXIF UserComment) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 13.06.2004 Created 
+            </history>
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Artist">
+            <summary> 
+            Artist name (EXIF Artist) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 13.06.2004 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Description">
+            <summary> 
+            Image description (EXIF ImageDescription) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Copyright">
+            <summary> 
+            Image copyright (EXIF Copyright) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ExposureTime">
+            <summary> 
+            Exposure time in seconds (EXIF ExifExposureTime/ExifShutterSpeed) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.Aperture">
+            <summary> 
+            Aperture value as F number (EXIF ExifFNumber/ExifApertureValue) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ExposureProgram">
+            <summary> 
+            Exposure program used (EXIF ExifExposureProg) 
+            </summary> 
+            <value></value> 
+            <remarks>If not specified, returns Normal (2)</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ISO">
+            <summary> 
+            ISO sensitivity 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.SubjectDistance">
+            <summary> 
+            Subject distance in meters (EXIF SubjectDistance) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.ExposureMeteringMode">
+            <summary> 
+            Exposure method metering mode used (EXIF MeteringMode) 
+            </summary> 
+            <value></value> 
+            <remarks>If not specified, returns Unknown (0)</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.FocalLength">
+            <summary> 
+            Focal length of lenses in mm (EXIF FocalLength) 
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.FlashMode">
+            <summary> 
+            Flash mode (EXIF Flash) 
+            </summary> 
+            <value></value> 
+            <remarks>If not present, value NotFired (0) is returned</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="P:ActivityPicturePlugin.Helper.ExifWorks.LightSource">
+            <summary> 
+            Light source / white balance (EXIF LightSource) 
+            </summary> 
+            <value></value> 
+            <remarks>If not specified, returns Unknown (0).</remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.Orientations">
+            <summary> 
+            Real position of 0th row and column of picture 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.ExposurePrograms">
+            <summary> 
+            Exposure programs 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.ExposureMeteringModes">
+            <summary> 
+            Exposure metering modes 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.FlashModes">
+            <summary> 
+            Flash activity modes 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.LightSources">
+            <summary> 
+            Possible light sources (white balance) 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Helper.ExifWorks.Rational">
+            <summary> 
+            Represents rational which is type of some Exif properties 
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.Rational.ToString">
+            <summary> 
+            Converts rational to string representation 
+            </summary> 
+            <returns>String representation of the rational.</returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.ExifWorks.Rational.ToDouble">
+            <summary> 
+            Converts rational to double precision real number 
+            </summary> 
+            <returns>The rational as double precision real number.</returns> 
+            <remarks></remarks> 
+            <history> 
+            [altair] 10.09.2003 Created 
+            </history> 
+        </member>
+        <member name="F:ActivityPicturePlugin.UI.Activities.ModifyTimeStamp.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.ModifyTimeStamp.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.ModifyTimeStamp.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:ActivityPicturePlugin.Plugin.GUID">
+            <summary> 
+            The unique identifier of the plugin
+            </summary> 
+            <remarks></remarks> 
+            <history> 
+            [doml] 05.09.2007 Created 
+            </history> 
+        </member>
+        <member name="T:ActivityPicturePlugin.Resources.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ActivityPicturePage_Title">
+            <summary>
+              Looks up a localized string similar to Pictures.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.Altitude_HeaderText">
+            <summary>
+              Looks up a localized string similar to Altitude.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btn_Cancel_Text">
+            <summary>
+              Looks up a localized string similar to Cancel.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btn_OK_Text">
+            <summary>
+              Looks up a localized string similar to OK.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnCollapseAll_Text">
+            <summary>
+              Looks up a localized string similar to Collapse All.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnExpandAll_Text">
+            <summary>
+              Looks up a localized string similar to Expand All.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnGeoTag_Text">
+            <summary>
+              Looks up a localized string similar to Geotag.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnKML_Text">
+            <summary>
+              Looks up a localized string similar to Export to Google Earth.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnManImp_Text">
+            <summary>
+              Looks up a localized string similar to Import.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.btnTimeOffset_Text">
+            <summary>
+              Looks up a localized string similar to Time offset.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Comment.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Date &amp; Time.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Camera Model.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ExifGPS_HeaderText">
+            <summary>
+              Looks up a localized string similar to GPS Data.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.GoogleEarthExport_Title">
+            <summary>
+              Looks up a localized string similar to Images to Google Earth.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.goupBoxListOptions_Text">
+            <summary>
+              Looks up a localized string similar to Options (for selected images).
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.groupBoxGPSFormat_Text">
+            <summary>
+              Looks up a localized string similar to GPS format.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.groupBoxImage_Text">
+            <summary>
+              Looks up a localized string similar to Image Options.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.groupBoxVideo_Text">
+            <summary>
+              Looks up a localized string similar to Video Options.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_addingFile">
+            <summary>
+              Looks up a localized string similar to Adding file.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_changeView">
+            <summary>
+              Looks up a localized string similar to View.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_importDone1">
+            <summary>
+              Looks up a localized string similar to Import done: A total of.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_importDone2">
+            <summary>
+              Looks up a localized string similar to Images have been imported.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_importing">
+            <summary>
+              Looks up a localized string similar to Importing Image.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_in">
+            <summary>
+              Looks up a localized string similar to in.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_scanDone1">
+            <summary>
+              Looks up a localized string similar to Scan done: A total of.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_scanDone2">
+            <summary>
+              Looks up a localized string similar to Images have been found.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_scanning">
+            <summary>
+              Looks up a localized string similar to Scanning of.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ImportControl_searchingActivity">
+            <summary>
+              Looks up a localized string similar to Searching matching activity for.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.labelImageSize_Text">
+            <summary>
+              Looks up a localized string similar to Image size.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.ModifyTimeStamp_Text">
+            <summary>
+              Looks up a localized string similar to Set Time Stamp.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Image Source.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.pictureAlbumToolStripMenuItem_Text">
+            <summary>
+              Looks up a localized string similar to Album.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.pictureListToolStripMenuItem_Text">
+            <summary>
+              Looks up a localized string similar to List.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to ReferenceID.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.SettingsPageControl_lblQuality_Text">
+            <summary>
+              Looks up a localized string similar to Quality.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Thumbnail.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Title.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.toolStripButtonPause_ToolTipText">
+            <summary>
+              Looks up a localized string similar to Pause.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.toolStripButtonPlay_ToolTipText">
+            <summary>
+              Looks up a localized string similar to Play.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.toolStripButtonStop_ToolTipText">
+            <summary>
+              Looks up a localized string similar to Stop.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.tooltip_OnlySelectedImages">
+            <summary>
+              Looks up a localized string similar to Only selected images.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.TypeImage_HeaderText">
+            <summary>
+              Looks up a localized string similar to Type.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText">
+            <summary>
+              Looks up a localized string similar to Waypoint.
+            </summary>
+        </member>
+        <member name="T:ActivityPicturePlugin.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ActivityPicturePlugin.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="F:ActivityPicturePlugin.Helper.VolumeSlider.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.VolumeSlider.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.Helper.VolumeSlider.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.UI.Activities.PluginData.LoadImageData(System.Collections.Generic.List{ActivityPicturePlugin.Helper.ImageDataSerializable})">
+            <summary> 
+            Method for updating ImageData after reading in the logbook
+            </summary> 
+            <value></value> 
+            <remarks></remarks> 
+            <history> 
+            [doml] 04.09.2007 Created 
+            </history> 
+        </member>
+        <member name="F:ActivityPicturePlugin.Settings.SettingsPageControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ActivityPicturePlugin.Settings.SettingsPageControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ActivityPicturePlugin.Settings.SettingsPageControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+    </members>
+</doc>
