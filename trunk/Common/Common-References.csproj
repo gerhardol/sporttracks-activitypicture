@@ -33,6 +33,13 @@
 	<StPluginVersion>3</StPluginVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
+    <ConfigurationType>Debug</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST2.1Release')) ">
+    <ConfigurationType>Release</ConfigurationType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
@@ -95,13 +102,6 @@
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
-<!--
-    <Reference Include="SportTracks, Version=3.0.3769.30929, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
--->
   </ItemGroup>
 
 
@@ -168,18 +168,14 @@ set stPlgFile=$(ProjectDir)$(ProjectName)-1.2.x.st$(StPluginVersion)plugin
 REM To move a .st2plugin to common area, create environment variable (or set it below)
 REM set stPlgoutdir=g:\Users\go\dev\web
 
-set ConfigurationType=Debug
-IF "$(ConfigurationName)"=="ST2.1Release" set ConfigurationType=Release
-IF "$(ConfigurationName)"=="ST3.0Release" set ConfigurationType=Release
-
 set StTarget="$(StPluginPath)\Update\%25guid%25\$(ProjectName)"
 IF NOT EXIST %25StTarget%25 mkdir %25StTarget%25
 REM XCOPY depreciated in Vista, use for XP compatibility
 XCOPY  $(TargetDir)*.* "%25StTarget%25" /I/Y/Q/E &lt;NUL:
 
-copy "$(SolutionDir)\MetaDataExtractor\bin\%25ConfigurationType%25\MetaDataExtractor.dll" "$(TargetDir)"
+copy "$(SolutionDir)\MetaDataExtractor\bin\$(ConfigurationType)\MetaDataExtractor.dll" "$(TargetDir)"
 
-IF NOT "%25ConfigurationType%25"=="Release" GOTO END
+IF NOT "$(ConfigurationType)"=="Release" GOTO END
 
 REM generate the plugin.xml file
 ECHO ^&lt;?xml version="1.0" encoding="utf-8" ?^&gt; &gt;  "$(TargetDir)\plugin.xml"
