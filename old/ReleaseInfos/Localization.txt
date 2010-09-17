@@ -1,0 +1,39 @@
+ActivityPicturePage_Title	Pictures	Bilder
+Altitude_HeaderText	Altitude	Höhe
+btnCollapseAll_Text	Collapse All	Alles Reduzieren
+btnExpandAll_Text	Expand All	Alles Erweitern
+btnGeoTag_Text	Geotag	Geotaggen
+btnKML_Text	Export to Google Earth	Exportieren nach Google Earth
+btnManImp_Text	Import	Importieren
+btnScan_Text	Import	Importieren
+btnTimeOffset_Text	Time offset	Zeitversatz
+commentDataGridViewTextBoxColumn_HeaderText	Comment	Kommentar
+dateTimeOriginalDataGridViewTextBoxColumn_HeaderText	Date & Time	Datum & Zeit
+equipmentModelDataGridViewTextBoxColumn_HeaderText	Camera Model	Kameramodell
+ExifGPS_HeaderText	GPS Data	GPS Daten
+goupBoxListOptions_Text	Options (for selected images)	Optionen (für ausgewählte Bilder)
+groupBoxGPSFormat_Text	GPS format	GPS Format
+groupBoxImage_Text	Image Options	Bildoptionen
+groupBoxVideo_Text	Video Options	Videooptionen
+ImportControl_addingFile	Adding file	Hinzufügen von Datei
+ImportControl_changeView	View	Ansicht
+ImportControl_importDone1	Import done: A total of	Import abgeschlossen: Insgesamt
+ImportControl_importDone2	Images have been imported	Bilder wurden importiert
+ImportControl_importing	Importing Image	Importieren von Bild
+ImportControl_in	in	in
+ImportControl_scanDone1	Scan done: A total of	Durchsuchen abgeschlossen: Insgesamt
+ImportControl_scanDone2	Images have been found	Bilder wurden gefunden
+ImportControl_scanning	Scanning of	Durchsuchen von
+ImportControl_searchingActivity	Searching matching activity for	Nach passender Aktivität suchen für
+labelImageSize_Text	Image size	Bildgröße
+photoSourceDataGridViewTextBoxColumn_HeaderText	Image Source	Bildquelle
+pictureAlbumToolStripMenuItem_Text	Album	Album
+pictureListToolStripMenuItem_Text	List	Liste
+referenceIDDataGridViewTextBoxColumn_HeaderText	ReferenceID	ReferenceID
+thumbnailDataGridViewImageColumn_HeaderText	Thumbnail	Minibild
+titleDataGridViewTextBoxColumn_HeaderText	Title	Titel
+toolStripButtonPause_ToolTipText	Pause	Pause
+toolStripButtonPlay_ToolTipText	Play	Abspielen
+toolStripButtonStop_ToolTipText	Stop	Stop
+TypeImage_HeaderText	Type	Typ
+waypointDataGridViewTextBoxColumn_HeaderText	Waypoint	Wegpunkt

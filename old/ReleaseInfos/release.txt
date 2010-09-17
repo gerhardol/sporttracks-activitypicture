@@ -1,0 +1,39 @@
+[b]Activity picture plugin [/b]
+
+[b]Author [/b]
+doml (contact via PM)
+
+[b]Download [/b]
+Version 1.0 (October 17, 2007) 
+
+[url]http://de.geocities.com/strabampel/index.html[/url]
+
+[b]Installation [/b]
+To install, unzip the downloaded zip file in the SportTracks plugin directory (e.g., C:\Program Files\Zone Five Software\SportTracks 2.0\Plugins). 
+
+[b]Description [/b]
+The plugin is made for accessing pictures that have been taken during an activity in a comfort way.
+
+Currently the plugin contains the following functions:
+- Automatic import of pictures into an activity based on the EXIF data.
+- Automatic Geotagging based on the GPS track of an activity.
+- Two different views are implemented (Album view, List view)
+
+In the album view, only the images are displayed. There are the following options:
+- When clicking on an image, it will be opened using the windows image viewer.
+- When scrolling on an image, the size will be changed
+- When hovering over an image, the tooltip will show the date and time, as well as the GPS location and the picture title.
+ 
+
+In the list view, thumbnails & metadata of the image are displayed. (e.g.: Title, DateTime, Filepath, CameraModel, GPSLocation,...)
+The metadata of the picture will be saved and changed if the cell is being edited (not all cells are editable).
+
+[b]Localization[/b]
+Currently the languages English and German are supported. Further languages will be added on request
+
+[b]Data storage[/b]
+When a picture is added, a unique referenceID will be created and an image of reduced size (<150kb) will be saved in the folder: "..Web files\Images\"
+The path of the original image + the referenceID (unique GUID) that will be created for each image will be saved in the logbook.
+
+[b]Caveats [/b]
+There is no way to show anything on the map with the current SportTracks API. As soon as the SportTracks API will allow it, there will be a way to show the images on the map (e.g. when hovering a picture). Admin has already promised to implement this function in the API

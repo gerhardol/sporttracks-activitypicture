@@ -1,0 +1,39 @@
+ActivityPicturePage_Title;Pictures;Bilder;Photos
+Altitude_HeaderText;Altitude;Höhe;Altitude
+btnCollapseAll_Text;Collapse All;Alles Reduzieren;Tout réduire
+btnExpandAll_Text;Expand All;Alles Erweitern;Tout élargir
+btnGeoTag_Text;Geotag;Geotaggen;Geotag
+btnKML_Text;Export to Google Earth;Exportieren nach Google Earth;Exporter vers Google Earth
+btnManImp_Text;Import;Importieren;Importer
+btnTimeOffset_Text;Time offset;Zeitversatz;Compensation de temps
+commentDataGridViewTextBoxColumn_HeaderText;Comment;Kommentar;Commentaire
+dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;Date & Time;Datum & Zeit;Date & Heure
+equipmentModelDataGridViewTextBoxColumn_HeaderText;Camera Model;Kameramodell;Modèle de caméra
+ExifGPS_HeaderText;GPS Data;GPS Daten;Données GPS
+GoogleEarthExport_Title;Images to Google Earth;Bilder nach Google Earth;Images vers Google Earth
+goupBoxListOptions_Text;Options (for selected images);Optionen (für ausgewählte Bilder);Options (pour les images sélectionnées)
+groupBoxGPSFormat_Text;GPS format;GPS Format;Format GPS
+groupBoxImage_Text;Image Options;Bildoptionen;Options Image
+groupBoxVideo_Text;Video Options;Videooptionen;Options Vidéo
+ImportControl_addingFile;Adding file;Hinzufügen von Datei;Ajout de fichier
+ImportControl_changeView;View;Ansicht;Vue
+ImportControl_importDone1;Import done: A total of;Import abgeschlossen: Insgesamt;Importation terminée: un total de
+ImportControl_importDone2;Images have been imported;Bilder wurden importiert;Images ont été importées
+ImportControl_importing;Importing Image;Importieren von Bild;Importer des images
+ImportControl_in;in;in;dans
+ImportControl_scanDone1;Scan done: A total of;Durchsuchen abgeschlossen: Insgesamt;Recherche terminée: un total de
+ImportControl_scanDone2;Images have been found;Bilder wurden gefunden;Images ont été trouvés
+ImportControl_scanning;Scanning of;Durchsuchen von;Recherche de
+ImportControl_searchingActivity;Searching matching activity for;Nach passender Aktivität suchen für;Recherche d'activités correspondantes pour
+labelImageSize_Text;Image size;Bildgröße;Taille de l'image
+photoSourceDataGridViewTextBoxColumn_HeaderText;Image Source;Bildquelle;Source de l'image
+pictureAlbumToolStripMenuItem_Text;Album;Album;Album
+pictureListToolStripMenuItem_Text;List;Liste;Liste
+referenceIDDataGridViewTextBoxColumn_HeaderText;ReferenceID;ReferenceID;ReferenceID
+thumbnailDataGridViewImageColumn_HeaderText;Thumbnail;Minibild;Miniature
+titleDataGridViewTextBoxColumn_HeaderText;Title;Titel;Titre
+toolStripButtonPause_ToolTipText;Pause;Pause;Pause
+toolStripButtonPlay_ToolTipText;Play;Abspielen;Lecture
+toolStripButtonStop_ToolTipText;Stop;Stop;Stop
+TypeImage_HeaderText;Type;Typ;Type
+waypointDataGridViewTextBoxColumn_HeaderText;Waypoint;Wegpunkt;Waypoint
