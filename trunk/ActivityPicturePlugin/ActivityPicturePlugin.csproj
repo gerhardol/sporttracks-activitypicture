@@ -94,15 +94,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.nl.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.es.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.de.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.fr.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.resx">
       <SubType>Designer</SubType>

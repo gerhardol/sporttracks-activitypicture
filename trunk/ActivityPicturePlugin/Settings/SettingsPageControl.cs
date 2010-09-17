@@ -48,7 +48,7 @@ namespace ActivityPicturePlugin.Settings
         #region ISettingsPage Members
         public Guid Id
         {
-            get { return new Guid(); }
+            get { return GUIDs.Settings; }
         }
         public IList<ZoneFiveSoftware.Common.Visuals.ISettingsPage> SubPages
         {

@@ -32,7 +32,6 @@ namespace ActivityPicturePlugin.Settings
         {
             get
             {
-                // TODO: Implement here.
                 return new ISettingsPage[] {
                     new SettingsPageControl()};
             }

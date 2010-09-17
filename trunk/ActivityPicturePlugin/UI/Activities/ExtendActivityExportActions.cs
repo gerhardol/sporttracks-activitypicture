@@ -30,15 +30,14 @@ using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
 
 namespace ActivityPicturePlugin.UI.Activities
-    {
-    class ExtendActivityExportActions : 
+{
+    class ExtendActivityExportActions :
 #if ST_2_1
     IExtendActivityExportActions
 #else
     IExtendDailyActivityViewActions, IExtendActivityReportsViewActions
 #endif
-
-        {
+    {
 #if ST_2_1
         #region IExtendActivityExportActions Members
 
@@ -75,9 +74,10 @@ namespace ActivityPicturePlugin.UI.Activities
         }
         #endregion
 #endif
-        }
+    }
+
     class TestExportAction : IAction
-        {
+    {
 #if !ST_2_1
         public TestExportAction(IDailyActivityView view)
         {
@@ -114,25 +114,25 @@ namespace ActivityPicturePlugin.UI.Activities
         private bool enabled = false;
         private string title = "";
         public bool Enabled
-            {
+        {
             get
-                {
+            {
                 return enabled;
-                }
             }
+        }
 
         public bool HasMenuArrow
-            {
+        {
             get
-                {
+            {
                 return true;
-                }
             }
+        }
 
         public System.Drawing.Image Image
-            {
+        {
             get { return Resources.Resources.GE; }
-            }
+        }
 
         public IList<string> MenuPath
         {
@@ -142,11 +142,11 @@ namespace ActivityPicturePlugin.UI.Activities
             }
         }
         public void Refresh()
-            {
-            }
+        {
+        }
 
         public void Run(System.Drawing.Rectangle rectButton)
-            {
+        {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.FileName = "";
             sfd.DefaultExt = "kmz";
@@ -156,15 +156,15 @@ namespace ActivityPicturePlugin.UI.Activities
             sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             DialogResult dres = sfd.ShowDialog();
             if (dres == DialogResult.OK & sfd.FileName != "")
-                {
+            {
                 Functions.PerformMultipleExportToGoogleEarth(activities, sfd.FileName);
-                }
             }
+        }
 
         public string Title
-            {
+        {
             get { return title; }
-            }
+        }
         public bool Visible
         {
             get
@@ -217,6 +217,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 _activities = value;
             }
         }
-        }
     }
+}
 

@@ -75,7 +75,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Zone Five Software\SportTracks 2.1\Plugins\ActivityPicturePlugin\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -115,22 +115,22 @@
     </Content>
     <Content Include="sampleFile.xml">
     </Content>
-    <None Include="resources\SonyMarkernote.txt" />
-    <None Include="resources\PanasonicMarkernote.txt" />
-    <None Include="resources\OlympusMarkernote.txt" />
-    <None Include="resources\NikonTypeMarkernote.txt" />
-    <None Include="resources\KyoceraMarkernote.txt" />
-    <None Include="resources\KodakMarkernote.txt" />
-    <None Include="resources\JpegMarkernote.txt" />
-    <None Include="resources\IptcMarkernote.txt" />
-    <None Include="resources\GpsMarkernote.txt" />
-    <None Include="resources\FujiFilmMarkernote.txt" />
-    <None Include="resources\ExifMarkernote.txt" />
-    <None Include="resources\ExifInteropMarkernote.txt" />
-    <None Include="resources\Commons.txt" />
-    <None Include="resources\CasioMarkernote.txt" />
-    <None Include="resources\PentaxMarkernote.txt" />
-    <None Include="resources\CanonMarkernote.txt" />
+    <None Include="Resources\SonyMarkernote.txt" />
+    <None Include="Resources\PanasonicMarkernote.txt" />
+    <None Include="Resources\OlympusMarkernote.txt" />
+    <None Include="Resources\NikonTypeMarkernote.txt" />
+    <None Include="Resources\KyoceraMarkernote.txt" />
+    <None Include="Resources\KodakMarkernote.txt" />
+    <None Include="Resources\JpegMarkernote.txt" />
+    <None Include="Resources\IptcMarkernote.txt" />
+    <None Include="Resources\GpsMarkernote.txt" />
+    <None Include="Resources\FujiFilmMarkernote.txt" />
+    <None Include="Resources\ExifMarkernote.txt" />
+    <None Include="Resources\ExifInteropMarkernote.txt" />
+    <None Include="Resources\Commons.txt" />
+    <None Include="Resources\CasioMarkernote.txt" />
+    <None Include="Resources\PentaxMarkernote.txt" />
+    <None Include="Resources\CanonMarkernote.txt" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
