@@ -24,11 +24,35 @@ using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+#if !ST_2_1
+using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Visuals.Util;
+#endif
 
 namespace ActivityPicturePlugin.UI.Activities
 {
-    class ActivityPicturePage:IActivityDetailPage
+    class ActivityPicturePage: 
+#if ST_2_1
+     IActivityDetailPage
+#else
+     IDetailPage
+#endif
     {
+#if !ST_2_1
+        public ActivityPicturePage(IDailyActivityView view)
+        {
+            this.m_view = view;
+            this.m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
+        }
+
+        private void OnViewSelectedItemsChanged(object sender, EventArgs e)
+        {
+            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            RefreshPage();
+        }
+        public System.Guid Id { get { return GUIDs.Activity; } }
+#endif
+
         #region IActivityDetailPage Members
 
         public IActivity Activity
@@ -43,12 +67,26 @@ namespace ActivityPicturePlugin.UI.Activities
             }
         }
 
-        public void RefreshPage()
+        public bool MenuEnabled
         {
-            if (control != null)
-            {
-                control.RefreshPage();
-            }
+            get { return menuEnabled; }
+            set { menuEnabled = value; OnPropertyChanged("MenuEnabled"); }
+        }
+        public IList<string> MenuPath
+        {
+            get { return menuPath; }
+            set { menuPath = value; OnPropertyChanged("MenuPath"); }
+        }
+        public bool MenuVisible
+        {
+            get { return menuVisible; }
+            set { menuVisible = value; OnPropertyChanged("MenuVisible"); }
+        }
+
+        public bool PageMaximized
+        {
+            get { return pageMaximized; }
+            set { pageMaximized = value; OnPropertyChanged("PageMaximized"); }
         }
 
         #endregion
@@ -97,6 +135,13 @@ namespace ActivityPicturePlugin.UI.Activities
             get { return Resources.Resources.ResourceManager.GetString("ActivityPicturePage_Title"); }
         }
 
+        public void RefreshPage()
+        {
+            if (control != null)
+            {
+                control.RefreshPage();
+            }
+        }
         public void UICultureChanged(CultureInfo culture)
         {
             if (control != null)
@@ -108,9 +153,8 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region INotifyPropertyChanged Members
-
+#pragma warning disable 67
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
         #endregion
 
         #region Private methods
@@ -124,8 +168,15 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Private members
+#if !ST_2_1
+        private IDailyActivityView m_view = null;
+#endif
         private IActivity activity = null;
         private ActivityPicturePageControl control = null;
+        private IList<string> menuPath = null;
+        private bool menuEnabled = true;
+        private bool menuVisible = true;
+        private bool pageMaximized = false;
         #endregion
     }
 }

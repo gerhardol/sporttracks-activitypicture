@@ -97,6 +97,7 @@ namespace ActivityPicturePlugin.Settings
         #endregion
         #region INotifyPropertyChanged Members
 
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion

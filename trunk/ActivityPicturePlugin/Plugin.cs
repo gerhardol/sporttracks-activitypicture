@@ -31,7 +31,7 @@ namespace ActivityPicturePlugin
         public IApplication Application
         {
             set {
-                ActivityPicturePlugin.Plugin.version = GetType().Assembly.GetName().Version.ToString(3);
+                ActivityPicturePlugin.Plugin.version = GetType().Assembly.GetName().Version.ToString(4);
                 application = value; 
             }
         }
@@ -40,7 +40,7 @@ namespace ActivityPicturePlugin
         {
             get
             {
-                return GUID;
+                return GUIDs.PluginMain;
             }
         }
 
@@ -66,14 +66,6 @@ namespace ActivityPicturePlugin
         }
 
         #endregion
-        /// <summary> 
-        /// The unique identifier of the plugin
-        /// </summary> 
-        /// <remarks></remarks> 
-        /// <history> 
-        /// [doml] 05.09.2007 Created 
-        /// </history> 
-        public static Guid GUID = new Guid("{1a0840b9-1d83-4845-ada9-b0c0a6959f40}");
         public static String version;
         
         public static IApplication GetIApplication()

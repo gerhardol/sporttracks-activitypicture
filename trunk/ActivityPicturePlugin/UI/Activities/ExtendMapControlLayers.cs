@@ -21,9 +21,14 @@ using System.Text;
 
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+#if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
+#else
+using ZoneFiveSoftware.Common.Visuals.Mapping;
+#endif
 
-
+#if ST_2_1
+//TODO:
 namespace ActivityPicturePlugin.UI.Activities
 {
     class ExtendMapControlLayers : IExtendMapControlLayers
@@ -84,3 +89,4 @@ namespace ActivityPicturePlugin.UI.Activities
 
 
 }
+#endif

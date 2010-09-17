@@ -29,16 +29,20 @@ namespace ActivityPicturePlugin.UI.Activities
     {
         #region IExtendActivityDetailPages Members
 
+#if ST_2_1
         public IList<IActivityDetailPage> ActivityDetailPages
         {
             get
             {
-                return new IActivityDetailPage[] {
-                    new ActivityPicturePage()
-                };
+                return new IActivityDetailPage[] { new ActivityPicturePage() };
             }
         }
-
+#else
+        public IList<IDetailPage> GetDetailPages(IDailyActivityView view, ExtendViewDetailPages.Location location)
+        {
+            return new IDetailPage[] { new ActivityPicturePage(view) };
+        }
+#endif
         #endregion
     }
 }
