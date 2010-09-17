@@ -28,7 +28,7 @@ using ZoneFiveSoftware.Common.Visuals.Mapping;
 #endif
 
 #if ST_2_1
-//TODO:
+//TODO: MapMarkers are not implemented in neither ST2/ST3
 namespace ActivityPicturePlugin.UI.Activities
 {
     class ExtendMapControlLayers : IExtendMapControlLayers

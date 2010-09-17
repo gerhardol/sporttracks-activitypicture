@@ -46,7 +46,6 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             InitializeComponent();
 
-            //string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetIApplication().SystemPreferences.WebFilesFolder + "\\Images\\";
             //Create directory if it does not already exist!
             if (!Directory.Exists(ImageFilesFolder)) Directory.CreateDirectory(ImageFilesFolder);
 
@@ -76,8 +75,8 @@ namespace ActivityPicturePlugin.UI.Activities
             //TODO:
             SystemPreferences.WebFilesFolder+"\\Images\\";
 #else
-          Configuration.CommonWebFilesFolder
-        + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
+Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
+       // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
 #endif
 
         public static PluginSettings PluginSettingsData = new PluginSettings();
