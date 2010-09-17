@@ -495,7 +495,7 @@ namespace ActivityPicturePlugin.UI
             try
             {
 
-                IList<IActivity> activities = GetActivities();
+                IEnumerable<IActivity> activities = GetActivities();
                 TreeNode yearNode, monthNode, dayNode;
                 dayNode = null;
                 foreach (IActivity act in activities)
@@ -544,9 +544,9 @@ namespace ActivityPicturePlugin.UI
                 throw;
             }
         }
-        private IList<IActivity> GetActivities()
+        private IEnumerable<IActivity> GetActivities()
         {
-            IList<IActivity> activities = new List<IActivity>();
+            IEnumerable<IActivity> activities = new List<IActivity>();
             if (this.ShowAllActivities)
             { //add all activities
                 activities = ActivityPicturePlugin.Plugin.GetIApplication().Logbook.Activities;
@@ -555,7 +555,10 @@ namespace ActivityPicturePlugin.UI
             { //add only current activity
                 if (((ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)(this.Parent.Parent)).Activity != null)
                 {
-                    activities.Add(((ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)(this.Parent.Parent)).Activity);
+                    //TODO:
+                    IList<IActivity> activities2 = new List<IActivity>();
+                    activities2.Add(((ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)(this.Parent.Parent)).Activity);
+                    activities = activities2;
                 }
             }
             return activities;

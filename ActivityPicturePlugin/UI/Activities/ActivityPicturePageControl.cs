@@ -34,24 +34,9 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ActivityPicturePlugin.Helper;
 using QuartzTypeLib;
 
-//TODO:1. Set timestamp manually     //Done! 
-//TODO:2. Set image size/quality for GE images //Done! Will be saved in the logbook: good compromise: 80% quality, 100% size
-//TODO:3. Tooltip on buttons (eg GE export) to inform that only selected images will be exported //Done!
-//TODO:4. Order of GE images according DateTime //Done! images are sorting by DateTime prior to export
-//TODO:5. Track path in GE export  //Done!
-//TODO:6. Sortable columns in list view //Done!
-//TODO:7. Update resource files!!! (Tooltips, new controls,...) //Done!
-
-
-
-//1. I cannot set timestamp on pictures without exif info. A raw edit of time (like name) maybe? //Done!
-
+//todo:
 //2. When doubleclicking the pictures in GE, the pictures are gray. Minatures are fine, so are pictures extracted from the .kmz 
 //4. Can this be the default in List view too? I can sort the pictures, but if I do something with them, the default order is actived again. 
-
-//5. Trackpath //Done!!
-//coordinates has the same "comma problem" as coordinates for pictures used to have (I have to deselect the route to view the pictures) 
-//altitude is always 30. ST uses the height to display stuff like speed or heartrate. Suggest the actual height is used here.
 
 namespace ActivityPicturePlugin.UI.Activities
 {
@@ -86,7 +71,15 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Public members
-        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetIApplication().SystemPreferences.WebFilesFolder + "\\Images\\";
+        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetIApplication().
+#if ST_2_1
+            //TODO:
+            SystemPreferences.WebFilesFolder+"\\Images\\";
+#else
+          Configuration.CommonWebFilesFolder
+        + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
+#endif
+
         public static PluginSettings PluginSettingsData = new PluginSettings();
         //public List<ImageData> Images = new System.Collections.Generic.List<ImageData>();
         #endregion
@@ -1119,7 +1112,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             try
             {
-                byte[] b = log.GetExtensionData(ActivityPicturePlugin.Plugin.GUID);
+                byte[] b = log.GetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain);
                 if (!(b.Length == 0))
                 {
                     System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
@@ -1152,8 +1145,8 @@ namespace ActivityPicturePlugin.UI.Activities
                 System.IO.MemoryStream mem = new System.IO.MemoryStream();
                 System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
                 xmlSer.Serialize(mem, data);
-                log.SetExtensionData(ActivityPicturePlugin.Plugin.GUID, mem.ToArray());
-                log.SetExtensionText(ActivityPicturePlugin.Plugin.GUID, "Picture Plugin");
+                log.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
+                log.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
                 mem.Close();
                 log.Modified = true;
             }

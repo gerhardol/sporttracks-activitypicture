@@ -734,16 +734,16 @@ namespace ActivityPicturePlugin.Helper
                 //store data of images in the serializable wrapper class
                 if (pd.Images.Count == 0)
                 {
-                    act.SetExtensionData(ActivityPicturePlugin.Plugin.GUID, null);
-                    act.SetExtensionText(ActivityPicturePlugin.Plugin.GUID, "");
+                    act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, null);
+                    act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "");
                 }
                 else
                 {
                     System.IO.MemoryStream mem = new System.IO.MemoryStream();
                     System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));
                     xmlSer.Serialize(mem, pd);
-                    act.SetExtensionData(ActivityPicturePlugin.Plugin.GUID, mem.ToArray());
-                    act.SetExtensionText(ActivityPicturePlugin.Plugin.GUID, "Picture Plugin");
+                    act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
+                    act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
                     mem.Close();
                 }
 
@@ -761,7 +761,7 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 PluginData pd;
-                byte[] b = act.GetExtensionData(ActivityPicturePlugin.Plugin.GUID);
+                byte[] b = act.GetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain);
                 if (!(b.Length == 0))
                 {
                     System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));

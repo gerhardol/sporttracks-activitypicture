@@ -20,12 +20,26 @@ using System.Collections.Generic;
 using System.Text;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using ZoneFiveSoftware.Common.Data.Fitness;
+#if !ST_2_1
+using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Visuals.Util;
+#endif
+
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+
 namespace ActivityPicturePlugin.UI.Activities
     {
-    class ExtendActivityExportActions : IExtendActivityExportActions
+    class ExtendActivityExportActions : 
+#if ST_2_1
+    IExtendActivityExportActions
+#else
+    IExtendDailyActivityViewActions, IExtendActivityReportsViewActions
+#endif
+
         {
+#if ST_2_1
         #region IExtendActivityExportActions Members
 
         public IList<IAction> GetActions(IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> activities)
@@ -39,10 +53,42 @@ namespace ActivityPicturePlugin.UI.Activities
             }
 
         #endregion
+#else
+        #region IExtendDailyActivityViewActions Members
+        public IList<IAction> GetActions(IDailyActivityView view,
+                                                 ExtendViewActions.Location location)
+        {
+            if (location == ExtendViewActions.Location.ExportMenu)
+            {
+                return new IAction[] { new TestExportAction(view) };
+            }
+            else return new IAction[0];
+        }
+        public IList<IAction> GetActions(IActivityReportsView view,
+                                         ExtendViewActions.Location location)
+        {
+            if (location == ExtendViewActions.Location.ExportMenu)
+            {
+                return new IAction[] { new TestExportAction(view) };
+            }
+            else return new IAction[0];
+        }
+        #endregion
+#endif
         }
     class TestExportAction : IAction
         {
-        public TestExportAction(ZoneFiveSoftware.Common.Data.Fitness.IActivity act)
+#if !ST_2_1
+        public TestExportAction(IDailyActivityView view)
+        {
+            this.dailyView = view;
+        }
+        public TestExportAction(IActivityReportsView view)
+        {
+            this.reportView = view;
+        }
+#else
+        public TestExportAction(IActivity act)
             {
             this.title = Resources.Resources.ResourceManager.GetString("GoogleEarthExport_Title");
             if (act != null)
@@ -54,7 +100,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     }
                 }
             }
-        public TestExportAction(IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> acts)
+        public TestExportAction(IList<IActivity> acts)
             {
             if (acts.Count > 0)
                 {
@@ -63,10 +109,10 @@ namespace ActivityPicturePlugin.UI.Activities
                 activities = acts;
                 }
             }
+#endif
         #region IAction Members
         private bool enabled = false;
         private string title = "";
-        private IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> activities = new List<ZoneFiveSoftware.Common.Data.Fitness.IActivity>();
         public bool Enabled
             {
             get
@@ -88,9 +134,15 @@ namespace ActivityPicturePlugin.UI.Activities
             get { return Resources.Resources.GE; }
             }
 
+        public IList<string> MenuPath
+        {
+            get
+            {
+                return new List<string>();
+            }
+        }
         public void Refresh()
             {
-            //throw new Exception("The method or operation is not implemented.");
             }
 
         public void Run(System.Drawing.Rectangle rectButton)
@@ -113,14 +165,58 @@ namespace ActivityPicturePlugin.UI.Activities
             {
             get { return title; }
             }
+        public bool Visible
+        {
+            get
+            {
+                if (activities.Count == 0) return false;
+                return true;
+            }
+        }
 
         #endregion
 
         #region INotifyPropertyChanged Members
 
+#pragma warning disable 67
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+#if !ST_2_1
+        private IDailyActivityView dailyView = null;
+        private IActivityReportsView reportView = null;
+#endif
+        private IList<IActivity> _activities = null;
+        private IList<IActivity> activities
+        {
+            get
+            {
+#if !ST_2_1
+                //activities are set either directly or by selection,
+                //not by more than one view
+                if (_activities == null)
+                {
+                    if (dailyView != null)
+                    {
+                        return CollectionUtils.GetAllContainedItemsOfType<IActivity>(dailyView.SelectionProvider.SelectedItems);
+                    }
+                    else if (reportView != null)
+                    {
+                        return CollectionUtils.GetAllContainedItemsOfType<IActivity>(reportView.SelectionProvider.SelectedItems);
+                    }
+                    else
+                    {
+                        return new List<IActivity>();
+                    }
+                }
+#endif
+                return _activities;
+            }
+            set
+            {
+                _activities = value;
+            }
+        }
         }
     }
 
