@@ -32,7 +32,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ActivityPicturePlugin.Helper;
-using QuartzTypeLib;
+//using QuartzTypeLib;
 
 //todo:
 //2. When doubleclicking the pictures in GE, the pictures are gray. Minatures are fine, so are pictures extracted from the .kmz 

@@ -109,7 +109,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <Content Include="App.ico" />
     <Content Include="exif.xslt">
     </Content>
