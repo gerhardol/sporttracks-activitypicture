@@ -1,0 +1,7 @@
+This project uses code from other open source projects
+
+MetaDataExtractor - Extract the metadata from pictures
+http://renaud91.free.fr/MetaDataExtractor/
+
+AviFile - AVI file handling
+Corinna John (Hannover, Germany) cj@binary-universe.net
