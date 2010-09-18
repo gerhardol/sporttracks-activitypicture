@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
     {
@@ -57,6 +58,11 @@ namespace ActivityPicturePlugin.UI.Activities
                 }
             }
 
+        public void ThemeChanged(ITheme visualTheme)
+        {
+            this.BackColor = visualTheme.Control;
+            this.ForeColor = visualTheme.ControlText;
+        }
         private void btnOK_Click(object sender, EventArgs e)
             {
             ApplyTimeStamp();

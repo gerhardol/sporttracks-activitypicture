@@ -159,37 +159,6 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
                 this.btnTimeOffset.Text = Resources.Resources.ResourceManager.GetString("btnTimeOffset_Text");
                 this.labelImageSize.Text = Resources.Resources.ResourceManager.GetString("labelImageSize_Text");
 
-
-
-                ITheme Theme = ActivityPicturePlugin.Plugin.GetIApplication().VisualTheme;
-
-                this.actionBannerViews.ThemeChanged(Theme);
-
-                this.panelViews.Border = ControlBorder.Style.SmallRoundShadow;
-                this.panelViews.BorderColor = Theme.Border;
-                this.panelViews.BorderShadowColor = System.Drawing.Color.Transparent;
-                this.panelViews.BackColor = Theme.Window;
-
-                this.toolStripVideo.BackColor = Theme.Control;
-                this.toolStripVideo.BackColor = Theme.Control;
-                this.trackBarImageSize.BackColor = Theme.Window;
-                //this.trackBarVideo.BackColor = Theme.Control;
-                this.trackBarVideo.BackColor = Theme.Window;
-                this.volumeSlider2.BarBackColor = Theme.ControlText;
-                this.volumeSlider2.BarForeColor = Theme.MainHeader;
-
-                this.groupBoxVideo.ForeColor = Theme.ControlText;
-                //this.groupBoxImport.ForeColor = Theme.ControlText;
-                this.groupBoxImage.ForeColor = Theme.ControlText;
-                //this.btnImpDir.ForeColor = Theme.ControlText;
-                //this.btnImpSel.ForeColor = Theme.ControlText;
-
-                this.dataGridViewImages.BackgroundColor = Theme.Window;
-                this.dataGridViewImages.DefaultCellStyle.BackColor = Theme.Window;
-                this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor = Theme.SubHeader;
-                this.dataGridViewImages.ColumnHeadersDefaultCellStyle.ForeColor = Theme.SubHeaderText;
-                this.actionBannerViews.BackColor = Theme.SubHeader;
-
                 this.Invalidate();
             }
             catch (Exception)
@@ -197,21 +166,53 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
                 //throw;
             }
         }
+        ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
         {
-
+            m_theme = visualTheme;
             //change theme colors
             //labelImageSize.ForeColor = visualTheme.ControlText;
             //this.trackBar1.BackColor = visualTheme.Window;
 
             this.Invalidate();
+ 
+            this.BackColor = visualTheme.Control;
+            this.actionBannerViews.ThemeChanged(visualTheme);
+            //this.actionBannerViews.BackColor = Theme.SubHeader;
+            this.panelViews.ThemeChanged(visualTheme);
+            this.panelViews.HeadingBackColor = visualTheme.Control;
+            //this.panelViews.Border = ControlBorder.Style.SmallRoundShadow;
+            //this.panelViews.BorderColor = Theme.Border;
+            //this.panelViews.BorderShadowColor = System.Drawing.Color.Transparent;
 
+            this.importControl1.ThemeChanged(visualTheme);
+            this.pictureAlbumView.ThemeChanged(visualTheme);
+            this.groupBoxListOptions.BackColor = visualTheme.Control;
+            this.groupBoxListOptions.ForeColor = visualTheme.ControlText;
+
+            this.groupBoxVideo.BackColor = visualTheme.Control;
+            this.groupBoxVideo.ForeColor = visualTheme.ControlText;
+            this.trackBarVideo.BackColor = visualTheme.Control;
+            this.toolStripVideo.BackColor = visualTheme.Control;
+            this.volumeSlider2.ThemeChanged(visualTheme);
+
+            this.groupBoxImage.BackColor = visualTheme.Control;
+            this.groupBoxImage.ForeColor = visualTheme.ControlText;
+            this.trackBarImageSize.BackColor = visualTheme.Control;
+
+            this.dataGridViewImages.ForeColor = visualTheme.ControlText;
+            this.dataGridViewImages.BackgroundColor = visualTheme.Control;
+            this.dataGridViewImages.GridColor = visualTheme.Border;
+            this.dataGridViewImages.DefaultCellStyle.BackColor = visualTheme.Window;
+            this.dataGridViewImages.RowHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
+            this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
+            this.dataGridViewImages.ColumnHeadersDefaultCellStyle.ForeColor = visualTheme.SubHeaderText;
         }
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             //change number formats
             RefreshPage();
-            this.importControl1.UpdateUICulture();
+            this.importControl1.UpdateUICulture(culture);
         }
         private void UpdateView()
         {
@@ -338,6 +339,7 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
                 {
                     //set the time stamp
                     ModifyTimeStamp frm = new ModifyTimeStamp(this.pictureAlbumView.ImageList[e.RowIndex]);
+                    frm.ThemeChanged(m_theme);
                     frm.ShowDialog();
                 }
             }
@@ -398,7 +400,7 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
                 if (ActivityPicturePageControl.PluginSettingsData.data.SortMode != PictureAlbum.ImageSortMode.none)
                 {
                     if (oldcol != null) oldcol.HeaderCell.Style.BackColor = this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor;
-                    col.HeaderCell.Style.BackColor = Plugin.GetIApplication().VisualTheme.MainHeader;
+                    col.HeaderCell.Style.BackColor = m_theme.MainHeader;
                     this.pictureAlbumView.ImageList.Sort(CompareImageData);
                     UpdateDataGridView();
                     ActivityPicturePageControl.PluginSettingsData.WriteSettings();
@@ -674,7 +676,7 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
             try
             {
                 //this.pictureAlbumView.ParentCtl = this;
-                this.ThemeChanged(ActivityPicturePlugin.Plugin.GetIApplication().VisualTheme);
+                this.ThemeChanged(m_theme);
                 InitializeDataGridView();
                 RefreshPage();
                 //ReloadData();
@@ -709,7 +711,7 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
         private void SortListView()
         {
             DataGridViewColumn col = GetSortColumn(ActivityPicturePageControl.PluginSettingsData.data.SortMode);
-            if (col != null) col.HeaderCell.Style.BackColor = Plugin.GetIApplication().VisualTheme.MainHeader;
+            if (col != null) col.HeaderCell.Style.BackColor = m_theme.MainHeader;
             this.pictureAlbumView.ImageList.Sort(CompareImageData);
             UpdateDataGridView();
         }
@@ -963,6 +965,7 @@ Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
         private void btnTimeOffset_Click(object sender, EventArgs e)
         {
             TimeOffset frm = new TimeOffset(GetSelectedImageData());
+            frm.ThemeChanged(m_theme);
             frm.ShowDialog();
         }
 

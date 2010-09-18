@@ -42,9 +42,9 @@ namespace ActivityPicturePlugin.UI
             this.SelectedNodes = new List<TreeNode>();
             this.ActivityNodes = new List<TreeNode>();
         }
-        public void UpdateUICulture()
+        public void UpdateUICulture(System.Globalization.CultureInfo culture)
         {
-
+            m_culture = culture;
             this.btnScan.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
             this.btnExpandAll.Text = Resources.Resources.ResourceManager.GetString("btnExpandAll_Text");
             this.btnCollapseAll.Text = Resources.Resources.ResourceManager.GetString("btnCollapseAll_Text");
@@ -60,8 +60,11 @@ namespace ActivityPicturePlugin.UI
             this.colDGPS.Text = Resources.Resources.ResourceManager.GetString("ExifGPS_HeaderText");
             this.colDTitle.Text = Resources.Resources.ResourceManager.GetString("titleDataGridViewTextBoxColumn_HeaderText");
             this.colDDescription.Text = Resources.Resources.ResourceManager.GetString("commentDataGridViewTextBoxColumn_HeaderText");
-
-            //ZoneFiveSoftware.Common.Visuals.ITheme Theme = ActivityPicturePlugin.Plugin.GetIApplication().VisualTheme;
+        }
+        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        {
+            this.BackColor = visualTheme.Control;
+            this.ForeColor = visualTheme.ControlText;
         }
         public void LoadNodes()
         {
@@ -70,7 +73,7 @@ namespace ActivityPicturePlugin.UI
             lblProgress.Text = "";
             progressBar2.Visible = false;
 
-            UpdateUICulture();
+            UpdateUICulture(m_culture);
 
             if (!standardpathalreadyshown)
             {
@@ -108,6 +111,7 @@ namespace ActivityPicturePlugin.UI
         private int viewFolder = 0; //View of ListviewDrive
         private int NumDayNodes = 0; //needed for progress bar
         private int numFilesImported = 0;
+        private System.Globalization.CultureInfo m_culture = System.Globalization.CultureInfo.CurrentUICulture;
         #endregion
 
         #region Public properties

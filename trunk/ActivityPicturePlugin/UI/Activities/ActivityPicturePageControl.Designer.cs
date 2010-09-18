@@ -467,8 +467,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 // volumeSlider2
                 // 
                 this.volumeSlider2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-                this.volumeSlider2.BarBackColor = System.Drawing.Color.Black;
-                this.volumeSlider2.BarForeColor = System.Drawing.Color.Blue;
                 this.volumeSlider2.Location = new System.Drawing.Point(145, 16);
                 this.volumeSlider2.MaximumSize = new System.Drawing.Size(100, 23);
                 this.volumeSlider2.Name = "volumeSlider2";

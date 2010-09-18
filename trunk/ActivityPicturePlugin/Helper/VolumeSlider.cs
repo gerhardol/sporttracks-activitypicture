@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.Helper
 {
@@ -65,17 +66,10 @@ namespace ActivityPicturePlugin.Helper
         }
 
 
-        public Color BarBackColor
+        public void ThemeChanged(ITheme visualTheme)
         {
-            get { return barBackColor; }
-            set { barBackColor = value; }
-        }
-
-
-        public Color BarForeColor
-        {
-            get { return barForeColor; }
-            set { barForeColor = value; }
+            this.BackColor = visualTheme.Control;
+            this.ForeColor = visualTheme.ControlText;
         }
 
         private void VolumeSlider_Load(object sender, EventArgs e)

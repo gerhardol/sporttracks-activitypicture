@@ -32,7 +32,6 @@ namespace ActivityPicturePlugin.Settings
         {
             InitializeComponent();
 
-
             //localization
             this.groupBoxImport.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
             this.lblImageQuality.Text = Resources.Resources.ResourceManager.GetString("SettingsPageControl_lblQuality_Text");
@@ -80,7 +79,12 @@ namespace ActivityPicturePlugin.Settings
         }
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
         {
-            this.BackColor = visualTheme.Window;
+            this.BackColor = visualTheme.Control;
+            this.importControl1.ThemeChanged(visualTheme);
+            this.groupBoxImport.BackColor = visualTheme.Control;
+            this.groupBoxImport.ForeColor = visualTheme.ControlText;
+            this.groupBox2.BackColor = visualTheme.Control;
+            this.groupBox2.ForeColor = visualTheme.ControlText;
         }
         public string Title
         {

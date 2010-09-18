@@ -299,6 +299,13 @@ namespace ActivityPicturePlugin.Helper
         {
             this.ActivityChanged(this, new EventArgs());
         }
+        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        {
+            this.BackColor = visualTheme.Control;
+            this.ForeColor = visualTheme.ControlText;
+            this.panel1.BackColor = visualTheme.Control;
+            this.panel1.ForeColor = visualTheme.ControlText;
+        }
         #endregion
         #region Event handler methods
         private void panel1_Paint(object sender, PaintEventArgs e)
