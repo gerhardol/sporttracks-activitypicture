@@ -40,6 +40,11 @@ namespace ActivityPicturePlugin.UI.Activities
             this.btnCancel.Text = Resources.Resources.ResourceManager.GetString("btn_Cancel_Text");
             }
 
+        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        {
+            this.BackColor = visualTheme.Control;
+            this.ForeColor = visualTheme.ControlText;
+        }
         private void btnOK_Click(object sender, EventArgs e)
             {
             ApplyOffset();
