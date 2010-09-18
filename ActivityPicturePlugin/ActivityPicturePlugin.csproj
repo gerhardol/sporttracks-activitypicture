@@ -16,6 +16,7 @@
     <Compile Include="GUIDs.cs" />
     <Compile Include="Helper\ExifWorks.cs" />
     <Compile Include="Helper\Functions.cs" />
+    <Compile Include="Helper\SimpleRun.cs" />
     <Compile Include="Helper\VolumeSlider.cs">
       <SubType>UserControl</SubType>
     </Compile>

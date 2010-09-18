@@ -265,8 +265,8 @@ namespace ActivityPicturePlugin.UI
                 string dts = "";
                 try
                 {
-                    ExifDirectory ed = com.SimpleRun.ShowOneFileExifDirectory(file.FullName);
-                    GpsDirectory gps = com.SimpleRun.ShowOneFileGPSDirectory(file.FullName);
+                    ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
+                    GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
 
                     string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                     IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
@@ -1186,7 +1186,7 @@ namespace ActivityPicturePlugin.UI
                 string strx, stry;
                 try
                 {
-                    ExifDirectory ex = com.SimpleRun.ShowOneFileExifDirectory(tx.FullName);
+                    ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(tx.FullName);
                     strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                 }
                 catch (Exception)
@@ -1195,7 +1195,7 @@ namespace ActivityPicturePlugin.UI
                 }
                 try
                 {
-                    ExifDirectory ey = com.SimpleRun.ShowOneFileExifDirectory(ty.FullName);
+                    ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory(ty.FullName);
                     stry = ey.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                 }
                 catch (Exception)
