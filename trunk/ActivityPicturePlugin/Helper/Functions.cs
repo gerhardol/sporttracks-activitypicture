@@ -35,7 +35,7 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                string fileTime = com.SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
+                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
                 IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
                 DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
                 return dt;

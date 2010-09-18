@@ -5,3 +5,4 @@ http://renaud91.free.fr/MetaDataExtractor/
 
 AviFile - AVI file handling
 Corinna John (Hannover, Germany) cj@binary-universe.net
+http://www.codeproject.com/KB/audio-video/avifilewrapper.aspx
