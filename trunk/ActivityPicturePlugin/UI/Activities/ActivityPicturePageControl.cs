@@ -75,7 +75,7 @@ namespace ActivityPicturePlugin.UI.Activities
             //TODO:
             SystemPreferences.WebFilesFolder+"\\Images\\";
 #else
-Configuration.CommonWebFilesFolder + "../../2.0/Web Files/Images/";
+Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
        // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
 #endif
 
