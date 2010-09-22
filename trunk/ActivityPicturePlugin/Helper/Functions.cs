@@ -677,9 +677,10 @@ namespace ActivityPicturePlugin.Helper
                 // if not found, try next to open image from ...\Web Files\Images folder
                 else
                 {
-                    if (System.IO.File.Exists(referenceID))
+                    string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+                    if (System.IO.File.Exists(ThumbnailPath))
                     {
-                        OpenImageWithWindowsViewer(referenceID);
+                        OpenImageWithWindowsViewer(ThumbnailPath);
                     }
                     // if both locations are not found, nothing will happen
                 }
@@ -699,6 +700,7 @@ namespace ActivityPicturePlugin.Helper
                 (sys + "\\rundll32.exe",
                 sys + "\\shimgvw.dll,ImageView_Fullscreen " +
                 ImageLocation);
+                //f.UseShellExecute = false;
                 System.Diagnostics.Process.Start(f);
             }
             catch (Exception ex)
@@ -731,23 +733,28 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                //store data of images in the serializable wrapper class
-                if (pd.Images.Count == 0)
-                {
-                    act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, null);
-                    act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "");
-                }
-                else
-                {
-                    System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));
-                    xmlSer.Serialize(mem, pd);
-                    act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
-                    act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
-                    mem.Close();
-                }
+                PluginData pd0 = ReadExtensionData(act);
 
-                ActivityPicturePlugin.Plugin.GetIApplication().Logbook.Modified = true;
+                if (pd.Equals(pd0))
+                {
+                    //store data of images in the serializable wrapper class
+                    if (pd.Images.Count == 0)
+                    {
+                        act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, null);
+                        act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "");
+                    }
+                    else
+                    {
+                        System.IO.MemoryStream mem = new System.IO.MemoryStream();
+                        System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));
+                        xmlSer.Serialize(mem, pd);
+                        act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
+                        act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
+                        mem.Close();
+                    }
+
+                    ActivityPicturePlugin.Plugin.GetIApplication().Logbook.Modified = true;
+                }
             }
             catch (Exception)
             {
