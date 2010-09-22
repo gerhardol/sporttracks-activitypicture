@@ -70,13 +70,13 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Public members
-        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetIApplication().
+        public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetIApplication().
 #if ST_2_1
             //TODO:
             SystemPreferences.WebFilesFolder+"\\Images\\";
 #else
-Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
-       // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
+Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
+       // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar);
 #endif
 
         public static PluginSettings PluginSettingsData = new PluginSettings();
@@ -92,12 +92,14 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
                 if ((!object.ReferenceEquals(_Activity, value)))
                 {
                     //Update activity
+                    this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                     _Activity = value;
                     this.pictureAlbumView.ActivityChanging();
                     //this.dataGridViewImages.Visible = false;
                     Functions.ClearImageList(this.pictureAlbumView);
                     ReloadData();
                     UpdateView();
+                    this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 }
             }
             get
@@ -366,7 +368,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
             }
             catch (Exception)
             {
-
                 //throw;
             }
 
@@ -1101,6 +1102,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
             }
         }
         public SettingsData data = new SettingsData();
+        public SettingsData dataRead = new SettingsData(); //data last read from logbook
         private ZoneFiveSoftware.Common.Data.Fitness.ILogbook log
         {
             get
@@ -1121,7 +1123,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
                     System.IO.MemoryStream mem = new System.IO.MemoryStream();
                     mem.Write(b, 0, b.Length);
                     mem.Position = 0;
-                    data = (SettingsData)xmlSer.Deserialize(mem);
+                    data = dataRead = (SettingsData)xmlSer.Deserialize(mem);
                     mem.Dispose();
                     xmlSer = null;
                     b = null;
@@ -1142,19 +1144,22 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\";
 
         public void WriteSettings()
         {
-            try
+            if (data.Equals(dataRead))
             {
-                System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
-                xmlSer.Serialize(mem, data);
-                log.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
-                log.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
-                mem.Close();
-                log.Modified = true;
-            }
-            catch (Exception)
-            {
-                throw;
+                try
+                {
+                    System.IO.MemoryStream mem = new System.IO.MemoryStream();
+                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
+                    xmlSer.Serialize(mem, data);
+                    log.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
+                    log.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
+                    mem.Close();
+                    log.Modified = true;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
             #endregion
