@@ -65,9 +65,12 @@ namespace ActivityPicturePlugin.Helper
             set { volume = value; }
         }
 
-
+        private ITheme m_theme;
         public void ThemeChanged(ITheme visualTheme)
         {
+            m_theme = visualTheme;
+            barBackColor = visualTheme.Control;
+            barForeColor = visualTheme.ControlText;
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.ControlText;
         }

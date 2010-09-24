@@ -37,6 +37,7 @@ namespace ActivityPicturePlugin.Helper
             this.ActivityChanged += new ActivityChangedEventHandler(PictureAlbum_ActivityChanged);
             this.ImageRectangles[0] = new Rectangle();
             this.albumToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
+            this.albumToolTipTimer.Interval = 200;
         }
         #region Overrides
         protected override void WndProc(ref Message m)
@@ -247,22 +248,19 @@ namespace ActivityPicturePlugin.Helper
                 // throw;
             }
         }
-        private int GetIndexOfCurrentImage(int x, int y)
+        private int GetIndexOfCurrentImage(Point p)
         {
             try
             {
-                if (ImageRectangles != null)
+                if (ImageRectangles != null && this.ImageList.Count != 0)
                 {
                     for (int i = 0; i < ImageRectangles.Length; i++)
                     {
                         if (ImageRectangles[i] != null)
                         {
-                            if (new Region(ImageRectangles[i]).IsVisible(new Point(x, y)))
+                            if (new Region(ImageRectangles[i]).IsVisible(p))
                             {
-                                if (this.ImageList.Count != 0)
-                                {
                                     return i;
-                                }
                             }
                         }
                     }
@@ -304,8 +302,6 @@ namespace ActivityPicturePlugin.Helper
         {
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.ControlText;
-            //this.panel1.BackColor = visualTheme.Control;
-            //this.panel1.ForeColor = visualTheme.ControlText;
         }
         #endregion
         #region Event handler methods
@@ -313,50 +309,32 @@ namespace ActivityPicturePlugin.Helper
         {
             //PaintAlbumView(true);
         }
-        //xxx not refreshing? saveextdata 
+
         //ToolTip support - hints from omb
 
         // private member variables of the Control - initialization omitted
-       // ToolTip summaryListToolTip = new ToolTip();
         Timer albumToolTipTimer = new Timer();
         bool albumTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
-        //UniqueRoutesResult summaryListLastEntryAtMouseMove = null;
         int IndexOfLastImage = -1;
-        //Point albumCursorLocationAtMouseMove;
 
         private void ToolTipTimer_Tick(object sender, EventArgs e)
         {
             albumToolTipTimer.Stop();
-
             if (IndexOfLastImage >= 0 &&
-                //albumCursorLocationAtMouseMove != null &&
-                !albumTooltipDisabled)
+                    this.ImageList[IndexOfLastImage].Type == ImageData.DataTypes.Image)
             {
-                //toolTip1.Show(similarToolTip[summaryListLastEntryAtMouseMove.Activity.ReferenceId],
-                //              summaryList,
-                //              new Point(summaryListCursorLocationAtMouseMove.X +
-                //                  Cursor.Current.Size.Width / 2,
-                //                        summaryListCursorLocationAtMouseMove.Y),
-                //              toolTip1.AutoPopDelay);
-                //try
-                //{
-                int i = IndexOfLastImage;//GetIndexOfCurrentImage(summaryListCursorLocationAtMouseMove.X, summaryListCursorLocationAtMouseMove.Y);
-                    string tooltip = "";
-                    if (i >= 0)
-                    {
-                        tooltip = this.ImageList[i].PhotoSource;
-                        DateTime dt = new DateTime(1950, 1, 1);
-                        if (dt < this.ImageList[i].EW.DateTimeOriginal) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
-                        if (this.ImageList[i].EW.GPSLatitude != 0) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS;
-                        if (this.ImageList[i].Title != "") tooltip += Environment.NewLine + this.ImageList[i].Title;
-                    this.toolTip1.SetToolTip(this.panel1, tooltip);
-                    }
-
-                //}
-                //catch (Exception)
-                //{
-                //    //throw;
-                //}
+                int i = IndexOfLastImage;
+                string tooltip = "";
+                tooltip = this.ImageList[i].PhotoSource;
+                DateTime dt = new DateTime(1950, 1, 1);
+                if (dt < this.ImageList[i].EW.DateTimeOriginal) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
+                if (this.ImageList[i].EW.GPSLatitude != 0) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS;
+                if (this.ImageList[i].Title != "") tooltip += Environment.NewLine + this.ImageList[i].Title;
+                this.toolTip1.SetToolTip(this.panel1, tooltip);
+            }
+            else
+            {
+                toolTip1.Hide(panel1);
             }
         }
         private void panel1_MouseEnter(object sender, EventArgs e)
@@ -371,40 +349,37 @@ namespace ActivityPicturePlugin.Helper
         }
         private void panel1_MouseMove(object sender, MouseEventArgs e)
         {
-            int i = GetIndexOfCurrentImage(e.Location.X, e.Location.Y);
+            int i = GetIndexOfCurrentImage(e.Location);
             if (i == IndexOfLastImage)
                 return;
             else
                 toolTip1.Hide(panel1);
 
             IndexOfLastImage = i;
-            //albumCursorLocationAtMouseMove = e.Location;
-
+            albumToolTipTimer.Stop();
             if (i>=0)
                 albumToolTipTimer.Start();
-            else
-                albumToolTipTimer.Stop();
         }
         private void panel1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            int i = this.GetIndexOfCurrentImage(e.X, e.Y);
+            int i = this.GetIndexOfCurrentImage(e.Location);
             if (i >= 0)
             {
                 string s = this.ImageList[i].PhotoSource;
                 if (this.ImageList[i].Type == ImageData.DataTypes.Image)
                 {
-                    Functions.OpenImage(this.ImageList[i].PhotoSource, this.ImageList[i].ReferenceID);
+                    Functions.OpenImage(s, this.ImageList[i].ReferenceID);
                 }
-
                 else if (this.ImageList[i].Type == ImageData.DataTypes.Video)
                 {
-                    Functions.OpenVideoInExternalWindow(this.ImageList[i].PhotoSource);
+                    //Note: The click does not "get through"
+                    Functions.OpenVideoInExternalWindow(s);
                 }
             }
         }
         private void panel1_MouseClick(object sender, MouseEventArgs e)
         {
-            int i = this.GetIndexOfCurrentImage(e.X, e.Y);
+            int i = this.GetIndexOfCurrentImage(e.Location);
             if (i >= 0)
             {
                 string s = this.ImageList[i].PhotoSource;
@@ -418,7 +393,7 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                //TODO: update size after update
+                //TODO: update size after update, not working now
                 if (e.KeyCode == Keys.Up)
                 {
                     if (this.Zoom < 99) this.ZoomChange(this, +2);

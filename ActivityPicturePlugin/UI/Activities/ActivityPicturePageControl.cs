@@ -70,6 +70,7 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Public members
+        //TODO: GetFullPath required due to relative paths
         public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetIApplication().
 #if ST_2_1
             //TODO:
@@ -92,14 +93,12 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 if ((!object.ReferenceEquals(_Activity, value)))
                 {
                     //Update activity
-                    this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                     _Activity = value;
                     this.pictureAlbumView.ActivityChanging();
                     //this.dataGridViewImages.Visible = false;
                     Functions.ClearImageList(this.pictureAlbumView);
                     ReloadData();
                     UpdateView();
-                    this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 }
             }
             get
@@ -116,9 +115,12 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             try
             {
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 Functions.ClearImageList(this.pictureAlbumView);
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 ReloadData();
                 UpdateView();
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 if (this.Mode == ShowMode.Album)
                 {
                     this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text");
@@ -162,6 +164,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 this.labelImageSize.Text = Resources.Resources.ResourceManager.GetString("labelImageSize_Text");
 
                 this.Invalidate();
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
             }
             catch (Exception)
             {
@@ -220,6 +223,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             try
             {
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 //Load controls depending on selected view
                 if (this.Mode == ShowMode.Album)
                 {                  
@@ -257,6 +261,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
                 this.groupBoxVideo.Enabled = false;
                 this.pictureAlbumView.StopVideo();
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
             }
             catch (Exception)
             {
@@ -270,6 +275,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 if (_Activity != null)
                 {
+                    this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                     this.Enabled = true;
 
                     //Read data and add new controls
@@ -279,6 +285,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                         this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData(this.PluginExtensionData.Images);
                         SortListView();
                     }
+                    this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 }
                 else
                 {
@@ -287,12 +294,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
             catch (Exception)
             {
-
                 //throw;
             }
-
         }
-
 
         private void UpdateDataGridView()
         {
@@ -306,13 +310,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
             catch (Exception)
             {
-
                 //throw;
             }
-
         }
-
-
 
         #endregion
 
@@ -325,14 +325,15 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             try
             {
                 if (this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.photoSourceDataGridViewTextBoxColumn.Name
-              | this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.thumbnailDataGridViewImageColumn.Name)
+                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.thumbnailDataGridViewImageColumn.Name
+                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.TypeImage.Name)
                 {
                     //open the image/video in external window
                     if (this.pictureAlbumView.ImageList[e.RowIndex].Type == ImageData.DataTypes.Image)
                     {
                         Helper.Functions.OpenImage(this.pictureAlbumView.ImageList[e.RowIndex].PhotoSource, this.pictureAlbumView.ImageList[e.RowIndex].ReferenceIDPath);
                     }
-                    else if (this.pictureAlbumView.ImageList[e.ColumnIndex].Type == ImageData.DataTypes.Video)
+                    else if (this.pictureAlbumView.ImageList[e.RowIndex].Type == ImageData.DataTypes.Video)
                     {
                         Functions.OpenVideoInExternalWindow(this.pictureAlbumView.ImageList[e.RowIndex].PhotoSource);
                     }
@@ -353,24 +354,23 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         void dataGridViewImages_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            if (!PreventCellValueChanged)
             {
-                if (!PreventCellValueChanged)
-                {
-                    PreventCellValueChanged = true;
+                 PreventCellValueChanged = true;
+                 try
+                 {
                     if (this._Activity != null)
                     {
                         this.PluginExtensionData.GetImageDataSerializable(this.pictureAlbumView.ImageList);
                         Functions.WriteExtensionData(_Activity, this.PluginExtensionData);
                     }
-                    PreventCellValueChanged = false;
-                }
-            }
-            catch (Exception)
-            {
+                 }
+                 catch (Exception)
+                 {
                 //throw;
+                 }
+                 PreventCellValueChanged = false;
             }
-
         }
         void dataGridViewImages_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
@@ -732,7 +732,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
             catch (Exception)
             {
-
                 //throw;
             }
 
@@ -993,6 +992,39 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         #endregion
 
         #region public properties
+        public bool Equals(PluginData pd1)
+        {
+            //Version not checked
+            if (this.NumberOfImages.Equals(pd1.NumberOfImages))
+            {
+                //The lists may not be in the same order
+                IDictionary<string, ImageDataSerializable> pd1Map =
+                            new Dictionary<string, ImageDataSerializable>(this.NumberOfImages);
+
+                for (int i = 0; i < this.NumberOfImages; i++)
+                {
+                    pd1Map.Add(pd1.images[i].ReferenceID, pd1.images[i]);
+                }
+                for (int i = 0; i < this.NumberOfImages; i++)
+                {
+                    if (pd1Map.ContainsKey(this.images[i].ReferenceID))
+                    {
+                        ImageDataSerializable i2 = pd1Map[images[i].ReferenceID];
+                        if (!(this.images[i].PhotoSource.Equals(i2.PhotoSource) &&
+                            this.images[i].Type.Equals(i2.Type)))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
         public string Version
         {
             get { return ActivityPicturePlugin.Plugin.version; }
@@ -1069,6 +1101,16 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
     {
         public class SettingsData
         {
+            public bool Equals(SettingsData sd1)
+            {
+                if (this.quality == sd1.quality &&
+                    this.size == sd1.size &&
+                    this.sortmode == sd1.sortmode)
+                {
+                    return true;
+                }
+                return false;
+            }
             #region private methods
             private PictureAlbum.ImageSortMode sortmode = PictureAlbum.ImageSortMode.byDateTimeAscending;
             private int size = 8;
@@ -1144,7 +1186,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         public void WriteSettings()
         {
-            if (data.Equals(dataRead))
+            if (!data.Equals(dataRead))
             {
                 try
                 {
