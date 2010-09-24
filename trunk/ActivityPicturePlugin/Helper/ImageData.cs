@@ -93,6 +93,29 @@ namespace ActivityPicturePlugin.Helper
         //    set { thumbnailstorelocation = value; }
         //}
 
+        public bool Equals(ImageData pd1)
+        {
+            if (this.Altitude.Equals(pd1.Altitude) &&
+                this.Comments.Equals(pd1.Comments) &&
+                this.DateTimeOriginal.Equals(pd1.DateTimeOriginal) &&
+                this.EquipmentModel.Equals(pd1.EquipmentModel) &&
+                this.EW.Equals(pd1.EW) &&
+                this.ExifGPS.Equals(pd1.ExifGPS) &&
+                this.KMLGPS.Equals(pd1.KMLGPS) &&
+                this.PhotoSource.Equals(pd1.PhotoSource) &&
+                this.PhotoSourceFileName.Equals(pd1.PhotoSourceFileName) &&
+                this.Ratio.Equals(pd1.Ratio) &&
+                this.ReferenceID.Equals(pd1.ReferenceID) &&
+                this.ReferenceIDPath.Equals(pd1.ReferenceIDPath) &&
+                this.Title.Equals(pd1.Title) &&
+                this.Type.Equals(pd1.Type) &&
+                this.TypeImage.Equals(pd1.TypeImage) &&
+                this.Waypoint.Equals(pd1.Waypoint))
+            {
+                return true;
+            }
+            return false;
+        }
         public Image TypeImage
         {
             get

@@ -48,6 +48,8 @@ namespace ActivityPicturePlugin.Helper
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip1.AutomaticDelay = 1000;
+
             this.SuspendLayout();
             // 
             // panel1

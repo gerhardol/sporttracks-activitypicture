@@ -700,7 +700,6 @@ namespace ActivityPicturePlugin.Helper
                 (sys + "\\rundll32.exe",
                 sys + "\\shimgvw.dll,ImageView_Fullscreen " +
                 ImageLocation);
-                //f.UseShellExecute = false;
                 System.Diagnostics.Process.Start(f);
             }
             catch (Exception ex)
@@ -735,7 +734,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 PluginData pd0 = ReadExtensionData(act);
 
-                if (pd.Equals(pd0))
+                if (!pd.Equals(pd0))
                 {
                     //store data of images in the serializable wrapper class
                     if (pd.Images.Count == 0)

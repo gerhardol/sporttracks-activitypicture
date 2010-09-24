@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ActivityPicturePage_Title" xml:space="preserve">
-    <value>Pictures</value>
+    <value>Activity Pictures</value>
   </data>
   <data name="Altitude_HeaderText" xml:space="preserve">
     <value>Altitude</value>
@@ -132,7 +132,7 @@
   <data name="btnGeoTag_Text" xml:space="preserve">
     <value>Geotag</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnimage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>btnimage.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
