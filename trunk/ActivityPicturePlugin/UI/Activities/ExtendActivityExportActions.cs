@@ -112,7 +112,7 @@ namespace ActivityPicturePlugin.UI.Activities
 #endif
         #region IAction Members
         private bool enabled = false;
-        private string title = "";
+        private string title = "Google Earth - Activity Pictures";
         public bool Enabled
         {
             get
@@ -169,7 +169,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             get
             {
-                if (activities.Count == 0) return false;
+                if (!enabled || activities.Count == 0) return false;
                 return true;
             }
         }

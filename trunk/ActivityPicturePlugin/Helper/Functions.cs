@@ -74,11 +74,8 @@ namespace ActivityPicturePlugin.Helper
                         + Resources.Resources.ResourceManager.GetString("ImportControl_in") + " " + act.Location;
             string KMZstyle = "Photo";
 
-
-
             //using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
             string docFile = "";
-
             FileInfo kmzFile = new FileInfo(SavePath);
 
             String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
@@ -149,7 +146,7 @@ namespace ActivityPicturePlugin.Helper
                         if (kmzFile.Extension == ".kmz")
                         {
                             CreateKMZImages(picDir, id);
-                            KMZfilesource = act.ReferenceId + "\\" + id.ReferenceID + ".jpg";
+                            KMZfilesource = act.ReferenceId + "/" + id.ReferenceID + ".jpg";
                             KMZLink = ">";
                             KMZstyle = id.ReferenceID;
 
@@ -167,9 +164,9 @@ namespace ActivityPicturePlugin.Helper
                         writer.WriteStartElement("description");
                         int width = (int)(Math.Min(500, id.Ratio * 500));
                         int height = (int)((Single)(width) / id.Ratio);
-                        string KMZpicdescription = "<P><FONT face=Verdana>"
-                        + KMZname
-                        + "</FONT></P><P><FONT face=Verdana size=2>"
+                        string KMZpicdescription = 
+                            //"<P><FONT face=Verdana>"+ KMZname + "</FONT></P>" + 
+                            "<P><FONT face=Verdana size=2>"
                         + id.PhotoSourceFileName
                         + "</FONT></P><P><A"
                         + KMZLink
@@ -185,7 +182,7 @@ namespace ActivityPicturePlugin.Helper
                         + id.DateTimeOriginal
                         + "</FONT></P><P><FONT face=Verdana size=2>"
                         + id.ExifGPS
-                        + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin of SportTracks 2</FONT></P>";
+                        + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
                         writer.WriteCData(KMZpicdescription);
                         writer.WriteEndElement();//description
 
@@ -251,8 +248,8 @@ namespace ActivityPicturePlugin.Helper
                     s.Finish();
                     s.Close();
                 }
-                Directory.Delete(act.ReferenceId, true);
-                File.Delete(Path.GetFileName(docFile));
+                Directory.Delete(picDir, true);
+                File.Delete(docFile);
             }
         }
 
@@ -417,7 +414,7 @@ namespace ActivityPicturePlugin.Helper
                             + id.DateTimeOriginal
                             + "</FONT></P><P><FONT face=Verdana size=2>"
                             + id.ExifGPS
-                            + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin of SportTracks 2</FONT></P>";
+                            + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
                             writer.WriteCData(KMZpicdescription);
                             writer.WriteEndElement();//description
 
@@ -576,7 +573,7 @@ namespace ActivityPicturePlugin.Helper
             writer.WriteAttributeString("id", KMZstyle + "_norm");
             writer.WriteStartElement("IconStyle");
             writer.WriteStartElement("Icon");
-            writer.WriteElementString("href", act.ReferenceId + "\\" + KMZstyle + "_small.jpg");
+            writer.WriteElementString("href", act.ReferenceId + "/" + KMZstyle + "_small.jpg");
             writer.WriteEndElement(); //Icon
             writer.WriteEndElement(); //IconStyle
             writer.WriteStartElement("LabelStyle");
@@ -593,7 +590,7 @@ namespace ActivityPicturePlugin.Helper
             writer.WriteStartElement("IconStyle");
             writer.WriteElementString("scale", "2");
             writer.WriteStartElement("Icon");
-            writer.WriteElementString("href", act.ReferenceId + "\\" + KMZstyle + "_small.jpg");
+            writer.WriteElementString("href", act.ReferenceId + "/" + KMZstyle + "_small.jpg");
             writer.WriteEndElement(); //Icon
             writer.WriteEndElement(); //IconStyle
             writer.WriteStartElement("BalloonStyle");
