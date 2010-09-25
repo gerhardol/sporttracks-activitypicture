@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Data.GPS;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -63,18 +64,18 @@ namespace ActivityPicturePlugin.Helper
             Image,
             Video
         }
-        public enum StoreLocation
-        {
-            WebFiles,
-            Temp
-        }
+        //public enum StoreLocation
+        //{
+        //    WebFiles,
+        //    Temp
+        //}
 
 
         private DataTypes type;
         private bool selected;
         private string photosource;
         private string referenceID;
-        private ActivityPicturePlugin.UI.Activities.IRouteWaypoint waypoint;
+        //private ActivityPicturePlugin.UI.Activities.IRouteWaypoint waypoint;
         private ExifWorks ew;
         private Image thumbnail;
         private Single ratio;
@@ -93,24 +94,25 @@ namespace ActivityPicturePlugin.Helper
         //    set { thumbnailstorelocation = value; }
         //}
 
+        //Compare static only, not Exif
         public bool Equals(ImageData pd1)
         {
-            if (this.Altitude.Equals(pd1.Altitude) &&
-                this.Comments.Equals(pd1.Comments) &&
-                this.DateTimeOriginal.Equals(pd1.DateTimeOriginal) &&
-                this.EquipmentModel.Equals(pd1.EquipmentModel) &&
+            if (//this.Altitude.Equals(pd1.Altitude) &&
+                //this.Comments.Equals(pd1.Comments) &&
+                //this.DateTimeOriginal.Equals(pd1.DateTimeOriginal) &&
+                //this.EquipmentModel.Equals(pd1.EquipmentModel) &&
                 this.EW.Equals(pd1.EW) &&
-                this.ExifGPS.Equals(pd1.ExifGPS) &&
-                this.KMLGPS.Equals(pd1.KMLGPS) &&
+                //this.ExifGPS.Equals(pd1.ExifGPS) &&
+                //this.KMLGPS.Equals(pd1.KMLGPS) &&
                 this.PhotoSource.Equals(pd1.PhotoSource) &&
-                this.PhotoSourceFileName.Equals(pd1.PhotoSourceFileName) &&
+                //this.PhotoSourceFileName.Equals(pd1.PhotoSourceFileName) &&
                 this.Ratio.Equals(pd1.Ratio) &&
                 this.ReferenceID.Equals(pd1.ReferenceID) &&
-                this.ReferenceIDPath.Equals(pd1.ReferenceIDPath) &&
-                this.Title.Equals(pd1.Title) &&
-                this.Type.Equals(pd1.Type) &&
-                this.TypeImage.Equals(pd1.TypeImage) &&
-                this.Waypoint.Equals(pd1.Waypoint))
+                //this.ReferenceIDPath.Equals(pd1.ReferenceIDPath) &&
+                //this.Title.Equals(pd1.Title) &&
+                //this.TypeImage.Equals(pd1.TypeImage) &&
+                //this.Waypoint.Equals(pd1.Waypoint) &&
+                this.Type.Equals(pd1.Type))
             {
                 return true;
             }
@@ -152,11 +154,11 @@ namespace ActivityPicturePlugin.Helper
             get { return ew; }
             set { ew = value; }
         }
-        public ActivityPicturePlugin.UI.Activities.IRouteWaypoint Waypoint
-        {
-            get { return waypoint; }
-            set { waypoint = value; }
-        }
+        //public ActivityPicturePlugin.UI.Activities.IRouteWaypoint Waypoint
+        //{
+        //    get { return waypoint; }
+        //    set { waypoint = value; }
+        //}
         public Image Thumbnail
         {
             get { return this.thumbnail; }
@@ -292,6 +294,21 @@ namespace ActivityPicturePlugin.Helper
 
             }
         }
+        public IGPSLocation GpsLocation
+        {
+            get
+            {
+                return new GPSLocation((float)ew.GPSLatitude, (float)ew.GPSLongitude);
+            }
+        }
+        public IGPSPoint GpsPoint
+        {
+            get
+            {
+                return new GPSPoint((float)ew.GPSLatitude, (float)ew.GPSLongitude, (float)ew.GPSAltitude);
+            }
+        }
+
         public string ExifGPS
         {
             get
@@ -525,6 +542,7 @@ namespace ActivityPicturePlugin.Helper
                     //Check if image at specified PhotoSource location exists
                     if (System.IO.File.Exists(this.PhotoSource))
                     {
+                        //TODO: Get image from video?
                         // Create new image in the default folder
                         bmp = (Bitmap)(Resources.Resources.video).Clone();
                         Functions.SaveThumbnailImage(bmp, defpath, 10);
@@ -614,16 +632,15 @@ namespace ActivityPicturePlugin.Helper
                 // throw;
             }
         }
-        public void CreateWayPoint()
-        {
-            ActivityPicturePlugin.UI.Activities.IRouteWaypoint rwp;
-            rwp = new ActivityPicturePlugin.UI.Activities.IRouteWaypoint();
-            rwp.Type = ActivityPicturePlugin.UI.Activities.IRouteWaypoint.MarkerType.FixedDateTime;
-            //rwp.FixedDateTime = EW.DateTimeOriginal;
-            //rwp.MarkerImage = this.Thumbnail;
-            // rwp.Photo = (Image)(new Bitmap(this.FilePath));
-
-        }
+        //public void CreateWayPoint()
+        //{
+        //    ActivityPicturePlugin.UI.Activities.IRouteWaypoint rwp;
+        //    rwp = new ActivityPicturePlugin.UI.Activities.IRouteWaypoint();
+        //    rwp.Type = ActivityPicturePlugin.UI.Activities.IRouteWaypoint.MarkerType.FixedDateTime;
+        //    //rwp.FixedDateTime = EW.DateTimeOriginal;
+        //    //rwp.MarkerImage = this.Thumbnail;
+        //    // rwp.Photo = (Image)(new Bitmap(this.FilePath));
+        //}
 
         #endregion
 
