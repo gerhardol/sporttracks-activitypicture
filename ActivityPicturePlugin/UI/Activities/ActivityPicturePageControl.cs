@@ -32,6 +32,9 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ActivityPicturePlugin.Helper;
+#if !ST_2_1
+using ActivityPicturePlugin.UI.MapLayers;
+#endif
 //using QuartzTypeLib;
 
 //todo:
@@ -66,7 +69,6 @@ namespace ActivityPicturePlugin.UI.Activities
 
         private List<string> SelectedReferenceIDs = new List<string>();
         private bool PreventRowsRemoved = false;//To prevent recursive calls
-        private bool PreventCellValueChanged = false;
         #endregion
 
         #region Public members
@@ -74,14 +76,19 @@ namespace ActivityPicturePlugin.UI.Activities
         public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetIApplication().
 #if ST_2_1
             //TODO:
-            SystemPreferences.WebFilesFolder+"\\Images\\";
+            SystemPreferences.WebFilesFolder+"\\Images\\");
 #else
 Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
        // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar);
 #endif
 
         public static PluginSettings PluginSettingsData = new PluginSettings();
-        //public List<ImageData> Images = new System.Collections.Generic.List<ImageData>();
+#if !ST_2_1
+        //private IDetailPage m_DetailPage = null;
+        //private IDailyActivityView m_view = null;
+        private PicturesProvider m_PicturesProvider = PicturesProvider.Instance;
+        private PicturesLayer layer { get { return (PicturesLayer)m_PicturesProvider.RouteControlLayer; } }
+#endif
         #endregion
 
         #region Public properties
@@ -170,6 +177,24 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 //throw;
             }
+        }
+        private bool _showPage = false;
+        public bool HidePage()
+        {
+            _showPage = false;
+#if !ST_2_1
+            layer.ShowPage = false;
+#endif
+            return false;
+        }
+        public void ShowPage(string bookmark)
+        {
+            //Not needed now
+            //RefreshData();
+            _showPage = true;
+#if !ST_2_1
+            layer.ShowPage = true;
+#endif
         }
         ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
@@ -286,6 +311,11 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                         SortListView();
                     }
                     this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+#if !ST_2_1
+                    layer.ShowPage = false; //defer updates
+                    layer.Pictures = this.pictureAlbumView.ImageList;
+                    layer.ShowPage = _showPage;//Refresh
+#endif
                 }
                 else
                 {
@@ -329,14 +359,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                  || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.TypeImage.Name)
                 {
                     //open the image/video in external window
-                    if (this.pictureAlbumView.ImageList[e.RowIndex].Type == ImageData.DataTypes.Image)
-                    {
-                        Helper.Functions.OpenImage(this.pictureAlbumView.ImageList[e.RowIndex].PhotoSource, this.pictureAlbumView.ImageList[e.RowIndex].ReferenceIDPath);
-                    }
-                    else if (this.pictureAlbumView.ImageList[e.RowIndex].Type == ImageData.DataTypes.Video)
-                    {
-                        Functions.OpenVideoInExternalWindow(this.pictureAlbumView.ImageList[e.RowIndex].PhotoSource);
-                    }
+                    Helper.Functions.OpenExternal(this.pictureAlbumView.ImageList[e.RowIndex]);
                 }
                 else if (this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.dateTimeOriginalDataGridViewTextBoxColumn.Name)
                 {
@@ -354,9 +377,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         void dataGridViewImages_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (!PreventCellValueChanged)
+            if (_showPage)
             {
-                 PreventCellValueChanged = true;
                  try
                  {
                     if (this._Activity != null)
@@ -369,7 +391,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                  {
                 //throw;
                  }
-                 PreventCellValueChanged = false;
             }
         }
         void dataGridViewImages_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -724,10 +745,17 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 SelectedReferenceIDs.Clear();
                 DataGridViewSelectedRowCollection SelRows = ((DataGridView)(sender)).SelectedRows;
+                IList<ImageData> selImages = new List<ImageData>();
                 for (int i = 0; i < SelRows.Count; i++)
                 {
-                    SelectedReferenceIDs.Add(this.pictureAlbumView.ImageList[SelRows[i].Index].ReferenceID);
+                    ImageData im = this.pictureAlbumView.ImageList[SelRows[i].Index];
+                    SelectedReferenceIDs.Add(im.ReferenceID);
+                    selImages.Add(im);
                 }
+                //TODO: Or use zoom button
+#if !ST_2_1
+                layer.SelectedPictures = selImages;
+#endif
                 SelRows = null;
             }
             catch (Exception)
@@ -1207,33 +1235,33 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             #endregion
     }
 
-    public class IRouteWaypoint
-    //Dummy until available in API
-    {
-        public enum MarkerType
-        {
-            Start,
-            End,
-            ElapsedTime,
-            FixedDateTime,
-            Distance,
-            GPSLocation
-        }
-        public MarkerType Type { get { return MarkerType.FixedDateTime; } set { } }
-        public TimeSpan ElapsedTime { get { return System.TimeSpan.MinValue; } set { } }
-        public DateTime FixedDateTime { get { return System.DateTime.Now; } set { } }
-        public double DistanceMeters { get { return 0; } set { } }
-        public IGPSLocation GPSLocation { get { return null; } set { } }
-        public string Notes { get { return null; } set { } }
-        public string Description { get { return null; } set { } }
-        public Image MarkerImage { get { return null; } set { } }
-        public Image Photo { get { return null; } set { } }
-        public new string ToString
-        {
-            get
-            {
-                return "Not yet implemented in API";
-            }
-        }
-    }
+    //public class IRouteWaypoint
+    ////Dummy until available in API
+    //{
+    //    public enum MarkerType
+    //    {
+    //        Start,
+    //        End,
+    //        ElapsedTime,
+    //        FixedDateTime,
+    //        Distance,
+    //        GPSLocation
+    //    }
+    //    public MarkerType Type { get { return MarkerType.FixedDateTime; } set { } }
+    //    public TimeSpan ElapsedTime { get { return System.TimeSpan.MinValue; } set { } }
+    //    public DateTime FixedDateTime { get { return System.DateTime.Now; } set { } }
+    //    public double DistanceMeters { get { return 0; } set { } }
+    //    public IGPSLocation GPSLocation { get { return null; } set { } }
+    //    public string Notes { get { return null; } set { } }
+    //    public string Description { get { return null; } set { } }
+    //    public Image MarkerImage { get { return null; } set { } }
+    //    public Image Photo { get { return null; } set { } }
+    //    public new string ToString
+    //    {
+    //        get
+    //        {
+    //            return "Not yet implemented in API";
+    //        }
+    //    }
+    //}
 }

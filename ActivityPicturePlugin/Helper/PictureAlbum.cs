@@ -328,7 +328,7 @@ namespace ActivityPicturePlugin.Helper
                 tooltip = this.ImageList[i].PhotoSource;
                 DateTime dt = new DateTime(1950, 1, 1);
                 if (dt < this.ImageList[i].EW.DateTimeOriginal) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
-                if (this.ImageList[i].EW.GPSLatitude != 0) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS;
+                if (this.ImageList[i].EW.GPSLatitude != 0) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace(Environment.NewLine, ", ");
                 if (this.ImageList[i].Title != "") tooltip += Environment.NewLine + this.ImageList[i].Title;
                 this.toolTip1.SetToolTip(this.panel1, tooltip);
             }
@@ -365,16 +365,8 @@ namespace ActivityPicturePlugin.Helper
             int i = this.GetIndexOfCurrentImage(e.Location);
             if (i >= 0)
             {
-                string s = this.ImageList[i].PhotoSource;
-                if (this.ImageList[i].Type == ImageData.DataTypes.Image)
-                {
-                    Functions.OpenImage(s, this.ImageList[i].ReferenceID);
-                }
-                else if (this.ImageList[i].Type == ImageData.DataTypes.Video)
-                {
-                    //Note: The click does not "get through"
-                    Functions.OpenVideoInExternalWindow(s);
-                }
+                //Note: The click does not "get through"toolTip1 Video
+                Helper.Functions.OpenExternal(this.ImageList[i]);
             }
         }
         private void panel1_MouseClick(object sender, MouseEventArgs e)

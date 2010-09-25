@@ -105,6 +105,10 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public bool HidePage()
         {
+            if (null != control)
+            {
+                control.HidePage();
+            }
             return true;
         }
 
@@ -115,6 +119,10 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void ShowPage(string bookmark)
         {
+            if (control != null)
+            {
+                control.ShowPage(bookmark);
+            }
         }
 
         public IPageStatus Status

@@ -181,7 +181,7 @@ namespace ActivityPicturePlugin.Helper
                         + "></A></P><P><FONT face=Verdana size=2>"
                         + id.DateTimeOriginal
                         + "</FONT></P><P><FONT face=Verdana size=2>"
-                        + id.ExifGPS
+                        + id.ExifGPS.Replace(Environment.NewLine, ", ")
                         + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
                         writer.WriteCData(KMZpicdescription);
                         writer.WriteEndElement();//description
@@ -413,7 +413,7 @@ namespace ActivityPicturePlugin.Helper
                             + "></A></P><P><FONT face=Verdana size=2>"
                             + id.DateTimeOriginal
                             + "</FONT></P><P><FONT face=Verdana size=2>"
-                            + id.ExifGPS
+                            + id.ExifGPS.Replace(Environment.NewLine, ", ")
                             + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
                             writer.WriteCData(KMZpicdescription);
                             writer.WriteEndElement();//description
@@ -661,7 +661,18 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        public static void OpenExternal(ImageData im)
+        {
+            if (im.Type == ImageData.DataTypes.Image)
+            {
+                Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceIDPath);
+            }
+            else if (im.Type == ImageData.DataTypes.Video)
+            {
+                Functions.OpenVideoInExternalWindow(im.PhotoSource);
+            }
 
+        }
         public static void OpenImage(string photoSource, string referenceID)
         {
             //try to open Photosource first

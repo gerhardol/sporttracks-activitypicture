@@ -82,6 +82,9 @@
     <Compile Include="UI\ImportControl.Designer.cs">
       <DependentUpon>ImportControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\MapLayers\RouteControlLayerBase.cs" />
+    <Compile Include="UI\MapLayers\PicturesLayer.cs" />
+    <Compile Include="Utils\GPS.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Helper\VolumeSlider.resx">
@@ -196,5 +199,6 @@
       <HintPath>..\References\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Common\Common-Files.csproj" />
 </Project>

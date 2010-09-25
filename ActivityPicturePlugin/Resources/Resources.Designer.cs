@@ -401,6 +401,15 @@ namespace ActivityPicturePlugin.Resources {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Activity Pictures.
+        /// </summary>
+        internal static string PicturesControlLayerProvider {
+            get {
+                return ResourceManager.GetString("PicturesControlLayerProvider", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap Play {
             get {
                 object obj = ResourceManager.GetObject("Play", resourceCulture);

@@ -21,11 +21,12 @@ namespace ActivityPicturePlugin
 {
 	class GUIDs {
         public static readonly Guid PluginMain = new Guid("1a0840b9-1d83-4845-ada9-b0c0a6959f40");
-//#if ST_2_1
-//        public static readonly Guid MapControlLayer = new Guid("2aa470c3-0a3c-42c7-bbee-a43073072ee7");
-//#else
-//        public static readonly Guid PictureControlLayerProvider = new Guid("2aa470c3-0a3c-42c7-bbee-a43073072ee7");
-//#endif
+#if ST_2_1
+        public static readonly Guid MapControlLayer
+#else
+        public static readonly Guid PicturesControlLayerProvider 
+#endif
+                                             = new Guid("95628fe0-c88e-11df-bd3b-0800200c9a66");
         public static readonly Guid Settings = new Guid("d8cd66e0-c2a0-11df-851a-0800200c9a66");
         public static readonly Guid Activity = new Guid("d8cd66e1-c2a0-11df-851a-0800200c9a66");
     }
