@@ -140,9 +140,6 @@
   <data name="btnKML_Text" xml:space="preserve">
     <value>Export to Google Earth</value>
   </data>
-  <data name="btnManImp_Text" xml:space="preserve">
-    <value>Import</value>
-  </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
     <value>Time offset</value>
   </data>
@@ -224,9 +221,6 @@
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
     <value>Album</value>
   </data>
-  <data name="pictureListToolStripMenuItem_Text" xml:space="preserve">
-    <value>List</value>
-  </data>
   <data name="Play" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Play.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -259,12 +253,6 @@
   </data>
   <data name="waypointDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Waypoint</value>
-  </data>
-  <data name="btn_Cancel_Text" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="btn_OK_Text" xml:space="preserve">
-    <value>OK</value>
   </data>
   <data name="ModifyTimeStamp_Text" xml:space="preserve">
     <value>Set Time Stamp</value>

@@ -33,7 +33,7 @@ namespace ActivityPicturePlugin.Settings
             InitializeComponent();
 
             //localization
-            this.groupBoxImport.Text = Resources.Resources.btnManImp_Text;
+            this.groupBoxImport.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
             this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
             this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
 
@@ -93,7 +93,7 @@ namespace ActivityPicturePlugin.Settings
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             //localization
-            this.groupBoxImport.Text = Resources.Resources.btnManImp_Text;
+            this.groupBoxImport.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
             this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
             this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
         }
