@@ -27,6 +27,7 @@ using System.Threading;
 using ActivityPicturePlugin.Helper;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Visuals;
 using com.drew.metadata.exif;
 
 namespace ActivityPicturePlugin.UI
@@ -45,19 +46,20 @@ namespace ActivityPicturePlugin.UI
         public void UpdateUICulture(System.Globalization.CultureInfo culture)
         {
             m_culture = culture;
-            this.btnScan.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
+            this.btnScan.Text = CommonResources.Text.ActionImport;
             this.btnExpandAll.Text = Resources.Resources.btnExpandAll_Text;
             this.btnCollapseAll.Text = Resources.Resources.btnCollapseAll_Text;
             this.btnViewAct.Text = Resources.Resources.ImportControl_changeView;
             this.btnViewFolder.Text = Resources.Resources.ImportControl_changeView;
             this.colImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
-            this.colDateTime.Text = Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;
-            this.colGPS.Text = Resources.Resources.ExifGPS_HeaderText;
+            this.colDateTime.Text = CommonResources.Text.LabelDate;
+            this.colGPS.Text = CommonResources.Text.LabelGPSLocation;
             this.colTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
             this.colDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+
             this.colDImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
-            this.colDDateTime.Text = Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;
-            this.colDGPS.Text = Resources.Resources.ExifGPS_HeaderText;
+            this.colDDateTime.Text = CommonResources.Text.LabelDate;
+            this.colDGPS.Text = CommonResources.Text.LabelGPSLocation;
             this.colDTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
             this.colDDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
         }
@@ -717,8 +719,8 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
 
-                this.lblProgress.Text = Resources.Resources.ImportControl_scanDone1 + " " +
-                    +numFilesImported + " " + Resources.Resources.ImportControl_scanDone2;
+                this.lblProgress.Text = String.Format(Resources.Resources.ImportControl_scanDone,
+                    +numFilesImported);
             }
             catch (Exception)
             {

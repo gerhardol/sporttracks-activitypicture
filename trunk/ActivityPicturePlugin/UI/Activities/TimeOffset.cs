@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
     {
@@ -36,8 +37,8 @@ namespace ActivityPicturePlugin.UI.Activities
 
             //localization
             this.Text = Resources.Resources.btnTimeOffset_Text;
-            this.btnOK.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-            this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+            this.btnOK.Text = CommonResources.Text.ActionOk;
+            this.btnCancel.Text = CommonResources.Text.ActionCancel;
             }
 
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)

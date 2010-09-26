@@ -70,15 +70,6 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Altitude.
-        /// </summary>
-        internal static string Altitude_HeaderText {
-            get {
-                return ResourceManager.GetString("Altitude_HeaderText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Collapse All.
         /// </summary>
         internal static string btnCollapseAll_Text {
@@ -147,29 +138,11 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Date &amp; Time.
-        /// </summary>
-        internal static string dateTimeOriginalDataGridViewTextBoxColumn_HeaderText {
-            get {
-                return ResourceManager.GetString("dateTimeOriginalDataGridViewTextBoxColumn_HeaderText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Camera Model.
         /// </summary>
         internal static string equipmentModelDataGridViewTextBoxColumn_HeaderText {
             get {
                 return ResourceManager.GetString("equipmentModelDataGridViewTextBoxColumn_HeaderText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GPS Data.
-        /// </summary>
-        internal static string ExifGPS_HeaderText {
-            get {
-                return ResourceManager.GetString("ExifGPS_HeaderText", resourceCulture);
             }
         }
         
@@ -181,7 +154,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Images to Google Earth.
+        ///   Looks up a localized string similar to Photos to Google Earth.
         /// </summary>
         internal static string GoogleEarthExport_Title {
             get {
@@ -190,7 +163,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Options (for selected images).
+        ///   Looks up a localized string similar to Options (for selected photos).
         /// </summary>
         internal static string goupBoxListOptions_Text {
             get {
@@ -199,25 +172,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GPS format.
-        /// </summary>
-        internal static string groupBoxGPSFormat_Text {
-            get {
-                return ResourceManager.GetString("groupBoxGPSFormat_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image Options.
-        /// </summary>
-        internal static string groupBoxImage_Text {
-            get {
-                return ResourceManager.GetString("groupBoxImage_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Video Options.
+        ///   Looks up a localized string similar to Video.
         /// </summary>
         internal static string groupBoxVideo_Text {
             get {
@@ -251,25 +206,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import done: A total of.
-        /// </summary>
-        internal static string ImportControl_importDone1 {
-            get {
-                return ResourceManager.GetString("ImportControl_importDone1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Images have been imported.
-        /// </summary>
-        internal static string ImportControl_importDone2 {
-            get {
-                return ResourceManager.GetString("ImportControl_importDone2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Importing Image.
+        ///   Looks up a localized string similar to Importing Photo.
         /// </summary>
         internal static string ImportControl_importing {
             get {
@@ -287,20 +224,11 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scan done: A total of.
+        ///   Looks up a localized string similar to Scan done: A total of {0} photos have been found.
         /// </summary>
-        internal static string ImportControl_scanDone1 {
+        internal static string ImportControl_scanDone {
             get {
-                return ResourceManager.GetString("ImportControl_scanDone1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Images have been found.
-        /// </summary>
-        internal static string ImportControl_scanDone2 {
-            get {
-                return ResourceManager.GetString("ImportControl_scanDone2", resourceCulture);
+                return ResourceManager.GetString("ImportControl_scanDone", resourceCulture);
             }
         }
         
@@ -323,7 +251,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image size.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         internal static string labelImageSize_Text {
             get {
@@ -348,7 +276,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image Source.
+        ///   Looks up a localized string similar to Photo Source.
         /// </summary>
         internal static string photoSourceDataGridViewTextBoxColumn_HeaderText {
             get {
@@ -362,15 +290,6 @@ namespace ActivityPicturePlugin.Resources {
         internal static string pictureAlbumToolStripMenuItem_Text {
             get {
                 return ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Activity Pictures.
-        /// </summary>
-        internal static string PicturesControlLayerProvider {
-            get {
-                return ResourceManager.GetString("PicturesControlLayerProvider", resourceCulture);
             }
         }
         
@@ -452,7 +371,7 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only selected images.
+        ///   Looks up a localized string similar to Only selected photos.
         /// </summary>
         internal static string tooltip_OnlySelectedImages {
             get {

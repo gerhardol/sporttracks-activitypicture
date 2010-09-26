@@ -36,8 +36,8 @@ namespace ActivityPicturePlugin.UI.Activities
 
             //localization
             this.Text = Resources.Resources.ModifyTimeStamp_Text;
-            this.btnOK.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-            this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+            this.btnOK.Text = CommonResources.Text.ActionOk;
+            this.btnCancel.Text = CommonResources.Text.ActionCancel;
 
 
 
