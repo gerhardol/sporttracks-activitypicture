@@ -120,9 +120,6 @@
   <data name="ActivityPicturePage_Title" xml:space="preserve">
     <value>Photos</value>
   </data>
-  <data name="Altitude_HeaderText" xml:space="preserve">
-    <value>Altitude</value>
-  </data>
   <data name="btnCollapseAll_Text" xml:space="preserve">
     <value>Tout réduire</value>
   </data>
@@ -135,32 +132,20 @@
   <data name="btnKML_Text" xml:space="preserve">
     <value>Exporter vers Google Earth</value>
   </data>
-  <data name="btnManImp_Text" xml:space="preserve">
-    <value>Importer</value>
-  </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
     <value>Compensation de temps</value>
   </data>
   <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Commentaire</value>
   </data>
-  <data name="dateTimeOriginalDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Date &amp; Heure</value>
-  </data>
   <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Modèle de caméra</value>
-  </data>
-  <data name="ExifGPS_HeaderText" xml:space="preserve">
-    <value>Données GPS</value>
   </data>
   <data name="GoogleEarthExport_Title" xml:space="preserve">
     <value>Images vers Google Earth</value>
   </data>
   <data name="goupBoxListOptions_Text" xml:space="preserve">
     <value>Options (pour les images sélectionnées)</value>
-  </data>
-  <data name="groupBoxGPSFormat_Text" xml:space="preserve">
-    <value>Format GPS</value>
   </data>
   <data name="groupBoxImage_Text" xml:space="preserve">
     <value>Options Image</value>
@@ -174,11 +159,8 @@
   <data name="ImportControl_changeView" xml:space="preserve">
     <value>Vue</value>
   </data>
-  <data name="ImportControl_importDone1" xml:space="preserve">
-    <value>Importation terminée: un total de</value>
-  </data>
-  <data name="ImportControl_importDone2" xml:space="preserve">
-    <value>Images ont été importées</value>
+  <data name="ImportControl_importDone" xml:space="preserve">
+    <value>Importation terminée: un total de {0} images ont été importées</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
     <value>Importer des images</value>
@@ -207,9 +189,6 @@
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
     <value>Album</value>
   </data>
-  <data name="pictureListToolStripMenuItem_Text" xml:space="preserve">
-    <value>Liste</value>
-  </data>
   <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>ReferenceID</value>
   </data>
@@ -233,12 +212,6 @@
   </data>
   <data name="waypointDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Waypoint</value>
-  </data>
-  <data name="btn_Cancel_Text" xml:space="preserve">
-    <value>Annuler</value>
-  </data>
-  <data name="btn_OK_Text" xml:space="preserve">
-    <value>OK</value>
   </data>
   <data name="ModifyTimeStamp_Text" xml:space="preserve">
     <value>Fixation de temps</value>

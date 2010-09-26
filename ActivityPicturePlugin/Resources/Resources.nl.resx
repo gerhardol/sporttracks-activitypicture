@@ -120,9 +120,6 @@
   <data name="ActivityPicturePage_Title" xml:space="preserve">
     <value>Afbeeldingen</value>
   </data>
-  <data name="Altitude_HeaderText" xml:space="preserve">
-    <value>Hoogte</value>
-  </data>
   <data name="btnCollapseAll_Text" xml:space="preserve">
     <value>Alles verkleinen</value>
   </data>
@@ -135,38 +132,20 @@
   <data name="btnKML_Text" xml:space="preserve">
     <value>Exporteren naar Google Earth</value>
   </data>
-  <data name="btnManImp_Text" xml:space="preserve">
-    <value>Importeren</value>
-  </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
     <value>Tijdsverloop</value>
-  </data>
-  <data name="btn_Cancel_Text" xml:space="preserve">
-    <value>Annuleer</value>
-  </data>
-  <data name="btn_OK_Text" xml:space="preserve">
-    <value>OK</value>
   </data>
   <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Commentaar</value>
   </data>
-  <data name="dateTimeOriginalDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Datum &amp; Tijd</value>
-  </data>
   <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Cameramodel</value>
-  </data>
-  <data name="ExifGPS_HeaderText" xml:space="preserve">
-    <value>GPS gegevens</value>
   </data>
   <data name="GoogleEarthExport_Title" xml:space="preserve">
     <value>Afbeeldingen naar Google Earth</value>
   </data>
   <data name="goupBoxListOptions_Text" xml:space="preserve">
     <value>Opties (voor geselecteerde afbeeldingen)</value>
-  </data>
-  <data name="groupBoxGPSFormat_Text" xml:space="preserve">
-    <value>GPS formaat</value>
   </data>
   <data name="groupBoxImage_Text" xml:space="preserve">
     <value>Opties afbeelding</value>
@@ -180,11 +159,8 @@
   <data name="ImportControl_changeView" xml:space="preserve">
     <value>Beeld</value>
   </data>
-  <data name="ImportControl_importDone1" xml:space="preserve">
-    <value>Importeren beëindigd: totaal</value>
-  </data>
-  <data name="ImportControl_importDone2" xml:space="preserve">
-    <value>Afbeeldingen geïmporteerd</value>
+  <data name="ImportControl_importDone" xml:space="preserve">
+    <value>Importeren beëindigd: totaal {0} afbeeldingen geïmporteerd</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
     <value>Afbeeldingen importeren</value>
@@ -215,9 +191,6 @@
   </data>
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
     <value>Album</value>
-  </data>
-  <data name="pictureListToolStripMenuItem_Text" xml:space="preserve">
-    <value>Lijst</value>
   </data>
   <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Referentie ID</value>

@@ -78,7 +78,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
         public string Name
         {
-            get { return Resources.Resources.PicturesControlLayerProvider; }
+            get { return Resources.Resources.ActivityPicturePage_Title; }
         }
     }
 
