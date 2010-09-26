@@ -140,7 +140,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public string Title
         {
-            get { return Resources.Resources.ResourceManager.GetString("ActivityPicturePage_Title"); }
+            get { return Resources.Resources.ActivityPicturePage_Title; }
         }
 
         public void RefreshPage()

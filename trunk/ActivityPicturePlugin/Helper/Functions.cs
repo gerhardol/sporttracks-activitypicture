@@ -71,7 +71,7 @@ namespace ActivityPicturePlugin.Helper
             settings.IndentChars = ("    ");
 
             string KMZname = act.StartTime.ToLocalTime().ToString("dd. MMMM,yyyy") + " "
-                        + Resources.Resources.ResourceManager.GetString("ImportControl_in") + " " + act.Location;
+                        + Resources.Resources.ImportControl_in + " " + act.Location;
             string KMZstyle = "Photo";
 
             //using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
@@ -341,7 +341,7 @@ namespace ActivityPicturePlugin.Helper
 
                     //Activity contains images
                     string KMZname = act.StartTime.ToLocalTime().ToString("dd. MMMM,yyyy") + " "
-                    + Resources.Resources.ResourceManager.GetString("ImportControl_in") + " " + act.Location;
+                    + Resources.Resources.ImportControl_in + " " + act.Location;
 
                     String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
                     if (kmzFile.Extension == ".kmz")
