@@ -79,24 +79,6 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancel.
-        /// </summary>
-        internal static string btn_Cancel_Text {
-            get {
-                return ResourceManager.GetString("btn_Cancel_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OK.
-        /// </summary>
-        internal static string btn_OK_Text {
-            get {
-                return ResourceManager.GetString("btn_OK_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Collapse All.
         /// </summary>
         internal static string btnCollapseAll_Text {
@@ -136,15 +118,6 @@ namespace ActivityPicturePlugin.Resources {
         internal static string btnKML_Text {
             get {
                 return ResourceManager.GetString("btnKML_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Import.
-        /// </summary>
-        internal static string btnManImp_Text {
-            get {
-                return ResourceManager.GetString("btnManImp_Text", resourceCulture);
             }
         }
         
@@ -389,15 +362,6 @@ namespace ActivityPicturePlugin.Resources {
         internal static string pictureAlbumToolStripMenuItem_Text {
             get {
                 return ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to List.
-        /// </summary>
-        internal static string pictureListToolStripMenuItem_Text {
-            get {
-                return ResourceManager.GetString("pictureListToolStripMenuItem_Text", resourceCulture);
             }
         }
         

@@ -45,7 +45,7 @@ namespace ActivityPicturePlugin.UI
         public void UpdateUICulture(System.Globalization.CultureInfo culture)
         {
             m_culture = culture;
-            this.btnScan.Text = Resources.Resources.btnManImp_Text;
+            this.btnScan.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
             this.btnExpandAll.Text = Resources.Resources.btnExpandAll_Text;
             this.btnCollapseAll.Text = Resources.Resources.btnCollapseAll_Text;
             this.btnViewAct.Text = Resources.Resources.ImportControl_changeView;

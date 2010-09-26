@@ -134,11 +134,11 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 else if (this.Mode == ShowMode.List)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
+                    this.actionBannerViews.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelList;
                 }
                 else if (this.Mode == ShowMode.Import)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.btnManImp_Text;
+                    this.actionBannerViews.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
                 }
                 this.Altitude.HeaderText = Resources.Resources.Altitude_HeaderText;
                 this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
@@ -150,8 +150,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
                 this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
                 this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
-                this.pictureListToolStripMenuItem.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
-                this.importToolStripMenuItem.Text = Resources.Resources.btnManImp_Text;
+                this.pictureListToolStripMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelList;
+                this.importToolStripMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
                 this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText;
                 this.groupBoxVideo.Text = Resources.Resources.groupBoxVideo_Text;
                 this.groupBoxImage.Text = Resources.Resources.groupBoxImage_Text;
@@ -263,7 +263,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 else if (this.Mode == ShowMode.List)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
+                    this.actionBannerViews.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelList;
                     this.groupBoxImage.Visible = false;
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = true;
@@ -274,7 +274,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 else if (this.Mode == ShowMode.Import)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.btnManImp_Text;
+                    this.actionBannerViews.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionImport;
                     this.dataGridViewImages.Visible = false;
                     this.pictureAlbumView.Visible = false;
                     this.groupBoxImage.Visible = false;
