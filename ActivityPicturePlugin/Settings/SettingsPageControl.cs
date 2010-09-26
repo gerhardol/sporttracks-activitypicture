@@ -33,9 +33,9 @@ namespace ActivityPicturePlugin.Settings
             InitializeComponent();
 
             //localization
-            this.groupBoxImport.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
-            this.lblImageQuality.Text = Resources.Resources.ResourceManager.GetString("SettingsPageControl_lblQuality_Text");
-            this.lblImageSize.Text = Resources.Resources.ResourceManager.GetString("labelImageSize_Text");
+            this.groupBoxImport.Text = Resources.Resources.btnManImp_Text;
+            this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
+            this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
 
             trackBarQuality.Value = ActivityPicturePageControl.PluginSettingsData.data.Quality;
             trackBarSize.Value = ActivityPicturePageControl.PluginSettingsData.data.Size;
@@ -93,9 +93,9 @@ namespace ActivityPicturePlugin.Settings
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             //localization
-            this.groupBoxImport.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
-            this.lblImageQuality.Text = Resources.Resources.ResourceManager.GetString("SettingsPageControl_lblQuality_Text");
-            this.lblImageSize.Text = Resources.Resources.ResourceManager.GetString("labelImageSize_Text");
+            this.groupBoxImport.Text = Resources.Resources.btnManImp_Text;
+            this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
+            this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
         }
 
         #endregion

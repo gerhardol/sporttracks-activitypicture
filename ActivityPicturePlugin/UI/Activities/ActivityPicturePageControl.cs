@@ -130,45 +130,45 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
                 if (this.Mode == ShowMode.Album)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text");
+                    this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
                 }
                 else if (this.Mode == ShowMode.List)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("pictureListToolStripMenuItem_Text");
+                    this.actionBannerViews.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
                 }
                 else if (this.Mode == ShowMode.Import)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
+                    this.actionBannerViews.Text = Resources.Resources.btnManImp_Text;
                 }
-                this.Altitude.HeaderText = Resources.Resources.ResourceManager.GetString("Altitude_HeaderText");
-                this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("commentDataGridViewTextBoxColumn_HeaderText");
-                this.dateTimeOriginalDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("dateTimeOriginalDataGridViewTextBoxColumn_HeaderText");
-                this.equipmentModelDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("equipmentModelDataGridViewTextBoxColumn_HeaderText");
-                this.ExifGPS.HeaderText = Resources.Resources.ResourceManager.GetString("ExifGPS_HeaderText");
-                this.photoSourceDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("photoSourceDataGridViewTextBoxColumn_HeaderText");
-                this.referenceIDDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("referenceIDDataGridViewTextBoxColumn_HeaderText");
-                this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.ResourceManager.GetString("thumbnailDataGridViewImageColumn_HeaderText");
-                this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("titleDataGridViewTextBoxColumn_HeaderText");
-                this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text");
-                this.pictureListToolStripMenuItem.Text = Resources.Resources.ResourceManager.GetString("pictureListToolStripMenuItem_Text");
-                this.importToolStripMenuItem.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
-                this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.ResourceManager.GetString("waypointDataGridViewTextBoxColumn_HeaderText");
-                this.groupBoxVideo.Text = Resources.Resources.ResourceManager.GetString("groupBoxVideo_Text");
-                this.groupBoxImage.Text = Resources.Resources.ResourceManager.GetString("groupBoxImage_Text");
-                this.groupBoxListOptions.Text = Resources.Resources.ResourceManager.GetString("goupBoxListOptions_Text");
-                this.toolStripButtonPause.ToolTipText = Resources.Resources.ResourceManager.GetString("toolStripButtonPause_ToolTipText");
-                this.toolStripButtonPlay.ToolTipText = Resources.Resources.ResourceManager.GetString("toolStripButtonPlay_ToolTipText");
-                this.toolStripButtonStop.ToolTipText = Resources.Resources.ResourceManager.GetString("toolStripButtonStop_ToolTipText");
+                this.Altitude.HeaderText = Resources.Resources.Altitude_HeaderText;
+                this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+                this.dateTimeOriginalDataGridViewTextBoxColumn.HeaderText = Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;
+                this.equipmentModelDataGridViewTextBoxColumn.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+                this.ExifGPS.HeaderText = Resources.Resources.ExifGPS_HeaderText;
+                this.photoSourceDataGridViewTextBoxColumn.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+                this.referenceIDDataGridViewTextBoxColumn.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+                this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+                this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
+                this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+                this.pictureListToolStripMenuItem.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
+                this.importToolStripMenuItem.Text = Resources.Resources.btnManImp_Text;
+                this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText;
+                this.groupBoxVideo.Text = Resources.Resources.groupBoxVideo_Text;
+                this.groupBoxImage.Text = Resources.Resources.groupBoxImage_Text;
+                this.groupBoxListOptions.Text = Resources.Resources.goupBoxListOptions_Text;
+                this.toolStripButtonPause.ToolTipText = Resources.Resources.toolStripButtonPause_ToolTipText;
+                this.toolStripButtonPlay.ToolTipText = Resources.Resources.toolStripButtonPlay_ToolTipText;
+                this.toolStripButtonStop.ToolTipText = Resources.Resources.toolStripButtonStop_ToolTipText;
 
-                this.toolTip1.SetToolTip(this.btnGeoTag, Resources.Resources.ResourceManager.GetString("tooltip_OnlySelectedImages"));
-                this.toolTip1.SetToolTip(this.btnKML, Resources.Resources.ResourceManager.GetString("tooltip_OnlySelectedImages"));
-                this.toolTip1.SetToolTip(this.btnTimeOffset, Resources.Resources.ResourceManager.GetString("tooltip_OnlySelectedImages"));
+                this.toolTip1.SetToolTip(this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages);
+                this.toolTip1.SetToolTip(this.btnKML, Resources.Resources.tooltip_OnlySelectedImages);
+                this.toolTip1.SetToolTip(this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages);
 
-                this.TypeImage.HeaderText = Resources.Resources.ResourceManager.GetString("TypeImage_HeaderText");
-                this.btnGeoTag.Text = Resources.Resources.ResourceManager.GetString("btnGeoTag_Text");
-                this.btnKML.Text = Resources.Resources.ResourceManager.GetString("btnKML_Text");
-                this.btnTimeOffset.Text = Resources.Resources.ResourceManager.GetString("btnTimeOffset_Text");
-                this.labelImageSize.Text = Resources.Resources.ResourceManager.GetString("labelImageSize_Text");
+                this.TypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
+                this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
+                this.btnKML.Text = Resources.Resources.btnKML_Text;
+                this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
+                this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
 
                 this.Invalidate();
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
@@ -252,7 +252,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 //Load controls depending on selected view
                 if (this.Mode == ShowMode.Album)
                 {                  
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("pictureAlbumToolStripMenuItem_Text"); ;
+                    this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
                     this.groupBoxImage.Visible = true;
                     this.groupBoxVideo.Visible = true;
                     this.groupBoxListOptions.Visible = false;
@@ -263,7 +263,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 else if (this.Mode == ShowMode.List)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("pictureListToolStripMenuItem_Text"); ;
+                    this.actionBannerViews.Text = Resources.Resources.pictureListToolStripMenuItem_Text;
                     this.groupBoxImage.Visible = false;
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = true;
@@ -274,7 +274,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 else if (this.Mode == ShowMode.Import)
                 {
-                    this.actionBannerViews.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
+                    this.actionBannerViews.Text = Resources.Resources.btnManImp_Text;
                     this.dataGridViewImages.Visible = false;
                     this.pictureAlbumView.Visible = false;
                     this.groupBoxImage.Visible = false;

@@ -90,7 +90,7 @@ namespace ActivityPicturePlugin.UI.Activities
 #else
         public TestExportAction(IActivity act)
             {
-            this.title = Resources.Resources.ResourceManager.GetString("GoogleEarthExport_Title");
+            this.title = Resources.Resources.GoogleEarthExport_Title;
             if (act != null)
                 {
                 if (Helper.Functions.ReadExtensionData(act).Images.Count != 0)
@@ -105,7 +105,7 @@ namespace ActivityPicturePlugin.UI.Activities
             if (acts.Count > 0)
                 {
                 this.enabled = true;
-                this.title = Resources.Resources.ResourceManager.GetString("GoogleEarthExport_Title");
+                this.title = Resources.Resources.GoogleEarthExport_Title;
                 activities = acts;
                 }
             }

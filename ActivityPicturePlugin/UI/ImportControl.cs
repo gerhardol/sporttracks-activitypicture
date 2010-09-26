@@ -45,21 +45,21 @@ namespace ActivityPicturePlugin.UI
         public void UpdateUICulture(System.Globalization.CultureInfo culture)
         {
             m_culture = culture;
-            this.btnScan.Text = Resources.Resources.ResourceManager.GetString("btnManImp_Text");
-            this.btnExpandAll.Text = Resources.Resources.ResourceManager.GetString("btnExpandAll_Text");
-            this.btnCollapseAll.Text = Resources.Resources.ResourceManager.GetString("btnCollapseAll_Text");
-            this.btnViewAct.Text = Resources.Resources.ResourceManager.GetString("ImportControl_changeView");
-            this.btnViewFolder.Text = Resources.Resources.ResourceManager.GetString("ImportControl_changeView");
-            this.colImage.Text = Resources.Resources.ResourceManager.GetString("thumbnailDataGridViewImageColumn_HeaderText");
-            this.colDateTime.Text = Resources.Resources.ResourceManager.GetString("dateTimeOriginalDataGridViewTextBoxColumn_HeaderText");
-            this.colGPS.Text = Resources.Resources.ResourceManager.GetString("ExifGPS_HeaderText");
-            this.colTitle.Text = Resources.Resources.ResourceManager.GetString("titleDataGridViewTextBoxColumn_HeaderText");
-            this.colDescription.Text = Resources.Resources.ResourceManager.GetString("commentDataGridViewTextBoxColumn_HeaderText");
-            this.colDImage.Text = Resources.Resources.ResourceManager.GetString("thumbnailDataGridViewImageColumn_HeaderText");
-            this.colDDateTime.Text = Resources.Resources.ResourceManager.GetString("dateTimeOriginalDataGridViewTextBoxColumn_HeaderText");
-            this.colDGPS.Text = Resources.Resources.ResourceManager.GetString("ExifGPS_HeaderText");
-            this.colDTitle.Text = Resources.Resources.ResourceManager.GetString("titleDataGridViewTextBoxColumn_HeaderText");
-            this.colDDescription.Text = Resources.Resources.ResourceManager.GetString("commentDataGridViewTextBoxColumn_HeaderText");
+            this.btnScan.Text = Resources.Resources.btnManImp_Text;
+            this.btnExpandAll.Text = Resources.Resources.btnExpandAll_Text;
+            this.btnCollapseAll.Text = Resources.Resources.btnCollapseAll_Text;
+            this.btnViewAct.Text = Resources.Resources.ImportControl_changeView;
+            this.btnViewFolder.Text = Resources.Resources.ImportControl_changeView;
+            this.colImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.colDateTime.Text = Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;
+            this.colGPS.Text = Resources.Resources.ExifGPS_HeaderText;
+            this.colTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            this.colDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.colDImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.colDDateTime.Text = Resources.Resources.dateTimeOriginalDataGridViewTextBoxColumn_HeaderText;
+            this.colDGPS.Text = Resources.Resources.ExifGPS_HeaderText;
+            this.colDTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            this.colDDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
         }
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
         {
@@ -531,7 +531,7 @@ namespace ActivityPicturePlugin.UI
 
                     dayNode = new TreeNode(act.StartTime.ToLocalTime().ToString("dd, dddd, " +
                         System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern) + " "
-                        + Resources.Resources.ResourceManager.GetString("ImportControl_in") + " " + act.Location);
+                        + Resources.Resources.ImportControl_in + " " + act.Location);
                     dayNode.Name = act.StartTime.ToString("u");
                     dayNode.Tag = act;
                     this.ActivityNodes.Add(dayNode);
@@ -582,7 +582,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     foreach (TreeNode day in month.Nodes)
                     {
-                        this.lblProgress.Text = Resources.Resources.ResourceManager.GetString("ImportControl_scanning") + " " + day.Text;
+                        this.lblProgress.Text = Resources.Resources.ImportControl_scanning + " " + day.Text;
                         this.progressBar2.PerformStep();
                         Application.DoEvents();
                         //Show Thumbs if called from activity
@@ -634,7 +634,7 @@ namespace ActivityPicturePlugin.UI
                 {
 
                     this.progressBar2.Value = (int)(100 * (double)(i) / (double)(files.Count));
-                    this.lblProgress.Text = Resources.Resources.ResourceManager.GetString("ImportControl_searchingActivity") + " " + file.FullName;
+                    this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
 
                     Application.DoEvents();
                     i++;
@@ -717,8 +717,8 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
 
-                this.lblProgress.Text = Resources.Resources.ResourceManager.GetString("ImportControl_scanDone1") + " " +
-                    +numFilesImported + " " + Resources.Resources.ResourceManager.GetString("ImportControl_scanDone2");
+                this.lblProgress.Text = Resources.Resources.ImportControl_scanDone1 + " " +
+                    +numFilesImported + " " + Resources.Resources.ImportControl_scanDone2;
             }
             catch (Exception)
             {
@@ -820,7 +820,7 @@ namespace ActivityPicturePlugin.UI
                             if (!files.Contains(file))
                             {
                                 files.Add(file);
-                                SetLabelText(Resources.Resources.ResourceManager.GetString("ImportControl_addingFile") + " " + file.Name);
+                                SetLabelText(Resources.Resources.ImportControl_addingFile + " " + file.Name);
                                 Application.DoEvents();
                             }
 

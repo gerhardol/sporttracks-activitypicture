@@ -35,9 +35,9 @@ namespace ActivityPicturePlugin.UI.Activities
             InitializeComponent();
 
             //localization
-            this.Text = Resources.Resources.ResourceManager.GetString("ModifyTimeStamp_Text");
-            this.btnOK.Text = Resources.Resources.ResourceManager.GetString("btn_OK_Text");
-            this.btnCancel.Text = Resources.Resources.ResourceManager.GetString("btn_Cancel_Text");
+            this.Text = Resources.Resources.ModifyTimeStamp_Text;
+            this.btnOK.Text = Resources.Resources.btn_OK_Text;
+            this.btnCancel.Text = Resources.Resources.btn_Cancel_Text;
 
 
 
