@@ -648,7 +648,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 foreach (string referenceID in referenceIDs)
                 {
-                    string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+                    string ThumbnailPath = thumbnailPath(referenceID);
                     if (System.IO.File.Exists(ThumbnailPath))
                     {
                         System.IO.File.Delete(ThumbnailPath);
@@ -665,7 +665,7 @@ namespace ActivityPicturePlugin.Helper
         {
             if (im.Type == ImageData.DataTypes.Image)
             {
-                Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceIDPath);
+                Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
             }
             else if (im.Type == ImageData.DataTypes.Video)
             {
@@ -673,24 +673,47 @@ namespace ActivityPicturePlugin.Helper
             }
 
         }
-        public static void OpenImage(string photoSource, string referenceID)
+        public static string thumbnailPath(string referenceID)
         {
+            //Could be several paths here
+            return ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+        }
+        public static string GetBestImage(string photoSource, string referenceID)
+        {
+            string path = null;
             //try to open Photosource first
             try
             {
                 if (System.IO.File.Exists(photoSource))
                 {
-                    OpenImageWithWindowsViewer(photoSource);
+                    path = photoSource;
                 }
                 // if not found, try next to open image from ...\Web Files\Images folder
                 else
                 {
-                    string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+                    string ThumbnailPath = thumbnailPath(referenceID);
                     if (System.IO.File.Exists(ThumbnailPath))
                     {
-                        OpenImageWithWindowsViewer(ThumbnailPath);
+                        path = ThumbnailPath;
                     }
                     // if both locations are not found, nothing will happen
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return path;
+        }
+        public static void OpenImage(string photoSource, string referenceID)
+        {
+            //try to open Photosource first
+            try
+            {
+                string path = GetBestImage(photoSource, referenceID);
+                if(null != path)
+                {
+                    OpenImageWithWindowsViewer(path);
                 }
             }
             catch (Exception)

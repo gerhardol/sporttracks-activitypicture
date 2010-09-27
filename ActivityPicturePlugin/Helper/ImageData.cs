@@ -279,7 +279,6 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-
                 try
                 {
                     if (this.EW.EquipmentModel != null)
@@ -290,8 +289,6 @@ namespace ActivityPicturePlugin.Helper
                 {
                     return "";
                 }
-
-
             }
         }
         public IGPSLocation GpsLocation
@@ -386,7 +383,7 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-                return ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + this.referenceID + ".jpg";
+                return Functions.thumbnailPath(this.referenceID);
             }
         }
         public string Altitude

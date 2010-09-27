@@ -282,16 +282,19 @@ namespace ActivityPicturePlugin.UI.MapLayers
                 }
                 else
                 {
-                    
+                    string path = Functions.GetBestImage(location.PhotoSource, location.ReferenceID);
+                    if (null != path)
+                    {
                         Size iconSize = new Size(15, 15);
-                        string fileURL = "file://"+location.PhotoSource;
+                        string fileURL = "file://" + path;
                         m_icon = new MapIcon(fileURL, iconSize);
 
                         MapMarker pointOverlay = new MapMarker(location.GpsPoint, m_icon, false);
                         //pointOverlay.DoubleClick += new MouseEventHandler(pointOverlay_DoubleClick);
                         newPointOverlays.Add(location.GpsPoint, pointOverlay);
-                    addedOverlays.Add(pointOverlay);
-                    m_scalingChanged = false;
+                        addedOverlays.Add(pointOverlay);
+                        m_scalingChanged = false;
+                    }
                 }
             }
 

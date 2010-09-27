@@ -40,6 +40,7 @@ using ActivityPicturePlugin.UI.MapLayers;
 //todo:
 //2. When doubleclicking the pictures in GE, the pictures are gray. Minatures are fine, so are pictures extracted from the .kmz 
 //4. Can this be the default in List view too? I can sort the pictures, but if I do something with them, the default order is actived again. 
+//Remove last three list columns, use tooltip instead
 
 namespace ActivityPicturePlugin.UI.Activities
 {
@@ -128,47 +129,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 ReloadData();
                 UpdateView();
                 this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
-                if (this.Mode == ShowMode.Album)
-                {
-                    this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
-                }
-                else if (this.Mode == ShowMode.List)
-                {
-                    this.actionBannerViews.Text = CommonResources.Text.LabelList;
-                }
-                else if (this.Mode == ShowMode.Import)
-                {
-                    this.actionBannerViews.Text = CommonResources.Text.ActionImport;
-                }
-                this.Altitude.HeaderText = CommonResources.Text.LabelElevation;
-                this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
-                this.dateTimeOriginalDataGridViewTextBoxColumn.HeaderText = CommonResources.Text.LabelDate;
-                this.equipmentModelDataGridViewTextBoxColumn.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
-                this.ExifGPS.HeaderText = CommonResources.Text.LabelGPSLocation;
-                this.photoSourceDataGridViewTextBoxColumn.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
-                this.referenceIDDataGridViewTextBoxColumn.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
-                this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
-                this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
-                this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
-                this.pictureListToolStripMenuItem.Text = CommonResources.Text.LabelList;
-                this.importToolStripMenuItem.Text = CommonResources.Text.ActionImport;
-                this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText;
-                this.groupBoxVideo.Text = Resources.Resources.groupBoxVideo_Text;
-                this.groupBoxImage.Text = CommonResources.Text.LabelPhoto;
-                this.groupBoxListOptions.Text = Resources.Resources.goupBoxListOptions_Text;
-                this.toolStripButtonPause.ToolTipText = Resources.Resources.toolStripButtonPause_ToolTipText;
-                this.toolStripButtonPlay.ToolTipText = Resources.Resources.toolStripButtonPlay_ToolTipText;
-                this.toolStripButtonStop.ToolTipText = Resources.Resources.toolStripButtonStop_ToolTipText;
-
-                this.toolTip1.SetToolTip(this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages);
-                this.toolTip1.SetToolTip(this.btnKML, Resources.Resources.tooltip_OnlySelectedImages);
-                this.toolTip1.SetToolTip(this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages);
-
-                this.TypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
-                this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
-                this.btnKML.Text = Resources.Resources.btnKML_Text;
-                this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
-                this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
 
                 this.Invalidate();
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
@@ -242,6 +202,49 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             //change number formats
             RefreshPage();
+
+            if (this.Mode == ShowMode.Album)
+            {
+                this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+            }
+            else if (this.Mode == ShowMode.List)
+            {
+                this.actionBannerViews.Text = CommonResources.Text.LabelList;
+            }
+            else if (this.Mode == ShowMode.Import)
+            {
+                this.actionBannerViews.Text = CommonResources.Text.ActionImport;
+            }
+            this.Altitude.HeaderText = CommonResources.Text.LabelElevation;
+            this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.dateTimeOriginalDataGridViewTextBoxColumn.HeaderText = CommonResources.Text.LabelDate;
+            this.equipmentModelDataGridViewTextBoxColumn.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+            this.ExifGPS.HeaderText = CommonResources.Text.LabelGPSLocation;
+            this.photoSourceDataGridViewTextBoxColumn.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+            this.referenceIDDataGridViewTextBoxColumn.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+            this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+            this.pictureListToolStripMenuItem.Text = CommonResources.Text.LabelList;
+            this.importToolStripMenuItem.Text = CommonResources.Text.ActionImport;
+            this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText;
+            this.groupBoxVideo.Text = Resources.Resources.groupBoxVideo_Text;
+            this.groupBoxImage.Text = CommonResources.Text.LabelPhoto;
+            this.groupBoxListOptions.Text = Resources.Resources.goupBoxListOptions_Text;
+            this.toolStripButtonPause.ToolTipText = Resources.Resources.toolStripButtonPause_ToolTipText;
+            this.toolStripButtonPlay.ToolTipText = Resources.Resources.toolStripButtonPlay_ToolTipText;
+            this.toolStripButtonStop.ToolTipText = Resources.Resources.toolStripButtonStop_ToolTipText;
+
+            this.toolTip1.SetToolTip(this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages);
+            this.toolTip1.SetToolTip(this.btnKML, Resources.Resources.tooltip_OnlySelectedImages);
+            this.toolTip1.SetToolTip(this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages);
+
+            this.TypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
+            this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
+            this.btnKML.Text = Resources.Resources.btnKML_Text;
+            this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
+            this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
+
             this.importControl1.UpdateUICulture(culture);
         }
         private void UpdateView()
@@ -709,7 +712,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
                 //throw;
             }
-
         }
 
         private void InitializeDataGridView()
@@ -725,7 +727,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.photoSourceDataGridViewTextBoxColumn.DisplayIndex = 8;
             this.referenceIDDataGridViewTextBoxColumn.DisplayIndex = 9;
             this.waypointDataGridViewTextBoxColumn.DisplayIndex = 10;
-
 
             SortListView();
         }
@@ -906,11 +907,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             UpdateToolBar();
         }
 
-        private void pictureAlbum1_MouseDown(object sender, MouseEventArgs e)
-        {
-
-        }
-
         private void timerVideo_Tick(object sender, EventArgs e)
         {
             this.trackBarVideo.Value = (int)(this.trackBarVideo.Maximum * this.pictureAlbumView.GetVideoPosition());
@@ -946,16 +942,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             PictureAlbum pa = (PictureAlbum)(sender);
             pa.Zoom = this.trackBarImageSize.Value;
-        }
-
-        private void importControl1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void importControl1_Load_1(object sender, EventArgs e)
-        {
-
         }
 
         private void btnGeoTag_Click(object sender, EventArgs e)
