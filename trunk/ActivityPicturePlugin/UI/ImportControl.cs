@@ -1145,7 +1145,7 @@ namespace ActivityPicturePlugin.UI
                         photosource = ids.PhotoSource;
                         if (ids.Type == ImageData.DataTypes.Image)
                         {
-                            Functions.OpenImage(photosource, ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + id + ".jpg");
+                            Functions.OpenImage(photosource, id);
                         }
                         else if (ids.Type == ImageData.DataTypes.Video)
                         {

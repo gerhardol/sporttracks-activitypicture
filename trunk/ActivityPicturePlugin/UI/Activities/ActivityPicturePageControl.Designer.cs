@@ -313,7 +313,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 this.pictureAlbumView.ShowVideoOptions += new ActivityPicturePlugin.Helper.PictureAlbum.ShowVideoOptionsEventHandler(this.pictureAlbumView_ShowVideoOptions);
                 this.pictureAlbumView.ZoomChange += new ActivityPicturePlugin.Helper.PictureAlbum.ZoomChangeEventHandler(this.pictureAlbumView_ZoomChange);
                 this.pictureAlbumView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureAlbum1_MouseClick);
-                this.pictureAlbumView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureAlbum1_MouseDown);
                 this.pictureAlbumView.UpdateVideoToolBar += new ActivityPicturePlugin.Helper.PictureAlbum.UpdateVideoToolBarEventHandler(this.pictureAlbumView_UpdateVideoToolBar);
                 this.pictureAlbumView.ActivityChanged += new ActivityPicturePlugin.Helper.PictureAlbum.ActivityChangedEventHandler(this.pictureAlbumView_ActivityChanged);
                 // 
@@ -326,7 +325,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 this.importControl1.Size = new System.Drawing.Size(448, 540);
                 this.importControl1.TabIndex = 6;
                 this.importControl1.Visible = false;
-                this.importControl1.Load += new System.EventHandler(this.importControl1_Load_1);
                 // 
                 // groupBoxListOptions
                 // 
