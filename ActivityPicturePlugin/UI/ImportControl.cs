@@ -74,6 +74,7 @@ namespace ActivityPicturePlugin.UI
             files.Clear();
             lblProgress.Text = "";
             progressBar2.Visible = false;
+            this.splitContainer1.Height = this.Height;
 
             UpdateUICulture(m_culture);
 
@@ -571,6 +572,7 @@ namespace ActivityPicturePlugin.UI
         }
         private void FindImagesInActivities()
         {
+            this.splitContainer1.Height = this.Height - 56;
             this.progressBar2.Visible = true;
             this.lblProgress.Visible = true;
             this.progressBar2.Minimum = 0;
@@ -595,6 +597,7 @@ namespace ActivityPicturePlugin.UI
 
             this.progressBar2.Visible = false;
             this.lblProgress.Visible = false;
+            this.splitContainer1.Height = this.Height;
         }
         #endregion
         private void FindAndImportImages(bool sorted)
@@ -962,6 +965,7 @@ namespace ActivityPicturePlugin.UI
         #endregion
         private void btnScan_Click(object sender, EventArgs e)
         {
+            this.splitContainer1.Height = this.Height - 56;
             this.progressBar2.Style = ProgressBarStyle.Marquee;
             this.progressBar2.Visible = true;
             this.lblProgress.Visible = true;
@@ -979,6 +983,9 @@ namespace ActivityPicturePlugin.UI
             else FindAndImportImages(false);
 
             AddImagesToListViewAct(this.treeViewActivities.SelectedNode, true);
+            this.progressBar2.Visible = false;
+            this.lblProgress.Visible = false;
+            this.splitContainer1.Height = this.Height;
         }
         private void SortFiles()
         {
