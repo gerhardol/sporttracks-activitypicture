@@ -89,7 +89,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewImages.CheckBoxes = true;
             this.treeViewImages.Location = new System.Drawing.Point(0, 31);
             this.treeViewImages.Name = "treeViewImages";
-            this.treeViewImages.Size = new System.Drawing.Size(170, 191);
+            this.treeViewImages.Size = new System.Drawing.Size(170, 218);
             this.treeViewImages.TabIndex = 1;
             this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
             this.treeViewImages.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewImages_BeforeExpand);
@@ -106,7 +106,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.ItemHeight = 20;
             this.treeViewActivities.Location = new System.Drawing.Point(0, 31);
             this.treeViewActivities.Name = "treeViewActivities";
-            this.treeViewActivities.Size = new System.Drawing.Size(345, 191);
+            this.treeViewActivities.Size = new System.Drawing.Size(348, 218);
             this.treeViewActivities.TabIndex = 6;
             this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewActivities_AfterSelect);
             // 
@@ -125,7 +125,7 @@ namespace ActivityPicturePlugin.UI
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(526, 452);
+            this.splitContainer1.Size = new System.Drawing.Size(529, 508);
             this.splitContainer1.SplitterDistance = 172;
             this.splitContainer1.TabIndex = 8;
             // 
@@ -147,8 +147,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.listViewDrive);
-            this.splitContainer3.Size = new System.Drawing.Size(170, 451);
-            this.splitContainer3.SplitterDistance = 224;
+            this.splitContainer3.Size = new System.Drawing.Size(170, 507);
+            this.splitContainer3.SplitterDistance = 251;
             this.splitContainer3.TabIndex = 12;
             // 
             // btnViewFolder
@@ -205,7 +205,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewDrive.Location = new System.Drawing.Point(0, 0);
             this.listViewDrive.Name = "listViewDrive";
-            this.listViewDrive.Size = new System.Drawing.Size(170, 223);
+            this.listViewDrive.Size = new System.Drawing.Size(170, 252);
             this.listViewDrive.TabIndex = 12;
             this.listViewDrive.UseCompatibleStateImageBehavior = false;
             this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
@@ -256,8 +256,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.listViewAct);
-            this.splitContainer2.Size = new System.Drawing.Size(345, 451);
-            this.splitContainer2.SplitterDistance = 224;
+            this.splitContainer2.Size = new System.Drawing.Size(348, 507);
+            this.splitContainer2.SplitterDistance = 251;
             this.splitContainer2.TabIndex = 13;
             // 
             // btnViewAct
@@ -335,7 +335,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewAct.Location = new System.Drawing.Point(0, 0);
             this.listViewAct.Name = "listViewAct";
-            this.listViewAct.Size = new System.Drawing.Size(345, 223);
+            this.listViewAct.Size = new System.Drawing.Size(348, 252);
             this.listViewAct.TabIndex = 11;
             this.listViewAct.UseCompatibleStateImageBehavior = false;
             this.listViewAct.DragDrop += new System.Windows.Forms.DragEventHandler(this.listViewAct_DragDrop);
