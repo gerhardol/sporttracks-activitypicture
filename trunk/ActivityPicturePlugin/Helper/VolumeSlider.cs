@@ -41,7 +41,12 @@ namespace ActivityPicturePlugin.Helper
          //   this.VolumeChanged += new VolumeChangedEventHandler(PictureAlbum_ActivityChanged);
             // At this point, CurrVol gets assigned the volume
             uint CurrVol = 0;
-            waveOutGetVolume(IntPtr.Zero, out CurrVol);
+            try
+            {
+                //Mono TODO:
+                waveOutGetVolume(IntPtr.Zero, out CurrVol);
+            }
+            catch { }
             ushort CalcVol = (ushort)(CurrVol & 0x0000ffff);
             // Get the volume on a scale of 1 to 100
             Volume = (uint)(CalcVol / (ushort.MaxValue / 100));
@@ -89,8 +94,12 @@ namespace ActivityPicturePlugin.Helper
             // Set the same volume for both the left and the right channels
             uint NewVolumeAllChannels = (((uint)NewVolume & 0x0000ffff) | ((uint)NewVolume << 16));
             // Set the volume
-            waveOutSetVolume(IntPtr.Zero, NewVolumeAllChannels);
-
+            try
+            {
+                //Mono TODO:
+                waveOutSetVolume(IntPtr.Zero, NewVolumeAllChannels);
+            }
+            catch { }
             //VolumeChanged(this, new EventArgs(), volume);
             this.Invalidate();
         }
