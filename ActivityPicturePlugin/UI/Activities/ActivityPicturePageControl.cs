@@ -35,12 +35,14 @@ using ActivityPicturePlugin.Helper;
 #if !ST_2_1
 using ActivityPicturePlugin.UI.MapLayers;
 #endif
-//using QuartzTypeLib;
 
 //todo:
 //2. When doubleclicking the pictures in GE, the pictures are gray. Minatures are fine, so are pictures extracted from the .kmz 
 //4. Can this be the default in List view too? I can sort the pictures, but if I do something with them, the default order is actived again. 
 //Remove last three list columns, use tooltip instead
+//Copy list text, including ref path?
+//Migration of paths
+//Migration of thumbnails 2->3
 
 namespace ActivityPicturePlugin.UI.Activities
 {

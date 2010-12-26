@@ -1415,14 +1415,19 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 12.6.2004 Created 
         /// </history> 
         public void SetProperty(Int32 PID, byte[] Data, ExifDataTypes Type)
-            {
+        {
             System.Drawing.Imaging.PropertyItem P = this._Image.PropertyItems[0];
             P.Id = PID;
             P.Value = Data;
             P.Type = (short)(Type);
             P.Len = Data.Length;
-            this._Image.SetPropertyItem(P);
+            try
+            {
+                //Mono TODO: NotImplemented
+                this._Image.SetPropertyItem(P);
             }
+            catch { }
+        }
 
         /// <summary> 
         /// Reads Int32 from EXIF bytearray. 

@@ -547,7 +547,12 @@ namespace ActivityPicturePlugin.Helper
             //copying the metadata of the original file into the new image
             foreach (System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems)
             {
-                bmpNew.SetPropertyItem(pItem);
+                try
+                {
+                    //Mono TODO: NotImplemented
+                    bmpNew.SetPropertyItem(pItem);
+                }
+                catch { }
             }
 
             //quality too bad

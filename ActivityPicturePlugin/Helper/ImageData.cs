@@ -600,7 +600,12 @@ namespace ActivityPicturePlugin.Helper
                         //copying the metadata of the original file into the new image
                         foreach (System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems)
                         {
-                            bmp.SetPropertyItem(pItem);
+                            try
+                            {
+                                //Mono TODO: NotImplemented
+                                bmp.SetPropertyItem(pItem);
+                            }
+                            catch { }
                         }
 
                         Functions.SaveThumbnailImage(bmp, defpath, 10);
