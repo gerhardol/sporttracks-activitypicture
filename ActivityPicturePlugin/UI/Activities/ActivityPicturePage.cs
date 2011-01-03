@@ -97,7 +97,11 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if (control == null)
             {
+#if !ST_2_1
+                control = new ActivityPicturePageControl(this, m_view);
+#else
                 control = new ActivityPicturePageControl();
+#endif
                 control.Activity = activity;
             }
             return control;
