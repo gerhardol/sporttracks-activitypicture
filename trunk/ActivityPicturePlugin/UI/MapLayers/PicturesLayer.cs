@@ -24,6 +24,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Data.GPS;
+using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Mapping;
 using System.Collections.Generic;
@@ -32,64 +33,68 @@ using ActivityPicturePlugin.Helper;
 
 namespace ActivityPicturePlugin.UI.MapLayers
 {
-    class ExtendRouteControlLayerProviders : IExtendRouteControlLayerProviders
-    {
-        public IList<IRouteControlLayerProvider> RouteControlLayerProviders
-        {
-            get
-            {
-                return new IRouteControlLayerProvider[] { PicturesProvider.Instance };
-            }
-        }
-    }
-    class PicturesProvider : IRouteControlLayerProvider
-    {
-        private static PicturesProvider m_instance = null;
-        public static PicturesProvider Instance
-        {
-            get
-            {
-                if (PicturesProvider.m_instance == null)
-                {
-                    PicturesProvider.m_instance = new PicturesProvider();
-                }
-                return PicturesProvider.m_instance;
-            }
-        }
-        private IRouteControlLayer m_layer = null;
-        public IRouteControlLayer RouteControlLayer
-        {
-            get { return m_layer; }
-        }
-
-        public IRouteControlLayer CreateControlLayer(IRouteControl control)
-        {
-            if (m_layer == null)
-            {
-                m_layer = new PicturesLayer(this,control);
-            }
-            return m_layer;
-        }
-
-        public Guid Id
-        {
-            get { return GUIDs.PicturesControlLayerProvider; }
-        }
-
-        public string Name
-        {
-            get { return Resources.Resources.ActivityPicturePage_Title; }
-        }
-    }
-
     class PicturesLayer : RouteControlLayerBase, IRouteControlLayer
     {
+        private DateTime m_creationTime = DateTime.Now;
         public PicturesLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1)
         {
+            m_instances.Add(this);
             //PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
             //listener = new RouteItemsDataChangeListener(control);
             //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
+        }
+
+        //TODO: Hack, there is no known relation between view and route control/layer
+        //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
+        public static PicturesLayer Instance(IView view)
+        {
+            PicturesLayer result = m_instances[0];
+            if (view == null)
+            {
+                //No activity page, use daily view
+                return result;
+            }
+            string viewType = view.GetType().FullName;
+
+            if (m_instances == null || m_instances.Count == 0)
+            {
+                //error, will likely give exceptions later
+                return null;
+            }
+            else if (viewType.EndsWith(".DailyActivityView.MainView"))
+            {
+                result = m_instances[0]; 
+            }
+            else if ((viewType.EndsWith(".ActivityReportDetailsPage") ||
+                viewType.EndsWith(".ReportsView.MainView"))
+                && m_instances.Count > 1)
+            {
+                for (int i = 1; i < m_instances.Count - 1; i++)
+                {
+                    if (m_instances[i + 1].m_creationTime.Subtract(m_instances[i].m_creationTime).TotalSeconds < 1)
+                    {
+                        result = m_instances[i];
+                        result.m_reportMapInstance = i + 1;
+                    }
+                }
+            }
+            //    if IRouteSettings have overlays
+            //else if (viewType.EndsWith("RouteView.MainView")
+            //    && m_instances.Count > 1)
+            //{
+            //    if (m_instances.Count <= 2)
+            //    {
+            //        result = m_instances[1];
+            //    }
+            //    else if (m_instances.Count == 4)
+            //    {
+            //        result = m_instances[3];
+            //    }
+            //}
+
+            //If we get here, this is really an error. Do not throw it in the user's face right now
+            return result;
         }
 
         public IList<ImageData> Pictures
@@ -148,20 +153,33 @@ namespace ActivityPicturePlugin.UI.MapLayers
                         south -= lat;
                         east += lng;
                         west -= lng;
-                        GPSBounds area = new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
-                        this.MapControl.SetLocation(area.Center,
-                          this.MapControl.ComputeZoomToFit(area));
+                        IGPSBounds area = new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
+                        DoZoom(area);
                     }
                 }
                     m_SelectedPictures = value;
             }
         }
 
-        public void Refresh()
+        public void DoZoom(IGPSBounds area)
         {
-            //Should not be necessary in ST3, updated when needed
-            RefreshOverlays(); 
+            if (area != null)
+            {
+                this.MapControl.SetLocation(area.Center,
+                this.MapControl.ComputeZoomToFit(area));
+                if (m_reportMapInstance >= 0)
+                {
+                    m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
+                    m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                }
+            }
         }
+
+        //public void Refresh()
+        //{
+        //    //Should not be necessary in ST3, updated when needed
+        //    RefreshOverlays(); 
+        //}
         public bool ShowPage
         {
             get { return _showPage; }
@@ -301,6 +319,15 @@ namespace ActivityPicturePlugin.UI.MapLayers
             ClearOverlays();
             MapControl.AddOverlays(addedOverlays);
             pointOverlays = newPointOverlays;
+            if (m_reportMapInstance >= 0)
+            {
+                try
+                {
+                    //Remove overlays are not working properly, the Map is not very usable
+                    m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
+                }catch(Exception){}
+                m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
+            }
         }
 
         //MapMarkers must be converted to ImageData (or ImageData implement MapMarker)
@@ -319,6 +346,10 @@ namespace ActivityPicturePlugin.UI.MapLayers
             //((MapMarker)pointOverlays[location.GpsPoint]).DoubleClick -= new MouseEventHandler(pointOverlay_DoubleClick);
             MapControl.RemoveOverlays(pointOverlays.Values);
             pointOverlays.Clear();
+            if (m_reportMapInstance >= 0)
+            {
+                m_instances[m_reportMapInstance].ClearOverlays();
+            }
         }
 
         private bool m_scalingChanged = false;
@@ -331,6 +362,8 @@ namespace ActivityPicturePlugin.UI.MapLayers
         private IList<ImageData> m_Pictures = new List<ImageData>();
         private IList<ImageData> m_SelectedPictures = new List<ImageData>();
         private static bool _showPage;
+        private int m_reportMapInstance = -1;
+        private static IList<PicturesLayer> m_instances = new List<PicturesLayer>(3);
     }
 }
 #endif

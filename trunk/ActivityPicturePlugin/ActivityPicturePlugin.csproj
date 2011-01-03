@@ -9,6 +9,9 @@
     <PluginId>1a0840b9-1d83-4845-ada9-b0c0a6959f40</PluginId>
   </PropertyGroup>
   <Import Project="..\Common\Common-References.csproj" />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);ACTIVITYPICTURESPLUGIN</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
   </ItemGroup>
@@ -83,6 +86,7 @@
       <DependentUpon>ImportControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MapLayers\RouteControlLayerBase.cs" />
+    <Compile Include="UI\MapLayers\PicturesProvider.cs" />
     <Compile Include="UI\MapLayers\PicturesLayer.cs" />
     <Compile Include="Utils\GPS.cs" />
   </ItemGroup>

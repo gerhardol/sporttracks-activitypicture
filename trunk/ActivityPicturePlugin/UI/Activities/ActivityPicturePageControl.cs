@@ -43,11 +43,28 @@ using ActivityPicturePlugin.UI.MapLayers;
 //Copy list text, including ref path?
 //Migration of paths
 //Migration of thumbnails 2->3
+//Albumview is blank
+//Zoom when clicking picture in List view?
+//Click on pictures in Route: open imageviewer?
+//Reports view: No display of pictures (map layer is synced with Trails after the feature was added there, but something is missing?)
 
 namespace ActivityPicturePlugin.UI.Activities
 {
     public partial class ActivityPicturePageControl : UserControl
     {
+#if !ST_2_1
+        public ActivityPicturePageControl(IDetailPage detailPage, IDailyActivityView view)
+           : this()
+        {
+            //m_DetailPage = detailPage;
+            m_view = view;
+            //if (m_DetailPage != null)
+            //{
+            //    expandButton.Visible = true;
+            //}
+            layer = PicturesLayer.Instance((IView)view);
+        }
+#endif
         public ActivityPicturePageControl()
         {
             InitializeComponent();
@@ -88,9 +105,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         public static PluginSettings PluginSettingsData = new PluginSettings();
 #if !ST_2_1
         //private IDetailPage m_DetailPage = null;
-        //private IDailyActivityView m_view = null;
-        private PicturesProvider m_PicturesProvider = PicturesProvider.Instance;
-        private PicturesLayer layer { get { return (PicturesLayer)m_PicturesProvider.RouteControlLayer; } }
+        private IDailyActivityView m_view = null;
+        private PicturesLayer layer = null;
 #endif
         #endregion
 
