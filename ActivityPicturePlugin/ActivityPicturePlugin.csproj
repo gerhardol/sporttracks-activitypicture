@@ -116,6 +116,14 @@
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resources.it.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Resources.sv.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
