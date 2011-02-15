@@ -319,10 +319,11 @@ namespace com.drew.metadata.exif
                 int offset = exifDirectory.GetInt(ExifDirectory.TAG_THUMBNAIL_OFFSET);
                 int length = exifDirectory.GetInt(ExifDirectory.TAG_THUMBNAIL_LENGTH);
                 byte[] result = new byte[length];
-                for (int i = 0; i < result.Length; i++)
-                {
-                    result[i] = base.data[tiffHeaderOffset + offset + i];
-                }
+                Buffer.BlockCopy(base.data, tiffHeaderOffset + offset, result, 0, length);
+                //for (int i = 0; i < result.Length; i++)
+                //{
+                //    result[i] = base.data[tiffHeaderOffset + offset + i];
+                //}
                 exifDirectory.SetObject(ExifDirectory.TAG_THUMBNAIL_DATA, result);
             }
             catch (Exception e)
@@ -655,7 +656,7 @@ namespace com.drew.metadata.exif
                 Trace.TraceInformation("Found a Minolta directory, will use Olympus directory.");
                 // Cases seen with the model starting with MINOLTA in capitals seem to have a valid Olympus makernote
                 // area that commences immediately.
-                ProcessDirectory(this.metadata.GetDirectory("com.drew.metadata.exif. OlympusDirectory"), processedDirectoryOffsets, subdirOffset, tiffHeaderOffset);
+                ProcessDirectory(this.metadata.GetDirectory("com.drew.metadata.exif.OlympusDirectory"), processedDirectoryOffsets, subdirOffset, tiffHeaderOffset);
             }
             else if ("KC".Equals(firstTwoChars) || "MINOL".Equals(firstFiveChars) || "MLY".Equals(firstThreeChars) || "+M+M+M+M".Equals(firstEightChars))
             {
