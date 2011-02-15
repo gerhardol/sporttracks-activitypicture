@@ -1060,43 +1060,51 @@ namespace ActivityPicturePlugin.Helper
             }
 
         public String GPSLatitudeReference
-            {
+        {
             get
-                {
+            {
                 return this.GetPropertyString((int)(TagNames.GpsLatitudeRef));
-                }
             }
+        }
         public String GPSLongitudeReference
-            {
+        {
             get
-                {
+            {
                 return this.GetPropertyString((int)(TagNames.GpsLongitudeRef));
+            }
+        }
+        public double GPSLatitude
+        {
+            get
+            {
+                try
+                {
+                    byte[] val = this.GetProperty((int)(TagNames.GpsLatitude), new byte[0]);
+                    byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLatitudeRef), new byte[0]);
+                    if (val.Length != 0)
+                    {
+                        int northing = 1;
+                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('S'))
+                        {
+                            northing = -1;
+                        }
+                        return northing * Functions.GetGPSDoubleValue(val);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                catch (Exception)
+                {
+                    return 0;
                 }
             }
-        public double GPSLatitude
-            {
-            get
-                {
-                try
-                    {
-                    byte[] val = this.GetProperty((int)(TagNames.GpsLatitude), new byte[0]);
-                    if (val.Length != 0)
-                        {
-                        return Functions.GetGPSDoubleValue(val);
-                        }
-                    else return 0;
-                    }
-                catch (Exception)
-                    {
-                    return 0;
-                    }
-                }
             set
-                {
-
+            {
                 //Set Latitude
                 byte[] val = new byte[24];
-                val = Functions.GetGPSByteValue(value);
+                val = Functions.GetGPSByteValue(Math.Abs(value));
                 SetProperty((int)(TagNames.GpsLatitude), val, ExifDataTypes.SignedRational);
 
                 //Set coordinate reference (North - South)
@@ -1106,31 +1114,41 @@ namespace ActivityPicturePlugin.Helper
                 else
                     coordRefByte[0] = Convert.ToByte('S');
                 SetProperty((int)TagNames.GpsLatitudeRef, coordRefByte, ExifDataTypes.AsciiString);
+            }
+        }
+
+        public double GPSLongitude
+        {
+            get
+            {
+                try
+                {
+                    byte[] val = this.GetProperty((int)(TagNames.GpsLongitude), new byte[0]);
+                    byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLongitudeRef), new byte[0]);
+                    if (val.Length != 0)
+                    {
+                        int easting = 1;
+                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('W'))
+                        {
+                            easting = -1;
+                        }
+                        return easting * Functions.GetGPSDoubleValue(val);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                catch (Exception)
+                {
+                    return 0;
                 }
             }
-        public double GPSLongitude
-            {
-            get
-                {
-                try
-                    {
-                    byte[] val = this.GetProperty((int)(TagNames.GpsLongitude), new byte[0]);
-                    if (val.Length != 0)
-                        {
-                        return Functions.GetGPSDoubleValue(val);
-                        }
-                    else return 0;
-                    }
-                catch (Exception)
-                    {
-                    return 0;
-                    }
-                }
             set
-                {
+            {
                 //Set Longitude
                 byte[] val = new byte[24];
-                val = Functions.GetGPSByteValue(value);
+                val = Functions.GetGPSByteValue(Math.Abs(value));
                 SetProperty((int)(TagNames.GpsLongitude), val, ExifDataTypes.SignedRational);
 
                 //Set coordinate reference (East - West)
@@ -1140,9 +1158,8 @@ namespace ActivityPicturePlugin.Helper
                 else
                     coordRefByte[0] = Convert.ToByte('W');
                 SetProperty((int)TagNames.GpsLongitudeRef, coordRefByte, ExifDataTypes.AsciiString);
-                }
             }
-
+        }
 
         public double GPSAltitude
             {
