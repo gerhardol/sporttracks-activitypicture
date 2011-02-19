@@ -210,7 +210,7 @@ namespace ActivityPicturePlugin.Helper
                     Graphics g = this.panel1.CreateGraphics();
                     for (int i = 0; i <= this.ImageList.Count - 1; i++)
                     {
-                        if ((this.ImageList[i].ReferenceIDPath != null))
+                        if ((this.ImageList[i].ThumbnailPath != null))
                         {
                             if (NoThumbNails) img = new Bitmap(this.ImageList[i].PhotoSource);
                             else img = this.ImageList[i].EW.GetBitmap();

@@ -300,7 +300,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                 }
                 else
                 {
-                    string path = Functions.GetBestImage(location.PhotoSource, location.ReferenceID);
+                    string path = location.ThumbnailPath;// Functions.GetBestImage(location.PhotoSource, location.ReferenceID);
                     if (null != path)
                     {
                         Size iconSize = new Size(15, 15);

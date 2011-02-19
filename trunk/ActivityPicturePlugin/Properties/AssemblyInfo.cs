@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ActivityPicturePlugin")]
-[assembly: AssemblyCopyright("Copyright 2009")]
+[assembly: AssemblyCopyright("Copyright 2009, 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.2.35.*")]
+[assembly: AssemblyVersion("1.2.36.*")]
 [assembly: AssemblyFileVersion("1.2")]
