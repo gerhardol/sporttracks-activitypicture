@@ -686,9 +686,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             //this.CurrentReferenceID = this.this.pictureAlbumView.ImageList[e.RowIndex].ReferenceID;
         }
 
-
-
-
         private void panel1_Resize(object sender, EventArgs e)
         {
             if (this.Mode == ShowMode.Album)
@@ -700,7 +697,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         private void pictureListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.Mode == ShowMode.Import) ReloadData();
+            if (this.Mode == ShowMode.Import)
+            {
+                ReloadData();
+            }
             this.Mode = ShowMode.List;
             UpdateView();
         }
@@ -710,7 +710,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         }
         private void pictureAlbumToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.Mode == ShowMode.Import) ReloadData();
+            if (this.Mode == ShowMode.Import)
+            {
+                ReloadData();
+            }
             this.Mode = ShowMode.Album;
             UpdateView();
         }
@@ -970,7 +973,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 if (id.Type == ImageData.DataTypes.Image)
                 {
                     if (System.IO.File.Exists(id.PhotoSource)) Functions.GeoTagWithActivity(id.PhotoSource, this._Activity);
-                    if (System.IO.File.Exists(id.ReferenceIDPath)) Functions.GeoTagWithActivity(id.ReferenceIDPath, this._Activity);
+                    if (System.IO.File.Exists(id.ThumbnailPath)) Functions.GeoTagWithActivity(id.ThumbnailPath, this._Activity);
                 }
             }
             Functions.ClearImageList(this.pictureAlbumView);

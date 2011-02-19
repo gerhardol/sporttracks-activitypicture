@@ -153,7 +153,7 @@ namespace ActivityPicturePlugin.Helper
                         }
                         else
                         {
-                            KMZfilesource = id.ReferenceIDPath;
+                            KMZfilesource = id.ThumbnailPath;
                             KMZstyle = "Photo";
                             KMZLink = " href='file://" + id.PhotoSource + "'>";
                         }
@@ -385,7 +385,7 @@ namespace ActivityPicturePlugin.Helper
                             }
                             else
                             {
-                                KMZfilesource = id.ReferenceIDPath;
+                                KMZfilesource = id.ThumbnailPath;
                                 KMZstyle = "Photo";
                                 KMZLink = " href='file://" + id.PhotoSource + "'>";
                             }
@@ -526,7 +526,7 @@ namespace ActivityPicturePlugin.Helper
             //minsize<=150 or original image not found
             if (bmp == null)
             {
-                bmp = new Bitmap(id.ReferenceIDPath);
+                bmp = new Bitmap(id.ThumbnailPath);
             }
 
             int Swidth, Sheight;
@@ -989,7 +989,7 @@ namespace ActivityPicturePlugin.Helper
                 if (CreateThumbnail)
                 {
                     ID.SetThumbnail();
-                    ID.EW = new ExifWorks(ID.ReferenceIDPath);
+                    ID.EW = new ExifWorks(ID.ThumbnailPath);
                 }
                 else
                 {

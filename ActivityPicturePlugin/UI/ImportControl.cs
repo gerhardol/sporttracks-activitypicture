@@ -464,7 +464,7 @@ namespace ActivityPicturePlugin.UI
                                 this.listViewAct.Items.Add(lvi);
 
                                 //images (large and small icons)
-                                Image img = Image.FromFile(id.ReferenceIDPath);
+                                Image img = Image.FromFile(id.ThumbnailPath);
                                 lil.Images.Add(Functions.getThumbnailWithBorder(lil.ImageSize.Width, img));
                                 lis.Images.Add(Functions.getThumbnailWithBorder(lis.ImageSize.Width, img));
                                 img.Dispose();

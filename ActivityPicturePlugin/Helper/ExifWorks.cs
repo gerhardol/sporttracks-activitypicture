@@ -1,6 +1,3 @@
-using System.IO;
-using System;
-using Microsoft.VisualBasic;
 /*
 Copyright (C) 2008 Dominik Laufer
 
@@ -18,6 +15,10 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.IO;
+using System;
+using Microsoft.VisualBasic;
+
 namespace ActivityPicturePlugin.Helper
     {
     public class ExifWorks : System.IDisposable
@@ -30,7 +31,7 @@ namespace ActivityPicturePlugin.Helper
             try
                 {
                 //added doml 2007: with this way, the file is not locked and may be modified/deleted later
-                System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open);
+                System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
                 BinaryReader Reader = new BinaryReader(ImageFile);
                 MemoryStream ImageStream = new MemoryStream(Reader.ReadBytes((int)ImageFile.Length));
                 Reader.Close();
@@ -1077,28 +1078,26 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
+                double result = 0;
                 try
                 {
                     byte[] val = this.GetProperty((int)(TagNames.GpsLatitude), new byte[0]);
                     byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLatitudeRef), new byte[0]);
                     if (val.Length != 0)
                     {
-                        int northing = 1;
-                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('S'))
+                        result = Functions.GetGPSDoubleValue(val);
+                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('S') &&
+                            //Compatibility with pre svn 35
+                            result > 0)
                         {
-                            northing = -1;
+                            result *= -1;
                         }
-                        return northing * Functions.GetGPSDoubleValue(val);
-                    }
-                    else
-                    {
-                        return 0;
                     }
                 }
                 catch (Exception)
                 {
-                    return 0;
                 }
+                return result;
             }
             set
             {
@@ -1121,28 +1120,26 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
+                double result = 0;
                 try
                 {
                     byte[] val = this.GetProperty((int)(TagNames.GpsLongitude), new byte[0]);
                     byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLongitudeRef), new byte[0]);
                     if (val.Length != 0)
                     {
-                        int easting = 1;
-                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('W'))
+                        result = Functions.GetGPSDoubleValue(val);
+                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('W') &&
+                            //Compatibility with pre svn 35
+                            result > 0)
                         {
-                            easting = -1;
+                            result *= -1;
                         }
-                        return easting * Functions.GetGPSDoubleValue(val);
-                    }
-                    else
-                    {
-                        return 0;
                     }
                 }
                 catch (Exception)
                 {
-                    return 0;
                 }
+                return result;
             }
             set
             {

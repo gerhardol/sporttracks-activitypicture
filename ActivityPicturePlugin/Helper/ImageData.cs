@@ -46,7 +46,7 @@ namespace ActivityPicturePlugin.Helper
                 // this.ThumbnailStoreLocation = StoreLocation.WebFiles;
                 if (this.type == DataTypes.Video) this.SetVideoThumbnail();
                 else this.SetThumbnail();
-                this.EW = new ExifWorks(this.ReferenceIDPath);
+                this.EW = new ExifWorks(this.ThumbnailPath);
                 this.Ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
             }
             catch (Exception)
@@ -379,7 +379,7 @@ namespace ActivityPicturePlugin.Helper
                 return kml;
             }
         }
-        public string ReferenceIDPath
+        public string ThumbnailPath
         {
             get
             {
@@ -488,9 +488,9 @@ namespace ActivityPicturePlugin.Helper
                 }
 
                 //Save Exif data to the webfiles image
-                this.EW.GetBitmap().Save(this.ReferenceIDPath);
+                this.EW.GetBitmap().Save(this.ThumbnailPath);
                 this.EW.Dispose();
-                this.EW = new ExifWorks(this.ReferenceIDPath);
+                this.EW = new ExifWorks(this.ThumbnailPath);
             }
             catch (Exception)
             {
@@ -521,7 +521,7 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 Bitmap bmp;
-                string defpath = this.ReferenceIDPath;
+                string defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
                 if (System.IO.File.Exists(defpath))
@@ -561,7 +561,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 Bitmap bmp;
                 string defpath = "";
-                defpath = this.ReferenceIDPath;
+                defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
                 if (System.IO.File.Exists(defpath))
