@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.UI.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals;
@@ -421,7 +422,7 @@ namespace ActivityPicturePlugin.UI
             {
                 this.listViewAct.Items.Clear();
                 IActivity act = (IActivity)(tn.Tag);
-                ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(act);
+                PluginData data = Helper.Functions.ReadExtensionData(act);
 
                 if (data.Images.Count > 0)
                 {
@@ -673,7 +674,7 @@ namespace ActivityPicturePlugin.UI
                                 if (FileTime > CurrentActivity.StartTime.ToLocalTime())
                                 {
                                     //the picture has been taken during the activity
-                                    ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
+                                    PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
 
                                     //Check if Image does already exist in the current activity
                                     if (!ImageAlreadyExistsInActivity(file.Name, data))
@@ -704,7 +705,7 @@ namespace ActivityPicturePlugin.UI
                                 if (FileTime > GetActivityEndTime(act)) continue;
 
                                 // if the code comes here, the picture should have been taken during the activity!
-                                ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(act);
+                                PluginData data = Helper.Functions.ReadExtensionData(act);
 
                                 //Check if Image does already exist in the current activity
                                 if (!ImageAlreadyExistsInActivity(file.Name, data))
@@ -731,7 +732,7 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private static bool ImageAlreadyExistsInActivity(string fileName, ActivityPicturePlugin.UI.Activities.PluginData data)
+        private static bool ImageAlreadyExistsInActivity(string fileName, PluginData data)
         {
             if (data.Images.Count != 0)
             {
@@ -875,7 +876,7 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 IActivity act = (IActivity)(this.treeViewActivities.SelectedNode.Tag);
-                ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(act);
+                PluginData data = Helper.Functions.ReadExtensionData(act);
 
                 //Check if Image does already exist in the current activity
                 foreach (ListViewItem lvi in lvisel)
@@ -1082,7 +1083,7 @@ namespace ActivityPicturePlugin.UI
                 case Keys.Back:
                     //Delete selected images
                     IActivity act = (IActivity)(this.treeViewActivities.SelectedNode.Tag);
-                    ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(act);
+                    PluginData data = Helper.Functions.ReadExtensionData(act);
                     List<string> idList = new List<string>();
                     foreach (ListViewItem lvi in this.listViewAct.SelectedItems)
                     {
@@ -1127,7 +1128,7 @@ namespace ActivityPicturePlugin.UI
             foreach (TreeNode n in node.Nodes)
             {
                 IActivity a = (IActivity)(n.Tag);
-                ActivityPicturePlugin.UI.Activities.PluginData d = Helper.Functions.ReadExtensionData(a);
+                PluginData d = Helper.Functions.ReadExtensionData(a);
                 if (d.Images.Count != 0)
                 {
                     foundimages = true;
@@ -1143,7 +1144,7 @@ namespace ActivityPicturePlugin.UI
                 string id = (string)(listViewAct.FocusedItem.Tag);
                 string photosource = "";
                 IActivity act = (IActivity)(this.treeViewActivities.SelectedNode.Tag);
-                ActivityPicturePlugin.UI.Activities.PluginData data = Helper.Functions.ReadExtensionData(act);
+                PluginData data = Helper.Functions.ReadExtensionData(act);
 
                 foreach (ImageDataSerializable ids in data.Images)
                 {

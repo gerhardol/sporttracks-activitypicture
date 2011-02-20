@@ -21,6 +21,7 @@ using System.Text;
 using System.Drawing;
 using QuartzTypeLib;
 using ActivityPicturePlugin.UI.Activities;
+using ActivityPicturePlugin.UI.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
 using System.IO;
@@ -798,7 +799,7 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        public static ActivityPicturePlugin.UI.Activities.PluginData ReadExtensionData(ZoneFiveSoftware.Common.Data.Fitness.IActivity act)
+        public static PluginData ReadExtensionData(ZoneFiveSoftware.Common.Data.Fitness.IActivity act)
         {
             try
             {

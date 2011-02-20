@@ -40,17 +40,14 @@
     </Compile>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Resources\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings\ExtendSettingsPages.cs" />
+    <Compile Include="Settings\PluginData.cs" />
+    <Compile Include="Settings\PluginSettings.cs" />
     <Compile Include="Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -153,13 +150,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>ImportControl.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\DataSources\ActivityPicturePlugin.UI.Activities.ImageData.datasource" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="QuartzTypeLib">
