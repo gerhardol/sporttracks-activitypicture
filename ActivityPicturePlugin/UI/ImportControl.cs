@@ -25,7 +25,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using ActivityPicturePlugin.Helper;
-using ActivityPicturePlugin.UI.Settings;
+using ActivityPicturePlugin.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals;

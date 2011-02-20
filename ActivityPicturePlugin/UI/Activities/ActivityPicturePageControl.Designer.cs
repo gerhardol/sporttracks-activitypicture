@@ -192,7 +192,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 this.dataGridViewImages.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellDoubleClick);
                 this.dataGridViewImages.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewImages_ColumnHeaderMouseClick);
                 this.dataGridViewImages.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewImages_DataError);
-                this.dataGridViewImages.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellEnter);
+                //this.dataGridViewImages.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellEnter);
                 this.dataGridViewImages.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridViewImages_RowsRemoved);
                 this.dataGridViewImages.SelectionChanged += new System.EventHandler(this.dataGridViewImages_SelectionChanged);
                 // 
@@ -312,7 +312,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 this.pictureAlbumView.Load += new System.EventHandler(this.pictureAlbumView_Load);
                 this.pictureAlbumView.ShowVideoOptions += new ActivityPicturePlugin.Helper.PictureAlbum.ShowVideoOptionsEventHandler(this.pictureAlbumView_ShowVideoOptions);
                 this.pictureAlbumView.ZoomChange += new ActivityPicturePlugin.Helper.PictureAlbum.ZoomChangeEventHandler(this.pictureAlbumView_ZoomChange);
-                this.pictureAlbumView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureAlbum1_MouseClick);
+                //this.pictureAlbumView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureAlbum1_MouseClick);
                 this.pictureAlbumView.UpdateVideoToolBar += new ActivityPicturePlugin.Helper.PictureAlbum.UpdateVideoToolBarEventHandler(this.pictureAlbumView_UpdateVideoToolBar);
                 this.pictureAlbumView.ActivityChanged += new ActivityPicturePlugin.Helper.PictureAlbum.ActivityChangedEventHandler(this.pictureAlbumView_ActivityChanged);
                 // 
