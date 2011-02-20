@@ -21,7 +21,7 @@ using System.Text;
 using System.Drawing;
 using QuartzTypeLib;
 using ActivityPicturePlugin.UI.Activities;
-using ActivityPicturePlugin.UI.Settings;
+using ActivityPicturePlugin.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
 using System.IO;

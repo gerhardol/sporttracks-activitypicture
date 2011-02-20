@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Collections;
 using ActivityPicturePlugin.Helper;
 
-namespace ActivityPicturePlugin.UI.Settings
+namespace ActivityPicturePlugin.Settings
 {
     //data that will be serialized and saved with SetExtensionData
     [Serializable()]
