@@ -175,23 +175,33 @@ namespace ActivityPicturePlugin.UI.MapLayers
             }
         }
 
-        //public void Refresh()
-        //{
-        //    //Should not be necessary in ST3, updated when needed
-        //    RefreshOverlays(); 
-        //}
-        public bool ShowPage
+        public float PictureSize
         {
-            get { return _showPage; }
             set
             {
-                bool changed = (value != _showPage);
-                _showPage = value;
-                if (changed)
+                if (m_pictureSize != value)
                 {
-                    RefreshOverlays(true);
+                    m_scalingChanged = true;
                 }
+                //Keep scaling here for now
+                m_pictureSize = 3*value;
             }
+        }
+        public void Refresh()
+        {
+            //Should not be necessary in ST3, updated when needed
+            RefreshOverlays();
+        }
+        public bool HidePage()
+        {
+            _showPage = false;
+            RefreshOverlays(true);
+            return true;
+        }
+        public void ShowPage(string bookmark)
+        {
+            _showPage = true;
+            RefreshOverlays(true);
         }
 
         /*************************************************************/
@@ -303,12 +313,12 @@ namespace ActivityPicturePlugin.UI.MapLayers
                     string path = location.ThumbnailPath;// Functions.GetBestImage(location.PhotoSource, location.ReferenceID);
                     if (null != path)
                     {
-                        Size iconSize = new Size(15, 15);
+                        Size iconSize = new Size((int)m_pictureSize, (int)(m_pictureSize/location.Ratio));
                         string fileURL = "file://" + path;
                         m_icon = new MapIcon(fileURL, iconSize);
 
                         MapMarker pointOverlay = new MapMarker(location.GpsPoint, m_icon, false);
-                        //pointOverlay.DoubleClick += new MouseEventHandler(pointOverlay_DoubleClick);
+                        //pointOverlay.DoubleClick +=new MouseEventHandler(pointOverlay_DoubleClick);
                         newPointOverlays.Add(location.GpsPoint, pointOverlay);
                         addedOverlays.Add(pointOverlay);
                         m_scalingChanged = false;
@@ -329,6 +339,12 @@ namespace ActivityPicturePlugin.UI.MapLayers
                 m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
             }
         }
+
+        //Does not seem to be called
+        //void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         //MapMarkers must be converted to ImageData (or ImageData implement MapMarker)
         //void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
@@ -361,6 +377,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
         private IList<ImageData> m_Pictures = new List<ImageData>();
         private IList<ImageData> m_SelectedPictures = new List<ImageData>();
+        private float m_pictureSize;
         private static bool _showPage;
         private int m_reportMapInstance = -1;
         private static IList<PicturesLayer> m_instances = new List<PicturesLayer>(3);
