@@ -27,35 +27,31 @@ namespace ActivityPicturePlugin.Helper
         private System.Text.Encoding _Encoding = System.Text.Encoding.Default;
 
         public ExifWorks(string FileName)
-            {
+        {
             try
-                {
-                //added doml 2007: with this way, the file is not locked and may be modified/deleted later
-                System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            {
+                //the file is not locked and may be modified/deleted later
+                System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 BinaryReader Reader = new BinaryReader(ImageFile);
                 MemoryStream ImageStream = new MemoryStream(Reader.ReadBytes((int)ImageFile.Length));
                 Reader.Close();
                 _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream(ImageStream);
-                //end addition doml 2007
-
-                //original code:
-                //Me._Image = DirectCast(System.Drawing.Bitmap.FromFile(FileName), System.Drawing.Bitmap)
-                }
-            catch (Exception ex)
-                {
-                Console.WriteLine(ex.Message);
-                }
-
             }
-        public System.Drawing.Bitmap GetBitmap()
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+        public System.Drawing.Bitmap GetBitmap()
+        {
             if (this._Image != null)
-                {
+            {
                 return (System.Drawing.Bitmap)this._Image.Clone();
-                }
+            }
             else
             { return null; }
-            }
+        }
 
         #region " Type declarations "
         public enum TagNames : int

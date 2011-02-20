@@ -33,11 +33,6 @@ namespace ActivityPicturePlugin.Settings
         {
             InitializeComponent();
 
-            //localization
-            this.groupBoxImport.Text = CommonResources.Text.ActionImport;
-            this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
-            this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
-
             trackBarQuality.Value = ActivityPicturePageControl.PluginSettingsData.data.Quality;
             trackBarSize.Value = ActivityPicturePageControl.PluginSettingsData.data.Size;
             lblSizeValue.Text = trackBarSize.Value * baseNum + " x " + trackBarSize.Value * baseNum * 3 / 4;
