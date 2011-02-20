@@ -32,7 +32,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ActivityPicturePlugin.Helper;
-using ActivityPicturePlugin.UI.Settings;
+using ActivityPicturePlugin.Settings;
 #if !ST_2_1
 using ActivityPicturePlugin.UI.MapLayers;
 #endif
@@ -60,7 +60,7 @@ namespace ActivityPicturePlugin.UI.Activities
             //{
             //    expandButton.Visible = true;
             //}
-            layer = PicturesLayer.Instance((IView)view);
+            m_layer = PicturesLayer.Instance((IView)view);
         }
 #endif
         public ActivityPicturePageControl()
@@ -104,7 +104,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 #if !ST_2_1
         //private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
-        private PicturesLayer layer = null;
+        private PicturesLayer m_layer = null;
 #endif
         #endregion
 
@@ -159,7 +159,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             _showPage = false;
 #if !ST_2_1
-            layer.ShowPage = false;
+            m_layer.HidePage();
 #endif
             return false;
         }
@@ -169,9 +169,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             //RefreshData();
             _showPage = true;
 #if !ST_2_1
-            layer.ShowPage = true;
+            m_layer.ShowPage("");
 #endif
         }
+
         ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
         public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
         {
@@ -214,6 +215,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.ForeColor = visualTheme.SubHeaderText;
         }
+
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             //change number formats
@@ -263,6 +265,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
             this.importControl1.UpdateUICulture(culture);
         }
+
         private void UpdateView()
         {
             try
@@ -331,9 +334,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     }
                     this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
 #if !ST_2_1
-                    layer.ShowPage = false; //defer updates
-                    layer.Pictures = this.pictureAlbumView.ImageList;
-                    layer.ShowPage = _showPage;//Refresh
+                    m_layer.HidePage(); //defer updates
+                    this.m_layer.PictureSize = this.trackBarImageSize.Value;
+                    m_layer.Pictures = this.pictureAlbumView.ImageList;
+                    m_layer.ShowPage("");//Refresh
 #endif
                 }
                 else
@@ -679,10 +683,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         }
 
 
-        private void dataGridViewImages_CellEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            //this.CurrentReferenceID = this.this.pictureAlbumView.ImageList[e.RowIndex].ReferenceID;
-        }
+        //private void dataGridViewImages_CellEnter(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    //this.CurrentReferenceID = this.this.pictureAlbumView.ImageList[e.RowIndex].ReferenceID;
+        //}
 
         private void panel1_Resize(object sender, EventArgs e)
         {
@@ -774,7 +778,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 }
                 //TODO: Or use zoom button
 #if !ST_2_1
-                layer.SelectedPictures = selImages;
+                m_layer.SelectedPictures = selImages;
 #endif
                 SelRows = null;
             }
@@ -801,17 +805,20 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             if (this.Mode == ShowMode.Album)
             {
                 //this.pictureAlbumView.Invalidate();
+                //this.trackBarImageSize.Value
                 TrackBar tb = (TrackBar)(sender);
                 this.pictureAlbumView.Zoom = tb.Value;
                 this.pictureAlbumView.PaintAlbumView(false);
+                this.m_layer.PictureSize = tb.Value;
+                this.m_layer.Refresh();
             }
         }
 
 
-        private void pictureAlbum1_MouseClick(object sender, MouseEventArgs e)
-        {
+        //private void pictureAlbum1_MouseClick(object sender, MouseEventArgs e)
+        //{
 
-        }
+        //}
 
         //private void btnImpDir_Click(object sender, EventArgs e)
         //    {
