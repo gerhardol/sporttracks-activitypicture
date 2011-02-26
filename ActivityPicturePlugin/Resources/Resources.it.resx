@@ -61,64 +61,64 @@
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ActivityPicturePage_Title" xml:space="preserve">
     <comment>changed</comment>
-    <value>Imágenes</value>
+    <value>Foto dell'attività</value>
   </data>
   <data name="btnCollapseAll_Text" xml:space="preserve">
-    <value>Contraer Todo</value>
+    <value>Comprimi tutto</value>
   </data>
   <data name="btnExpandAll_Text" xml:space="preserve">
-    <value>Expandir Todo</value>
+    <value>Espandi tutto</value>
   </data>
   <data name="btnGeoTag_Text" xml:space="preserve">
     <value>Geotag</value>
   </data>
   <data name="btnKML_Text" xml:space="preserve">
-    <value>Exportar a Google Earth</value>
+    <value>Esporta in Google Earth</value>
   </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
-    <value>Compensar tiempo</value>
+    <value>Offset di tempo</value>
   </data>
   <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Comentario</value>
+    <value>Commento</value>
   </data>
   <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Modelo de Cámara</value>
+    <value>Modello di macchina fotografica</value>
   </data>
   <data name="GoogleEarthExport_Title" xml:space="preserve">
-    <value>Imágenes a Google Earth</value>
+    <value>Foto in Google Earth</value>
   </data>
   <data name="goupBoxListOptions_Text" xml:space="preserve">
-    <value>Opciones (imágenes seleccionadas)</value>
+    <value>Opzioni (per le foto selezionate)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">
     <value>Video</value>
   </data>
   <data name="ImportControl_addingFile" xml:space="preserve">
-    <value>Agregar archivo</value>
+    <value>Aggiungere file</value>
   </data>
   <data name="ImportControl_changeView" xml:space="preserve">
     <value>Vista</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
-    <value>Importando imágenes</value>
+    <value>Importare foto</value>
   </data>
   <data name="ImportControl_in" xml:space="preserve">
-    <value>en</value>
+    <value>in</value>
   </data>
   <data name="ImportControl_scanning" xml:space="preserve">
-    <value>Búsqueda de</value>
+    <value>Scansione di</value>
   </data>
   <data name="ImportControl_searchingActivity" xml:space="preserve">
-    <value>Buscando concordancia de actividades para</value>
+    <value>Ricerca di attività corrispondenti per</value>
   </data>
   <data name="labelImageSize_Text" xml:space="preserve">
-    <value>Tamaño de imagen</value>
+    <value>Dimensione</value>
   </data>
   <data name="photoSourceDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Fuente de imagen</value>
+    <value>Origine della foto</value>
   </data>
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
-    <value>Álbum</value>
+    <value>Raccolta</value>
   </data>
   <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>ReferenceID</value>
@@ -127,16 +127,16 @@
     <value>Miniatura</value>
   </data>
   <data name="titleDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Titulo</value>
+    <value>Titolo</value>
   </data>
   <data name="toolStripButtonPause_ToolTipText" xml:space="preserve">
     <value>Pausa</value>
   </data>
   <data name="toolStripButtonPlay_ToolTipText" xml:space="preserve">
-    <value>Iniciar</value>
+    <value>Play</value>
   </data>
   <data name="toolStripButtonStop_ToolTipText" xml:space="preserve">
-    <value>Detener</value>
+    <value>Stop</value>
   </data>
   <data name="TypeImage_HeaderText" xml:space="preserve">
     <value>Tipo</value>
@@ -145,15 +145,15 @@
     <value>Waypoint</value>
   </data>
   <data name="ModifyTimeStamp_Text" xml:space="preserve">
-    <value>Concretar Fecha y Hora</value>
+    <value>Imposta la registrazione del momento in cui è stata scattata la foto</value>
   </data>
   <data name="SettingsPageControl_lblQuality_Text" xml:space="preserve">
-    <value>Calidad</value>
+    <value>Qualità</value>
   </data>
   <data name="tooltip_OnlySelectedImages" xml:space="preserve">
-    <value>Sólo imágenes seleccionadas</value>
+    <value>Solo foto selezionate</value>
   </data>
   <data name="ImportControl_scanDone" xml:space="preserve">
-    <value>Búsqueda terminada: un total de {0} imágenes fueron encontrada</value>
+    <value>Scansione effettuata: sono state trovate {0} foto</value>
   </data>
 </root>
