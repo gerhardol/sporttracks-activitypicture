@@ -789,7 +789,7 @@ namespace ActivityPicturePlugin.Helper
                         mem.Close();
                     }
 
-                    ActivityPicturePlugin.Plugin.GetIApplication().Logbook.Modified = true;
+                    ActivityPicturePlugin.Plugin.GetApplication().Logbook.Modified = true;
                 }
             }
             catch (Exception)

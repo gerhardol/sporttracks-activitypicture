@@ -68,7 +68,7 @@ namespace ActivityPicturePlugin
         #endregion
         public static String version;
         
-        public static IApplication GetIApplication()
+        public static IApplication GetApplication()
         {
             return application;
         }

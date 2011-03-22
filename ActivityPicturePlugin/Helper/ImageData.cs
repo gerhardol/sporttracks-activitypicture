@@ -317,7 +317,7 @@ namespace ActivityPicturePlugin.Helper
                     {
                         string GPSString = "";
                         double degLat, minLat, secLat, degLon, minLon, secLon;
-                        switch (Plugin.GetIApplication().SystemPreferences.GPSLocationUnits)
+                        switch (Plugin.GetApplication().SystemPreferences.GPSLocationUnits)
                         {
                             case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
 
@@ -395,7 +395,7 @@ namespace ActivityPicturePlugin.Helper
                     string AltStr = "";
                     //string comAlt = com.SimpleRun.ShowOneFileOnlyTagGPSAltitude(this.PhotoSource);
                     double Alt = ew.GPSAltitude;
-                    switch (Plugin.GetIApplication().SystemPreferences.ElevationUnits)
+                    switch (Plugin.GetApplication().SystemPreferences.ElevationUnits)
                     {
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Centimeter:
                             AltStr = (Alt * 100).ToString("0") + " cm";

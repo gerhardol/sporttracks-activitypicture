@@ -91,7 +91,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         #region Public members
         //TODO: GetFullPath required due to relative paths
-        public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetIApplication().
+        public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().
 #if ST_2_1
             //TODO:
             SystemPreferences.WebFilesFolder+"\\Images\\");
