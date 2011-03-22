@@ -76,7 +76,7 @@ namespace ActivityPicturePlugin.Settings
         {
             get
             {
-                return ActivityPicturePlugin.Plugin.GetIApplication().Logbook;
+                return ActivityPicturePlugin.Plugin.GetApplication().Logbook;
             }
         }
 

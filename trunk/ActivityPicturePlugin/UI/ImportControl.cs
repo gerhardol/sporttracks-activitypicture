@@ -557,7 +557,7 @@ namespace ActivityPicturePlugin.UI
             IEnumerable<IActivity> activities = new List<IActivity>();
             if (this.ShowAllActivities)
             { //add all activities
-                activities = ActivityPicturePlugin.Plugin.GetIApplication().Logbook.Activities;
+                activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
             }
             else
             { //add only current activity
