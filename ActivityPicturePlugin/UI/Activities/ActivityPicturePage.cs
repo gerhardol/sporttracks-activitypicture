@@ -31,7 +31,8 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
-    class ActivityPicturePage: 
+    class ActivityPicturePage: IDisposable,
+
 #if ST_2_1
      IActivityDetailPage
 #else
@@ -190,5 +191,10 @@ namespace ActivityPicturePlugin.UI.Activities
         private bool menuVisible = true;
         private bool pageMaximized = false;
         #endregion
+
+        public void Dispose()
+        {
+            this.control.Dispose();
+        }
     }
 }
