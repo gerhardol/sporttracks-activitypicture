@@ -602,12 +602,12 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             List<string> s = new List<string>();
 
-            IList<IActivity> activities = new List<IActivity>();
+            IEnumerable<IActivity> activities = new List<IActivity>();
             activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
 
-            for ( int i = activities.Count - 1; i >= 0; i-- )
+            foreach(IActivity activity in activities)
             {
-                PluginData data = Helper.Functions.ReadExtensionData( activities[i] );
+                PluginData data = Helper.Functions.ReadExtensionData( activity );
                 if ( data.Images.Count > 0 )
                 {
                     for ( int j = 0; j < data.Images.Count; j++ )
