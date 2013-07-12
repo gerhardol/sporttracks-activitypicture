@@ -33,7 +33,7 @@ namespace ActivityPicturePlugin.UI.Activities
 {
     class ExtendActivityExportActions :
 #if ST_2_1
-    IExtendActivityExportActions
+ IExtendActivityExportActions
 #else
     IExtendDailyActivityViewActions, IExtendActivityReportsViewActions
 #endif
@@ -41,15 +41,15 @@ namespace ActivityPicturePlugin.UI.Activities
 #if ST_2_1
         #region IExtendActivityExportActions Members
 
-        public IList<IAction> GetActions(IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> activities)
-            {
-            return new IAction[] { new TestExportAction(activities) };
-            }
+        public IList<IAction> GetActions( IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> activities )
+        {
+            return new IAction[] { new ActivityPictureExportAction( activities ) };
+        }
 
-        public IList<IAction> GetActions(ZoneFiveSoftware.Common.Data.Fitness.IActivity activity)
-            {
-            return new IAction[] { new TestExportAction(activity) };
-            }
+        public IList<IAction> GetActions( ZoneFiveSoftware.Common.Data.Fitness.IActivity activity )
+        {
+            return new IAction[] { new ActivityPictureExportAction( activity ) };
+        }
 
         #endregion
 #else
@@ -59,7 +59,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if (location == ExtendViewActions.Location.ExportMenu)
             {
-                return new IAction[] { new TestExportAction(view) };
+                return new IAction[] { new ActivityPictureExportAction(view) };
             }
             else return new IAction[0];
         }
@@ -68,7 +68,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if (location == ExtendViewActions.Location.ExportMenu)
             {
-                return new IAction[] { new TestExportAction(view) };
+                return new IAction[] { new ActivityPictureExportAction(view) };
             }
             else return new IAction[0];
         }
@@ -76,39 +76,43 @@ namespace ActivityPicturePlugin.UI.Activities
 #endif
     }
 
-    class TestExportAction : IAction
+    class ActivityPictureExportAction : IAction
     {
 #if !ST_2_1
-        public TestExportAction(IDailyActivityView view)
+        public ActivityPictureExportAction(IDailyActivityView view)
         {
             this.dailyView = view;
         }
-        public TestExportAction(IActivityReportsView view)
+        public ActivityPictureExportAction(IActivityReportsView view)
         {
             this.reportView = view;
         }
 #else
-        public TestExportAction(IActivity act)
-            {
+        public ActivityPictureExportAction( IActivity act )
+        {
             this.title = Resources.Resources.GoogleEarthExport_Title;
-            if (act != null)
-                {
-                if (Helper.Functions.ReadExtensionData(act).Images.Count != 0)
-                    {
-                    this.enabled = true;
-                    activities.Add(act);
-                    }
-                }
-            }
-        public TestExportAction(IList<IActivity> acts)
+            if ( act != null )
             {
-            if (acts.Count > 0)
+                if ( Helper.Functions.ReadExtensionData( act ).Images.Count != 0 )
                 {
-                this.enabled = true;
-                this.title = Resources.Resources.GoogleEarthExport_Title;
-                activities = acts;
+                    this.enabled = true;
+                    if ( activities == null ) activities = new List<IActivity>();
+                    activities.Add( act );
                 }
             }
+        }
+        public ActivityPictureExportAction( IList<IActivity> acts )
+        {
+            if ( acts.Count > 0 )
+            {
+                this.enabled = true;
+                string sNumActivities = "";
+                if ( acts.Count > 1 )
+                    sNumActivities = " " + String.Format( Resources.Resources.FromXActivities_Text, acts.Count );
+                this.title = Resources.Resources.GoogleEarthExport_Title + sNumActivities;
+                activities = acts;
+            }
+        }
 #endif
         #region IAction Members
         private bool enabled = false;
@@ -131,7 +135,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public System.Drawing.Image Image
         {
-            get { return Resources.Resources.GE; }
+            get { return Resources.Resources.GE2; }
         }
 
         public IList<string> MenuPath
@@ -145,7 +149,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
         }
 
-        public void Run(System.Drawing.Rectangle rectButton)
+        public void Run( System.Drawing.Rectangle rectButton )
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.FileName = "";
@@ -153,12 +157,15 @@ namespace ActivityPicturePlugin.UI.Activities
             sfd.AddExtension = true;
             sfd.CheckPathExists = true;
             sfd.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
-            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            sfd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
             DialogResult dres = sfd.ShowDialog();
-            if (dres == DialogResult.OK & sfd.FileName != "")
+            if ( dres == DialogResult.OK && sfd.FileName != "" )
             {
-                Functions.PerformMultipleExportToGoogleEarth(activities, sfd.FileName);
+                Functions.PerformMultipleExportToGoogleEarth( activities, sfd.FileName );
             }
+            if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
+                Functions.OpenExternal( sfd.FileName );
+
         }
 
         public string Title
@@ -169,7 +176,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             get
             {
-                if (!enabled || activities.Count == 0) return false;
+                if ( !enabled || activities.Count == 0 ) return false;
                 return true;
             }
         }
@@ -219,4 +226,3 @@ namespace ActivityPicturePlugin.UI.Activities
         }
     }
 }
-

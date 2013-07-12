@@ -28,13 +28,13 @@ namespace ActivityPicturePlugin.Helper
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        protected override void Dispose( bool disposing )
         {
-            if (disposing && (components != null))
+            if ( disposing && ( components != null ) )
             {
                 components.Dispose();
             }
-            base.Dispose(disposing);
+            base.Dispose( disposing );
         }
 
         #region Component Designer generated code
@@ -49,13 +49,17 @@ namespace ActivityPicturePlugin.Helper
             // 
             // VolumeSlider
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF( 8F, 16F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.DoubleBuffered = true;
+            this.Margin = new System.Windows.Forms.Padding( 4 );
             this.Name = "VolumeSlider";
-            this.Size = new System.Drawing.Size(150, 34);
-            this.Load += new System.EventHandler(this.VolumeSlider_Load);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.VolumeSlider_MouseClick);
-            this.ResumeLayout(false);
+            this.Size = new System.Drawing.Size( 200, 42 );
+            this.Load += new System.EventHandler( this.VolumeSlider_Load );
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseDown );
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseMove );
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseUp );
+            this.ResumeLayout( false );
 
         }
         #endregion

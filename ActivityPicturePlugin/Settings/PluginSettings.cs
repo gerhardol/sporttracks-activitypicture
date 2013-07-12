@@ -28,84 +28,41 @@ namespace ActivityPicturePlugin.Settings
     {
         public class SettingsData
         {
-            public bool Equals(SettingsData sd1)
-            {
-                if (this.quality == sd1.quality &&
-                    this.size == sd1.size &&
-                    this.sortmode == sd1.sortmode)
-                {
-                    return true;
-                }
-                return false;
-            }
-            #region private methods
-            private PictureAlbum.ImageSortMode sortmode = PictureAlbum.ImageSortMode.byDateTimeAscending;
-            private int size = 8;
-            private int quality = 8;
-            public PictureAlbum.ImageSortMode SortMode 
-            {
-                get { return sortmode; }
-                set { sortmode = value; }
-            }
-            public int Quality
-            {
-                get
-                {
-                    return quality;
-                }
-                set
-                {
-                    quality = value;
-                }
-            }
-            public int Size
-            {
-                get
-                {
-                    return size;
-                }
-                set
-                {
-                    size = value;
-                }
-            }
-        }
-        public SettingsData data = new SettingsData();
-        public SettingsData dataRead = new SettingsData(); //data last read from logbook
-        private ZoneFiveSoftware.Common.Data.Fitness.ILogbook log
-        {
-            get
-            {
-                return ActivityPicturePlugin.Plugin.GetApplication().Logbook;
-            }
         }
 
+        #region private
+        private ZoneFiveSoftware.Common.Data.Fitness.ILogbook log
+        {
+            get { return ActivityPicturePlugin.Plugin.GetApplication().Logbook; }
+        }
+        #endregion
+
+        #region public
+        public SettingsData data = new SettingsData();
+
+        public SettingsData dataRead = new SettingsData(); //data last read from logbook
 
         public void ReadSettings()
         {
             try
             {
-                byte[] b = log.GetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain);
-                if (!(b.Length == 0))
+                byte[] b = log.GetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain );
+                if ( !( b.Length == 0 ) )
                 {
-                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
+                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( SettingsData ) );
                     System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    mem.Write(b, 0, b.Length);
+                    mem.Write( b, 0, b.Length );
                     mem.Position = 0;
-                    data = dataRead = (SettingsData)xmlSer.Deserialize(mem);
+                    data = dataRead = (SettingsData)xmlSer.Deserialize( mem );
                     mem.Dispose();
                     xmlSer = null;
                     b = null;
-
-                    //this.Quality = p.Quality;
-                    //this.Size = p.Size;               
                 }
                 else
                 {
-
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
@@ -113,24 +70,24 @@ namespace ActivityPicturePlugin.Settings
 
         public void WriteSettings()
         {
-            if (!data.Equals(dataRead))
+            if ( !data.Equals( dataRead ) )
             {
                 try
                 {
                     System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(SettingsData));
-                    xmlSer.Serialize(mem, data);
-                    log.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
-                    log.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
+                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( SettingsData ) );
+                    xmlSer.Serialize( mem, data );
+                    log.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
+                    log.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
                     mem.Close();
                     log.Modified = true;
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     throw;
                 }
             }
         }
-            #endregion
+        #endregion
     }
 }

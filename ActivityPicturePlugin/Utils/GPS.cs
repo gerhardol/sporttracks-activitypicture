@@ -15,17 +15,46 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//Used in both Trails and Matrix plugin
+
+using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data.GPS;
 
-namespace ActivityPicturePlugin.Utils
+namespace TrailsPlugin.Utils
 {
-	public class GPS {
-		public static IGPSPoint LocationToPoint(IGPSLocation location) {
-			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, 0);
-		}
+    public class GPS
+    {
+        public static IGPSPoint LocationToPoint( IGPSLocation location )
+        {
+            return new GPSPoint( location.LatitudeDegrees, location.LongitudeDegrees, 0 );
+        }
 
-		public static IGPSLocation PointToLocation(IGPSPoint point) {
-			return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
-		}
-	}
+        public static IGPSLocation PointToLocation( IGPSPoint point )
+        {
+            return new GPSLocation( point.LatitudeDegrees, point.LongitudeDegrees );
+        }
+
+#if !ST_2_1
+        public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)
+        {
+            GPSBounds area = null;
+            foreach (IList<IGPSPoint> trk in trks)
+            {
+                GPSBounds area2 = GPSBounds.FromGPSPoints(trk);
+                if (area2 != null)
+                {
+                    if (area == null)
+                    {
+                        area = area2;
+                    }
+                    else
+                    {
+                        area = (GPSBounds)area.Union(area2);
+                    }
+                }
+            }
+            return area;
+        }
+#endif
+    }
 }

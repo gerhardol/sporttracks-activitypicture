@@ -17,6 +17,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUIDs.cs" />
+    <Compile Include="Helper\AviFile\AudioStream.cs" />
+    <Compile Include="Helper\AviFile\Avi.cs" />
+    <Compile Include="Helper\AviFile\AviManager.cs" />
+    <Compile Include="Helper\AviFile\AviPlayer.cs" />
+    <Compile Include="Helper\AviFile\AviStream.cs" />
+    <Compile Include="Helper\AviFile\EditableVideoStream.cs" />
+    <Compile Include="Helper\AviFile\VideoStream.cs" />
+    <Compile Include="Helper\ColorSlider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helper\ColorSlider.Designer.cs">
+      <DependentUpon>ColorSlider.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\ExifWorks.cs" />
     <Compile Include="Helper\Functions.cs" />
     <Compile Include="Helper\SimpleRun.cs" />
@@ -45,6 +58,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Settings\Settings.cs" />
     <Compile Include="Settings\ExtendSettingsPages.cs" />
     <Compile Include="Settings\PluginData.cs" />
     <Compile Include="Settings\PluginSettings.cs" />
@@ -88,6 +102,9 @@
     <Compile Include="Utils\GPS.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Helper\ColorSlider.resx">
+      <DependentUpon>ColorSlider.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Helper\VolumeSlider.resx">
       <SubType>Designer</SubType>
       <DependentUpon>VolumeSlider.cs</DependentUpon>
@@ -194,6 +211,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GE1.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\camera.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\GE2.gif" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">

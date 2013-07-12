@@ -20,32 +20,33 @@ using System;
 using Microsoft.VisualBasic;
 
 namespace ActivityPicturePlugin.Helper
-    {
+{
     public class ExifWorks : System.IDisposable
-        {
+    {
         private System.Drawing.Bitmap _Image;
         private System.Text.Encoding _Encoding = System.Text.Encoding.Default;
 
-        public ExifWorks(string FileName)
+        public ExifWorks( string FileName )
         {
             try
             {
                 //the file is not locked and may be modified/deleted later
-                System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                BinaryReader Reader = new BinaryReader(ImageFile);
-                MemoryStream ImageStream = new MemoryStream(Reader.ReadBytes((int)ImageFile.Length));
+                System.IO.FileStream ImageFile = new System.IO.FileStream( FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
+                BinaryReader Reader = new BinaryReader( ImageFile );
+                MemoryStream ImageStream = new MemoryStream( Reader.ReadBytes( (int)ImageFile.Length ) );
                 Reader.Close();
-                _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream(ImageStream);
+                _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream( ImageStream );
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine( ex.Message );
             }
 
         }
+
         public System.Drawing.Bitmap GetBitmap()
         {
-            if (this._Image != null)
+            if ( this._Image != null )
             {
                 return (System.Drawing.Bitmap)this._Image.Clone();
             }
@@ -53,9 +54,9 @@ namespace ActivityPicturePlugin.Helper
             { return null; }
         }
 
-        #region " Type declarations "
+        #region  Type declarations
         public enum TagNames : int
-            {
+        {
             ExifIFD = 34665,
             GpsIFD = 34853,
             NewSubfileType = 254,
@@ -275,9 +276,9 @@ namespace ActivityPicturePlugin.Helper
             FileExplorerKeywords = 40094,
             FileExplorerSubject = 40095,
             FileExplorerComments = 40092
-            }
+        }
         public enum ExifDataTypes : short
-            {
+        {
             UnsignedByte = 1,
             AsciiString = 2,
             UnsignedShort = 3,
@@ -290,7 +291,7 @@ namespace ActivityPicturePlugin.Helper
             SignedRational = 10,
             SingleFloat = 11,
             DoubleFloat = 12
-            }
+        }
 
 
         /// <summary> 
@@ -302,7 +303,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public enum Orientations
-            {
+        {
             TopLeft = 1,
             TopRight = 2,
             BottomRight = 3,
@@ -311,7 +312,7 @@ namespace ActivityPicturePlugin.Helper
             RightTop = 6,
             RightBottom = 7,
             LftBottom = 8
-            }
+        }
 
 
         /// <summary> 
@@ -323,7 +324,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public enum ExposurePrograms
-            {
+        {
             Manual = 1,
             Normal = 2,
             AperturePriority = 3,
@@ -332,7 +333,7 @@ namespace ActivityPicturePlugin.Helper
             Action = 6,
             Portrait = 7,
             Landscape = 8
-            }
+        }
 
 
         /// <summary> 
@@ -344,7 +345,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public enum ExposureMeteringModes
-            {
+        {
             Unknown = 0,
             Average = 1,
             CenterWeightedAverage = 2,
@@ -353,7 +354,7 @@ namespace ActivityPicturePlugin.Helper
             MultiSegment = 5,
             Partial = 6,
             Other = 255
-            }
+        }
 
 
         /// <summary> 
@@ -365,12 +366,12 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public enum FlashModes
-            {
+        {
             NotFired = 0,
             Fired = 1,
             FiredButNoStrobeReturned = 5,
             FiredAndStrobeReturned = 7
-            }
+        }
 
 
         /// <summary> 
@@ -382,7 +383,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public enum LightSources
-            {
+        {
             Unknown = 0,
             Daylight = 1,
             Fluorescent = 2,
@@ -395,7 +396,7 @@ namespace ActivityPicturePlugin.Helper
             D65 = 21,
             D75 = 22,
             Other = 255
-            }
+        }
 
         /// <summary> 
         /// Represents rational which is type of some Exif properties 
@@ -406,7 +407,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
 
         public struct Rational
-            {
+        {
             public Int32 Numerator;
             public Int32 Denominator;
 
@@ -421,9 +422,9 @@ namespace ActivityPicturePlugin.Helper
             /// </history> 
 
             public new string ToString() // ERROR: Unsupported modifier : In, Optional string Delimiter) 
-                {
+            {
                 return Numerator + "/" + Denominator;
-                }
+            }
 
 
             /// <summary> 
@@ -436,14 +437,14 @@ namespace ActivityPicturePlugin.Helper
             /// </history> 
 
             public double ToDouble()
-                {
-                return (double)(Numerator) / (double)(Denominator);
-                }
+            {
+                return (double)( Numerator ) / (double)( Denominator );
             }
+        }
 
         #endregion
 
-        #region " Nicely formatted well-known properties "
+        #region  Nicely formatted well-known properties
         /// <summary> 
         /// Brand of equipment (EXIF EquipMake) 
         /// </summary> 
@@ -453,9 +454,9 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string EquipmentMaker
-            {
-            get { return this.GetPropertyString((int)(TagNames.EquipMake)); }
-            }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.EquipMake ) ); }
+        }
         /// <summary> 
         /// Model of equipment (EXIF EquipModel) 
         /// </summary> 
@@ -465,21 +466,21 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string EquipmentModel
-            {
-            get { return this.GetPropertyString((int)(TagNames.EquipModel)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.EquipModel ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.EquipModel), value);
-                    }
-                catch (Exception)
-                    {
+                {
+                    this.SetPropertyString( (int)( TagNames.EquipModel ), value );
+                }
+                catch ( Exception )
+                {
 
                     throw;
-                    }
                 }
             }
+        }
         /// <summary> 
         /// Software used for processing (EXIF Software) 
         /// </summary> 
@@ -489,9 +490,9 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string Software
-            {
-            get { return this.GetPropertyString((int)(TagNames.SoftwareUsed)); }
-            }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.SoftwareUsed ) ); }
+        }
         /// <summary> 
         /// Orientation of image (position of row 0, column 0) (EXIF Orientation) 
         /// </summary> 
@@ -501,21 +502,21 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public Orientations Orientation
-            {
+        {
             get
-                {
-                Int32 X = this.GetPropertyInt16((int)(TagNames.Orientation));
+            {
+                Int32 X = this.GetPropertyInt16( (int)( TagNames.Orientation ) );
 
-                if (!Enum.IsDefined(typeof(Orientations), X))
-                    {
+                if ( !Enum.IsDefined( typeof( Orientations ), X ) )
+                {
                     return Orientations.TopLeft;
-                    }
+                }
                 else
-                    {
-                    return (Orientations)Enum.Parse(typeof(Orientations), Enum.GetName(typeof(Orientations), X));
-                    }
+                {
+                    return (Orientations)Enum.Parse( typeof( Orientations ), Enum.GetName( typeof( Orientations ), X ) );
                 }
             }
+        }
 
         /// <summary> 
         /// Time when image was last modified (EXIF DateTime). 
@@ -526,31 +527,31 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public DateTime DateTimeLastModified
-            {
+        {
 
 
             get
-                {
+            {
                 try
-                    {
-                    return DateTime.ParseExact(this.GetPropertyString((int)(TagNames.DateTime)), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null);
-                    }
-                catch
-                    {
-                    return DateTime.MinValue;
-                    }
+                {
+                    return DateTime.ParseExact( this.GetPropertyString( (int)( TagNames.DateTime ) ), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null );
                 }
-            set
-                {
-                try
-                    {
-                    this.SetPropertyString((int)(TagNames.DateTime), value.ToString("yyyy\\:MM\\:dd HH\\:mm\\:ss"));
-                    }
                 catch
-                    {
-                    }
+                {
+                    return DateTime.MinValue;
                 }
             }
+            set
+            {
+                try
+                {
+                    this.SetPropertyString( (int)( TagNames.DateTime ), value.ToString( "yyyy\\:MM\\:dd HH\\:mm\\:ss" ) );
+                }
+                catch
+                {
+                }
+            }
+        }
         /// <summary> 
         /// Time when image was digitized (EXIF DateTimeDigitized). 
         /// </summary> 
@@ -560,31 +561,31 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public DateTime DateTimeDigitized
-            {
+        {
 
 
             get
-                {
+            {
                 try
-                    {
-                    return DateTime.ParseExact(this.GetPropertyString((int)(TagNames.ExifDTDigitized)), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null);
-                    }
-                catch
-                    {
-                    return DateTime.MinValue;
-                    }
+                {
+                    return DateTime.ParseExact( this.GetPropertyString( (int)( TagNames.ExifDTDigitized ) ), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null );
                 }
-            set
-                {
-                try
-                    {
-                    this.SetPropertyString((int)(TagNames.ExifDTDigitized), value.ToString("yyyy\\:MM\\:dd HH\\:mm\\:ss"));
-                    }
                 catch
-                    {
-                    }
+                {
+                    return DateTime.MinValue;
                 }
             }
+            set
+            {
+                try
+                {
+                    this.SetPropertyString( (int)( TagNames.ExifDTDigitized ), value.ToString( "yyyy\\:MM\\:dd HH\\:mm\\:ss" ) );
+                }
+                catch
+                {
+                }
+            }
+        }
         /// <summary> 
         /// Image width 
         /// </summary> 
@@ -595,9 +596,9 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 04.09.2005 Changed output to Int32, load from image instead of EXIF 
         /// </history> 
         public Int32 Width
-            {
+        {
             get { return this._Image.Width; }
-            }
+        }
         /// <summary> 
         /// Image height 
         /// </summary> 
@@ -608,11 +609,11 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 04.09.2005 Changed output to Int32, load from image instead of EXIF 
         /// </history> 
         public Int32 Height
-            {
+        {
 
 
             get { return this._Image.Height; }
-            }
+        }
         /// <summary> 
         /// X resolution in dpi (EXIF XResolution/ResolutionUnit) 
         /// </summary> 
@@ -622,23 +623,23 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double ResolutionX
-            {
+        {
             get
-                {
-                double R = this.GetPropertyRational((int)(TagNames.XResolution)).ToDouble();
+            {
+                double R = this.GetPropertyRational( (int)( TagNames.XResolution ) ).ToDouble();
 
-                if (this.GetPropertyInt16((int)(TagNames.ResolutionUnit)) == 3)
-                    {
+                if ( this.GetPropertyInt16( (int)( TagNames.ResolutionUnit ) ) == 3 )
+                {
                     //-- resolution is in points/cm 
                     return R * 2.54;
-                    }
+                }
                 else
-                    {
+                {
                     //-- resolution is in points/inch 
                     return R;
-                    }
                 }
             }
+        }
         /// <summary> 
         /// Y resolution in dpi (EXIF YResolution/ResolutionUnit) 
         /// </summary> 
@@ -648,25 +649,25 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double ResolutionY
-            {
+        {
 
 
             get
-                {
-                double R = this.GetPropertyRational((int)(TagNames.YResolution)).ToDouble();
+            {
+                double R = this.GetPropertyRational( (int)( TagNames.YResolution ) ).ToDouble();
 
-                if (this.GetPropertyInt16((int)(TagNames.ResolutionUnit)) == 3)
-                    {
+                if ( this.GetPropertyInt16( (int)( TagNames.ResolutionUnit ) ) == 3 )
+                {
                     //-- resolution is in points/cm 
                     return R * 2.54;
-                    }
+                }
                 else
-                    {
+                {
                     //-- resolution is in points/inch 
                     return R;
-                    }
                 }
             }
+        }
         /// <summary> 
         /// Image title (EXIF ImageTitle) 
         /// </summary> 
@@ -676,64 +677,64 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string Title
-            {
-            get { return this.GetPropertyString((int)(TagNames.ImageTitle)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.ImageTitle ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.ImageTitle), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.ImageTitle ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
 
         public string FileExplorerTitle
-            {
-            get { return this.GetPropertyString((int)(TagNames.FileExplorerTitle)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.FileExplorerTitle ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.FileExplorerTitle), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.FileExplorerTitle ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
 
         public string FileExplorerAuthor
-            {
-            get { return this.GetPropertyString((int)(TagNames.FileExplorerAuthor)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.FileExplorerAuthor ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.FileExplorerAuthor), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.FileExplorerAuthor ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
 
         public string FileExplorerComments
-            {
-            get { return this.GetPropertyString((int)(TagNames.FileExplorerComments)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.FileExplorerComments ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.FileExplorerComments), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.FileExplorerComments ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
 
         /// <summary> 
         /// User comment (EXIF UserComment) 
@@ -744,19 +745,19 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 13.06.2004 Created 
         /// </history>
         public string UserComment
-            {
-            get { return this.GetPropertyString((int)(TagNames.ExifUserComment)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.ExifUserComment ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.ExifUserComment), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.ExifUserComment ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
         /// <summary> 
         /// Artist name (EXIF Artist) 
         /// </summary> 
@@ -766,19 +767,19 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 13.06.2004 Created 
         /// </history> 
         public string Artist
-            {
-            get { return this.GetPropertyString((int)(TagNames.Artist)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.Artist ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.Artist), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.Artist ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
         /// <summary> 
         /// Image description (EXIF ImageDescription) 
         /// </summary> 
@@ -788,19 +789,19 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string Description
-            {
-            get { return this.GetPropertyString((int)(TagNames.ImageDescription)); }
+        {
+            get { return this.GetPropertyString( (int)( TagNames.ImageDescription ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.ImageDescription), value);
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.ImageDescription ), value );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
 
         /// <summary> 
         /// Image copyright (EXIF Copyright) 
@@ -811,21 +812,21 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public string Copyright
-            {
+        {
 
 
-            get { return this.GetPropertyString((int)(TagNames.Copyright)); }
+            get { return this.GetPropertyString( (int)( TagNames.Copyright ) ); }
             set
-                {
+            {
                 try
-                    {
-                    this.SetPropertyString((int)(TagNames.Copyright), value.ToString());
-                    }
+                {
+                    this.SetPropertyString( (int)( TagNames.Copyright ), value.ToString() );
+                }
                 catch
-                    {
-                    }
+                {
                 }
             }
+        }
         /// <summary> 
         /// Exposure time in seconds (EXIF ExifExposureTime/ExifShutterSpeed) 
         /// </summary> 
@@ -835,26 +836,26 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double ExposureTime
-            {
+        {
             get
+            {
+                if ( this.IsPropertyDefined( (int)( TagNames.ExifExposureTime ) ) )
                 {
-                if (this.IsPropertyDefined((int)(TagNames.ExifExposureTime)))
-                    {
                     //-- Exposure time is explicitly specified 
-                    return this.GetPropertyRational((int)(TagNames.ExifExposureTime)).ToDouble();
-                    }
-                else if (this.IsPropertyDefined((int)(TagNames.ExifShutterSpeed)))
-                    {
+                    return this.GetPropertyRational( (int)( TagNames.ExifExposureTime ) ).ToDouble();
+                }
+                else if ( this.IsPropertyDefined( (int)( TagNames.ExifShutterSpeed ) ) )
+                {
                     //-- Compute exposure time from shutter speed 
-                    return 1 / (Math.Pow(2, this.GetPropertyRational((int)(TagNames.ExifShutterSpeed)).ToDouble()));
-                    }
+                    return 1 / ( Math.Pow( 2, this.GetPropertyRational( (int)( TagNames.ExifShutterSpeed ) ).ToDouble() ) );
+                }
                 else
-                    {
+                {
                     //-- Can't figure out 
                     return 0;
-                    }
                 }
             }
+        }
 
         /// <summary> 
         /// Aperture value as F number (EXIF ExifFNumber/ExifApertureValue) 
@@ -865,25 +866,25 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double Aperture
-            {
+        {
 
 
             get
+            {
+                if ( this.IsPropertyDefined( (int)( TagNames.ExifFNumber ) ) )
                 {
-                if (this.IsPropertyDefined((int)(TagNames.ExifFNumber)))
-                    {
-                    return this.GetPropertyRational((int)(TagNames.ExifFNumber)).ToDouble();
-                    }
-                else if (this.IsPropertyDefined((int)(TagNames.ExifAperture)))
-                    {
-                    return Math.Pow(System.Math.Sqrt(2), this.GetPropertyRational((int)(TagNames.ExifAperture)).ToDouble());
-                    }
+                    return this.GetPropertyRational( (int)( TagNames.ExifFNumber ) ).ToDouble();
+                }
+                else if ( this.IsPropertyDefined( (int)( TagNames.ExifAperture ) ) )
+                {
+                    return Math.Pow( System.Math.Sqrt( 2 ), this.GetPropertyRational( (int)( TagNames.ExifAperture ) ).ToDouble() );
+                }
                 else
-                    {
+                {
                     return 0;
-                    }
                 }
             }
+        }
 
         /// <summary> 
         /// Exposure program used (EXIF ExifExposureProg) 
@@ -894,22 +895,22 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public ExposurePrograms ExposureProgram
-            {
+        {
 
             get
-                {
-                Int32 X = this.GetPropertyInt16((int)(TagNames.ExifExposureProg));
+            {
+                Int32 X = this.GetPropertyInt16( (int)( TagNames.ExifExposureProg ) );
 
-                if (Enum.IsDefined(typeof(ExposurePrograms), X))
-                    {
-                    return (ExposurePrograms)Enum.Parse(typeof(ExposurePrograms), Enum.GetName(typeof(ExposurePrograms), X));
-                    }
+                if ( Enum.IsDefined( typeof( ExposurePrograms ), X ) )
+                {
+                    return (ExposurePrograms)Enum.Parse( typeof( ExposurePrograms ), Enum.GetName( typeof( ExposurePrograms ), X ) );
+                }
                 else
-                    {
+                {
                     return ExposurePrograms.Normal;
-                    }
                 }
             }
+        }
         /// <summary> 
         /// ISO sensitivity 
         /// </summary> 
@@ -919,11 +920,11 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public Int16 ISO
-            {
+        {
 
 
-            get { return this.GetPropertyInt16((int)(TagNames.ExifISOSpeed)); }
-            }
+            get { return this.GetPropertyInt16( (int)( TagNames.ExifISOSpeed ) ); }
+        }
         /// <summary> 
         /// Subject distance in meters (EXIF SubjectDistance) 
         /// </summary> 
@@ -933,11 +934,11 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double SubjectDistance
-            {
+        {
 
 
-            get { return this.GetPropertyRational((int)(TagNames.ExifSubjectDist)).ToDouble(); }
-            }
+            get { return this.GetPropertyRational( (int)( TagNames.ExifSubjectDist ) ).ToDouble(); }
+        }
         /// <summary> 
         /// Exposure method metering mode used (EXIF MeteringMode) 
         /// </summary> 
@@ -947,23 +948,23 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public ExposureMeteringModes ExposureMeteringMode
-            {
+        {
 
 
             get
-                {
-                Int32 X = this.GetPropertyInt16((int)(TagNames.ExifMeteringMode));
+            {
+                Int32 X = this.GetPropertyInt16( (int)( TagNames.ExifMeteringMode ) );
 
-                if (Enum.IsDefined(typeof(ExposureMeteringModes), X))
-                    {
-                    return (ExposureMeteringModes)Enum.Parse(typeof(ExposureMeteringModes), Enum.GetName(typeof(ExposureMeteringModes), X));
-                    }
+                if ( Enum.IsDefined( typeof( ExposureMeteringModes ), X ) )
+                {
+                    return (ExposureMeteringModes)Enum.Parse( typeof( ExposureMeteringModes ), Enum.GetName( typeof( ExposureMeteringModes ), X ) );
+                }
                 else
-                    {
+                {
                     return ExposureMeteringModes.Unknown;
-                    }
                 }
             }
+        }
 
         /// <summary> 
         /// Focal length of lenses in mm (EXIF FocalLength) 
@@ -974,9 +975,9 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public double FocalLength
-            {
-            get { return this.GetPropertyRational((int)(TagNames.ExifFocalLength)).ToDouble(); }
-            }
+        {
+            get { return this.GetPropertyRational( (int)( TagNames.ExifFocalLength ) ).ToDouble(); }
+        }
         /// <summary> 
         /// Flash mode (EXIF Flash) 
         /// </summary> 
@@ -986,23 +987,23 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public FlashModes FlashMode
-            {
+        {
 
 
             get
-                {
-                Int32 X = this.GetPropertyInt16((int)(TagNames.ExifFlash));
+            {
+                Int32 X = this.GetPropertyInt16( (int)( TagNames.ExifFlash ) );
 
-                if (Enum.IsDefined(typeof(FlashModes), X))
-                    {
-                    return (FlashModes)Enum.Parse(typeof(FlashModes), Enum.GetName(typeof(FlashModes), X));
-                    }
+                if ( Enum.IsDefined( typeof( FlashModes ), X ) )
+                {
+                    return (FlashModes)Enum.Parse( typeof( FlashModes ), Enum.GetName( typeof( FlashModes ), X ) );
+                }
                 else
-                    {
+                {
                     return FlashModes.NotFired;
-                    }
                 }
             }
+        }
         /// <summary> 
         /// Light source / white balance (EXIF LightSource) 
         /// </summary> 
@@ -1012,62 +1013,62 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// </history> 
         public LightSources LightSource
-            {
+        {
 
 
             get
-                {
-                Int32 X = this.GetPropertyInt16((int)(TagNames.ExifLightSource));
+            {
+                Int32 X = this.GetPropertyInt16( (int)( TagNames.ExifLightSource ) );
 
-                if (Enum.IsDefined(typeof(LightSources), X))
-                    {
-                    return (LightSources)Enum.Parse(typeof(LightSources), Enum.GetName(typeof(LightSources), X));
-                    }
+                if ( Enum.IsDefined( typeof( LightSources ), X ) )
+                {
+                    return (LightSources)Enum.Parse( typeof( LightSources ), Enum.GetName( typeof( LightSources ), X ) );
+                }
                 else
-                    {
+                {
                     return LightSources.Unknown;
-                    }
                 }
             }
+        }
 
 
         public DateTime DateTimeOriginal
-            {
+        {
             get
-                {
+            {
                 try
-                    {
-                    return DateTime.ParseExact(this.GetPropertyString((int)TagNames.ExifDTOrig), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null);
-                    }
-                catch
-                    {
-                    return DateTime.MinValue;
-                    }
+                {
+                    return DateTime.ParseExact( this.GetPropertyString( (int)TagNames.ExifDTOrig ), "yyyy\\:MM\\:dd HH\\:mm\\:ss", null );
                 }
-            set
-                {
-                try
-                    {
-                    this.SetPropertyString((int)TagNames.ExifDTOrig, value.ToString("yyyy\\:MM\\:dd HH\\:mm\\:ss"));
-                    }
                 catch
-                    {
-                    }
+                {
+                    return DateTime.MinValue;
                 }
             }
+            set
+            {
+                try
+                {
+                    this.SetPropertyString( (int)TagNames.ExifDTOrig, value.ToString( "yyyy\\:MM\\:dd HH\\:mm\\:ss" ) );
+                }
+                catch
+                {
+                }
+            }
+        }
 
         public String GPSLatitudeReference
         {
             get
             {
-                return this.GetPropertyString((int)(TagNames.GpsLatitudeRef));
+                return this.GetPropertyString( (int)( TagNames.GpsLatitudeRef ) );
             }
         }
         public String GPSLongitudeReference
         {
             get
             {
-                return this.GetPropertyString((int)(TagNames.GpsLongitudeRef));
+                return this.GetPropertyString( (int)( TagNames.GpsLongitudeRef ) );
             }
         }
         public double GPSLatitude
@@ -1077,20 +1078,20 @@ namespace ActivityPicturePlugin.Helper
                 double result = 0;
                 try
                 {
-                    byte[] val = this.GetProperty((int)(TagNames.GpsLatitude), new byte[0]);
-                    byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLatitudeRef), new byte[0]);
-                    if (val.Length != 0)
+                    byte[] val = this.GetProperty( (int)( TagNames.GpsLatitude ), new byte[0] );
+                    byte[] coordRefByte = this.GetProperty( (int)( TagNames.GpsLatitudeRef ), new byte[0] );
+                    if ( val.Length != 0 )
                     {
-                        result = Functions.GetGPSDoubleValue(val);
-                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('S') &&
+                        result = Functions.GetGPSDoubleValue( val );
+                        if ( coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte( 'S' ) &&
                             //Compatibility with pre svn 35
-                            result > 0)
+                            result > 0 )
                         {
                             result *= -1;
                         }
                     }
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                 }
                 return result;
@@ -1099,16 +1100,16 @@ namespace ActivityPicturePlugin.Helper
             {
                 //Set Latitude
                 byte[] val = new byte[24];
-                val = Functions.GetGPSByteValue(Math.Abs(value));
-                SetProperty((int)(TagNames.GpsLatitude), val, ExifDataTypes.SignedRational);
+                val = Functions.GetGPSByteValue( Math.Abs( value ) );
+                SetProperty( (int)( TagNames.GpsLatitude ), val, ExifDataTypes.SignedRational );
 
                 //Set coordinate reference (North - South)
                 byte[] coordRefByte = new byte[2];
-                if (value >= 0)
-                    coordRefByte[0] = Convert.ToByte('N');
+                if ( value >= 0 )
+                    coordRefByte[0] = Convert.ToByte( 'N' );
                 else
-                    coordRefByte[0] = Convert.ToByte('S');
-                SetProperty((int)TagNames.GpsLatitudeRef, coordRefByte, ExifDataTypes.AsciiString);
+                    coordRefByte[0] = Convert.ToByte( 'S' );
+                SetProperty( (int)TagNames.GpsLatitudeRef, coordRefByte, ExifDataTypes.AsciiString );
             }
         }
 
@@ -1119,20 +1120,20 @@ namespace ActivityPicturePlugin.Helper
                 double result = 0;
                 try
                 {
-                    byte[] val = this.GetProperty((int)(TagNames.GpsLongitude), new byte[0]);
-                    byte[] coordRefByte = this.GetProperty((int)(TagNames.GpsLongitudeRef), new byte[0]);
-                    if (val.Length != 0)
+                    byte[] val = this.GetProperty( (int)( TagNames.GpsLongitude ), new byte[0] );
+                    byte[] coordRefByte = this.GetProperty( (int)( TagNames.GpsLongitudeRef ), new byte[0] );
+                    if ( val.Length != 0 )
                     {
-                        result = Functions.GetGPSDoubleValue(val);
-                        if (coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte('W') &&
+                        result = Functions.GetGPSDoubleValue( val );
+                        if ( coordRefByte.Length > 0 && coordRefByte[0] == Convert.ToByte( 'W' ) &&
                             //Compatibility with pre svn 35
-                            result > 0)
+                            result > 0 )
                         {
                             result *= -1;
                         }
                     }
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                 }
                 return result;
@@ -1141,61 +1142,61 @@ namespace ActivityPicturePlugin.Helper
             {
                 //Set Longitude
                 byte[] val = new byte[24];
-                val = Functions.GetGPSByteValue(Math.Abs(value));
-                SetProperty((int)(TagNames.GpsLongitude), val, ExifDataTypes.SignedRational);
+                val = Functions.GetGPSByteValue( Math.Abs( value ) );
+                SetProperty( (int)( TagNames.GpsLongitude ), val, ExifDataTypes.SignedRational );
 
                 //Set coordinate reference (East - West)
                 byte[] coordRefByte = new byte[2];
-                if (value >= 0)
-                    coordRefByte[0] = Convert.ToByte('E');
+                if ( value >= 0 )
+                    coordRefByte[0] = Convert.ToByte( 'E' );
                 else
-                    coordRefByte[0] = Convert.ToByte('W');
-                SetProperty((int)TagNames.GpsLongitudeRef, coordRefByte, ExifDataTypes.AsciiString);
+                    coordRefByte[0] = Convert.ToByte( 'W' );
+                SetProperty( (int)TagNames.GpsLongitudeRef, coordRefByte, ExifDataTypes.AsciiString );
             }
         }
 
         public double GPSAltitude
-            {
+        {
             get
-                {
+            {
                 try
-                    {
-                    double d = this.GetPropertyRational((int)(TagNames.GpsAltitude)).ToDouble();
+                {
+                    double d = this.GetPropertyRational( (int)( TagNames.GpsAltitude ) ).ToDouble();
                     return d;
-                    }
-                catch (Exception)
-                    {
+                }
+                catch ( Exception )
+                {
                     return 0;
                     //throw;
-                    }
                 }
+            }
             set
-                {
+            {
                 byte[] val = new byte[8];
-                BitConverter.GetBytes(Convert.ToInt32(value * 100)).CopyTo(val, 0);
-                BitConverter.GetBytes(Convert.ToInt32(100)).CopyTo(val, 4);
-                SetProperty((int)(TagNames.GpsAltitude), val, ExifDataTypes.SignedRational);
+                BitConverter.GetBytes( Convert.ToInt32( value * 100 ) ).CopyTo( val, 0 );
+                BitConverter.GetBytes( Convert.ToInt32( 100 ) ).CopyTo( val, 4 );
+                SetProperty( (int)( TagNames.GpsAltitude ), val, ExifDataTypes.SignedRational );
 
                 //0=above sea level, 1=below sea level (not supported)
                 byte[] b = new byte[1];
-                b[0] = Convert.ToByte(0);
-                SetProperty((int)TagNames.GpsAltitudeRef, b, ExifDataTypes.UnsignedByte);
-                }
+                b[0] = Convert.ToByte( 0 );
+                SetProperty( (int)TagNames.GpsAltitudeRef, b, ExifDataTypes.UnsignedByte );
             }
+        }
         #endregion
 
-        #region " Support methods for working with EXIF properties "
-        public string GetPropertyString(Int32 PID)
+        #region  Support methods for working with EXIF properties
+        public string GetPropertyString( Int32 PID )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return GetString(this._Image.GetPropertyItem(PID).Value);
-                }
-            else
-                {
-                return null;
-                }
+                return GetString( this._Image.GetPropertyItem( PID ).Value );
             }
+            else
+            {
+                return null;
+            }
+        }
 
         /// <summary> 
         /// Checks if current image has specified certain property 
@@ -1206,10 +1207,10 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 10.09.2003 Created 
         /// </history> 
-        public bool IsPropertyDefined(Int32 PID)
-            {
-            return (bool)(Array.IndexOf(this._Image.PropertyIdList, PID) > -1);
-            }
+        public bool IsPropertyDefined( Int32 PID )
+        {
+            return (bool)( Array.IndexOf( this._Image.PropertyIdList, PID ) > -1 );
+        }
 
         /// <summary> 
         /// Gets specified Int32 property 
@@ -1220,17 +1221,17 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 10.09.2003 Created 
         /// </history> 
-        public Int32 GetPropertyInt32(Int32 PID, Int32 DefaultValue)
+        public Int32 GetPropertyInt32( Int32 PID, Int32 DefaultValue )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return GetInt32(this._Image.GetPropertyItem(PID).Value);
-                }
-            else
-                {
-                return DefaultValue;
-                }
+                return GetInt32( this._Image.GetPropertyItem( PID ).Value );
             }
+            else
+            {
+                return DefaultValue;
+            }
+        }
 
         /// <summary> 
         /// Gets specified Int16 property 
@@ -1240,17 +1241,17 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 10.09.2003 Created 
         /// </history> 
-        public Int16 GetPropertyInt16(Int32 PID)
+        public Int16 GetPropertyInt16( Int32 PID )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return GetInt16(this._Image.GetPropertyItem(PID).Value);
-                }
-            else
-                {
-                return 0;// DefaultValue; 
-                }
+                return GetInt16( this._Image.GetPropertyItem( PID ).Value );
             }
+            else
+            {
+                return 0;// DefaultValue; 
+            }
+        }
 
         /// <summary> 
         /// Gets specified string property 
@@ -1262,17 +1263,17 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 10.09.2003 Created 
         /// </history> 
-        public string GetPropertyString(Int32 PID, string DefaultValue)
+        public string GetPropertyString( Int32 PID, string DefaultValue )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return GetString(this._Image.GetPropertyItem(PID).Value);
-                }
-            else
-                {
-                return DefaultValue;
-                }
+                return GetString( this._Image.GetPropertyItem( PID ).Value );
             }
+            else
+            {
+                return DefaultValue;
+            }
+        }
 
         /// <summary> 
         /// Gets specified property in raw form 
@@ -1284,17 +1285,17 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 05.09.2005 Created 
         /// </history> 
-        public byte[] GetProperty(Int32 PID, byte[] DefaultValue)
+        public byte[] GetProperty( Int32 PID, byte[] DefaultValue )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return this._Image.GetPropertyItem(PID).Value;
-                }
-            else
-                {
-                return DefaultValue;
-                }
+                return this._Image.GetPropertyItem( PID ).Value;
             }
+            else
+            {
+                return DefaultValue;
+            }
+        }
 
         /// <summary> 
         /// Gets specified rational property 
@@ -1305,20 +1306,20 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 10.09.2003 Created 
         /// </history> 
-        public Rational GetPropertyRational(Int32 PID)
+        public Rational GetPropertyRational( Int32 PID )
+        {
+            if ( this.IsPropertyDefined( PID ) )
             {
-            if (this.IsPropertyDefined(PID))
-                {
-                return GetRational(this._Image.GetPropertyItem(PID).Value);
-                }
+                return GetRational( this._Image.GetPropertyItem( PID ).Value );
+            }
             else
-                {
+            {
                 Rational R;
                 R.Numerator = 0;
                 R.Denominator = 1;
                 return R;
-                }
             }
+        }
 
         /// <summary> 
         /// Sets specified string property 
@@ -1329,53 +1330,53 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 12.6.2004 Created 
         /// </history> 
-        public void SetPropertyString(Int32 PID, string Value)
-            {
-            byte[] Data = this._Encoding.GetBytes(Value + Constants.vbNullChar);
-            SetProperty(PID, Data, ExifDataTypes.AsciiString);
-            }
+        public void SetPropertyString( Int32 PID, string Value )
+        {
+            byte[] Data = this._Encoding.GetBytes( Value + Constants.vbNullChar );
+            SetProperty( PID, Data, ExifDataTypes.AsciiString );
+        }
 
-        public void SetPropertyGPSLoc(Int32 PID, Double Value)
-            {
-            double d1 = Math.Floor(Value);
-            double d2 = Math.Round((Value - Math.Floor(Value)) * 10000 * 0.6);
+        public void SetPropertyGPSLoc( Int32 PID, Double Value )
+        {
+            double d1 = Math.Floor( Value );
+            double d2 = Math.Round( ( Value - Math.Floor( Value ) ) * 10000 * 0.6 );
             byte[] val = new byte[24];
-            BitConverter.GetBytes(Convert.ToInt32(d1)).CopyTo(val, 0);
-            BitConverter.GetBytes(Convert.ToInt32(1)).CopyTo(val, 4);
-            BitConverter.GetBytes(Convert.ToInt32(d2)).CopyTo(val, 8);
-            BitConverter.GetBytes(Convert.ToInt32(100)).CopyTo(val, 12);
-            BitConverter.GetBytes(Convert.ToInt32(0)).CopyTo(val, 16);
-            BitConverter.GetBytes(Convert.ToInt32(1)).CopyTo(val, 20);
-            SetProperty(PID, val, ExifDataTypes.SignedRational);
+            BitConverter.GetBytes( Convert.ToInt32( d1 ) ).CopyTo( val, 0 );
+            BitConverter.GetBytes( Convert.ToInt32( 1 ) ).CopyTo( val, 4 );
+            BitConverter.GetBytes( Convert.ToInt32( d2 ) ).CopyTo( val, 8 );
+            BitConverter.GetBytes( Convert.ToInt32( 100 ) ).CopyTo( val, 12 );
+            BitConverter.GetBytes( Convert.ToInt32( 0 ) ).CopyTo( val, 16 );
+            BitConverter.GetBytes( Convert.ToInt32( 1 ) ).CopyTo( val, 20 );
+            SetProperty( PID, val, ExifDataTypes.SignedRational );
 
 
             char coordRef;
-            if (PID == (int)TagNames.GpsLongitude)
-                {
-                if (Value >= 0)
+            if ( PID == (int)TagNames.GpsLongitude )
+            {
+                if ( Value >= 0 )
                     coordRef = 'E';
                 else
                     coordRef = 'W';
 
                 byte[] coordRefByte = new byte[2];
-                coordRefByte[0] = Convert.ToByte(coordRef);
-                SetProperty((int)TagNames.GpsLongitudeRef, coordRefByte, ExifDataTypes.AsciiString);
-                }
+                coordRefByte[0] = Convert.ToByte( coordRef );
+                SetProperty( (int)TagNames.GpsLongitudeRef, coordRefByte, ExifDataTypes.AsciiString );
+            }
             else
+            {
+                if ( PID == (int)TagNames.GpsLatitude )
                 {
-                if (PID == (int)TagNames.GpsLatitude)
-                    {
-                    if (Value >= 0)
+                    if ( Value >= 0 )
                         coordRef = 'N';
                     else
                         coordRef = 'S';
                     byte[] coordRefByte = new byte[2];
-                    coordRefByte[0] = Convert.ToByte(coordRef);
-                    SetProperty((int)TagNames.GpsLatitudeRef, coordRefByte, ExifDataTypes.AsciiString);
-                    }
+                    coordRefByte[0] = Convert.ToByte( coordRef );
+                    SetProperty( (int)TagNames.GpsLatitudeRef, coordRefByte, ExifDataTypes.AsciiString );
                 }
-
             }
+
+        }
 
         /// <summary> 
         /// Sets specified Int16 property 
@@ -1386,13 +1387,13 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 12.6.2004 Created 
         /// </history> 
-        public void SetPropertyInt16(Int32 PID, Int16 Value)
-            {
+        public void SetPropertyInt16( Int32 PID, Int16 Value )
+        {
             byte[] Data = new byte[2];
-            Data[0] = (byte)(Value & 255);
-            Data[1] = (byte)((Value & 65280) >> 8);
-            SetProperty(PID, Data, ExifDataTypes.SignedShort);
-            }
+            Data[0] = (byte)( Value & 255 );
+            Data[1] = (byte)( ( Value & 65280 ) >> 8 );
+            SetProperty( PID, Data, ExifDataTypes.SignedShort );
+        }
 
         /// <summary> 
         /// Sets specified Int32 property 
@@ -1403,16 +1404,16 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 13.06.2004 Created 
         /// </history> 
-        public void SetPropertyInt32(Int32 PID, Int32 Value)
-            {
+        public void SetPropertyInt32( Int32 PID, Int32 Value )
+        {
             byte[] Data = new byte[4];
-            for (Int32 I = 0; I <= 3; I++)
-                {
-                Data[I] = (byte)(Value & 255);
+            for ( Int32 I = 0; I <= 3; I++ )
+            {
+                Data[I] = (byte)( Value & 255 );
                 Value >>= 8;
-                }
-            SetProperty(PID, Data, ExifDataTypes.SignedLong);
             }
+            SetProperty( PID, Data, ExifDataTypes.SignedLong );
+        }
 
         /// <summary> 
         /// Sets specified propery in raw form 
@@ -1424,17 +1425,17 @@ namespace ActivityPicturePlugin.Helper
         /// <history> 
         /// [altair] 12.6.2004 Created 
         /// </history> 
-        public void SetProperty(Int32 PID, byte[] Data, ExifDataTypes Type)
+        public void SetProperty( Int32 PID, byte[] Data, ExifDataTypes Type )
         {
             System.Drawing.Imaging.PropertyItem P = this._Image.PropertyItems[0];
             P.Id = PID;
             P.Value = Data;
-            P.Type = (short)(Type);
+            P.Type = (short)( Type );
             P.Len = Data.Length;
             try
             {
                 //Mono TODO: NotImplemented
-                this._Image.SetPropertyItem(P);
+                this._Image.SetPropertyItem( P );
             }
             catch { }
         }
@@ -1449,12 +1450,12 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// [altair] 05.09.2005 Changed from public shared to private instance method 
         /// </history> 
-        private Int32 GetInt32(byte[] B)
-            {
-            if (B.Length < 4)
-                throw new ArgumentException("Data too short (4 bytes expected)", "B");
+        private Int32 GetInt32( byte[] B )
+        {
+            if ( B.Length < 4 )
+                throw new ArgumentException( "Data too short (4 bytes expected)", "B" );
             return B[3] << 24 | B[2] << 16 | B[1] << 8 | B[0];
-            }
+        }
 
         /// <summary> 
         /// Reads Int16 from EXIF bytearray. 
@@ -1466,12 +1467,12 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// [altair] 05.09.2005 Changed from public shared to private instance method 
         /// </history> 
-        private Int16 GetInt16(byte[] B)
-            {
-            if (B.Length < 2)
-                throw new ArgumentException("Data too short (2 bytes expected)", "B");
-            return (short)(B[1] << 8 | B[0]);
-            }
+        private Int16 GetInt16( byte[] B )
+        {
+            if ( B.Length < 2 )
+                throw new ArgumentException( "Data too short (2 bytes expected)", "B" );
+            return (short)( B[1] << 8 | B[0] );
+        }
 
         /// <summary> 
         /// Reads string from EXIF bytearray. 
@@ -1483,13 +1484,13 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// [altair] 05.09.2005 Changed from public shared to private instance method 
         /// </history> 
-        private string GetString(byte[] B)
-            {
-            string R = this._Encoding.GetString(B);
-            if (R.EndsWith(Constants.vbNullChar))
-                R = R.Substring(0, R.Length - 1);
+        private string GetString( byte[] B )
+        {
+            string R = this._Encoding.GetString( B );
+            if ( R.EndsWith( Constants.vbNullChar ) )
+                R = R.Substring( 0, R.Length - 1 );
             return R;
-            }
+        }
 
         /// <summary> 
         /// Reads rational from EXIF bytearray. 
@@ -1501,29 +1502,29 @@ namespace ActivityPicturePlugin.Helper
         /// [altair] 10.09.2003 Created 
         /// [altair] 05.09.2005 Changed from public shared to private instance method 
         /// </history> 
-        private Rational GetRational(byte[] B)
-            {
+        private Rational GetRational( byte[] B )
+        {
             Rational R = new Rational();
             byte[] N = new byte[4];
             byte[] D = new byte[4];
-            Array.Copy(B, 0, N, 0, 4);
-            Array.Copy(B, 4, D, 0, 4);
-            R.Denominator = this.GetInt32(D);
-            R.Numerator = this.GetInt32(N);
+            Array.Copy( B, 0, N, 0, 4 );
+            Array.Copy( B, 4, D, 0, 4 );
+            R.Denominator = this.GetInt32( D );
+            R.Numerator = this.GetInt32( N );
             return R;
-            }
-
-        #endregion
-
-        #region " IDisposable implementation "
-        public void Dispose()
-            {
-            if (this._Image != null)
-                {
-                this._Image.Dispose();
-                }
-            }
-        #endregion
-
         }
+
+        #endregion
+
+        #region  IDisposable implementation
+        public void Dispose()
+        {
+            if ( this._Image != null )
+            {
+                this._Image.Dispose();
+            }
+        }
+        #endregion
+
     }
+}

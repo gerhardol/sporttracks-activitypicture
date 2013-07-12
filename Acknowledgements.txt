@@ -6,3 +6,8 @@ http://renaud91.free.fr/MetaDataExtractor/
 AviFile - AVI file handling
 Corinna John (Hannover, Germany) cj@binary-universe.net
 http://www.codeproject.com/KB/audio-video/avifilewrapper.aspx
+
+Owner-drawn trackbar (slider)
+Michal Brylka (Wroclaw, Poland) michal.brylka[mail-'"at'"-sign]op.pl. 
+http://www.codeproject.com/Articles/17395/Owner-drawn-trackbar-slider
+

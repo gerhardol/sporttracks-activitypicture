@@ -29,84 +29,124 @@ namespace ActivityPicturePlugin.Helper
 {
     public partial class VolumeSlider : UserControl
     {
-        [DllImport("winmm.dll")]
-        public static extern int waveOutGetVolume(IntPtr hwo, out uint dwVolume);
+        [DllImport( "winmm.dll" )]
+        public static extern int waveOutGetVolume( IntPtr hwo, out uint dwVolume );
 
-        [DllImport("winmm.dll")]
-        public static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+        [DllImport( "winmm.dll" )]
+        public static extern int waveOutSetVolume( IntPtr hwo, uint dwVolume );
 
         public VolumeSlider()
         {
             InitializeComponent();
-         //   this.VolumeChanged += new VolumeChangedEventHandler(PictureAlbum_ActivityChanged);
+            this.VolumeChanged += new VolumeChangedEventHandler( VolumeSlider_VolumeChanged );
             // At this point, CurrVol gets assigned the volume
             uint CurrVol = 0;
             try
             {
                 //Mono TODO:
-                waveOutGetVolume(IntPtr.Zero, out CurrVol);
+                waveOutGetVolume( IntPtr.Zero, out CurrVol );
             }
             catch { }
-            ushort CalcVol = (ushort)(CurrVol & 0x0000ffff);
+            ushort CalcVol = (ushort)( CurrVol & 0x0000ffff );
             // Get the volume on a scale of 1 to 100
-            Volume = (uint)(CalcVol / (ushort.MaxValue / 100));
+            Volume = (uint)( CalcVol / ( ushort.MaxValue / 100 ) );
         }
 
-        //public delegate void VolumeChangedEventHandler(System.Object sender, System.EventArgs e,uint Volume);
-        //public event VolumeChangedEventHandler VolumeChanged;
-
-
-        private uint volume;
+        public delegate void VolumeChangedEventHandler( System.Object sender, System.EventArgs e );
+        public event VolumeChangedEventHandler VolumeChanged;
         private Color barForeColor = Color.Blue;
         private Color barBackColor = Color.Black;
+        private Color barTextColor = Color.Black;
         private int horMargin = 5;
         private int verMargin = 5;
+        private uint volume;
         public uint Volume
         {
-            get
+            get { return volume; }
+            set
             {
-                return Math.Max(0, Math.Min(volume, 100));
+                volume = Math.Max( 0, Math.Min( value, 100 ) );
+                VolumeChanged( this, new EventArgs() );
             }
-            set { volume = value; }
+        }
+
+        private bool m_showVolumeText = true;
+        public bool ShowVolumeText
+        {
+            get { return m_showVolumeText; }
+            set { m_showVolumeText = value; }
         }
 
         private ITheme m_theme;
-        public void ThemeChanged(ITheme visualTheme)
+        public void ThemeChanged( ITheme visualTheme )
         {
             m_theme = visualTheme;
-            barBackColor = visualTheme.Control;
-            barForeColor = visualTheme.ControlText;
+            //barBackColor = visualTheme.Control;
+            //barForeColor = visualTheme.ControlText;
+            //this.BackColor = visualTheme.Control;
+            //this.ForeColor = visualTheme.ControlText;
+
+            barBackColor = System.Drawing.SystemColors.GrayText;
+            barForeColor = visualTheme.MainHeader;
+            barTextColor = visualTheme.ControlText;
             this.BackColor = visualTheme.Control;
-            this.ForeColor = visualTheme.ControlText;
+            this.ForeColor = visualTheme.Window;
         }
 
-        private void VolumeSlider_Load(object sender, EventArgs e)
+        private void VolumeSlider_Load( object sender, EventArgs e )
         {
             //this.volume = 80;
         }
 
-        private void VolumeSlider_MouseClick(object sender, MouseEventArgs e)
+        private void VolumeSlider_VolumeChanged( System.Object sender, System.EventArgs e )
         {
-            volume = (uint)(100 * (((double)(e.X) - horMargin) / ((double)(this.Width) - 2 * horMargin)));
-
             // Calculate the volume that's being set
-            int NewVolume = ((ushort.MaxValue / 100) * (int)(Volume));
+            int NewVolume = ( ( ushort.MaxValue / 100 ) * (int)( Volume ) );
             // Set the same volume for both the left and the right channels
-            uint NewVolumeAllChannels = (((uint)NewVolume & 0x0000ffff) | ((uint)NewVolume << 16));
+            uint NewVolumeAllChannels = ( ( (uint)NewVolume & 0x0000ffff ) | ( (uint)NewVolume << 16 ) );
             // Set the volume
             try
             {
                 //Mono TODO:
-                waveOutSetVolume(IntPtr.Zero, NewVolumeAllChannels);
+                waveOutSetVolume( IntPtr.Zero, NewVolumeAllChannels );
             }
             catch { }
-            //VolumeChanged(this, new EventArgs(), volume);
+
             this.Invalidate();
         }
 
-        protected override void OnPaint(PaintEventArgs e)
+        private void VolumeSlider_MouseMove( object sender, MouseEventArgs e )
         {
-            base.OnPaint(e);
+            if ( Capture & e.Button == MouseButtons.Left )
+            {
+                double eX = (double)( e.X ) - horMargin;
+                double max = (double)this.Width - 2 * horMargin;
+                if ( eX < 0 ) eX = 0;
+                if ( eX > max ) eX = max;
+
+                volume = (uint)( 100 * ( eX / max ) );
+                VolumeChanged( this, new EventArgs() );
+            }
+        }
+
+        private void VolumeSlider_MouseUp( object sender, MouseEventArgs e )
+        {
+            Capture = false;
+            this.Invalidate();
+        }
+
+        private void VolumeSlider_MouseDown( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == MouseButtons.Left )
+            {
+                Capture = true;
+                VolumeSlider_MouseMove( sender, e );
+            }
+        }
+
+        protected override void OnPaint( PaintEventArgs e )
+        {
+            base.OnPaint( e );
 
             //double imax = 10000;
             //Pen p = new Pen(BarBackColor, 1);
@@ -121,27 +161,50 @@ namespace ActivityPicturePlugin.Helper
             //        p.Color = barForeColor;
             //    e.Graphics.DrawLine(p, x, y1, x, y2);
             //}
-            int x = (int)(horMargin + (double)(volume) / 100 * (this.Width - 2 * horMargin));
-            Point p1 = new Point(horMargin, this.Height - horMargin);
-            Point p2 = new Point(x, this.Height - horMargin);
-            Point p3 = new Point(x, (int)(verMargin + (1 - (double)(volume) / 100) * (this.Height - 2 * verMargin)));
-            Point p4 = new Point(this.Width - horMargin, verMargin);
-            Point p5 = new Point(this.Width - horMargin, this.Height - verMargin);
+            /*int x = (int)( horMargin + (double)( volume ) / 100 * ( this.Width - 2 * horMargin ) );
+            Point p1 = new Point( horMargin, this.Height - verMargin );
+            Point p2 = new Point( x, this.Height - verMargin );
+            Point p3 = new Point( x, (int)( verMargin + ( 1 - (double)( volume ) / 100 ) * ( this.Height - 2 * verMargin ) ) );
+            Point p4 = new Point( this.Width - horMargin, verMargin );
+            Point p5 = new Point( this.Width - horMargin, this.Height - verMargin );
             Point[] vol = { p1, p2, p3 };
+            Point[] full = { p2, p3, p4, p5 };*/
+
+            int offsetNoVolume = 2;	//slightly widens the low end of the volume graphic.
+            int x = (int)( horMargin + (double)( volume ) / 100 * ( this.Width - 2 * horMargin ) );
+            double slope = (double)( this.Height - offsetNoVolume - 2 * verMargin ) / ( this.Width - 2 * horMargin );
+            Point p1 = new Point( horMargin, this.Height - verMargin );
+            Point p2 = new Point( x, this.Height - verMargin );
+            Point p3 = new Point( x, ( this.Height - offsetNoVolume - verMargin ) - (int)( x * slope ) );
+            Point p4 = new Point( this.Width - horMargin, verMargin );
+            Point p5 = new Point( this.Width - horMargin, this.Height - verMargin );
+            Point p6 = new Point( horMargin, this.Height - verMargin - offsetNoVolume );
+            Point[] vol = { p1, p2, p3, p6 };
             Point[] full = { p2, p3, p4, p5 };
-            Brush bvol = new SolidBrush(this.barForeColor);
-            Brush bfull = new SolidBrush(this.barBackColor);
-            if (this.Enabled)
+
+            string text = volume + "%";
+
+            using ( Brush bvol = new SolidBrush( this.barForeColor ),
+                    bfull = new SolidBrush( this.barBackColor ),
+                    btext = new SolidBrush( this.barTextColor ) )
             {
-                e.Graphics.FillPolygon(bvol, vol);
-                e.Graphics.FillPolygon(bfull, full);
-            }
-            else
-            {
-                Brush disabled = new SolidBrush(System.Drawing.SystemColors.GrayText);
-                e.Graphics.FillPolygon(disabled, vol);
-                e.Graphics.FillPolygon(disabled, full);
+                if ( this.Enabled )
+                {
+                    e.Graphics.FillPolygon( bvol, vol );
+                    e.Graphics.FillPolygon( bfull, full );
+                    if ( m_showVolumeText && Capture )
+                        e.Graphics.DrawString( text, this.Font, btext, new PointF( 0, 0 ) );
+                }
+                else
+                {
+                    using ( Brush disabled = new SolidBrush( System.Drawing.SystemColors.GrayText ) )
+                    {
+                        e.Graphics.FillPolygon( disabled, vol );
+                        e.Graphics.FillPolygon( disabled, full );
+                    }
+                }
             }
         }
+
     }
 }

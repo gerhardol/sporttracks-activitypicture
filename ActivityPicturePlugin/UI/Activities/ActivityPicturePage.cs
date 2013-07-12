@@ -31,10 +31,10 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
-    class ActivityPicturePage: IDisposable,
+    class ActivityPicturePage : IDisposable,
 
 #if ST_2_1
-     IActivityDetailPage
+ IActivityDetailPage
 #else
      IDetailPage
 #endif
@@ -61,7 +61,7 @@ namespace ActivityPicturePlugin.UI.Activities
             set
             {
                 activity = value;
-                if (control != null)
+                if ( control != null )
                 {
                     control.Activity = value;
                 }
@@ -71,23 +71,25 @@ namespace ActivityPicturePlugin.UI.Activities
         public bool MenuEnabled
         {
             get { return menuEnabled; }
-            set { menuEnabled = value; OnPropertyChanged("MenuEnabled"); }
+            set { menuEnabled = value; OnPropertyChanged( "MenuEnabled" ); }
         }
+
         public IList<string> MenuPath
         {
             get { return menuPath; }
-            set { menuPath = value; OnPropertyChanged("MenuPath"); }
+            set { menuPath = value; OnPropertyChanged( "MenuPath" ); }
         }
+
         public bool MenuVisible
         {
             get { return menuVisible; }
-            set { menuVisible = value; OnPropertyChanged("MenuVisible"); }
+            set { menuVisible = value; OnPropertyChanged( "MenuVisible" ); }
         }
 
         public bool PageMaximized
         {
             get { return pageMaximized; }
-            set { pageMaximized = value; OnPropertyChanged("PageMaximized"); }
+            set { pageMaximized = value; OnPropertyChanged( "PageMaximized" ); }
         }
 
         #endregion
@@ -96,13 +98,15 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public Control CreatePageControl()
         {
-            if (control == null)
+            if ( control == null )
             {
 #if !ST_2_1
                 control = new ActivityPicturePageControl(this, m_view);
 #else
                 control = new ActivityPicturePageControl();
 #endif
+                control.CleanupThumbnails();
+
                 control.Activity = activity;
             }
             return control;
@@ -110,9 +114,9 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public bool HidePage()
         {
-            if (null != control)
+            if ( null != this.control )
             {
-                control.HidePage();
+                this.control.HidePage();
             }
             return true;
         }
@@ -122,11 +126,12 @@ namespace ActivityPicturePlugin.UI.Activities
             get { return Title; }
         }
 
-        public void ShowPage(string bookmark)
+        public void ShowPage( string bookmark )
         {
-            if (control != null)
+            if ( control != null )
             {
-                control.ShowPage(bookmark);
+                //return;
+                control.ShowPage( bookmark );
             }
         }
 
@@ -135,11 +140,11 @@ namespace ActivityPicturePlugin.UI.Activities
             get { return null; }
         }
 
-        public void ThemeChanged(ITheme visualTheme)
+        public void ThemeChanged( ITheme visualTheme )
         {
-            if (control != null)
+            if ( control != null )
             {
-                control.ThemeChanged(visualTheme);
+                control.ThemeChanged( visualTheme );
             }
         }
 
@@ -150,16 +155,20 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void RefreshPage()
         {
-            if (control != null)
+            if ( control != null )
             {
-                control.RefreshPage();
+                //control.RefreshPage();	//Note:  If you must call RefreshPage, check _showPage first.
+                control.Refresh();
             }
         }
-        public void UICultureChanged(CultureInfo culture)
+
+        public void UICultureChanged( CultureInfo culture )
         {
-            if (control != null)
+            if ( control != null )
             {
-                control.UICultureChanged(culture);
+                control.ShowProgressBar();
+                control.UICultureChanged( culture );
+                control.HideProgressBar();
             }
         }
 
@@ -171,11 +180,11 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Private methods
-        private void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged( string propertyName )
         {
-            if (PropertyChanged != null)
+            if ( PropertyChanged != null )
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                PropertyChanged( this, new PropertyChangedEventArgs( propertyName ) );
             }
         }
         #endregion
@@ -194,7 +203,11 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void Dispose()
         {
-            this.control.Dispose();
+            if ( this.control != null )
+            {
+                this.control.Dispose();
+                this.control = null;
+            }
         }
     }
 }

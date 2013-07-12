@@ -26,6 +26,9 @@ using ActivityPicturePlugin.UI.Activities;
 using QuartzTypeLib;
 using ZoneFiveSoftware.Common.Data.GPS;
 
+using System.IO;
+using System.Runtime.InteropServices;
+
 namespace ActivityPicturePlugin.Helper
 {
     public partial class PictureAlbum : UserControl
@@ -34,17 +37,20 @@ namespace ActivityPicturePlugin.Helper
         {
             InitializeComponent();
             EnableDoubleBuffering();
-            this.ActivityChanged += new ActivityChangedEventHandler(PictureAlbum_ActivityChanged);
+            this.ActivityChanged += new ActivityChangedEventHandler( PictureAlbum_ActivityChanged );
+            this.VideoChanged += new CurrentVideoIndexChangedEventHandler( PictureAlbum_VideoChanged );
+            this.SelectedChanged += new SelectedChangedEventHandler( PictureAlbum_SelectedChanged );
             this.ImageRectangles[0] = new Rectangle();
-            this.albumToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
-            this.albumToolTipTimer.Interval = 200;
+            this.albumToolTipTimer.Tick += new System.EventHandler( ToolTipTimer_Tick );
+            this.albumToolTipTimer.Interval = 1000;
         }
+
         #region Overrides
-        protected override void WndProc(ref Message m)
+        protected override void WndProc( ref Message m )
         {
             try
             {
-                switch (m.Msg)
+                switch ( m.Msg )
                 {
                     case WM_VSCROLL:
                         //return;
@@ -52,71 +58,135 @@ namespace ActivityPicturePlugin.Helper
                     case WM_GRAPHNOTIFY:
                         int lEventCode;
                         int lParam1, lParam2;
-                        while (true)
+                        while ( true )
                         {
-                            MediaEventEx.GetEvent(out lEventCode,
+                            if ( MediaEventEx == null ) break;
+                            MediaEventEx.GetEvent( out lEventCode,
                                 out lParam1,
                                 out lParam2,
-                                0);
-                            MediaEventEx.FreeEventParams(lEventCode, lParam1, lParam2);
-                            if (lEventCode == EC_COMPLETE) //video is a end position
+                                0 );
+
+                            MediaEventEx.FreeEventParams( lEventCode, lParam1, lParam2 );
+                            if ( ( lEventCode == EC_COMPLETE ) || //video is a end position
+                                ( lEventCode == EC_USERABORT ) ||
+                                ( lEventCode == EC_ERRORABORT ) )
                             {
                                 FilGrMan.Stop();
                                 FilGrMan.CurrentPosition = 0;
                                 CurrentStatus = MediaStatus.Stopped;
-                                UpdateVideoToolBar(this, new EventArgs());
+                                UpdateVideoToolBar( this, new EventArgs() );
                             }
                         }
+                        break;
                     default:
                         break;
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //break;
             }
-            base.WndProc(ref m);
+            base.WndProc( ref m );
         }
-        protected override void OnPaint(PaintEventArgs e)
+        protected override void OnPaint( PaintEventArgs e )
         {
-            this.PaintAlbumView(false);
-            PaintEventArgs pe = new PaintEventArgs(this.CreateGraphics(), this.DisplayRectangle);
-            base.OnPaint(pe);
+            this.PaintAlbumView( false, e );
+            base.OnPaint( e );
         }
         #endregion
+
         #region EventHandlers
-        public delegate void ActivityChangedEventHandler(System.Object sender, System.EventArgs e);
-        public delegate void ZoomChangeEventHandler(System.Object sender, int increment);
-        public delegate void UpdateVideoToolBarEventHandler(System.Object sender, System.EventArgs e);
-        public delegate void ShowVideoOptionsEventHandler(System.Object sender, System.EventArgs e);
+        public delegate void SelectedChangedEventHandler( System.Object sender, SelectedChangedEventArgs e );
+        public delegate void ActivityChangedEventHandler( System.Object sender, System.EventArgs e );
+        public delegate void ZoomChangeEventHandler( System.Object sender, int increment );
+        public delegate void UpdateVideoToolBarEventHandler( System.Object sender, System.EventArgs e );
+        public delegate void ShowVideoOptionsEventHandler( System.Object sender, System.EventArgs e );
+        public delegate void CurrentVideoIndexChangedEventHandler( System.Object sender, System.EventArgs e );
         #endregion
+
         #region Events
+        public event SelectedChangedEventHandler SelectedChanged;
         public event ActivityChangedEventHandler ActivityChanged;
         public event ZoomChangeEventHandler ZoomChange;
         public event UpdateVideoToolBarEventHandler UpdateVideoToolBar;
         public event ShowVideoOptionsEventHandler ShowVideoOptions;
+        public event CurrentVideoIndexChangedEventHandler VideoChanged;
+        public class SelectedChangedEventArgs : EventArgs
+        {
+            public SelectedChangedEventArgs( int ix, Rectangle r )
+            {
+                selectedIndex = ix;
+                rect = r;
+            }
+
+            private int selectedIndex = -1;
+            public int SelectedIndex
+            {
+                get { return selectedIndex; }
+                private set { selectedIndex = value; }
+            }
+
+            private Rectangle rect = new Rectangle( -1, -1, -1, -1 );
+            public Rectangle Rect
+            {
+                get { return rect; }
+                private set { rect = value; }
+            }
+        }
+
         #endregion
+
         #region public members
         public List<ImageData> ImageList
         {
             get { return imagelist; }
             set { imagelist = value; }
         }
+
+        private int selectedIndex = -1;
+        public int SelectedIndex
+        {
+            get { return selectedIndex; }
+            set
+            {
+                Rectangle r;
+                if ( ( value >= 0 ) && ( value < ImageRectangles.Length ) )
+                    r = ImageRectangles[value];
+                else
+                    r = new Rectangle( -1, -1, -1, -1 );
+                this.SelectedChanged( this, new SelectedChangedEventArgs( value, r ) );
+            }
+        }
+
         public int Zoom
         {
             get { return zoom; }
             set { zoom = value; }
         }
+
         public bool NoThumbNails
         {
             get { return nothumbnails; }
             set { nothumbnails = value; }
         }
+
+        private MaxImageSize m_MaxImageSize = MaxImageSize.NoLimit;
+        public MaxImageSize MaximumImageSize
+        {
+            get { return m_MaxImageSize; }
+            set { m_MaxImageSize = value; }
+        }
+
         //public ImageSortMode SortMode
         //{
         //    get { return sortmode; }
         //    set { sortmode = value; }
         //}
+        public enum MaxImageSize
+        {
+            NoLimit = 0,
+            FitToWindow
+        }
         public enum ImageSortMode
         {
             none,
@@ -139,6 +209,7 @@ namespace ActivityPicturePlugin.Helper
         }
 
         #endregion
+
         #region private members
         private bool nothumbnails;
         private int zoom = 20;
@@ -146,404 +217,977 @@ namespace ActivityPicturePlugin.Helper
         private Rectangle[] ImageRectangles = new Rectangle[1];
         //private ImageSortMode sortmode = ImageSortMode.none;
         #endregion
+
         #region private methods
+
         private Rectangle GetImagePositions()
         {
             try
             {
-                int NewHeight = (int)(30 + 5 * Zoom);
+                int NewHeight = (int)( 30 + 5 * Zoom );
                 int NewWidth = 120;
-                int offset = 0;
                 int left = 0, top = 0, row = 0;
+                int nImagesInRow = 0;
 
-                if (this.ImageList.Count > 0)
+                if ( ( this.ImageList != null ) && ( this.ImageList.Count > 0 ) )
                 {
                     ImageRectangles = new Rectangle[this.ImageList.Count];
-                    for (int i = 0; i <= this.ImageList.Count - 1; i++)
+                    for ( int i = 0; i <= this.ImageList.Count - 1; i++ )
                     {
-                        NewWidth = (int)(ImageList[i].Ratio * NewHeight);
-                        if (this.panel1.Width < NewWidth)
+                        nImagesInRow++;
+                        NewHeight = (int)( 30 + 5 * Zoom );
+                        NewWidth = (int)( ImageList[i].Ratio * NewHeight );
+                        if ( ( this.Width < NewWidth ) && ( m_MaxImageSize == MaxImageSize.FitToWindow ) )
                         {
-                            ZoomChange(this, -1);
-                            return new Rectangle(0, 0, 0, 0);
+                            //Maximum zoom exceeded. Calculate maximum and re-call GetImagePositions
+                            double zoomchange = ( ( ( this.Width / ImageList[i].Ratio ) - 30 ) / 5 ) - Zoom;
+                            Zoom += (int)Math.Floor( zoomchange );
+                            ZoomChange( this, 0 );	// Signal a zoom change has occurred.
+                            return GetImagePositions();
                         }
 
                         //calculate new Position
-                        if ((left + NewWidth) > this.panel1.Width)
+                        if ( ( ( left + NewWidth ) > this.Width ) && ( nImagesInRow > 1 ) )  //(nImagesInRow>1) ensures at least one image in row
                         {
                             //start new row
                             left = 0;
                             row += 1;
+                            top += NewHeight;
+                            nImagesInRow = 1;	// this image begins a new row
                         }
 
-                        top = offset + row * NewHeight;
-                        ImageRectangles[i] = new Rectangle(left, top, NewWidth, NewHeight);
+                        if ( ( i != currentVideoIndex ) || ( NewWidth < this.Width - 1 ) )
+                            ImageRectangles[i] = new Rectangle( left, top, NewWidth, NewHeight );
+                        else
+                        {
+                            int vidHeight = (int)( ( this.Width - 1 ) * (double)NewHeight / NewWidth );
+                            // The video cannot be wider than this
+                            ImageRectangles[i] = new Rectangle( left, top, this.Width - 1, vidHeight );
+
+                            // Even though the top of the next row is calculated in the next iteration
+                            // we decrement the current top the difference between the NewHeight and
+                            // this current vidHeight.
+                            top -= ( NewHeight - vidHeight );
+                        }
 
                         //left for the next image
                         left += NewWidth;
                     }
-                    return new Rectangle(0, 0, this.panel1.Width, top + NewHeight);
+                    return new Rectangle( 0, 0, this.Width, top + NewHeight );
                 }
-                else return new Rectangle(0, 0, 0, 0);
+                else return new Rectangle( 0, 0, 0, 0 );
             }
-            catch (Exception)
+            catch ( Exception )
             {
-                return new Rectangle(0, 0, 0, 0);
+                return new Rectangle( 0, 0, 0, 0 );
             }
-
-
         }
-        private void DrawImages(bool CompleteRedraw)
+
+        private void DrawImages( bool CompleteRedraw, PaintEventArgs e )
         {
             try
             {
                 //int ZoomLevel = this.parentctl.GetZoom();
                 //int NewHeight = (int)(30 + 5 * ZoomLevel);
                 //int NewWidth = 120; //reference width
-                //int offset = 0;
                 //int left = 0, top = 0, row = 0;
+
                 Image img = null;
                 //List<ImageData> imgList = this.ImageList;//.parentctl.Images;
-                if (this.ImageList.Count > 0)
+                if ( this.ImageList.Count > 0 )
                 {
                     //ImageRectangles = new Rectangle[imgList.Count];
-                    Graphics g = this.panel1.CreateGraphics();
-                    for (int i = 0; i <= this.ImageList.Count - 1; i++)
+                    Graphics g = e.Graphics;
+                    int ixSelected = -1;
+                    for ( int i = 0; i < this.ImageList.Count; i++ )
                     {
-                        if ((this.ImageList[i].ThumbnailPath != null))
+                        if ( ( this.ImageList[i].ThumbnailPath != null ) )
                         {
-                            if (NoThumbNails) img = new Bitmap(this.ImageList[i].PhotoSource);
+                            if ( NoThumbNails ) img = new Bitmap( this.ImageList[i].PhotoSource );
                             else img = this.ImageList[i].EW.GetBitmap();
                             //    NewWidth = (int)((double)(img.Width) / (double)(img.Height) * NewHeight);
                         }
 
                         //draw the images
-                        Pen p = new Pen(Brushes.Black, 2);
-                        g.DrawImage(img, ImageRectangles[i]);
-                        if (this.ImageList[i].Selected) g.DrawRectangle(new Pen(Brushes.Blue, 2), ImageRectangles[i]);
-                        else g.DrawRectangle(p, ImageRectangles[i]);
+                        using ( Pen p1 = new Pen( Brushes.Black, 2 ) )
+                        {
+                            g.DrawImage( img, ImageRectangles[i] );
+                            g.DrawRectangle( p1, ImageRectangles[i] );
+                            if ( this.ImageList[i].Selected ) ixSelected = i;
+                        }
+
+                        img.Dispose();
+                        img = null;
                     }
 
                     // test for solution without invalidating
-                    Region r = new Region();
-                    for (int i = 0; i < ImageRectangles.Length; i++)
+                    using ( Region r = new Region() )
                     {
-                        r.Xor(ImageRectangles[i]);
-                    }
-                    //Rectangle rect = new Rectangle(new Point(0, 0), this.panel1.Size);
-                    ////r.Complement(rect);
-                    g.FillRegion(Brushes.White, r);
+                        for ( int i = 0; i < ImageRectangles.Length; i++ )
+                        {
+                            r.Xor( ImageRectangles[i] );
+                        }
 
-                    if ((this.FilGrMan != null) & (currentVideoIndex != -1))
+                        //Rectangle rect = new Rectangle(new Point(0, 0), this.panel1.Size);
+                        ////r.Complement(rect);
+                        using ( SolidBrush sb = new SolidBrush( this.BackColor ) )
+                        {
+                            g.FillRegion( sb, r );
+                        }
+                    }
+
+                    if ( ( this.FilGrMan != null ) & ( currentVideoIndex != -1 ) )
                     {
-                        FilGrMan.SetWindowPosition(ImageRectangles[currentVideoIndex].Left,
+                        FilGrMan.SetWindowPosition( ImageRectangles[currentVideoIndex].Left,
                             ImageRectangles[currentVideoIndex].Top,
                             ImageRectangles[currentVideoIndex].Width,
-                            ImageRectangles[currentVideoIndex].Height);
+                            ImageRectangles[currentVideoIndex].Height );
+                    }
+
+                    //draw the images
+                    if ( ixSelected != -1 )
+                    {
+                        //using ( Pen p2 = new Pen( Brushes.Blue, 2 ) )
+                        using ( Pen p2 = new Pen( Brushes.Yellow, 2 ) )
+                        {
+                            g.DrawRectangle( p2, ImageRectangles[ixSelected] );
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 // throw;
             }
         }
-        private int GetIndexOfCurrentImage(Point p)
+
+        private int GetIndexOfCurrentImage( Point p )
         {
             try
             {
-                if (ImageRectangles != null && this.ImageList.Count != 0)
+                if ( ImageRectangles != null && this.ImageList.Count != 0 )
                 {
-                    for (int i = 0; i < ImageRectangles.Length; i++)
+                    for ( int i = 0; i < ImageRectangles.Length; i++ )
                     {
-                        if (ImageRectangles[i] != null)
+                        if ( ImageRectangles[i] != null )
                         {
-                            if (new Region(ImageRectangles[i]).IsVisible(p))
+                            if ( new Region( ImageRectangles[i] ).IsVisible( p ) )
                             {
-                                    return i;
+                                return i;
                             }
                         }
                     }
                 }
                 return -1;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return -1;
             }
 
         }
+
         private void EnableDoubleBuffering()
         {
             // Set the value of the double-buffering style bits to true.
-            this.SetStyle(ControlStyles.DoubleBuffer |
+            this.SetStyle( ControlStyles.DoubleBuffer |
                ControlStyles.UserPaint |
                ControlStyles.AllPaintingInWmPaint,
-               true);
-            this.SetStyle(ControlStyles.ResizeRedraw, true);
+               true );
+            this.SetStyle( ControlStyles.ResizeRedraw, true );
             this.UpdateStyles();
         }
-        #endregion
-        #region public methods
-        public void PaintAlbumView(bool CompleteRedraw)
+
+        private void PaintAlbumView( bool CompleteRedraw, PaintEventArgs e )
         {
             Rectangle rect = this.GetImagePositions();
-            if (rect.Height > 0)
-            {
-                if (this.panel1.Height != rect.Height) this.panel1.Height = rect.Height;
-                this.DrawImages(CompleteRedraw);
-            }
+            if ( rect.Height == 0 ) rect.Height = 1;	// No images to display.  This line results in control being resized.
+            if ( this.Height != rect.Height ) this.Height = rect.Height;
+            this.DrawImages( CompleteRedraw, e );
         }
+        #endregion
+
+        #region public methods
+        public void PaintAlbumView( bool CompleteRedraw )
+        {
+            using ( PaintEventArgs e = new PaintEventArgs( this.CreateGraphics(), this.DisplayRectangle ) )
+            {
+                PaintAlbumView( CompleteRedraw, e );
+            }
+
+        }
+
         public void ActivityChanging()
         {
-            this.ActivityChanged(this, new EventArgs());
+            this.ActivityChanged( this, new EventArgs() );
         }
-        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+
+        public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
         {
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.ControlText;
         }
         #endregion
+
         #region Event handler methods
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-            //PaintAlbumView(true);
-        }
 
         //ToolTip support - hints from omb
-
         // private member variables of the Control - initialization omitted
         Timer albumToolTipTimer = new Timer();
-        bool albumTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
+        //bool albumTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
         int IndexOfLastImage = -1;
 
-        private void ToolTipTimer_Tick(object sender, EventArgs e)
+        private void ToolTipTimer_Tick( object sender, EventArgs e )
         {
             albumToolTipTimer.Stop();
-            if (IndexOfLastImage >= 0 &&
-                    this.ImageList[IndexOfLastImage].Type == ImageData.DataTypes.Image)
+            if ( IndexOfLastImage >= 0 &&
+                    this.ImageList[IndexOfLastImage].Type == ImageData.DataTypes.Image )
             {
                 int i = IndexOfLastImage;
                 string tooltip = "";
                 tooltip = this.ImageList[i].PhotoSource;
-                DateTime dt = new DateTime(1950, 1, 1);
-                if (dt < this.ImageList[i].EW.DateTimeOriginal) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
-                if (this.ImageList[i].EW.GPSLatitude != 0) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace(Environment.NewLine, ", ");
-                if (this.ImageList[i].Title != "") tooltip += Environment.NewLine + this.ImageList[i].Title;
-                this.toolTip1.SetToolTip(this.panel1, tooltip);
+                DateTime dt = new DateTime( 1950, 1, 1 );
+                if ( dt < this.ImageList[i].EW.DateTimeOriginal ) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
+                if ( this.ImageList[i].EW.GPSLatitude != 0 ) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace( Environment.NewLine, ", " );
+                if ( this.ImageList[i].Title != "" ) tooltip += Environment.NewLine + this.ImageList[i].Title;
+                this.toolTip1.SetToolTip( this, tooltip );
             }
             else
             {
-                toolTip1.Hide(panel1);
+                toolTip1.Hide( this );
             }
         }
-        private void panel1_MouseEnter(object sender, EventArgs e)
+
+        private void PictureAlbum_MouseEnter( object sender, EventArgs e )
         {
-            this.panel1.Focus();
+            this.Focus();
         }
-        private void panel1_MouseLeave(object sender, EventArgs e)
+
+        private void PictureAlbum_MouseLeave( object sender, EventArgs e )
         {
             albumToolTipTimer.Stop();
-            toolTip1.Hide(panel1);
+            toolTip1.Hide( this );
             IndexOfLastImage = -1;
         }
-        private void panel1_MouseMove(object sender, MouseEventArgs e)
+
+        private void PictureAlbum_MouseMove( object sender, MouseEventArgs e )
         {
-            int i = GetIndexOfCurrentImage(e.Location);
-            if (i == IndexOfLastImage)
+            int i = GetIndexOfCurrentImage( e.Location );
+            if ( i == IndexOfLastImage )
                 return;
             else
-                toolTip1.Hide(panel1);
+                toolTip1.Hide( this );
 
             IndexOfLastImage = i;
             albumToolTipTimer.Stop();
-            if (i>=0)
+            if ( i >= 0 )
                 albumToolTipTimer.Start();
         }
-        private void panel1_MouseDoubleClick(object sender, MouseEventArgs e)
+
+        private void PictureAlbum_MouseDoubleClick( object sender, MouseEventArgs e )
         {
-            int i = this.GetIndexOfCurrentImage(e.Location);
-            if (i >= 0)
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
             {
-                //Note: The click does not "get through"toolTip1 Video
-                Helper.Functions.OpenExternal(this.ImageList[i]);
-            }
-        }
-        private void panel1_MouseClick(object sender, MouseEventArgs e)
-        {
-            int i = this.GetIndexOfCurrentImage(e.Location);
-            if (i >= 0)
-            {
-                string s = this.ImageList[i].PhotoSource;
-                if (this.ImageList[i].Type == ImageData.DataTypes.Video)
+                int i = this.GetIndexOfCurrentImage( e.Location );
+                if ( i >= 0 )
                 {
-                    this.OpenVideo(this.ImageList[i].PhotoSource, i);
+                    //Note: The click does not "get through"toolTip1 Video
+                    Helper.Functions.OpenExternal( this.ImageList[i] );
                 }
             }
         }
-        private void panel1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+
+        private void PictureAlbum_MouseClick( object sender, MouseEventArgs e )
         {
             try
             {
-                //TODO: update size after update, not working now
-                if (e.KeyCode == Keys.Up)
+                if ( e.Button == System.Windows.Forms.MouseButtons.Left )
                 {
-                    if (this.Zoom < 99) this.ZoomChange(this, +2);
-                }
-                else if (e.KeyCode == Keys.Down)
-                {
-                    if (this.Zoom > 1) this.ZoomChange(this, -2);
+                    CurrentVideoIndex = -1;
+                    int i = this.GetIndexOfCurrentImage( e.Location );
+                    if ( i >= 0 )
+                    {
+                        string s = this.ImageList[i].PhotoSource;
+
+                        // Select it if it isn't already
+                        if ( !this.ImageList[i].Selected )
+                        {
+                            SelectedIndex = i;
+                        }
+
+                        if ( this.ImageList[i].Type == ImageData.DataTypes.Video )
+                        {
+                            this.OpenVideo( this.ImageList[i].PhotoSource, i );
+                        }
+                    }
+                    else
+                    {
+                        // Deselect all images
+                        SelectedIndex = -1;
+                        //for ( int j = 0; j < this.ImageList.Count; j++ )
+                        //this.ImageList[j].Selected = false;
+                        //this.SelectedChanged( this, new SelectedChangedEventArgs( -1, new Rectangle( -1, -1, -1, -1 ) ) );
+                        //this.Invalidate();
+                    }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
+            {
+            }
+        }
+
+        #region PictureAlbum: Keyboard Scrolling
+        private void PictureAlbumMoveSelectionUp()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int ixSelected = -1;
+            int ixNew = -1;
+            Rectangle rSelected = new Rectangle( -1, -1, -1, -1 );
+            int yNewRow = Int32.MinValue;
+
+            int i = SelectedIndex;
+            if ( ( i <= -1 ) || ( i >= id.Count ) ) i = 0;
+            for ( i = id.Count - 1; i >= 0; i-- )
+            {
+                if ( ixSelected == -1 )
+                {
+                    if ( id[i].Selected )
+                    {
+                        ixSelected = i;
+                        rSelected = ImageRectangles[i];
+                    }
+                    else continue;  // No point carrying on until we find the selected item. NEXT.
+                }
+
+                // We're at the first item.  Break out.
+                if ( i == 0 )
+                {
+                    if ( ixNew == -1 )
+                    {
+                        ixNew = i;
+                        break;
+                    }
+                }
+
+                // We're at the highest row.  Select the first item.
+                if ( rSelected.Top == 0 )
+                {
+                    ixNew = 0;
+                    break;
+                }
+
+                if ( ImageRectangles[i].Y < rSelected.Y )
+                {
+                    if ( yNewRow <= ImageRectangles[i].Y ) yNewRow = ImageRectangles[i].Y;  // We found a higher row
+                    else break;	// We found a row too high.  Break out.
+
+                    if ( rSelected.X == 0 )
+                    {
+                        // The currently selected item is the left-most item in the row
+                        // We want a left-align to the window match with an item in the next row if we can
+                        if ( ImageRectangles[i].X == 0 )
+                        {
+                            ixNew = i;
+                            break;
+                        }
+                    }
+                    else if ( ( ixSelected + 1 == id.Count ) || ( ImageRectangles[ixSelected + 1].Y > rSelected.Y ) )
+                    {
+                        // The currently selected item is the right-most item in the row
+                        // We want a right-align match with an item in the previous row if we can
+                        if ( ImageRectangles[i - 1].Y <= yNewRow )
+                        {
+                            ixNew = i;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // The currently selected item is not the right-most item in the row
+                        // We want a left-align to the item match with an item in the previous row
+                        if ( ImageRectangles[i].Width >= rSelected.Width )
+                        {
+                            if ( ( rSelected.Left >= ImageRectangles[i].Left ) && ( rSelected.Right <= ImageRectangles[i].Right ) )
+                                ixNew = i;
+                        }
+                        else if ( rSelected.Width >= ImageRectangles[i].Width )
+                        {
+                            if ( ( ImageRectangles[i].Right <= rSelected.Right ) && ( ImageRectangles[i].Left >= rSelected.Left ) )
+                                ixNew = i;
+                        }
+
+                        if ( rSelected.Left > ImageRectangles[i].Right )
+                        {
+                            //We either went too far or this is the last image on the previous row
+                            if ( ixNew == -1 ) ixNew = i;
+                            break;
+                        }
+
+                        if ( rSelected.Right < ImageRectangles[i].Left )
+                            continue;
+
+                        int x = 0, r = 0;
+                        if ( rSelected.Left >= ImageRectangles[i].Left )
+                        {
+                            x = rSelected.Left;
+                            if ( rSelected.Right < ImageRectangles[i].Right ) r = rSelected.Right;
+                            else r = ImageRectangles[i].Right;
+                        }
+                        else
+                        {
+                            x = ImageRectangles[i].Left;
+                            r = rSelected.Right;
+                        }
+
+                        if ( rSelected.Width >= ImageRectangles[i].Width )
+                        {
+                            if ( ( ( (double)r - x ) / ImageRectangles[i].Width ) >= 0.500 )
+                                ixNew = i;
+                        }
+                        else
+                        {
+                            if ( ( ( (double)r - x ) / rSelected.Width ) >= 0.500 )
+                            {
+                                ixNew = i;
+                                break;
+                            }
+                        }
+
+                        if ( rSelected.Left > ImageRectangles[i].Right )
+                        {
+                            //We either went too far or this is the last image on the previous row
+                            if ( ixNew == -1 ) ixNew = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ( ( ixSelected != -1 ) && ( ixNew != -1 ) )
+            {
+                id[ixSelected].Selected = false;
+                id[ixNew].Selected = true;
+            }
+
+            selectedIndex = ixNew;
+            SelectedIndex = ixNew;
+            //this.SelectedChanged( this, new SelectedChangedEventArgs( ixNew, this.ImageRectangles[ixNew] ) );
+            this.Invalidate();
+
+        }
+        private void PictureAlbumMoveSelectionDown()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int ixSelected = -1;
+            int ixNew = -1;
+            Rectangle rSelected = new Rectangle( -1, -1, -1, -1 );
+            int yNewRow = Int32.MaxValue;
+
+            int i = SelectedIndex;
+            if ( ( i <= -1 ) || ( i >= id.Count ) ) i = 0;
+            for ( i = 0; i < id.Count; i++ )
+            {
+                if ( ixSelected == -1 )
+                {
+                    if ( id[i].Selected )
+                    {
+                        ixSelected = i;
+                        rSelected = ImageRectangles[i];
+                    }
+                    else continue;  // No point carrying on until we find the selected item. NEXT.
+                }
+
+                // We're at the last item.  Break out.
+                if ( i + 1 == id.Count )
+                {
+                    if ( yNewRow >= ImageRectangles[i].Y ) ixNew = i;
+                    break;
+                }
+
+                // We're at the lowest row.  Select the last item.
+                if ( rSelected.Top == ImageRectangles[id.Count - 1].Top )
+                {
+                    ixNew = id.Count - 1;
+                    break;
+                }
+
+                if ( ImageRectangles[i].Y > rSelected.Y )
+                {
+                    if ( yNewRow >= ImageRectangles[i].Y ) yNewRow = ImageRectangles[i].Y;  // We found a lower row
+                    else break;	// We found a row too low.  Break out.
+
+                    if ( rSelected.X == 0 )
+                    {
+                        // The currently selected item is the left-most item in the row
+                        // We want a left-align to the window match with an item in the next row if we can
+                        if ( ImageRectangles[i].X == 0 )
+                        {
+                            ixNew = i;
+                            break;
+                        }
+                    }
+                    else if ( ImageRectangles[ixSelected + 1].Y > rSelected.Y )
+                    {
+                        // The currently selected item is the right-most item in the row
+                        // We want a right-align match with an item in the next row if we can
+                        if ( ImageRectangles[i].X <= rSelected.X + rSelected.Width )
+                        {
+                            ixNew = i;
+                            if ( ImageRectangles[i].X + ImageRectangles[i].Width > rSelected.X + rSelected.Width )
+                                break;
+                        }
+                        else break;
+                    }
+                    else
+                    {
+                        // The currently selected item is not the right-most item in the row
+                        // We want a left-align to the item match with an item in the next row
+                        if ( ImageRectangles[i].Width >= rSelected.Width )
+                        {
+                            if ( ( ( rSelected.Left >= ImageRectangles[i].Left ) && ( rSelected.Right <= ImageRectangles[i].Right ) ) ||
+                                ( ( ImageRectangles[i].Left + ImageRectangles[i].Width / 2 > rSelected.Left ) && ( ImageRectangles[i].Left < rSelected.Left ) ) ||
+                                ( ImageRectangles[i].Left > rSelected.Left ) )
+                            {
+                                ixNew = i;
+                                break;
+                            }
+                        }
+                        else if ( rSelected.Width >= ImageRectangles[i].Width )
+                        {
+                            if ( ( ImageRectangles[i].Left >= rSelected.Left ) ||
+                                ( ( ImageRectangles[i].Right - rSelected.Left ) * 2 > ImageRectangles[i].Width ) )
+                            {
+                                ixNew = i;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if ( ixNew == -1 ) ixNew = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ( ( ixSelected != -1 ) && ( ixNew != -1 ) )
+            {
+                id[ixSelected].Selected = false;
+                id[ixNew].Selected = true;
+            }
+            selectedIndex = ixNew;
+            SelectedIndex = ixNew;
+            //this.SelectedChanged( this, new SelectedChangedEventArgs( ixNew, this.ImageRectangles[ixNew] ) );
+            this.Invalidate();
+
+        }
+        private void PictureAlbumMoveSelectionRight()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int i = SelectedIndex;
+            if ( ( i != -1 ) && ( i < id.Count - 1 ) )
+            {
+                id[i].Selected = false;
+                id[i + 1].Selected = true;
+                selectedIndex = i + 1;
+                SelectedIndex = i + 1;
+            }
+        }
+        private void PictureAlbumMoveSelectionLeft()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int i = SelectedIndex;
+            if ( ( i > 0 ) && ( id.Count > 1 ) )
+            {
+                id[i].Selected = false;
+                id[i - 1].Selected = true;
+                selectedIndex = i - 1;
+                SelectedIndex = i - 1;
+            }
+
+        }
+        private void PictureAlbumMoveSelectionHome()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int i = SelectedIndex;
+            if ( ( i != -1 ) && ( i < id.Count ) )
+                id[i].Selected = false;
+
+            id[0].Selected = true;
+            selectedIndex = 0;
+            SelectedIndex = 0;
+
+
+        }
+        private void PictureAlbumMoveSelectionEnd()
+        {
+            List<ImageData> id = this.ImageList;
+            if ( ( id == null ) || ( id.Count < 0 ) ) return;
+
+            int i = SelectedIndex;
+            if ( ( i != -1 ) && ( i < id.Count ) )
+                id[i].Selected = false;
+            id[id.Count - 1].Selected = true;
+            selectedIndex = id.Count - 1;
+            SelectedIndex = id.Count - 1;
+        }
+        #endregion
+
+        private void PictureAlbum_PreviewKeyDown( object sender, PreviewKeyDownEventArgs e )
+        {
+            try
+            {
+                if ( e.Control )
+                {
+                    if ( e.KeyCode == Keys.Up )
+                    {
+                        if ( this.Zoom < 99 ) this.ZoomChange( this, +2 );
+                    }
+                    else if ( e.KeyCode == Keys.Down )
+                    {
+                        if ( this.Zoom > 1 ) this.ZoomChange( this, -2 );
+                    }
+                }
+                else
+                {
+                    if ( !e.Control )
+                    {
+                        if ( e.KeyCode == Keys.Right )
+                            PictureAlbumMoveSelectionRight();
+                        else if ( e.KeyCode == Keys.Left )
+                            PictureAlbumMoveSelectionLeft();
+                        else if ( e.KeyCode == Keys.Down )
+                            PictureAlbumMoveSelectionDown();
+                        else if ( e.KeyCode == Keys.Up )
+                            PictureAlbumMoveSelectionUp();
+                        else if ( e.KeyCode == Keys.Enter )
+                        {
+                            CurrentVideoIndex = -1;
+                            int i = SelectedIndex;
+                            if ( i >= 0 )
+                            {
+                                if ( this.ImageList[i].Type == ImageData.DataTypes.Video )
+                                {
+                                    if ( !this.OpenVideo( this.ImageList[i].PhotoSource, i ) )
+                                        Helper.Functions.OpenExternal( this.ImageList[i] );
+                                }
+                                else
+                                    Helper.Functions.OpenExternal( this.ImageList[i] );
+                            }
+                        }
+                        else if ( e.KeyCode == Keys.Home )
+                            PictureAlbumMoveSelectionHome();
+                        else if ( e.KeyCode == Keys.End )
+                            PictureAlbumMoveSelectionEnd();
+                    }
+
+                }
+            }
+            catch ( Exception )
             {
                 //throw;
             }
         }
-        private void PictureAlbum_Load(object sender, EventArgs e)
-        {
-            this.panel1.Width = this.Width - 6;
-            this.panel1.Height = this.Height - 6;
-            this.panel1.Left = 3;
-            this.panel1.Top = 3;
-        }
-        private void PictureAlbum_ActivityChanged(object sender, EventArgs e)
-        {
-            if (FilGrMan != null)
-            {
-                CleanUp();
-            }
 
+        private void PictureAlbum_ActivityChanged( object sender, EventArgs e )
+        {
+            CurrentVideoIndex = -1;
+            SelectedIndex = -1;
         }
+
         #endregion
+
         #region Video
+
         #region Public
+
         internal enum MediaStatus { None, Stopped, Paused, Running };
         internal MediaStatus CurrentStatus = MediaStatus.None;
-        internal void SetVideoPosition(int pos)
+
+        internal void SetVideoPosition( int pos )
         {
-            FilGrMan.CurrentPosition = FilGrMan.Duration * (double)(pos) / 1000;
+            if ( FilGrMan != null )
+                FilGrMan.CurrentPosition = FilGrMan.Duration * (double)( pos ) / 1000;
         }
-        internal double GetVideoPosition()
+
         //returns the position in % of the overall length
+        internal double GetVideoPosition()
         {
             try
             {
-                if (this.FilGrMan != null)
+                if ( this.FilGrMan != null )
                 {
                     double pos = this.FilGrMan.CurrentPosition / this.FilGrMan.Duration;
-                    if ((pos >= 0) & (pos <= 1)) return pos;
+                    if ( ( pos >= 0 ) & ( pos <= 1 ) ) return pos;
                 }
                 return 0;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return 0;
             }
-
         }
+
+        internal int GetCurrentVideoFrame()
+        {
+            int iFrame = 0;
+            try
+            {
+                if ( FilGrMan != null )
+                {
+                    if ( FilGrMan.AvgTimePerFrame != 0 )
+                        iFrame = (int)( FilGrMan.CurrentPosition / FilGrMan.AvgTimePerFrame );
+                }
+            }
+            catch ( Exception )
+            {
+                return 0;
+            }
+            return iFrame;
+        }
+
+        public bool IsAvi()
+        {
+            if ( ( CurrentVideoIndex != -1 ) && ( this.ImageList != null ) )
+            {
+                System.IO.FileInfo fi = new FileInfo( this.ImageList[CurrentVideoIndex].PhotoSource );
+                if ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 )
+                    return true;
+            }
+            return false;
+        }
+
         internal void PauseVideo()
         {
-            FilGrMan.Pause();
-            CurrentStatus = MediaStatus.Paused;
+            if ( ( FilGrMan != null ) && ( currentVideoIndex != -1 ) )
+            {
+                FilGrMan.Pause();
+                CurrentStatus = MediaStatus.Paused;
+            }
         }
+
         internal void StopVideo()
         {
-            FilGrMan.Stop();
-            FilGrMan.CurrentPosition = 0;
-            CurrentStatus = MediaStatus.Stopped;
+            if ( ( FilGrMan != null ) && ( currentVideoIndex != -1 ) )
+            {
+                FilGrMan.Stop();
+                FilGrMan.CurrentPosition = 0;
+                CurrentStatus = MediaStatus.Stopped;
+            }
         }
+
         internal void PlayVideo()
         {
-            FilGrMan.Run();
-            CurrentStatus = MediaStatus.Running;
+            if ( currentVideoIndex != -1 )
+            {
+                if ( FilGrMan != null )
+                {
+                    FilGrMan.Run();
+                    CurrentStatus = MediaStatus.Running;
+                }
+                else if ( this.ImageList != null )
+                    Helper.Functions.OpenExternal( this.ImageList[currentVideoIndex] );
+            }
         }
         #endregion
+
         #region Private
         private const int WM_APP = 0x8000;
         private const int WM_VSCROLL = 277;
         private const int WM_GRAPHNOTIFY = WM_APP + 1;
         private const int EC_COMPLETE = 0x01;
+        private const int EC_USERABORT = 0x02;
+        private const int EC_ERRORABORT = 0x03;
         private const int WS_CHILD = 0x40000000;
         private const int WS_CLIPCHILDREN = 0x2000000;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;
         private FilgraphManagerClass FilGrMan = null;
         private IMediaEventEx MediaEventEx = null;
+
         private int currentVideoIndex = -1;
-        private void OpenVideo(string file, int imageNumber)
+        public int CurrentVideoIndex
         {
+            get { return this.currentVideoIndex; }
+            private set
+            {
+                bool bChanged = this.currentVideoIndex != value;
+                this.currentVideoIndex = value;
+                if ( bChanged ) this.VideoChanged( this, new EventArgs() );
+            }
+        }
+
+        private bool OpenVideo( string file, int imageNumber )
+        {
+            bool bRet = true;
             try
             {
                 //int ZoomLevel = this.parentctl.GetZoom();
-                int height = (int)(30 + 3 * Zoom);
+                int height = (int)( 30 + 3 * Zoom );
 
-
-                CleanUp();
+                CurrentVideoIndex = imageNumber;
                 FilGrMan = new FilgraphManagerClass();
-                FilGrMan.RenderFile(file);
+                FilGrMan.RenderFile( file );
 
-                int width = (int)((double)(FilGrMan.DestinationWidth) / (double)(FilGrMan.DestinationHeight) * height);
-
+                int width = (int)( (double)( FilGrMan.DestinationWidth ) / (double)( FilGrMan.DestinationHeight ) * height );
 
                 try
                 {
-                    FilGrMan.Owner = (int)panel1.Handle;
+                    FilGrMan.Owner = (int)this.Handle;
                     FilGrMan.WindowStyle = WS_CHILD | WS_CLIPCHILDREN;
-                    FilGrMan.SetWindowPosition(ImageRectangles[imageNumber].Left,
+                    FilGrMan.WindowStyleEx = WS_EX_TOOLWINDOW;	//Prevents ActiveMovie window from showing in taskbar during Cleanup()
+
+                    //The video cannot be wider than this.
+                    Rectangle r = ImageRectangles[imageNumber];
+                    if ( r.Width > this.Width - 01 )
+                    {
+                        r.Width = this.Width - 01;
+                        //Maintain aspect ratio.
+                        r.Height = (int)( r.Width * (double)ImageRectangles[imageNumber].Height / ImageRectangles[imageNumber].Width );
+                    }
+
+                    FilGrMan.SetWindowPosition( ImageRectangles[imageNumber].Left,
+                        r.Top, r.Width, r.Height );
+
+                    /*FilGrMan.SetWindowPosition( ImageRectangles[imageNumber].Left,
                         ImageRectangles[imageNumber].Top,
                         ImageRectangles[imageNumber].Width,
-                        ImageRectangles[imageNumber].Height);
+                        ImageRectangles[imageNumber].Height );*/
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
+                    bRet = false;
                     FilGrMan.Visible = 0;
                     FilGrMan.Owner = 0;
                 }
 
                 MediaEventEx = FilGrMan as IMediaEventEx;
-                MediaEventEx.SetNotifyWindow((int)this.Handle, WM_GRAPHNOTIFY, 0);
+                MediaEventEx.SetNotifyWindow( (int)this.Handle, WM_GRAPHNOTIFY, 0 );
 
                 FilGrMan.Run();
 
-                currentVideoIndex = imageNumber;
                 CurrentStatus = MediaStatus.Running;
-                //UpdateStatusBar();
-                ShowVideoOptions(this, new EventArgs());
-                UpdateVideoToolBar(this, new EventArgs());
+                ShowVideoOptions( this, new EventArgs() );
+                UpdateVideoToolBar( this, new EventArgs() );
             }
-            catch (Exception)
+            catch ( Exception )
             {
+                bRet = false;
+                if ( FilGrMan != null ) FilGrMan = null;
+                if ( MediaEventEx != null ) MediaEventEx = null;
                 // throw;
             }
+
+            return bRet;
         }
+
         private void CleanUp()
         {
-            if (FilGrMan != null) FilGrMan.Stop();
+            if ( FilGrMan != null ) FilGrMan.Stop();
 
             CurrentStatus = MediaStatus.Stopped;
-            currentVideoIndex = -1;
-            if (MediaEventEx != null) MediaEventEx.SetNotifyWindow(0, 0, 0);
-
-            if (FilGrMan != null)
+            if ( FilGrMan != null )
             {
-                if (FilGrMan.Visible != 0) FilGrMan.Visible = 0;
-                if (FilGrMan.Owner != 0) FilGrMan.Owner = 0;
+                //Setting FilGrMan.Ower=0 can cause clip to be opened in new Active Movie window.
+                //Setting width and height to 0 prevents it from being shown.
+                //WS_EX_TOOLWINDOW prevents Active Movie from showing in taskbar.
+                FilGrMan.Width = 0;
+                FilGrMan.Height = 0;
+                FilGrMan.Caption = "";
+                if ( FilGrMan.Visible != 0 ) FilGrMan.Visible = 0;
+                if ( FilGrMan.Owner != 0 ) FilGrMan.Owner = 0;
                 FilGrMan = null;
             }
-            if (MediaEventEx != null) MediaEventEx = null;
+
+            if ( MediaEventEx != null )
+            {
+                MediaEventEx.SetNotifyWindow( 0, 0, 0 );
+                MediaEventEx = null;
+            }
         }
+
         #endregion
+
+        #region Event handler methods
+        private void PictureAlbum_VideoChanged( object sender, EventArgs e )
+        {
+            this.CleanUp();
+            if ( this.currentVideoIndex == -1 ) CurrentStatus = MediaStatus.None;
+            else this.CurrentStatus = MediaStatus.Stopped;
+        }
+
+        void PictureAlbum_SelectedChanged( object sender, SelectedChangedEventArgs e )
+        {
+            try
+            {
+                if ( e.SelectedIndex == SelectedIndex )
+                {
+                    this.Invalidate();
+                    return;
+                }
+
+                if ( this.ImageList != null )
+                {
+                    if ( ( e.SelectedIndex == -1 ) || ( e.SelectedIndex >= this.ImageList.Count ) )
+                    {
+                        selectedIndex = -1;
+                        for ( int j = 0; j < this.ImageList.Count; j++ )
+                            this.ImageList[j].Selected = false;
+                    }
+                    else
+                    {
+                        if ( ( SelectedIndex == -1 ) || ( SelectedIndex >= this.ImageList.Count ) || ( !this.ImageList[SelectedIndex].Selected ) )
+                        {
+                            // We should scan through all the images to make sure they're all deseleted.
+                            for ( int j = 0; j < this.ImageList.Count; j++ )
+                                this.ImageList[j].Selected = false;
+                        }
+                        else
+                            this.ImageList[SelectedIndex].Selected = false;
+
+                        //for ( int j = 0; j < this.ImageList.Count; j++ )
+                        //this.ImageList[j].Selected = false;
+                        selectedIndex = e.SelectedIndex;
+                        this.ImageList[e.SelectedIndex].Selected = true;
+                    }
+                }
+                else
+                {
+                    selectedIndex = -1;
+                }
+
+                this.Invalidate();
+            }
+            catch ( Exception )
+            {
+            }
+
+        }
+
+        #endregion
+
         #endregion
     }
 }
 
-//public void SaveFirstFrame(string VideoFile, string BitmapFile)
+//public void SaveFirstFrame( string VideoFile, string BitmapFile )
 //{
-//    AviManager aviManager = new AviManager(VideoFile, true);
+//    AviManager aviManager = new AviManager( VideoFile, true );
 //    VideoStream stream = aviManager.GetVideoStream();
 //    stream.GetFrameOpen();
-//    stream.ExportBitmap(1, BitmapFile);
-//    Bitmap bmp = stream.GetBitmap(1);
+//    stream.ExportBitmap( 1, BitmapFile );
+//    Bitmap bmp = stream.GetBitmap( 1 );
 //    stream.GetFrameClose();
 //    aviManager.Close();
-//    SaveThumbnailImage(bmp, BitmapFile + ".jpg");
+//    Functions.SaveThumbnailImage( bmp, BitmapFile + ".jpg", 10 );
 //}
+

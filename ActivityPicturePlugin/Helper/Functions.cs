@@ -32,354 +32,129 @@ namespace ActivityPicturePlugin.Helper
 {
     static class Functions
     {
-        internal static DateTime GetFileTime(String filename)
+        internal static DateTime GetFileTime( String filename )
         {
             try
             {
-                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
-                IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
+                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime( filename );
+                IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                DateTime dt = DateTime.ParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture );
                 return dt;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return new DateTime();
                 //throw;
             }
         }
-        internal static bool ValidVideoFile(string s)
+
+        internal static bool ValidVideoFile( string s )
         {
             try
             {
                 FilgraphManagerClass FilGrMan = new FilgraphManagerClass();
-                FilGrMan.RenderFile(s);
+                FilGrMan.RenderFile( s );
                 FilGrMan = null;
                 return true;
 
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return false;
             }
 
         }
 
-        internal static void PerformExportToGoogleEarth(List<ImageData> images, ZoneFiveSoftware.Common.Data.Fitness.IActivity act, string SavePath)
+        internal static void PerformExportToGoogleEarth( List<ImageData> images, ZoneFiveSoftware.Common.Data.Fitness.IActivity act, string SavePath )
         {
-            images.Sort(CompareByDate);
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("    ");
-
-            string KMZname = act.StartTime.ToLocalTime().ToString("dd. MMMM,yyyy") + " "
-                        + Resources.Resources.ImportControl_in + " " + act.Location;
-            string KMZstyle = "Photo";
-
-            //using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
-            string docFile = "";
-            FileInfo kmzFile = new FileInfo(SavePath);
-
-            String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
-            if (kmzFile.Extension == ".kmz")
+            try
             {
-                if (!System.IO.Directory.Exists(picDir)) System.IO.Directory.CreateDirectory(picDir);
-                docFile = kmzFile.Directory.ToString() + "\\doc.kml";
-            }
-            else
-            {
-                docFile = SavePath;
-            }
+                images.Sort( CompareByDate );
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.IndentChars = ( "    " );
 
-            //writing KML file
-            using (XmlWriter writer = XmlWriter.Create(docFile, settings))
-            {
-                writer.WriteStartElement("kml", "http://earth.google.com/kml/2.2");
-                writer.WriteStartElement("Document");
+                string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+                string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+                            + Resources.Resources.ImportControl_in + " " + act.Location;
+                //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
+                //+ Resources.Resources.ImportControl_in + " " + act.Location;
+                string KMZstyle = "Photo";
 
-                writer.WriteElementString("name", "SportTracks Images exported with Activity Picture Plugin");
-                writer.WriteElementString("open", "1");
+                //using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
+                string docFile = "";
+                FileInfo kmzFile = new FileInfo( SavePath );
 
-                if (kmzFile.Extension == ".kml")
+                String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
+                if ( kmzFile.Extension == ".kmz" )
                 {
-                    writer.WriteStartElement("Style");
-                    writer.WriteAttributeString("id", KMZstyle);
-                    writer.WriteElementString("geomScale", "0.75");
-                    writer.WriteStartElement("LabelStyle");
-                    writer.WriteElementString("scale", "0");
-                    writer.WriteEndElement(); //LabelStyle
-                    writer.WriteStartElement("IconStyle");
-                    writer.WriteElementString("color", "ffffffff");
-                    writer.WriteStartElement("Icon");
-                    writer.WriteElementString("href", "root://icons/palette-4.png");
-                    writer.WriteElementString("x", "192");
-                    writer.WriteElementString("y", "96");
-                    writer.WriteElementString("w", "32");
-                    writer.WriteElementString("h", "32");
-                    writer.WriteEndElement(); //Icon
-                    writer.WriteEndElement(); //IconStyle
-                    writer.WriteEndElement(); //Style
+                    if ( !System.IO.Directory.Exists( picDir ) ) System.IO.Directory.CreateDirectory( picDir );
+                    docFile = kmzFile.Directory.ToString() + "\\doc.kml";
                 }
                 else
                 {
-                    foreach (ImageData id in images)
-                    {
-                        if (id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0)
-                        {
-                            //stylemaps
-                            KMZstyle = id.ReferenceID;
-                            WriteStyleMaps(act, KMZstyle, writer);
-                        }
-                    }
+                    docFile = SavePath;
                 }
 
-                writer.WriteStartElement("Folder");
-                writer.WriteElementString("name", KMZname);
-                writer.WriteElementString("open", "1");
-
-                WriteTrackXML(act, writer);
-
-                foreach (ImageData id in images)
+                //writing KML file
+                using ( XmlWriter writer = XmlWriter.Create( docFile, settings ) )
                 {
-                    if (id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0)
+                    writer.WriteStartElement( "kml", "http://earth.google.com/kml/2.2" );
+                    writer.WriteStartElement( "Document" );
+
+                    //writer.WriteElementString( "name", "SportTracks Images exported with Activity Picture Plugin" );
+                    writer.WriteElementString( "name", Resources.Resources.SportTracksImagesExportedWith_Text + " " + Resources.Resources.ActivityPicturePlugin_Text );
+                    writer.WriteElementString( "open", "1" );
+
+                    if ( kmzFile.Extension == ".kml" )
                     {
-                        string KMZfilesource; //source of image (which will be embedded in case of kmz)
-                        string KMZLink;
-                        if (kmzFile.Extension == ".kmz")
+                        writer.WriteStartElement( "Style" );
+                        writer.WriteAttributeString( "id", KMZstyle );
+                        writer.WriteElementString( "geomScale", "0.75" );
+                        writer.WriteStartElement( "LabelStyle" );
+                        writer.WriteElementString( "scale", "0" );
+                        writer.WriteEndElement(); //LabelStyle
+                        writer.WriteStartElement( "IconStyle" );
+                        writer.WriteElementString( "color", "ffffffff" );
+                        writer.WriteStartElement( "Icon" );
+                        writer.WriteElementString( "href", "root://icons/palette-4.png" );
+                        writer.WriteElementString( "x", "192" );
+                        writer.WriteElementString( "y", "96" );
+                        writer.WriteElementString( "w", "32" );
+                        writer.WriteElementString( "h", "32" );
+                        writer.WriteEndElement(); //Icon
+                        writer.WriteEndElement(); //IconStyle
+                        writer.WriteEndElement(); //Style
+                    }
+                    else
+                    {
+                        foreach ( ImageData id in images )
                         {
-                            CreateKMZImages(picDir, id);
-                            KMZfilesource = act.ReferenceId + "/" + id.ReferenceID + ".jpg";
-                            KMZLink = ">";
-                            KMZstyle = id.ReferenceID;
-
-                        }
-                        else
-                        {
-                            KMZfilesource = id.ThumbnailPath;
-                            KMZstyle = "Photo";
-                            KMZLink = " href='file://" + id.PhotoSource + "'>";
-                        }
-
-                        writer.WriteStartElement("Placemark");
-                        writer.WriteElementString("name", id.PhotoSourceFileName);
-                        writer.WriteElementString("Snippet", "");
-                        writer.WriteStartElement("description");
-                        int width = (int)(Math.Min(500, id.Ratio * 500));
-                        int height = (int)((Single)(width) / id.Ratio);
-                        string KMZpicdescription = 
-                            //"<P><FONT face=Verdana>"+ KMZname + "</FONT></P>" + 
-                            "<P><FONT face=Verdana size=2>"
-                        + id.PhotoSourceFileName
-                        + "</FONT></P><P><A"
-                        + KMZLink
-                        + "<IMG height="
-                        + height
-                        + " alt=" +
-                        id.PhotoSourceFileName
-                        + " hspace=0 src='"
-                        + KMZfilesource
-                        + "' width="
-                        + width
-                        + "></A></P><P><FONT face=Verdana size=2>"
-                        + id.DateTimeOriginal
-                        + "</FONT></P><P><FONT face=Verdana size=2>"
-                        + id.ExifGPS.Replace(Environment.NewLine, ", ")
-                        + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
-                        writer.WriteCData(KMZpicdescription);
-                        writer.WriteEndElement();//description
-
-                        writer.WriteElementString("styleUrl", "#" + KMZstyle);
-                        writer.WriteStartElement("Point");
-                        writer.WriteElementString("altitudeMode", "absolute");
-                        writer.WriteElementString("extrude", "1");
-                        writer.WriteElementString("coordinates", id.KMLGPS);
-                        writer.WriteEndElement(); //Point
-                        writer.WriteEndElement(); //Placemark
-                    }
-                }
-
-
-
-                writer.WriteEndElement(); //Folder
-                writer.WriteEndElement(); //Document
-                writer.WriteEndElement(); //kml
-
-                // Write the XML to file and close the writer.
-                writer.Flush();
-                writer.Close();
-            }
-
-
-            if (kmzFile.Extension == ".kmz")
-            {
-                using (ZipOutputStream s = new ZipOutputStream(File.Create(SavePath)))
-                {
-                    s.SetLevel(6);
-                    s.IsStreamOwner = true;
-                    FileInfo fi;
-
-                    string[] filenames = Directory.GetFiles(picDir);
-
-                    foreach (string file in filenames)
-                    {
-                        ZipEntry entry = new ZipEntry(act.ReferenceId + "/" + Path.GetFileName(file));
-                        fi = new FileInfo(file);
-                        entry.DateTime = DateTime.Now;
-                        entry.Size = fi.Length;
-                        s.PutNextEntry(entry);
-                        using (FileStream fs = File.OpenRead(file))
-                        {
-                            byte[] buffer = new byte[fs.Length];
-                            fs.Read(buffer, 0, buffer.Length);
-                            s.Write(buffer, 0, buffer.Length);
-                        }
-
-                    }
-                    //add doc.kml
-                    ZipEntry doc = new ZipEntry(Path.GetFileName(docFile));
-                    fi = new FileInfo(docFile);
-                    doc.DateTime = DateTime.Now;
-                    doc.Size = fi.Length;
-                    s.PutNextEntry(doc);
-                    using (FileStream fs = File.OpenRead(docFile))
-                    {
-                        byte[] buffer = new byte[fs.Length];
-                        fs.Read(buffer, 0, buffer.Length);
-                        s.Write(buffer, 0, buffer.Length);
-                    }
-                    s.Finish();
-                    s.Close();
-                }
-                Directory.Delete(picDir, true);
-                File.Delete(docFile);
-            }
-        }
-
-        private static void WriteTrackXML(ZoneFiveSoftware.Common.Data.Fitness.IActivity act, XmlWriter writer)
-        {
-            //write track path of route
-            writer.WriteStartElement("Placemark");
-            writer.WriteElementString("name", "Route");
-            writer.WriteElementString("visibility", "1");
-            writer.WriteStartElement("Style");
-            writer.WriteStartElement("IconStyle");
-            writer.WriteStartElement("Icon");
-            writer.WriteElementString("href", "http://www.zonefivesoftware.com/SportTracks/Images/SportTracksIcon48.png");
-            writer.WriteElementString("w", "48");
-            writer.WriteElementString("h", "48");
-            writer.WriteEndElement(); //Icon
-            writer.WriteEndElement(); //IconStyle
-            writer.WriteElementString("geomScale", "6");
-            writer.WriteElementString("geomColor", "660000ff");
-            writer.WriteEndElement(); //Style
-            writer.WriteStartElement("LineString");
-            string strCoord = "";
-            foreach (ZoneFiveSoftware.Common.Data.TimeValueEntry<ZoneFiveSoftware.Common.Data.GPS.IGPSPoint> gps in act.GPSRoute)
-            {
-                System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo("en-US");
-                strCoord += gps.Value.LongitudeDegrees.ToString("0.00000000", ci) + "," + gps.Value.LatitudeDegrees.ToString("0.00000000", ci) + ",30" + Environment.NewLine;
-            }
-            writer.WriteElementString("coordinates", strCoord);
-            writer.WriteEndElement(); //LineString
-            writer.WriteEndElement(); //Placemark
-        }
-
-        internal static void PerformMultipleExportToGoogleEarth(IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> acts, string SavePath)
-        {
-
-            bool ImageFound = false; //if no images found, doc file will not be created
-
-            string KMZstyle = "Photo";
-            FileInfo kmzFile = new FileInfo(SavePath);
-
-            string docFile = SavePath;
-            if (kmzFile.Extension == ".kmz") docFile = kmzFile.Directory.ToString() + "\\doc.kml";
-
-            //start writing xml file
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("    ");
-            using (XmlWriter writer = XmlWriter.Create(docFile, settings))
-            {
-                writer.WriteStartElement("kml", "http://earth.google.com/kml/2.2");
-                writer.WriteStartElement("Document");
-
-                writer.WriteElementString("name", "SportTracks Images exported with Activity Picture Plugin");
-                writer.WriteElementString("open", "1");
-
-                if (kmzFile.Extension == ".kml")
-                {
-                    writer.WriteStartElement("Style");
-                    writer.WriteAttributeString("id", KMZstyle);
-                    writer.WriteElementString("geomScale", "0.75");
-                    writer.WriteStartElement("LabelStyle");
-                    writer.WriteElementString("scale", "0");
-                    writer.WriteEndElement(); //LabelStyle
-                    writer.WriteStartElement("IconStyle");
-                    writer.WriteElementString("color", "ffffffff");
-                    writer.WriteStartElement("Icon");
-                    writer.WriteElementString("href", "root://icons/palette-4.png");
-                    writer.WriteElementString("x", "192");
-                    writer.WriteElementString("y", "96");
-                    writer.WriteElementString("w", "32");
-                    writer.WriteElementString("h", "32");
-                    writer.WriteEndElement(); //Icon
-                    writer.WriteEndElement(); //IconStyle
-                    writer.WriteEndElement(); //Style
-                }
-
-                foreach (IActivity act in acts)
-                {
-                    //Get image data
-                    List<ImageData> images = new List<ImageData>();
-                    images.Sort(CompareByDate);
-                    PluginData pd = ReadExtensionData(act);
-                    if (pd.Images.Count != 0)
-                    {
-                        images = pd.LoadImageData(pd.Images);
-                        ImageFound = true;
-                    }
-                    else continue; //if no images, continue to next activity
-
-                    //Activity contains images
-                    string KMZname = act.StartTime.ToLocalTime().ToString("dd. MMMM,yyyy") + " "
-                    + Resources.Resources.ImportControl_in + " " + act.Location;
-
-                    String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
-                    if (kmzFile.Extension == ".kmz")
-                    {
-                        if (!System.IO.Directory.Exists(picDir)) System.IO.Directory.CreateDirectory(picDir);
-                    }
-
-                    //writing KML file for activity
-                    if (kmzFile.Extension == ".kmz")
-                    {
-                        foreach (ImageData id in images)
-                        {
-                            if (id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0)
+                            if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
                             {
                                 //stylemaps
                                 KMZstyle = id.ReferenceID;
-                                WriteStyleMaps(act, KMZstyle, writer);
+                                WriteStyleMaps( act, KMZstyle, writer );
                             }
                         }
                     }
 
-                    writer.WriteStartElement("Folder");
-                    writer.WriteElementString("name", KMZname);
-                    writer.WriteElementString("open", "1");
+                    writer.WriteStartElement( "Folder" );
+                    writer.WriteElementString( "name", KMZname );
+                    writer.WriteElementString( "open", "1" );
 
-                    WriteTrackXML(act, writer);
+                    WriteTrackXML( act, writer );
 
-                    foreach (ImageData id in images)
+                    foreach ( ImageData id in images )
                     {
-                        if (id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0)
+                        if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
                         {
                             string KMZfilesource; //source of image (which will be embedded in case of kmz)
                             string KMZLink;
-                            if (kmzFile.Extension == ".kmz")
+                            if ( kmzFile.Extension == ".kmz" )
                             {
-                                CreateKMZImages(picDir, id);
-                                KMZfilesource = act.ReferenceId + "\\" + id.ReferenceID + ".jpg";
+                                CreateKMZImages( picDir, id );
+                                KMZfilesource = act.ReferenceId + "/" + id.ReferenceID + ".jpg";
                                 KMZLink = ">";
                                 KMZstyle = id.ReferenceID;
 
@@ -391,15 +166,29 @@ namespace ActivityPicturePlugin.Helper
                                 KMZLink = " href='file://" + id.PhotoSource + "'>";
                             }
 
-                            writer.WriteStartElement("Placemark");
-                            writer.WriteElementString("name", id.PhotoSourceFileName);
-                            writer.WriteElementString("Snippet", "");
-                            writer.WriteStartElement("description");
-                            int width = (int)(Math.Min(500, id.Ratio * 500));
-                            int height = (int)((Single)(width) / id.Ratio);
-                            string KMZpicdescription = "<P><FONT face=Verdana>"
-                            + KMZname
-                            + "</FONT></P><P><FONT face=Verdana size=2>"
+                            writer.WriteStartElement( "Placemark" );
+                            writer.WriteElementString( "name", id.PhotoSourceFileName );
+                            writer.WriteElementString( "Snippet", "" );
+                            writer.WriteStartElement( "description" );
+                            //int width = (int)( Math.Min( 500, id.Ratio * 500 ) );
+                            //int height = (int)( (Single)( width ) / id.Ratio );
+
+                            int width, height;
+                            double ratio = id.Ratio;
+                            if ( ratio > 1 )
+                            {
+                                width = ActivityPicturePlugin.Source.Settings.GESize * 50;
+                                height = (int)Math.Ceiling( width / ratio );
+                            }
+                            else
+                            {
+                                height = ActivityPicturePlugin.Source.Settings.GESize * 50;
+                                width = (int)Math.Ceiling( height * ratio );
+                            }
+
+                            string KMZpicdescription =
+                                //"<P><FONT face=Verdana>"+ KMZname + "</FONT></P>" + 
+                                "<P><FONT face=Verdana size=2>"
                             + id.PhotoSourceFileName
                             + "</FONT></P><P><A"
                             + KMZLink
@@ -414,109 +203,373 @@ namespace ActivityPicturePlugin.Helper
                             + "></A></P><P><FONT face=Verdana size=2>"
                             + id.DateTimeOriginal
                             + "</FONT></P><P><FONT face=Verdana size=2>"
-                            + id.ExifGPS.Replace(Environment.NewLine, ", ")
-                            + "</FONT></P><P><FONT face=Verdana size=1>Created with ActivityPicturePlugin for SportTracks</FONT></P>";
-                            writer.WriteCData(KMZpicdescription);
+                            + id.ExifGPS.Replace( Environment.NewLine, ", " )
+                            + "</FONT></P><P><FONT face=Verdana size=1>"
+                            + String.Format( Resources.Resources.CreatedWithXForSportTracks_Text, Resources.Resources.ActivityPicturePlugin_Text )
+                            + "</FONT></P>";
+                            writer.WriteCData( KMZpicdescription );
                             writer.WriteEndElement();//description
 
-                            writer.WriteElementString("styleUrl", "#" + KMZstyle);
-                            writer.WriteStartElement("Point");
-                            writer.WriteElementString("altitudeMode", "absolute");
-                            writer.WriteElementString("extrude", "1");
-                            writer.WriteElementString("coordinates", id.KMLGPS);
+                            writer.WriteElementString( "styleUrl", "#" + KMZstyle );
+                            writer.WriteStartElement( "Point" );
+                            writer.WriteElementString( "altitudeMode", "absolute" );
+                            writer.WriteElementString( "extrude", "1" );
+                            writer.WriteElementString( "coordinates", id.KMLGPS );
                             writer.WriteEndElement(); //Point
                             writer.WriteEndElement(); //Placemark
                         }
                     }
+
                     writer.WriteEndElement(); //Folder
+                    writer.WriteEndElement(); //Document
+                    writer.WriteEndElement(); //kml
+
+                    // Write the XML to file and close the writer.
+                    writer.Flush();
+                    writer.Close();
                 }
 
-                writer.WriteEndElement(); //Document
-                writer.WriteEndElement(); //kml
 
-                // Write the XML to file and close the writer.
-                writer.Flush();
-                writer.Close();
-            }
-
-
-            if (!ImageFound) //no image at all found
-            {
-                File.Delete(Path.GetFileName(docFile));
-                return;
-            }
-
-
-            // create zip file
-            if (kmzFile.Extension == ".kmz")
-            {
-                using (ZipOutputStream s = new ZipOutputStream(File.Create(SavePath)))
+                if ( kmzFile.Extension == ".kmz" )
                 {
-                    s.SetLevel(6);
-                    s.IsStreamOwner = true;
-                    FileInfo fi;
-
-                    //create zip files for images
-                    foreach (IActivity act in acts)
+                    using ( ZipOutputStream s = new ZipOutputStream( File.Create( SavePath ) ) )
                     {
-                        if (Directory.Exists(kmzFile.Directory.ToString() + "\\" + act.ReferenceId)) //exists only if act. contains images
+                        s.SetLevel( 6 );
+                        s.IsStreamOwner = true;
+                        FileInfo fi;
+
+                        string[] filenames = Directory.GetFiles( picDir );
+
+                        foreach ( string file in filenames )
                         {
-                            string[] filenames = Directory.GetFiles(kmzFile.Directory.ToString() + "\\" + act.ReferenceId);
-                            foreach (string file in filenames)
+                            ZipEntry entry = new ZipEntry( act.ReferenceId + "/" + Path.GetFileName( file ) );
+                            fi = new FileInfo( file );
+                            entry.DateTime = DateTime.Now;
+                            entry.Size = fi.Length;
+                            s.PutNextEntry( entry );
+                            using ( FileStream fs = File.OpenRead( file ) )
                             {
-                                ZipEntry entry = new ZipEntry(act.ReferenceId + "/" + Path.GetFileName(file));
-                                fi = new FileInfo(file);
-                                entry.DateTime = DateTime.Now;
-                                entry.Size = fi.Length;
-                                s.PutNextEntry(entry);
-                                using (FileStream fs = File.OpenRead(file))
+                                byte[] buffer = new byte[fs.Length];
+                                fs.Read( buffer, 0, buffer.Length );
+                                s.Write( buffer, 0, buffer.Length );
+                            }
+
+                        }
+                        //add doc.kml
+                        ZipEntry doc = new ZipEntry( Path.GetFileName( docFile ) );
+                        fi = new FileInfo( docFile );
+                        doc.DateTime = DateTime.Now;
+                        doc.Size = fi.Length;
+                        s.PutNextEntry( doc );
+                        using ( FileStream fs = File.OpenRead( docFile ) )
+                        {
+                            byte[] buffer = new byte[fs.Length];
+                            fs.Read( buffer, 0, buffer.Length );
+                            s.Write( buffer, 0, buffer.Length );
+                        }
+                        s.Finish();
+                        s.Close();
+                    }
+                    Directory.Delete( picDir, true );
+                    File.Delete( docFile );
+                }
+            }
+            catch ( Exception )
+            {
+            }
+        }
+
+        private static void WriteTrackXML( ZoneFiveSoftware.Common.Data.Fitness.IActivity act, XmlWriter writer )
+        {
+            //write track path of route
+            writer.WriteStartElement( "Placemark" );
+            writer.WriteElementString( "name", "Route" );
+            writer.WriteElementString( "visibility", "1" );
+            writer.WriteStartElement( "Style" );
+            writer.WriteStartElement( "IconStyle" );
+            writer.WriteStartElement( "Icon" );
+            writer.WriteElementString( "href", "http://www.zonefivesoftware.com/SportTracks/Images/SportTracksIcon48.png" );
+            writer.WriteElementString( "w", "48" );
+            writer.WriteElementString( "h", "48" );
+            writer.WriteEndElement(); //Icon
+            writer.WriteEndElement(); //IconStyle
+            writer.WriteElementString( "geomScale", "6" );
+            writer.WriteElementString( "geomColor", "660000ff" );
+            writer.WriteEndElement(); //Style
+            writer.WriteStartElement( "LineString" );
+            string strCoord = "";
+            foreach ( ZoneFiveSoftware.Common.Data.TimeValueEntry<ZoneFiveSoftware.Common.Data.GPS.IGPSPoint> gps in act.GPSRoute )
+            {
+                System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo( "en-US" );
+                strCoord += gps.Value.LongitudeDegrees.ToString( "0.00000000", ci ) + "," + gps.Value.LatitudeDegrees.ToString( "0.00000000", ci ) + ",30" + Environment.NewLine;
+            }
+            writer.WriteElementString( "coordinates", strCoord );
+            writer.WriteEndElement(); //LineString
+            writer.WriteEndElement(); //Placemark
+        }
+
+        internal static void PerformMultipleExportToGoogleEarth( IList<ZoneFiveSoftware.Common.Data.Fitness.IActivity> acts, string SavePath )
+        {
+            try
+            {
+                bool ImageFound = false; //if no images found, doc file will not be created
+
+                string KMZstyle = "Photo";
+                FileInfo kmzFile = new FileInfo( SavePath );
+
+                string docFile = SavePath;
+                if ( kmzFile.Extension == ".kmz" ) docFile = kmzFile.Directory.ToString() + "\\doc.kml";
+
+                string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+
+                //start writing xml file
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.IndentChars = ( "    " );
+                using ( XmlWriter writer = XmlWriter.Create( docFile, settings ) )
+                {
+                    writer.WriteStartElement( "kml", "http://earth.google.com/kml/2.2" );
+                    writer.WriteStartElement( "Document" );
+
+                    //writer.WriteElementString( "name", "SportTracks Images exported with Activity Picture Plugin" );
+                    writer.WriteElementString( "name", Resources.Resources.SportTracksImagesExportedWith_Text + " " + Resources.Resources.ActivityPicturePlugin_Text );
+                    writer.WriteElementString( "open", "1" );
+
+                    if ( kmzFile.Extension == ".kml" )
+                    {
+                        writer.WriteStartElement( "Style" );
+                        writer.WriteAttributeString( "id", KMZstyle );
+                        writer.WriteElementString( "geomScale", "0.75" );
+                        writer.WriteStartElement( "LabelStyle" );
+                        writer.WriteElementString( "scale", "0" );
+                        writer.WriteEndElement(); //LabelStyle
+                        writer.WriteStartElement( "IconStyle" );
+                        writer.WriteElementString( "color", "ffffffff" );
+                        writer.WriteStartElement( "Icon" );
+                        writer.WriteElementString( "href", "root://icons/palette-4.png" );
+                        writer.WriteElementString( "x", "192" );
+                        writer.WriteElementString( "y", "96" );
+                        writer.WriteElementString( "w", "32" );
+                        writer.WriteElementString( "h", "32" );
+                        writer.WriteEndElement(); //Icon
+                        writer.WriteEndElement(); //IconStyle
+                        writer.WriteEndElement(); //Style
+                    }
+
+                    foreach ( IActivity act in acts )
+                    {
+                        //Get image data
+                        List<ImageData> images = new List<ImageData>();
+                        images.Sort( CompareByDate );
+                        PluginData pd = ReadExtensionData( act );
+                        if ( pd.Images.Count != 0 )
+                        {
+                            images = pd.LoadImageData( pd.Images );
+                            ImageFound = true;
+                        }
+                        else continue; //if no images, continue to next activity
+
+                        //Activity contains images
+                        //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
+                        //+ Resources.Resources.ImportControl_in + " " + act.Location;
+                        string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+                                    + Resources.Resources.ImportControl_in + " " + act.Location;
+
+                        String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
+                        if ( kmzFile.Extension == ".kmz" )
+                        {
+                            if ( !System.IO.Directory.Exists( picDir ) ) System.IO.Directory.CreateDirectory( picDir );
+                        }
+
+                        //writing KML file for activity
+                        if ( kmzFile.Extension == ".kmz" )
+                        {
+                            foreach ( ImageData id in images )
+                            {
+                                if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
                                 {
-                                    byte[] buffer = new byte[fs.Length];
-                                    fs.Read(buffer, 0, buffer.Length);
-                                    s.Write(buffer, 0, buffer.Length);
+                                    //stylemaps
+                                    KMZstyle = id.ReferenceID;
+                                    WriteStyleMaps( act, KMZstyle, writer );
                                 }
                             }
-                            Directory.Delete(act.ReferenceId, true);
                         }
+
+                        writer.WriteStartElement( "Folder" );
+                        writer.WriteElementString( "name", KMZname );
+                        writer.WriteElementString( "open", "1" );
+
+                        WriteTrackXML( act, writer );
+
+                        foreach ( ImageData id in images )
+                        {
+                            if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
+                            {
+                                string KMZfilesource; //source of image (which will be embedded in case of kmz)
+                                string KMZLink;
+                                if ( kmzFile.Extension == ".kmz" )
+                                {
+                                    CreateKMZImages( picDir, id );
+                                    KMZfilesource = act.ReferenceId + "/" + id.ReferenceID + ".jpg";
+                                    KMZLink = ">";
+                                    KMZstyle = id.ReferenceID;
+
+                                }
+                                else
+                                {
+                                    KMZfilesource = id.ThumbnailPath;
+                                    KMZstyle = "Photo";
+                                    KMZLink = " href='file://" + id.PhotoSource + "'>";
+                                }
+
+                                writer.WriteStartElement( "Placemark" );
+                                writer.WriteElementString( "name", id.PhotoSourceFileName );
+                                writer.WriteElementString( "Snippet", "" );
+                                writer.WriteStartElement( "description" );
+                                //int width = (int)( Math.Min( 500, id.Ratio * 500 ) );
+                                //int height = (int)( (Single)( width ) / id.Ratio );
+
+                                int width, height;
+                                double ratio = id.Ratio;
+                                if ( ratio > 1 )
+                                {
+                                    width = ActivityPicturePlugin.Source.Settings.GESize * 50;
+                                    height = (int)Math.Ceiling( width / ratio );
+                                }
+                                else
+                                {
+                                    height = ActivityPicturePlugin.Source.Settings.GESize * 50;
+                                    width = (int)Math.Ceiling( height * ratio );
+                                }
+
+                                string KMZpicdescription = "<P><FONT face=Verdana>"
+                                + KMZname
+                                + "</FONT></P><P><FONT face=Verdana size=2>"
+                                + id.PhotoSourceFileName
+                                + "</FONT></P><P><A"
+                                + KMZLink
+                                + "<IMG height="
+                                + height
+                                + " alt=" +
+                                id.PhotoSourceFileName
+                                + " hspace=0 src='"
+                                + KMZfilesource
+                                + "' width="
+                                + width
+                                + "></A></P><P><FONT face=Verdana size=2>"
+                                + id.DateTimeOriginal
+                                + "</FONT></P><P><FONT face=Verdana size=2>"
+                                + id.ExifGPS.Replace( Environment.NewLine, ", " )
+                                + "</FONT></P><P><FONT face=Verdana size=1>"
+                                + String.Format( Resources.Resources.CreatedWithXForSportTracks_Text, Resources.Resources.ActivityPicturePlugin_Text )
+                                + "</FONT></P>";
+                                writer.WriteCData( KMZpicdescription );
+                                writer.WriteEndElement();//description
+
+                                writer.WriteElementString( "styleUrl", "#" + KMZstyle );
+                                writer.WriteStartElement( "Point" );
+                                writer.WriteElementString( "altitudeMode", "absolute" );
+                                writer.WriteElementString( "extrude", "1" );
+                                writer.WriteElementString( "coordinates", id.KMLGPS );
+                                writer.WriteEndElement(); //Point
+                                writer.WriteEndElement(); //Placemark
+                            }
+                        }
+                        writer.WriteEndElement(); //Folder
                     }
 
-                    //add doc.kml
-                    ZipEntry doc = new ZipEntry(Path.GetFileName(docFile));
-                    fi = new FileInfo(docFile);
-                    doc.DateTime = DateTime.Now;
-                    doc.Size = fi.Length;
-                    s.PutNextEntry(doc);
-                    using (FileStream fs = File.OpenRead(docFile))
-                    {
-                        byte[] buffer = new byte[fs.Length];
-                        fs.Read(buffer, 0, buffer.Length);
-                        s.Write(buffer, 0, buffer.Length);
-                    }
-                    s.Finish();
-                    s.Close();
+                    writer.WriteEndElement(); //Document
+                    writer.WriteEndElement(); //kml
+
+                    // Write the XML to file and close the writer.
+                    writer.Flush();
+                    writer.Close();
                 }
-                File.Delete(Path.GetFileName(docFile));
+
+
+                if ( !ImageFound ) //no image at all found
+                {
+                    File.Delete( Path.GetFileName( docFile ) );
+                    return;
+                }
+
+
+                // create zip file
+                if ( kmzFile.Extension == ".kmz" )
+                {
+                    using ( ZipOutputStream s = new ZipOutputStream( File.Create( SavePath ) ) )
+                    {
+                        s.SetLevel( 6 );
+                        s.IsStreamOwner = true;
+                        FileInfo fi;
+
+                        //create zip files for images
+                        foreach ( IActivity act in acts )
+                        {
+                            if ( Directory.Exists( kmzFile.Directory.ToString() + "\\" + act.ReferenceId ) ) //exists only if act. contains images
+                            {
+                                string[] filenames = Directory.GetFiles( kmzFile.Directory.ToString() + "\\" + act.ReferenceId );
+                                foreach ( string file in filenames )
+                                {
+                                    ZipEntry entry = new ZipEntry( act.ReferenceId + "/" + Path.GetFileName( file ) );
+                                    fi = new FileInfo( file );
+                                    entry.DateTime = DateTime.Now;
+                                    entry.Size = fi.Length;
+                                    s.PutNextEntry( entry );
+                                    using ( FileStream fs = File.OpenRead( file ) )
+                                    {
+                                        byte[] buffer = new byte[fs.Length];
+                                        fs.Read( buffer, 0, buffer.Length );
+                                        s.Write( buffer, 0, buffer.Length );
+                                    }
+                                }
+                                Directory.Delete( kmzFile.Directory.ToString() + "\\" + act.ReferenceId, true );
+                            }
+                        }
+
+                        //add doc.kml
+                        ZipEntry doc = new ZipEntry( Path.GetFileName( docFile ) );
+                        fi = new FileInfo( docFile );
+                        doc.DateTime = DateTime.Now;
+                        doc.Size = fi.Length;
+                        s.PutNextEntry( doc );
+                        using ( FileStream fs = File.OpenRead( docFile ) )
+                        {
+                            byte[] buffer = new byte[fs.Length];
+                            fs.Read( buffer, 0, buffer.Length );
+                            s.Write( buffer, 0, buffer.Length );
+                        }
+                        s.Finish();
+                        s.Close();
+                    }
+                    File.Delete( Path.GetFileName( docFile ) );
+                }
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Print( ex.Message );
             }
         }
 
-        private static void CreateKMZImages(String picDir, ImageData id)
+        private static void CreateKMZImages( String picDir, ImageData id )
         {
-
-
             //create small thumbnail
-            Bitmap bmp = CreateSmallThumbnail(id, 108);
-            Functions.SaveThumbnailImage(bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePageControl.PluginSettingsData.data.Quality);
+            Bitmap bmp = CreateSmallThumbnail( id, 108 );
+            Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
 
-            if (!File.Exists(picDir + "\\" + id.ReferenceID + ".jpg"))
+            if ( !File.Exists( picDir + "\\" + id.ReferenceID + ".jpg" ) )
             //copy image from webfiles folder to the image folder of the zip archive (if not already exist)
             {
-                bmp = CreateSmallThumbnail(id, (int)(ActivityPicturePageControl.PluginSettingsData.data.Size * 50 * 0.75));
-                Functions.SaveThumbnailImage(bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePageControl.PluginSettingsData.data.Quality);
+                bmp = CreateSmallThumbnail( id, (int)( ActivityPicturePlugin.Source.Settings.GESize * 50 * 0.75 ) );
+                Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
                 //System.IO.File.Copy(id.ReferenceIDPath, picDir + "\\" + id.ReferenceID + ".jpg");
             }
+
+            bmp.Dispose();
+            bmp = null;
         }
 
-        private static Bitmap CreateSmallThumbnail(ImageData id, int minSize)
+        private static Bitmap CreateSmallThumbnail( ImageData id, int minSize )
         {
             Bitmap bmp = null;
             //if (minSize > 150)
@@ -525,33 +578,33 @@ namespace ActivityPicturePlugin.Helper
             //}
 
             //minsize<=150 or original image not found
-            if (bmp == null)
+            if ( bmp == null )
             {
-                bmp = new Bitmap(id.ThumbnailPath);
+                bmp = new Bitmap( id.ThumbnailPath );
             }
 
             int Swidth, Sheight;
-            double ratio = (double)(bmp.Width) / (double)(bmp.Height);
-            if (ratio > 1)
+            double ratio = (double)( bmp.Width ) / (double)( bmp.Height );
+            if ( ratio > 1 )
             {
-                Swidth = (int)(minSize * ratio);
+                Swidth = (int)( minSize * ratio );
                 Sheight = minSize;
             }
             else
             {
                 Swidth = minSize;
-                Sheight = (int)(minSize / ratio);
+                Sheight = (int)( minSize / ratio );
             }
-            Size size = new Size(Swidth, Sheight);
-            Bitmap bmpNew = new Bitmap(bmp, size);
+            Size size = new Size( Swidth, Sheight );
+            Bitmap bmpNew = new Bitmap( bmp, size );
 
             //copying the metadata of the original file into the new image
-            foreach (System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems)
+            foreach ( System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems )
             {
                 try
                 {
                     //Mono TODO: NotImplemented
-                    bmpNew.SetPropertyItem(pItem);
+                    bmpNew.SetPropertyItem( pItem );
                 }
                 catch { }
             }
@@ -561,79 +614,80 @@ namespace ActivityPicturePlugin.Helper
             return bmpNew;
         }
 
-        private static void WriteStyleMaps(ZoneFiveSoftware.Common.Data.Fitness.IActivity act, string KMZstyle, XmlWriter writer)
+        private static void WriteStyleMaps( ZoneFiveSoftware.Common.Data.Fitness.IActivity act, string KMZstyle, XmlWriter writer )
         {
-            writer.WriteStartElement("StyleMap");
-            writer.WriteAttributeString("id", KMZstyle);
-            writer.WriteStartElement("Pair");
-            writer.WriteElementString("key", "normal");
-            writer.WriteElementString("styleUrl", "#" + KMZstyle + "_norm");
+            writer.WriteStartElement( "StyleMap" );
+            writer.WriteAttributeString( "id", KMZstyle );
+            writer.WriteStartElement( "Pair" );
+            writer.WriteElementString( "key", "normal" );
+            writer.WriteElementString( "styleUrl", "#" + KMZstyle + "_norm" );
             writer.WriteEndElement(); //Pair
-            writer.WriteStartElement("Pair");
-            writer.WriteElementString("key", "highlight");
-            writer.WriteElementString("styleUrl", "#" + KMZstyle + "_high");
+            writer.WriteStartElement( "Pair" );
+            writer.WriteElementString( "key", "highlight" );
+            writer.WriteElementString( "styleUrl", "#" + KMZstyle + "_high" );
             writer.WriteEndElement(); //Pair
             writer.WriteEndElement(); //StyleMap
 
-            writer.WriteStartElement("Style");
-            writer.WriteAttributeString("id", KMZstyle + "_norm");
-            writer.WriteStartElement("IconStyle");
-            writer.WriteStartElement("Icon");
-            writer.WriteElementString("href", act.ReferenceId + "/" + KMZstyle + "_small.jpg");
+            writer.WriteStartElement( "Style" );
+            writer.WriteAttributeString( "id", KMZstyle + "_norm" );
+            writer.WriteStartElement( "IconStyle" );
+            writer.WriteStartElement( "Icon" );
+            writer.WriteElementString( "href", act.ReferenceId + "/" + KMZstyle + "_small.jpg" );
             writer.WriteEndElement(); //Icon
             writer.WriteEndElement(); //IconStyle
-            writer.WriteStartElement("LabelStyle");
-            writer.WriteElementString("scale", "0");
+            writer.WriteStartElement( "LabelStyle" );
+            writer.WriteElementString( "scale", "0" );
             writer.WriteEndElement(); //LabelStyle
-            writer.WriteStartElement("BalloonStyle");
-            writer.WriteElementString("text", "$[description]");
+            writer.WriteStartElement( "BalloonStyle" );
+            writer.WriteElementString( "text", "$[description]" );
             writer.WriteEndElement(); //BalloonStyle
             writer.WriteEndElement(); //Style
 
 
-            writer.WriteStartElement("Style");
-            writer.WriteAttributeString("id", KMZstyle + "_high");
-            writer.WriteStartElement("IconStyle");
-            writer.WriteElementString("scale", "2");
-            writer.WriteStartElement("Icon");
-            writer.WriteElementString("href", act.ReferenceId + "/" + KMZstyle + "_small.jpg");
+            writer.WriteStartElement( "Style" );
+            writer.WriteAttributeString( "id", KMZstyle + "_high" );
+            writer.WriteStartElement( "IconStyle" );
+            writer.WriteElementString( "scale", "2" );
+            writer.WriteStartElement( "Icon" );
+            writer.WriteElementString( "href", act.ReferenceId + "/" + KMZstyle + "_small.jpg" );
             writer.WriteEndElement(); //Icon
             writer.WriteEndElement(); //IconStyle
-            writer.WriteStartElement("BalloonStyle");
-            writer.WriteElementString("text", "$[description]");
+            writer.WriteStartElement( "BalloonStyle" );
+            writer.WriteElementString( "text", "$[description]" );
             writer.WriteEndElement(); //BalloonStyle
             writer.WriteEndElement(); //Style
         }
 
-        internal static byte[] GetGPSByteValue(double value)
+        internal static byte[] GetGPSByteValue( double value )
         {
             byte[] val = new byte[24];
-            Int32 d1 = (Int32)(value); //degree
+            Int32 d1 = (Int32)( value ); //degree
             Int32 d1den = 1;
-            Int32 d2 = (Int32)((value - d1) * 60); //minutes
+            Int32 d2 = (Int32)( ( value - d1 ) * 60 ); //minutes
             Int32 d2den = 1;
-            Int32 d3 = (Int32)((value - d1 - (double)(d2) / 60) * 60 * 60 * 100); //seconds with 2 digits after comma
+            Int32 d3 = (Int32)( ( value - d1 - (double)( d2 ) / 60 ) * 60 * 60 * 100 ); //seconds with 2 digits after comma
             Int32 d3den = 100;
-            BitConverter.GetBytes(d1).CopyTo(val, 0);
-            BitConverter.GetBytes(d1den).CopyTo(val, 4);
-            BitConverter.GetBytes(d2).CopyTo(val, 8);
-            BitConverter.GetBytes(d2den).CopyTo(val, 12);
-            BitConverter.GetBytes(d3).CopyTo(val, 16);
-            BitConverter.GetBytes(d3den).CopyTo(val, 20);
+            BitConverter.GetBytes( d1 ).CopyTo( val, 0 );
+            BitConverter.GetBytes( d1den ).CopyTo( val, 4 );
+            BitConverter.GetBytes( d2 ).CopyTo( val, 8 );
+            BitConverter.GetBytes( d2den ).CopyTo( val, 12 );
+            BitConverter.GetBytes( d3 ).CopyTo( val, 16 );
+            BitConverter.GetBytes( d3den ).CopyTo( val, 20 );
             return val;
         }
 
-        internal static double GetGPSDoubleValue(byte[] val)
+        internal static double GetGPSDoubleValue( byte[] val )
         {
-            Int32 d1 = BitConverter.ToInt32(val, 0);
-            Int32 d1den = BitConverter.ToInt32(val, 4);
-            Int32 d2 = BitConverter.ToInt32(val, 8);
-            Int32 d2den = BitConverter.ToInt32(val, 12);
-            Int32 d3 = BitConverter.ToInt32(val, 16);
-            Int32 d3den = BitConverter.ToInt32(val, 20);
-            double d = (double)(d1) / (double)(d1den) + (double)(d2) / (double)(d2den) / 60 + (double)(d3) / (double)(d3den) / 60 / 60;
+            Int32 d1 = BitConverter.ToInt32( val, 0 );
+            Int32 d1den = BitConverter.ToInt32( val, 4 );
+            Int32 d2 = BitConverter.ToInt32( val, 8 );
+            Int32 d2den = BitConverter.ToInt32( val, 12 );
+            Int32 d3 = BitConverter.ToInt32( val, 16 );
+            Int32 d3den = BitConverter.ToInt32( val, 20 );
+            double d = (double)( d1 ) / (double)( d1den ) + (double)( d2 ) / (double)( d2den ) / 60 + (double)( d3 ) / (double)( d3den ) / 60 / 60;
             return d;
         }
+
         //public static bool ValidImageFile(string p)
         //    {
         //    try
@@ -648,105 +702,149 @@ namespace ActivityPicturePlugin.Helper
         //        }
         //    }
 
-        internal static void DeleteThumbnails(List<string> referenceIDs)
+        internal static void DeleteThumbnails( List<string> referenceIDs )
         {
             try
             {
-                foreach (string referenceID in referenceIDs)
+                foreach ( string referenceID in referenceIDs )
                 {
-                    string ThumbnailPath = thumbnailPath(referenceID);
-                    if (System.IO.File.Exists(ThumbnailPath))
+                    string ThumbnailPath = thumbnailPath( referenceID );
+                    if ( System.IO.File.Exists( ThumbnailPath ) )
                     {
-                        System.IO.File.Delete(ThumbnailPath);
+                        System.IO.File.Delete( ThumbnailPath );
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
         }
 
-        public static void OpenExternal(ImageData im)
+        public static void OpenExternal( string sFile )
         {
-            if (im.Type == ImageData.DataTypes.Image)
+            try
             {
-                Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
+                System.Diagnostics.Process.Start( sFile );
             }
-            else if (im.Type == ImageData.DataTypes.Video)
+            catch ( Exception )
+            { }
+        }
+        public static void OpenExternal( ImageData im )
+        {
+            if ( im.Type == ImageData.DataTypes.Image )
             {
-                Functions.OpenVideoInExternalWindow(im.PhotoSource);
+                try
+                {
+                    //Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
+                    string sPath = GetBestImage( im.PhotoSource, im.ReferenceID );
+                    if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
+                }
+                catch ( Exception )
+                { }
+            }
+            else if ( im.Type == ImageData.DataTypes.Video )
+            {
+                try
+                {
+                    //Functions.OpenVideoInExternalWindow( im.PhotoSource );
+                    System.Diagnostics.Process.Start( im.PhotoSource );
+
+                }
+                catch ( Exception )
+                { }
             }
 
         }
-        public static string thumbnailPath(string referenceID)
+
+        public static string thumbnailPath( string referenceID )
         {
             //Could be several paths here
             return ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
         }
-        public static string GetBestImage(string photoSource, string referenceID)
+
+        public static string GetBestImage( string photoSource, string referenceID )
         {
             string path = null;
             //try to open Photosource first
             try
             {
-                if (System.IO.File.Exists(photoSource))
+                if ( System.IO.File.Exists( photoSource ) )
                 {
                     path = photoSource;
                 }
                 // if not found, try next to open image from ...\Web Files\Images folder
                 else
                 {
-                    string ThumbnailPath = thumbnailPath(referenceID);
-                    if (System.IO.File.Exists(ThumbnailPath))
+                    string ThumbnailPath = thumbnailPath( referenceID );
+                    if ( System.IO.File.Exists( ThumbnailPath ) )
                     {
                         path = ThumbnailPath;
                     }
                     // if both locations are not found, nothing will happen
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 throw;
             }
             return path;
         }
-        public static void OpenImage(string photoSource, string referenceID)
+
+        public static void OpenImage( string photoSource, string referenceID )
         {
             //try to open Photosource first
             try
             {
-                string path = GetBestImage(photoSource, referenceID);
+                /*string path = GetBestImage(photoSource, referenceID);
                 if(null != path)
                 {
                     OpenImageWithWindowsViewer(path);
+                }*/
+
+                try
+                {
+                    //Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
+                    string sPath = GetBestImage( photoSource, referenceID );
+                    if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
+                catch ( Exception )
+                { }
+
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 throw;
             }
         }
-        private static void OpenImageWithWindowsViewer(string ImageLocation)
+
+        private static void OpenImageWithWindowsViewer( string ImageLocation )
         {
             try
             {
                 //show picture with windows
-                string sys = System.Environment.GetFolderPath(Environment.SpecialFolder.System);
+                string sys = System.Environment.GetFolderPath( Environment.SpecialFolder.System );
                 System.Diagnostics.ProcessStartInfo f = new System.Diagnostics.ProcessStartInfo
-                (sys + "\\rundll32.exe",
+                ( sys + "\\rundll32.exe",
                 sys + "\\shimgvw.dll,ImageView_Fullscreen " +
-                ImageLocation);
-                System.Diagnostics.Process.Start(f);
+                ImageLocation );
+                System.Diagnostics.Process.Start( f );
             }
-            catch (Exception ex)
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
-        public static void OpenVideoInExternalWindow(string p)
+
+        public static void OpenVideoInExternalWindow( string p )
         {
             try
+            {
+                if ( p != null ) System.Diagnostics.Process.Start( p );
+            }
+            catch ( Exception )
+            { }
+
+            /*try
             {
                 FilgraphManager graphManager = new FilgraphManager();
                 // QueryInterface for the IMediaControl interface:
@@ -761,58 +859,59 @@ namespace ActivityPicturePlugin.Helper
             {
                 //throw;
             }
-            Console.WriteLine("Press Enter to continue.");
+            Console.WriteLine("Press Enter to continue.");*/
         }
 
-
-        public static void WriteExtensionData(ZoneFiveSoftware.Common.Data.Fitness.IActivity act, PluginData pd)
+        public static void WriteExtensionData( ZoneFiveSoftware.Common.Data.Fitness.IActivity act, PluginData pd )
         {
             try
             {
-                PluginData pd0 = ReadExtensionData(act);
+                PluginData pd0 = ReadExtensionData( act );
 
-                if (!pd.Equals(pd0))
+                if ( !pd.Equals( pd0 ) )
                 {
                     //store data of images in the serializable wrapper class
-                    if (pd.Images.Count == 0)
+                    if ( pd.Images.Count == 0 )
                     {
-                        act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, null);
-                        act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "");
+                        act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, null );
+                        act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "" );
                     }
                     else
                     {
                         System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                        System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));
-                        xmlSer.Serialize(mem, pd);
-                        act.SetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray());
-                        act.SetExtensionText(ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin");
+                        System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( PluginData ) );
+                        xmlSer.Serialize( mem, pd );
+                        act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
+                        act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
                         mem.Close();
                     }
 
                     ActivityPicturePlugin.Plugin.GetApplication().Logbook.Modified = true;
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 throw;
             }
         }
 
-        public static PluginData ReadExtensionData(ZoneFiveSoftware.Common.Data.Fitness.IActivity act)
+        public static PluginData ReadExtensionData( ZoneFiveSoftware.Common.Data.Fitness.IActivity act )
         {
             try
             {
+                if ( act == null ) return new PluginData();
+
                 PluginData pd;
-                byte[] b = act.GetExtensionData(ActivityPicturePlugin.GUIDs.PluginMain);
-                if (!(b.Length == 0))
+                byte[] b = act.GetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain );
+                if ( !( b.Length == 0 ) )
                 {
-                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer(typeof(PluginData));
+                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( PluginData ) );
                     System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    mem.Write(b, 0, b.Length);
+                    mem.Write( b, 0, b.Length );
                     mem.Position = 0;
                     //this.PluginExtensionData = (PluginData)xmlSer.Deserialize(mem);
-                    pd = (PluginData)xmlSer.Deserialize(mem);
+                    pd = (PluginData)xmlSer.Deserialize( mem );
                     mem.Dispose();
                     xmlSer = null;
                     b = null;
@@ -824,157 +923,165 @@ namespace ActivityPicturePlugin.Helper
                     return new PluginData();
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return new PluginData();
                 //throw;
             }
 
         }
-        internal static void SaveThumbnailImage(Bitmap bmp, string defpath, Int64 quality)
+
+        internal static void SaveThumbnailImage( Bitmap bmp, string defpath, Int64 quality )
         {
             try
             {
                 System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders();
                 System.Drawing.Imaging.ImageCodecInfo codec = null;
-                for (int i = 0; i < codecs.Length; i++)
+                for ( int i = 0; i < codecs.Length; i++ )
                 {
-                    if (codecs[i].MimeType.Equals("image/jpeg"))
+                    if ( codecs[i].MimeType.Equals( "image/jpeg" ) )
                     {
                         codec = codecs[i];
                         break;
                     }
                 }
-                if (codec != null)
+                if ( codec != null )
                 {
                     //save with the changed settings (quality, color depth)
                     System.Drawing.Imaging.Encoder encoderInstance = System.Drawing.Imaging.Encoder.Quality;
                     System.Drawing.Imaging.EncoderParameters encoderParametersInstance;
-                    encoderParametersInstance = new System.Drawing.Imaging.EncoderParameters(2);
+                    encoderParametersInstance = new System.Drawing.Imaging.EncoderParameters( 2 );
                     //100% quality
-                    if (quality < 1 | quality > 10) quality = 10; //check for wrong input;
-                    System.Drawing.Imaging.EncoderParameter encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter(encoderInstance, (long)(quality * 10));
+                    if ( quality < 1 | quality > 10 ) quality = 10; //check for wrong input;
+                    System.Drawing.Imaging.EncoderParameter encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, (long)( quality * 10 ) );
                     encoderParametersInstance.Param[0] = encoderParameterInstance;
                     encoderInstance = System.Drawing.Imaging.Encoder.ColorDepth;
                     //24bit color depth
-                    encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter(encoderInstance, 24L);
+                    encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, 24L );
                     encoderParametersInstance.Param[1] = encoderParameterInstance;
-                    bmp.Save(defpath, codec, encoderParametersInstance);
+                    bmp.Save( defpath, codec, encoderParametersInstance );
                 }
                 else
                 //save with the default settings
                 {
-                    bmp.Save(defpath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    bmp.Save( defpath, System.Drawing.Imaging.ImageFormat.Jpeg );
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
 
         }
-        internal static void GeoTagWithActivity(string filepath, ZoneFiveSoftware.Common.Data.Fitness.IActivity act)
+
+        internal static void GeoTagWithActivity( string filepath, ZoneFiveSoftware.Common.Data.Fitness.IActivity act )
         {
             try
             {
-                ExifWorks EW = new ExifWorks(filepath);
-                EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue(EW.DateTimeOriginal.ToUniversalTime()).Value.LatitudeDegrees;
-                EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue(EW.DateTimeOriginal.ToUniversalTime()).Value.LongitudeDegrees;
-                EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue(EW.DateTimeOriginal.ToUniversalTime()).Value.ElevationMeters;
+                ExifWorks EW = new ExifWorks( filepath );
+                EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LatitudeDegrees;
+                EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LongitudeDegrees;
+                EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.ElevationMeters;
                 // Save Image with new Exif data
 
-                EW.GetBitmap().Save(filepath);
+                EW.GetBitmap().Save( filepath );
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 //throw;
             }
 
         }
-        internal static Image getThumbnailWithBorder(int width, Image img)
+
+        internal static Image getThumbnailWithBorder( int width, Image img )
         {
             try
             {
-                Image thumb = new Bitmap(width, width);
+                Image thumb = new Bitmap( width, width );
                 Image tmp = null;
                 //If the original image is small than the Thumbnail size, just draw in the center
-                if (img.Width < width && img.Height < width)
+                if ( img.Width < width && img.Height < width )
                 {
-                    using (Graphics g = Graphics.FromImage(thumb))
+                    using ( Graphics g = Graphics.FromImage( thumb ) )
                     {
-                        int xoffset = (int)((width - img.Width) / 2);
-                        int yoffset = (int)((width - img.Height) / 2);
-                        g.DrawImage(img, xoffset, yoffset, img.Width, img.Height);
+                        int xoffset = (int)( ( width - img.Width ) / 2 );
+                        int yoffset = (int)( ( width - img.Height ) / 2 );
+                        g.DrawImage( img, xoffset, yoffset, img.Width, img.Height );
                     }
                 }
                 else //Otherwise we have to get the thumbnail for drawing
                 {
                     Image.GetThumbnailImageAbort myCallback = new
-                        Image.GetThumbnailImageAbort(ThumbnailCallback);
-                    if (img.Width == img.Height)
+                        Image.GetThumbnailImageAbort( ThumbnailCallback );
+                    if ( img.Width == img.Height )
                     {
                         thumb = img.GetThumbnailImage(
                                  width, width,
-                                 myCallback, IntPtr.Zero);
+                                 myCallback, IntPtr.Zero );
                     }
                     else
                     {
                         int k = 0;
                         int xoffset = 0;
                         int yoffset = 0;
-                        if (img.Width < img.Height)
+                        if ( img.Width < img.Height )
                         {
-                            k = (int)(width * img.Width / img.Height);
-                            tmp = img.GetThumbnailImage(k, width, myCallback, IntPtr.Zero);
-                            xoffset = (int)((width - k) / 2);
+                            k = (int)( width * img.Width / img.Height );
+                            tmp = img.GetThumbnailImage( k, width, myCallback, IntPtr.Zero );
+                            xoffset = (int)( ( width - k ) / 2 );
                         }
-                        if (img.Width > img.Height)
+                        if ( img.Width > img.Height )
                         {
-                            k = (int)(width * img.Height / img.Width);
-                            tmp = img.GetThumbnailImage(width, k, myCallback, IntPtr.Zero);
-                            yoffset = (int)((width - k) / 2);
+                            k = (int)( width * img.Height / img.Width );
+                            tmp = img.GetThumbnailImage( width, k, myCallback, IntPtr.Zero );
+                            yoffset = (int)( ( width - k ) / 2 );
                         }
-                        using (Graphics g = Graphics.FromImage(thumb))
+                        using ( Graphics g = Graphics.FromImage( thumb ) )
                         {
-                            g.DrawImage(tmp, xoffset, yoffset, tmp.Width, tmp.Height);
+                            g.DrawImage( tmp, xoffset, yoffset, tmp.Width, tmp.Height );
                         }
                     }
                 }
-                using (Graphics g = Graphics.FromImage(thumb))
+                using ( Graphics g = Graphics.FromImage( thumb ) )
                 {
-                    g.DrawRectangle(Pens.Black, 0, 0, thumb.Width - 1, thumb.Height - 1);
+                    g.DrawRectangle( Pens.Black, 0, 0, thumb.Width - 1, thumb.Height - 1 );
                 }
+                tmp.Dispose();
                 return thumb;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return null;
             }
 
         }
+
         internal static bool ThumbnailCallback()
         {
             return true;
         }
 
-        internal static ImageData.DataTypes GetMediaType(string p)
+        internal static ImageData.DataTypes GetMediaType( string p )
         {
-            if (p.Length > 4) p = p.Substring(p.Length - 4);
-            string[] extimg = { ".jpg", ".png", ".tif", ".gif", ".bmp" };
-            string[] extvid = { ".avi", ".wmv", ".mgp", ".mpeg" };
-            foreach (string str in extimg)
+            System.IO.FileInfo fi = new FileInfo( p );
+            //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
+            string[] extimg = { ".jpg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
+            string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov" };
+            foreach ( string str in extimg )
             {
-                if (str == p.ToLower()) return ImageData.DataTypes.Image;
+                //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
+                if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Image;
             }
-            foreach (string str in extvid)
+            foreach ( string str in extvid )
             {
-                if (str == p.ToLower()) return ImageData.DataTypes.Video;
+                //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
+                if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Video;
             }
             return ImageData.DataTypes.Nothing;
         }
 
-        internal static ImageData AddImage(String ImageLocation, Boolean CreateThumbnail)
+        internal static ImageData AddImage( String ImageLocation, Boolean CreateThumbnail )
         {
             try
             {
@@ -987,78 +1094,99 @@ namespace ActivityPicturePlugin.Helper
 
 
                 ID.Type = ImageData.DataTypes.Image;
-                if (CreateThumbnail)
+                if ( CreateThumbnail )
                 {
                     ID.SetThumbnail();
-                    ID.EW = new ExifWorks(ID.ThumbnailPath);
+                    ID.EW = new ExifWorks( ID.ThumbnailPath );
                 }
                 else
                 {
-                    ID.EW = new ExifWorks(ID.PhotoSource);
+                    ID.EW = new ExifWorks( ID.PhotoSource );
                 }
 
-                ID.Ratio = (Single)(ID.EW.GetBitmap().Width) / (Single)(ID.EW.GetBitmap().Height);
+                ID.Ratio = (Single)( ID.EW.GetBitmap().Width ) / (Single)( ID.EW.GetBitmap().Height );
 
                 return ID;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 return null;
             }
 
         }
 
-        internal static void ClearImageList(PictureAlbum pa)
+        internal static void ClearImageList( PictureAlbum pa )
         {
             try
             {
-
-                foreach (ImageData ID in pa.ImageList)
+                if ( pa.ImageList != null )
                 {
-                    if (ID.EW != null)
+                    foreach ( ImageData ID in pa.ImageList )
                     {
-                        ID.EW.Dispose();
+                        if ( ID.EW != null )
+                        {
+                            ID.EW.Dispose();
+                        }
+                        ID.Dispose();
                     }
-                    ID.Dispose();
-                }
 
-                pa.ImageList.Clear();
+                    pa.ImageList.Clear();
+                }
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 //throw;
             }
         }
 
-        internal static int CompareByDate(ImageData x, ImageData y)
+        internal static int CompareByDate( ImageData x, ImageData y )
         {
+            const string cDateTimeFormat = "yyyy MM dd HH:mm:ss";
+            DateTime dt = new DateTime();
+            string xtemp, ytemp;
+            int retval = 0;
+
             try
             {
-                if (x == null)
+                if ( x == null )
                 {
-                    if (y == null) return 0; // If x is null and y is null, they're equal. 
+                    if ( y == null ) return 0; // If x is null and y is null, they're equal. 
                     else return -1; // If x is null and y is not null, y is greater. 
                 }
                 else
                 {
                     // If x is not null...
-                    if (y == null) return 1;// ...and y is null, x is greater.
+                    if ( y == null ) return 1;// ...and y is null, x is greater.
                     else
                     {
                         // ...and y is not null, compare the dates
-                        int retval = x.DateTimeOriginal.CompareTo(y.DateTimeOriginal);
-                        if (retval != 0) return retval;// If they are not equal, the later date is greater.
-                        else return 0;// If the dates are equal, 0 is returned
+                        DateTime.TryParse( x.DateTimeOriginal, out dt );
+                        xtemp = dt.ToString( cDateTimeFormat );
+                        DateTime.TryParse( y.DateTimeOriginal, out dt );
+                        ytemp = dt.ToString( cDateTimeFormat );
+
+                        retval = xtemp.CompareTo( ytemp );
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
-                return 0;
                 //throw;
             }
 
+            return retval;
         }
+
+        internal static string UppercaseFirst( string s )
+        {
+            // Check for empty string.
+            if ( string.IsNullOrEmpty( s ) )
+                return string.Empty;
+
+            // Return char and concat substring.
+            return char.ToUpper( s[0] ) + s.Substring( 1 );
+        }
+
     }
 }

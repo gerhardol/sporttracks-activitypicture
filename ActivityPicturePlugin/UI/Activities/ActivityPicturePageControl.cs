@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Collections;
 using System.IO;
@@ -48,7 +49,7 @@ using ActivityPicturePlugin.UI.MapLayers;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
-    public partial class ActivityPicturePageControl : UserControl
+    public partial class ActivityPicturePageControl : UserControl, IDisposable
     {
 #if !ST_2_1
         public ActivityPicturePageControl(IDetailPage detailPage, IDailyActivityView view)
@@ -65,10 +66,12 @@ namespace ActivityPicturePlugin.UI.Activities
 #endif
         public ActivityPicturePageControl()
         {
+            this.Visible = false;
             InitializeComponent();
 
+            LoadSettings();
             //Create directory if it does not already exist!
-            if (!Directory.Exists(ImageFilesFolder)) Directory.CreateDirectory(ImageFilesFolder);
+            if ( !Directory.Exists( ImageFilesFolder ) ) Directory.CreateDirectory( ImageFilesFolder );
 
             //read settings from logfile
             ActivityPicturePageControl.PluginSettingsData.ReadSettings();
@@ -84,6 +87,7 @@ namespace ActivityPicturePlugin.UI.Activities
         }
         private ShowMode Mode = ShowMode.List;
         private PluginData PluginExtensionData = new PluginData();
+        private bool _showPage = false;
 
         private List<string> SelectedReferenceIDs = new List<string>();
         private bool PreventRowsRemoved = false;//To prevent recursive calls
@@ -91,10 +95,10 @@ namespace ActivityPicturePlugin.UI.Activities
 
         #region Public members
         //TODO: GetFullPath required due to relative paths
-        public static string ImageFilesFolder = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().
+        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().
 #if ST_2_1
             //TODO:
-            SystemPreferences.WebFilesFolder+"\\Images\\");
+            SystemPreferences.WebFilesFolder + "\\Images\\" );
 #else
 Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
        // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar);
@@ -109,20 +113,32 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         #endregion
 
         #region Public properties
+        bool m_Active = false;
+        ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
         public IActivity Activity
         {
             set
             {
                 //if activity has changed
-                if ((!object.ReferenceEquals(_Activity, value)))
+                if ( ( !object.ReferenceEquals( _Activity, value ) ) )
                 {
                     //Update activity
                     _Activity = value;
-                    this.pictureAlbumView.ActivityChanging();
-                    //this.dataGridViewImages.Visible = false;
-                    Functions.ClearImageList(this.pictureAlbumView);
-                    ReloadData();
-                    UpdateView();
+                    if ( !m_Active ) ResetPage();
+                    else
+                    {
+                        this.pictureAlbumView.ActivityChanging();
+                        Functions.ClearImageList( this.pictureAlbumView );
+                        this.dataGridViewImages.Visible = false;
+                        //ResetPage();
+                        if ( _Activity != null )
+                        {
+                            ReloadData();
+                            UpdateView();
+                        }
+                        else
+                            ResetPage();
+                    }
                 }
             }
             get
@@ -130,118 +146,203 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 return _Activity;
             }
         }
+
+        public void ShowProgressBar()
+        {
+            this.progressBar1.MarqueeAnimationSpeed = 1;
+            this.progressBar1.Visible = true;
+        }
+        public void HideProgressBar()
+        {
+            this.progressBar1.MarqueeAnimationSpeed = 0;
+            this.progressBar1.Visible = false;
+        }
         #endregion
 
         #region Helper Methods
+        public void LoadSettings()
+        {
+            Mode = (ShowMode)ActivityPicturePlugin.Source.Settings.ActivityMode; //Activity Picture Mode (Album, List, Import)
+            sliderImageSize.Value = ActivityPicturePlugin.Source.Settings.ImageZoom;
+            //pictureAlbumView.MaximumImageSize = (PictureAlbum.MaxImageSize)ActivityPicturePlugin.Source.Settings.MaxImageSize;
 
+            toolStripMenuTypeImage.Checked = ActivityPicturePlugin.Source.Settings.CTypeImage;
+            toolStripMenuExifGPS.Checked = ActivityPicturePlugin.Source.Settings.CExifGPS;
+            toolStripMenuAltitude.Checked = ActivityPicturePlugin.Source.Settings.CAltitude;
+            toolStripMenuComment.Checked = ActivityPicturePlugin.Source.Settings.CComment;
+            //toolStripMenuThumbnail.Checked = ActivityPicturePlugin.Source.Settings.CThumbnail;
+            toolStripMenuDateTime.Checked = ActivityPicturePlugin.Source.Settings.CDateTimeOriginal;
+            toolStripMenuTitle.Checked = ActivityPicturePlugin.Source.Settings.CPhotoTitle;
+            toolStripMenuCamera.Checked = ActivityPicturePlugin.Source.Settings.CCamera;
+            toolStripMenuPhotoSource.Checked = ActivityPicturePlugin.Source.Settings.CPhotoSource;
+            toolStripMenuReferenceID.Checked = ActivityPicturePlugin.Source.Settings.CReferenceID;
+
+            toolStripMenuFitToWindow.Checked = ActivityPicturePlugin.Source.Settings.MaxImageSize == (int)PictureAlbum.MaxImageSize.FitToWindow;
+
+            dataGridViewImages.Columns["cTypeImage"].Visible = ActivityPicturePlugin.Source.Settings.CTypeImage;
+            dataGridViewImages.Columns["cExifGPS"].Visible = ActivityPicturePlugin.Source.Settings.CExifGPS;
+            dataGridViewImages.Columns["cAltitude"].Visible = ActivityPicturePlugin.Source.Settings.CAltitude;
+            dataGridViewImages.Columns["cComment"].Visible = ActivityPicturePlugin.Source.Settings.CComment;
+            dataGridViewImages.Columns["cThumbnail"].Visible = ActivityPicturePlugin.Source.Settings.CThumbnail;
+            dataGridViewImages.Columns["cDateTimeOriginal"].Visible = ActivityPicturePlugin.Source.Settings.CDateTimeOriginal;
+            dataGridViewImages.Columns["cPhotoTitle"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoTitle;
+            dataGridViewImages.Columns["cCamera"].Visible = ActivityPicturePlugin.Source.Settings.CCamera;
+            dataGridViewImages.Columns["cPhotoSource"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoSource;
+            dataGridViewImages.Columns["cReferenceID"].Visible = ActivityPicturePlugin.Source.Settings.CReferenceID;
+
+            volumeSlider2.Volume = ActivityPicturePlugin.Source.Settings.VolumeValue;
+            //volumeSlider2.Volume = 10u;
+        }
+
+        public void ResetPage()
+        {
+            this.timerVideo.Stop();
+            this.pictureAlbumView.StopVideo();
+            this.pictureAlbumView.ActivityChanging();
+            Functions.ClearImageList( this.pictureAlbumView );
+            this.contextMenuStripView.Enabled = false;
+            this.groupBoxImage.Visible = false;
+            this.groupBoxVideo.Visible = false;
+            this.groupBoxListOptions.Visible = false;
+            this.pictureAlbumView.Visible = false;
+            this.panelPictureAlbumView.Visible = false;
+            this.importControl1.Visible = false;
+            this.dataGridViewImages.Visible = false;
+            UpdateDataGridView();
+        }
 
         public void RefreshPage()
         {
             try
             {
-                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
-                Functions.ClearImageList(this.pictureAlbumView);
-                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
+                Functions.ClearImageList( this.pictureAlbumView );
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
                 ReloadData();
                 UpdateView();
-                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
 
                 this.Invalidate();
-                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
         }
-        private bool _showPage = false;
+
         public bool HidePage()
         {
             _showPage = false;
+            m_Active = false;
+            this.ResetPage();
 #if !ST_2_1
             m_layer.HidePage();
 #endif
             return false;
         }
-        public void ShowPage(string bookmark)
+
+        public void ShowPage( string bookmark )
         {
-            //Not needed now
-            //RefreshData();
             _showPage = true;
+            this.Visible = true;
+            m_Active = true;
+
 #if !ST_2_1
             m_layer.ShowPage("");
 #endif
         }
 
-        ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
-        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
         {
             m_theme = visualTheme;
+
             //change theme colors
-            //labelImageSize.ForeColor = visualTheme.ControlText;
-            //this.trackBar1.BackColor = visualTheme.Window;
-
             this.Invalidate();
- 
-            this.BackColor = visualTheme.Control;
-            this.actionBannerViews.ThemeChanged(visualTheme);
-            //this.actionBannerViews.BackColor = Theme.SubHeader;
-            this.panelViews.ThemeChanged(visualTheme);
-            this.panelViews.HeadingBackColor = visualTheme.Control;
-            //this.panelViews.Border = ControlBorder.Style.SmallRoundShadow;
-            //this.panelViews.BorderColor = Theme.Border;
-            //this.panelViews.BorderShadowColor = System.Drawing.Color.Transparent;
 
-            this.importControl1.ThemeChanged(visualTheme);
-            this.pictureAlbumView.ThemeChanged(visualTheme);
+            this.BackColor = visualTheme.Control;
+            this.actionBannerViews.ThemeChanged( visualTheme );
+
+            this.panelViews.ThemeChanged( visualTheme );
+            this.panelViews.HeadingBackColor = visualTheme.Control;
+            //this.panelViews.BackColor = visualTheme.Control;
+            //this.panelViews.ForeColor = visualTheme.ControlText;
+
+
+            this.importControl1.ThemeChanged( visualTheme );
+            // I do not know why the ImportControl is so hard to resize.  
+            // If a background color other than transparent is used, 
+            // it overlaps the lower and right borders of its parent.
+            // Might be a bug in the SplitterControl panels.  Don't
+            // Feel like creating a new one.  Flickers a bit too.
+            this.importControl1.BackColor = Color.Transparent;
+
+            this.pictureAlbumView.ThemeChanged( visualTheme );
             this.groupBoxListOptions.BackColor = visualTheme.Control;
             this.groupBoxListOptions.ForeColor = visualTheme.ControlText;
 
             this.groupBoxVideo.BackColor = visualTheme.Control;
             this.groupBoxVideo.ForeColor = visualTheme.ControlText;
-            this.trackBarVideo.BackColor = visualTheme.Control;
             this.toolStripVideo.BackColor = visualTheme.Control;
-            this.volumeSlider2.ThemeChanged(visualTheme);
+
+            this.sliderImageSize.BarInnerColor = visualTheme.Selected;
+            this.sliderImageSize.BarOuterColor = visualTheme.MainHeader;
+            this.sliderImageSize.BarPenColor = visualTheme.SubHeader;
+            this.sliderImageSize.ElapsedInnerColor = visualTheme.Window;
+            this.sliderImageSize.ElapsedOuterColor = visualTheme.MainHeader;
+
+            this.sliderVideo.BarInnerColor = visualTheme.Selected;
+            this.sliderVideo.BarOuterColor = visualTheme.MainHeader;
+            this.sliderVideo.BarPenColor = visualTheme.SubHeader;
+            this.sliderVideo.ElapsedInnerColor = visualTheme.Window;
+            this.sliderVideo.ElapsedOuterColor = visualTheme.MainHeader;
 
             this.groupBoxImage.BackColor = visualTheme.Control;
             this.groupBoxImage.ForeColor = visualTheme.ControlText;
-            this.trackBarImageSize.BackColor = visualTheme.Control;
+            this.sliderImageSize.BackColor = visualTheme.Control;
+            this.sliderImageSize.ForeColor = visualTheme.MainHeader;
+
+            this.volumeSlider2.ThemeChanged( visualTheme );
 
             this.dataGridViewImages.ForeColor = visualTheme.ControlText;
-            this.dataGridViewImages.BackgroundColor = visualTheme.Control;
+            //this.dataGridViewImages.BackgroundColor = visualTheme.Control;
+            this.dataGridViewImages.BackgroundColor = visualTheme.Window;
             this.dataGridViewImages.GridColor = visualTheme.Border;
             this.dataGridViewImages.DefaultCellStyle.BackColor = visualTheme.Window;
             this.dataGridViewImages.RowHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.ForeColor = visualTheme.SubHeaderText;
+
+            dataGridViewImages.RowsDefaultCellStyle.SelectionBackColor = visualTheme.Selected;
+            dataGridViewImages.RowsDefaultCellStyle.SelectionForeColor = visualTheme.SelectedText;
+
+            dataGridViewImages.RowsDefaultCellStyle.BackColor = visualTheme.Window;
+            dataGridViewImages.AlternatingRowsDefaultCellStyle.BackColor = GridAltRowColor( visualTheme.Window );
+
+            this.progressBar1.BackColor = this.BackColor;
+            this.progressBar1.ForeColor = visualTheme.Selected;
         }
 
-        public void UICultureChanged(System.Globalization.CultureInfo culture)
+        public void UICultureChanged( System.Globalization.CultureInfo culture )
         {
             //change number formats
             RefreshPage();
 
-            if (this.Mode == ShowMode.Album)
-            {
+            if ( this.Mode == ShowMode.Album )
                 this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
-            }
-            else if (this.Mode == ShowMode.List)
-            {
+            else if ( this.Mode == ShowMode.List )
                 this.actionBannerViews.Text = CommonResources.Text.LabelList;
-            }
-            else if (this.Mode == ShowMode.Import)
-            {
+            else if ( this.Mode == ShowMode.Import )
                 this.actionBannerViews.Text = CommonResources.Text.ActionImport;
-            }
-            this.Altitude.HeaderText = CommonResources.Text.LabelElevation;
-            this.commentDataGridViewTextBoxColumn.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
-            this.dateTimeOriginalDataGridViewTextBoxColumn.HeaderText = CommonResources.Text.LabelDate;
-            this.equipmentModelDataGridViewTextBoxColumn.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
-            this.ExifGPS.HeaderText = CommonResources.Text.LabelGPSLocation;
-            this.photoSourceDataGridViewTextBoxColumn.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
-            this.referenceIDDataGridViewTextBoxColumn.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
-            this.thumbnailDataGridViewImageColumn.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
-            this.titleDataGridViewTextBoxColumn.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            this.cAltitude.HeaderText = CommonResources.Text.LabelElevation;
+            this.cComment.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.cDateTimeOriginal.HeaderText = CommonResources.Text.LabelDate;
+            this.cCamera.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+            this.cExifGPS.HeaderText = Functions.UppercaseFirst( CommonResources.Text.LabelGPSLocation );
+            this.cPhotoSource.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+            this.cReferenceID.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+            this.cThumbnail.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.cPhotoTitle.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
             this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
             this.pictureListToolStripMenuItem.Text = CommonResources.Text.LabelList;
             this.importToolStripMenuItem.Text = CommonResources.Text.ActionImport;
@@ -252,67 +353,212 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.toolStripButtonPause.ToolTipText = Resources.Resources.toolStripButtonPause_ToolTipText;
             this.toolStripButtonPlay.ToolTipText = Resources.Resources.toolStripButtonPlay_ToolTipText;
             this.toolStripButtonStop.ToolTipText = Resources.Resources.toolStripButtonStop_ToolTipText;
+            this.toolStripButtonSnapshot.ToolTipText = Resources.Resources.toolStripButtonSnapshot_ToolTipText;
 
-            this.toolTip1.SetToolTip(this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages);
-            this.toolTip1.SetToolTip(this.btnKML, Resources.Resources.tooltip_OnlySelectedImages);
-            this.toolTip1.SetToolTip(this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages);
+            this.toolTip1.SetToolTip( this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages );
+            this.toolTip1.SetToolTip( this.btnKML, Resources.Resources.tooltip_OnlySelectedImages );
+            this.toolTip1.SetToolTip( this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages );
 
-            this.TypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
-            this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
-            this.btnKML.Text = Resources.Resources.btnKML_Text;
-            this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
-            this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
+            this.cTypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
 
-            this.importControl1.UpdateUICulture(culture);
+            using ( Graphics g = this.CreateGraphics() )
+            {
+                this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
+                this.btnGeoTag.Width = (int)g.MeasureString( this.btnGeoTag.Text, this.btnGeoTag.Font ).Width + 10; ;
+                this.btnKML.Text = Resources.Resources.btnKML_Text;
+                this.btnKML.Width = (int)g.MeasureString( this.btnKML.Text, this.btnKML.Font ).Width + 10;
+                this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
+                this.btnTimeOffset.Width = (int)g.MeasureString( this.btnTimeOffset.Text, this.btnTimeOffset.Font ).Width + 10;
+                this.btnTimeOffset.Left = ( this.btnGeoTag.Right + 10 );
+                this.btnKML.Left = ( this.btnTimeOffset.Right + 10 );
+                this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
+                this.labelImageSize.Width = (int)g.MeasureString( this.labelImageSize.Text, this.labelImageSize.Font ).Width + 10;
+            }
+
+            this.sliderImageSize.Location = new Point( this.labelImageSize.Width + this.labelImageSize.Left + 20, this.sliderImageSize.Top );
+            this.groupBoxImage.Width = this.sliderImageSize.Width + this.sliderImageSize.Left + 10;
+            this.groupBoxVideo.Left = this.groupBoxImage.Left + this.groupBoxImage.Width + 10;
+            //this.groupBoxVideo.Width = this.Width - this.groupBoxVideo.Left - 10;
+            this.groupBoxVideo.Width = this.panelViews.Width - this.groupBoxVideo.Left - 10;
+
+            this.toolStripMenuFitToWindow.Text = Resources.Resources.FitImagesToView_Text;
+
+            this.toolStripMenuCopy.Text = Resources.Resources.CopyToClipboard_Text;
+            this.toolStripMenuNone.Text = Resources.Resources.HideAllColumns_Text;
+            this.toolStripMenuAll.Text = Resources.Resources.ShowAllColumns_Text;
+            this.toolStripMenuTypeImage.Text = Resources.Resources.TypeImage_HeaderText;
+            this.toolStripMenuExifGPS.Text = CommonResources.Text.LabelGPSLocation;
+            this.toolStripMenuAltitude.Text = CommonResources.Text.LabelElevation;
+            this.toolStripMenuComment.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            //this.toolStripMenuThumbnail.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.toolStripMenuDateTime.Text = CommonResources.Text.LabelDate;
+            this.toolStripMenuCamera.Text = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuPhotoSource.Text = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuReferenceID.Text = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+
+            this.importControl1.UpdateUICulture( culture );
+        }
+
+        // Cleans up the thumbnails that were created but not saved during the last session
+        public void CleanupThumbnails()
+        {
+            string s = ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated;
+            if ( s != "" )
+            {
+                Thread thread = new Thread( new ParameterizedThreadStart( RunCleanup ) );
+                thread.Start( s );
+            }
+            ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated = "";
+        }
+
+        private void RunCleanup( object sNewThumbs )
+        {
+            string s = sNewThumbs as string;
+            string[] sFiles = s.Split( '\t' );
+            List<string> thumbNails = GetThumbnailPathsAllActivities();
+
+            foreach ( string sFile in sFiles )
+            {
+                if ( sFile == "" ) continue;
+                try
+                {
+                    FileInfo fi = new FileInfo( sFile );
+                    bool bFound = false;
+                    if ( sFile != "" )
+                    {
+                        foreach ( string sThumbnail in thumbNails )
+                        {
+                            if ( String.Compare( sThumbnail, sFile, true ) == 0 )
+                            {
+                                bFound = true;
+                                break;
+                            }
+                        }
+                    }
+                    if ( !bFound )
+                        fi.Delete();
+                }
+                catch ( Exception ex )
+                {
+                    System.Diagnostics.Debug.Print( "Error deleting: " + sFile + " " + ex.Message );
+                }
+            }
         }
 
         private void UpdateView()
         {
             try
             {
-                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                this.contextMenuStripView.Enabled = true;
+                this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
+
                 //Load controls depending on selected view
-                if (this.Mode == ShowMode.Album)
-                {                  
+                if ( this.Mode == ShowMode.Album )
+                {
                     this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+                    this.groupBoxVideo.Enabled = true;	// ( this.pictureAlbumView.CurrentStatus != PictureAlbum.MediaStatus.None );
                     this.groupBoxImage.Visible = true;
+                    this.groupBoxImage.Enabled = true;
                     this.groupBoxVideo.Visible = true;
                     this.groupBoxListOptions.Visible = false;
+                    this.UpdateToolBar();
                     this.dataGridViewImages.Visible = false;
                     this.pictureAlbumView.Visible = true;
                     this.importControl1.Visible = false;
+                    this.panelPictureAlbumView.Visible = true;
+                    if ( ( this.pictureAlbumView.ImageList == null ) || ( this.pictureAlbumView.ImageList.Count == 0 ) )
+                        this.groupBoxImage.Enabled = false;
                     this.pictureAlbumView.Invalidate();
                 }
-                else if (this.Mode == ShowMode.List)
+                else if ( this.Mode == ShowMode.List )
                 {
+                    this.pictureAlbumView.PauseVideo();
                     this.actionBannerViews.Text = CommonResources.Text.LabelList;
                     this.groupBoxImage.Visible = false;
+                    this.groupBoxVideo.Enabled = false;
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = true;
                     this.dataGridViewImages.Visible = true;
                     this.pictureAlbumView.Visible = false;
+                    this.panelPictureAlbumView.Visible = false;
                     this.importControl1.Visible = false;
                     UpdateDataGridView();
+                    if ( this.dataGridViewImages.Rows.Count > 0 )
+                    {
+                        this.btnGeoTag.Enabled = true;
+                        this.btnTimeOffset.Enabled = true;
+                    }
+                    else
+                    {
+                        this.btnGeoTag.Enabled = false;
+                        this.btnTimeOffset.Enabled = false;
+                    }
                 }
-                else if (this.Mode == ShowMode.Import)
+                else if ( this.Mode == ShowMode.Import )
                 {
+                    this.pictureAlbumView.PauseVideo();
                     this.actionBannerViews.Text = CommonResources.Text.ActionImport;
                     this.dataGridViewImages.Visible = false;
                     this.pictureAlbumView.Visible = false;
+                    this.panelPictureAlbumView.Visible = false;
                     this.groupBoxImage.Visible = false;
+                    this.groupBoxVideo.Enabled = false;
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = false;
                     this.importControl1.LoadNodes();
                     this.importControl1.Visible = true;
                 }
 
-                this.groupBoxVideo.Enabled = false;
-                this.pictureAlbumView.StopVideo();
-                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
+            }
+        }
+
+        public void UpdateToolBar()
+        {
+            switch ( this.pictureAlbumView.CurrentStatus )
+            {
+                case Helper.PictureAlbum.MediaStatus.None:
+                    toolStripButtonPlay.Enabled = false;
+                    toolStripButtonPause.Enabled = false;
+                    toolStripButtonStop.Enabled = false;
+                    toolStripButtonSnapshot.Enabled = false;
+                    sliderVideo.Enabled = false;
+                    volumeSlider2.Enabled = false;
+                    break;
+
+                case Helper.PictureAlbum.MediaStatus.Paused:
+                    toolStripButtonPlay.Enabled = true;
+                    toolStripButtonPause.Enabled = false;
+                    toolStripButtonStop.Enabled = true;
+                    toolStripButtonSnapshot.Enabled = pictureAlbumView.IsAvi();
+                    sliderVideo.Enabled = true;
+                    volumeSlider2.Enabled = true;
+                    break;
+
+                case Helper.PictureAlbum.MediaStatus.Running:
+                    toolStripButtonPlay.Enabled = false;
+                    toolStripButtonPause.Enabled = true;
+                    toolStripButtonStop.Enabled = true;
+                    toolStripButtonSnapshot.Enabled = true;
+                    toolStripButtonSnapshot.Enabled = pictureAlbumView.IsAvi();
+                    sliderVideo.Enabled = true;
+                    volumeSlider2.Enabled = true;
+                    timerVideo.Start();
+                    break;
+
+                case Helper.PictureAlbum.MediaStatus.Stopped:
+                    toolStripButtonPlay.Enabled = true;
+                    toolStripButtonPause.Enabled = false;
+                    toolStripButtonStop.Enabled = false;
+                    timerVideo.Stop();
+                    toolStripButtonSnapshot.Enabled = false;
+                    sliderVideo.Enabled = false;
+                    volumeSlider2.Enabled = true;
+                    break;
             }
         }
 
@@ -320,35 +566,80 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             try
             {
-                if (_Activity != null)
+                if ( _Activity != null )
                 {
-                    this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
-                    this.Enabled = true;
+                    this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
+                    //this.Visible = true;
+                    this.Visible = _showPage;
 
                     //Read data and add new controls
-                    this.PluginExtensionData = Helper.Functions.ReadExtensionData(_Activity);
-                    if (this.PluginExtensionData.Images.Count != 0)
+                    this.PluginExtensionData = Helper.Functions.ReadExtensionData( _Activity );
+                    if ( this.PluginExtensionData.Images.Count != 0 )
                     {
-                        this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData(this.PluginExtensionData.Images);
+                        this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images );
                         SortListView();
                     }
-                    this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
+                    this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
 #if !ST_2_1
                     m_layer.HidePage(); //defer updates
-                    this.m_layer.PictureSize = this.trackBarImageSize.Value;
+                    this.m_layer.PictureSize = this.sliderImageSize.Value;
                     m_layer.Pictures = this.pictureAlbumView.ImageList;
                     m_layer.ShowPage("");//Refresh
 #endif
                 }
                 else
                 {
-                    this.Enabled = false;
+                    this.Visible = false;
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
+        }
+
+        private List<string> GetThumbnailPathsAllActivities()
+        {
+            List<string> s = new List<string>();
+
+            IList<IActivity> activities = new List<IActivity>();
+            activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
+
+            for ( int i = activities.Count - 1; i >= 0; i-- )
+            {
+                PluginData data = Helper.Functions.ReadExtensionData( activities[i] );
+                if ( data.Images.Count > 0 )
+                {
+                    for ( int j = 0; j < data.Images.Count; j++ )
+                        s.Add( Functions.thumbnailPath( data.Images[j].ReferenceID ) );
+                }
+            }
+            return s;
+        }
+
+        private static Color GridAltRowColor( Color defaultRowColor )
+        {
+            int R = (int)( defaultRowColor.R / 1.012 );
+            int G = (int)( defaultRowColor.G / 1.02 );
+            int B = (int)( defaultRowColor.B / 1.025 );
+            return Color.FromArgb( R, G, B );
+        }
+
+        private void InitializeDataGridView()
+        {
+            this.cThumbnail.DisplayIndex = 0;
+            this.cTypeImage.DisplayIndex = 1;
+            this.cExifGPS.DisplayIndex = 2;
+            this.cAltitude.DisplayIndex = 3;
+            this.cDateTimeOriginal.DisplayIndex = 4;
+            this.cPhotoTitle.DisplayIndex = 5;
+            this.cComment.DisplayIndex = 6;
+            this.cCamera.DisplayIndex = 7;
+            this.cPhotoSource.DisplayIndex = 8;
+            this.cReferenceID.DisplayIndex = 9;
+            this.waypointDataGridViewTextBoxColumn.DisplayIndex = 10;
+
+            SortListView();
         }
 
         private void UpdateDataGridView()
@@ -357,424 +648,466 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 PreventRowsRemoved = true;
                 this.bindingSourceImageList.DataSource = this.pictureAlbumView.ImageList;
-                this.bindingSourceImageList.ResetBindings(false);
+                this.bindingSourceImageList.ResetBindings( false );
                 PreventRowsRemoved = false;
+                SetSortGlyph();
+
                 this.dataGridViewImages.Invalidate();
+
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
         }
 
-        #endregion
-
-        #region Event handler methods
-        void dataGridViewImages_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void SetSortGlyph()
         {
-        }
-        void dataGridViewImages_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                if (this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.photoSourceDataGridViewTextBoxColumn.Name
-                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.thumbnailDataGridViewImageColumn.Name
-                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.TypeImage.Name)
-                {
-                    //open the image/video in external window
-                    Helper.Functions.OpenExternal(this.pictureAlbumView.ImageList[e.RowIndex]);
-                }
-                else if (this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.dateTimeOriginalDataGridViewTextBoxColumn.Name)
-                {
-                    //set the time stamp
-                    ModifyTimeStamp frm = new ModifyTimeStamp(this.pictureAlbumView.ImageList[e.RowIndex]);
-                    frm.ThemeChanged(m_theme);
-                    frm.ShowDialog();
-                }
-            }
-            catch (Exception)
-            {
-                //throw;
-            }
+            PictureAlbum.ImageSortMode ism = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
+            DataGridViewColumn col = GetSortColumn( ism );
+            col.HeaderCell.SortGlyphDirection = GetSortDirection( ism );
         }
 
-        void dataGridViewImages_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void SortListView()
         {
-            if (_showPage)
-            {
-                 try
-                 {
-                    if (this._Activity != null)
-                    {
-                        this.PluginExtensionData.GetImageDataSerializable(this.pictureAlbumView.ImageList);
-                        Functions.WriteExtensionData(_Activity, this.PluginExtensionData);
-                    }
-                 }
-                 catch (Exception)
-                 {
-                //throw;
-                 }
-            }
-        }
-        void dataGridViewImages_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
-        {
-            if (!PreventRowsRemoved)
-            {
-                if (this._Activity != null)
-                {
-                    // remove thumbnail image in web folder
-                    Functions.DeleteThumbnails(this.SelectedReferenceIDs);
-                    this.PluginExtensionData.GetImageDataSerializable(this.pictureAlbumView.ImageList);
-                    Functions.WriteExtensionData(_Activity, this.PluginExtensionData);
-                }
-            }
-        }
-        private void dataGridViewImages_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            //not possible for bound data
-            //dataGridViewImages.Sort(this.dateTimeOriginalDataGridViewTextBoxColumn, ListSortDirection.Ascending);
-            try
-            {
-                PictureAlbum.ImageSortMode oldSortMode = ActivityPicturePageControl.PluginSettingsData.data.SortMode;
-                DataGridViewColumn oldcol = GetSortColumn(oldSortMode);
-
-
-                DataGridViewColumn col = this.dataGridViewImages.Columns[e.ColumnIndex];
-                ActivityPicturePageControl.PluginSettingsData.data.SortMode = GetSortMode(col);
-
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode != PictureAlbum.ImageSortMode.none)
-                {
-                    if (oldcol != null) oldcol.HeaderCell.Style.BackColor = this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor;
-                    col.HeaderCell.Style.BackColor = m_theme.MainHeader;
-                    this.pictureAlbumView.ImageList.Sort(CompareImageData);
-                    UpdateDataGridView();
-                    ActivityPicturePageControl.PluginSettingsData.WriteSettings();
-                }
-                else
-                {
-                    ActivityPicturePageControl.PluginSettingsData.data.SortMode = oldSortMode;
-                }
-            }
-
-
-            catch (Exception)
-            {
-                // throw;
-            }
+            //DataGridViewColumn col = GetSortColumn( ActivityPicturePageControl.PluginSettingsData.data.SortMode );
+            PictureAlbum.ImageSortMode ism = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
+            DataGridViewColumn col = GetSortColumn( ism );
+            this.pictureAlbumView.ImageList.Sort( CompareImageData );
+            UpdateDataGridView();
         }
 
-        private DataGridViewColumn GetSortColumn(PictureAlbum.ImageSortMode imageSortMode)
+        private DataGridViewColumn GetSortColumn( PictureAlbum.ImageSortMode imageSortMode )
         {
-            switch (imageSortMode)
+            switch ( imageSortMode )
             {
                 case PictureAlbum.ImageSortMode.byAltitudeAscending:
                 case PictureAlbum.ImageSortMode.byAltitudeDescending:
-                    return this.Altitude;
+                    return this.cAltitude;
                 case PictureAlbum.ImageSortMode.byCameraModelAscending:
                 case PictureAlbum.ImageSortMode.byCameraModelDescending:
-                    return this.equipmentModelDataGridViewTextBoxColumn;
+                    return this.cCamera;
                 case PictureAlbum.ImageSortMode.byCommentAscending:
                 case PictureAlbum.ImageSortMode.byCommentDescending:
-                    return this.commentDataGridViewTextBoxColumn;
+                    return this.cComment;
                 case PictureAlbum.ImageSortMode.byDateTimeAscending:
                 case PictureAlbum.ImageSortMode.byDateTimeDescending:
-                    return this.dateTimeOriginalDataGridViewTextBoxColumn;
+                    return this.cDateTimeOriginal;
                 case PictureAlbum.ImageSortMode.byExifGPSAscending:
                 case PictureAlbum.ImageSortMode.byExifGPSDescending:
-                    return this.ExifGPS;
+                    return this.cExifGPS;
                 case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
                 case PictureAlbum.ImageSortMode.byPhotoSourceDescending:
-                    return this.photoSourceDataGridViewTextBoxColumn;
+                    return this.cPhotoSource;
                 case PictureAlbum.ImageSortMode.byTitleAscending:
                 case PictureAlbum.ImageSortMode.byTitleDescending:
-                    return this.titleDataGridViewTextBoxColumn;
+                    return this.cPhotoTitle;
                 case PictureAlbum.ImageSortMode.byTypeAscending:
                 case PictureAlbum.ImageSortMode.byTypeDescending:
-                    return this.TypeImage;
+                    return this.cTypeImage;
                 case PictureAlbum.ImageSortMode.none:
                 default:
                     return null;
             }
         }
 
-        private PictureAlbum.ImageSortMode GetSortMode(DataGridViewColumn col)
+        private SortOrder GetSortDirection( PictureAlbum.ImageSortMode imageSortMode )
         {
-            if (col == this.dateTimeOriginalDataGridViewTextBoxColumn)
+            SortOrder so = SortOrder.None;
+
+            switch ( imageSortMode )
             {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byDateTimeAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byDateTimeDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byDateTimeAscending;
-                }
+                case PictureAlbum.ImageSortMode.byAltitudeAscending:
+                case PictureAlbum.ImageSortMode.byCameraModelAscending:
+                case PictureAlbum.ImageSortMode.byCommentAscending:
+                case PictureAlbum.ImageSortMode.byDateTimeAscending:
+                case PictureAlbum.ImageSortMode.byExifGPSAscending:
+                case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
+                case PictureAlbum.ImageSortMode.byTitleAscending:
+                case PictureAlbum.ImageSortMode.byTypeAscending:
+                    so = SortOrder.Ascending;
+                    break;
+                case PictureAlbum.ImageSortMode.byAltitudeDescending:
+                case PictureAlbum.ImageSortMode.byCameraModelDescending:
+                case PictureAlbum.ImageSortMode.byCommentDescending:
+                case PictureAlbum.ImageSortMode.byDateTimeDescending:
+                case PictureAlbum.ImageSortMode.byExifGPSDescending:
+                case PictureAlbum.ImageSortMode.byPhotoSourceDescending:
+                case PictureAlbum.ImageSortMode.byTitleDescending:
+                case PictureAlbum.ImageSortMode.byTypeDescending:
+                    so = SortOrder.Descending;
+                    break;
+                default:
+                    so = SortOrder.None;
+                    break;
             }
-            else if (col == this.ExifGPS)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byExifGPSAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byExifGPSDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byExifGPSAscending;
-                }
-            }
-            else if (col == this.Altitude)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byAltitudeAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byAltitudeDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byAltitudeAscending;
-                }
-            }
-            else if (col == this.equipmentModelDataGridViewTextBoxColumn)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byCameraModelAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byCameraModelDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byCameraModelAscending;
-                }
-            }
-            else if (col == this.titleDataGridViewTextBoxColumn)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byTitleAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byTitleDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byTitleAscending;
-                }
-            }
-            else if (col == this.photoSourceDataGridViewTextBoxColumn)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byPhotoSourceAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byPhotoSourceDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byPhotoSourceAscending;
-                }
-            }
-            else if (col == this.commentDataGridViewTextBoxColumn)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byCommentAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byCommentDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byCommentAscending;
-                }
-            }
-            else if (col == this.thumbnailDataGridViewImageColumn)
-            {
-                return PictureAlbum.ImageSortMode.none;
-            }
-            else if (col == this.TypeImage)
-            {
-                if (ActivityPicturePageControl.PluginSettingsData.data.SortMode == PictureAlbum.ImageSortMode.byTypeAscending)
-                {
-                    return PictureAlbum.ImageSortMode.byTypeDescending;
-                }
-                else
-                {
-                    return PictureAlbum.ImageSortMode.byTypeAscending;
-                }
-            }
-            else
-            {
-                return PictureAlbum.ImageSortMode.none;
-            }
+
+            return so;
+
         }
 
-
-        internal int CompareImageData(ImageData x, ImageData y)
+        private PictureAlbum.ImageSortMode GetSortMode( DataGridViewColumn col )
         {
+            PictureAlbum.ImageSortMode sortmode = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
+
+            if ( col == this.cDateTimeOriginal )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byDateTimeAscending )
+                    return PictureAlbum.ImageSortMode.byDateTimeDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byDateTimeAscending;
+            }
+            else if ( col == this.cExifGPS )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byExifGPSAscending )
+                    return PictureAlbum.ImageSortMode.byExifGPSDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byExifGPSAscending;
+            }
+            else if ( col == this.cAltitude )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byAltitudeAscending )
+                    return PictureAlbum.ImageSortMode.byAltitudeDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byAltitudeAscending;
+            }
+            else if ( col == this.cCamera )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byCameraModelAscending )
+                    return PictureAlbum.ImageSortMode.byCameraModelDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byCameraModelAscending;
+            }
+            else if ( col == this.cPhotoTitle )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byTitleAscending )
+                    return PictureAlbum.ImageSortMode.byTitleDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byTitleAscending;
+            }
+            else if ( col == this.cPhotoSource )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byPhotoSourceAscending )
+                    return PictureAlbum.ImageSortMode.byPhotoSourceDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byPhotoSourceAscending;
+            }
+            else if ( col == this.cComment )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byCommentAscending )
+                    return PictureAlbum.ImageSortMode.byCommentDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byCommentAscending;
+            }
+            else if ( col == this.cThumbnail )
+                return PictureAlbum.ImageSortMode.none;
+            else if ( col == this.cTypeImage )
+            {
+                if ( sortmode == PictureAlbum.ImageSortMode.byTypeAscending )
+                    return PictureAlbum.ImageSortMode.byTypeDescending;
+                else
+                    return PictureAlbum.ImageSortMode.byTypeAscending;
+            }
+            else
+                return PictureAlbum.ImageSortMode.none;
+        }
+
+        private List<ImageData> GetSelectedImageData()
+        {
+            List<ImageData> il = new List<ImageData>();
+            DataGridViewSelectedRowCollection SelRows = this.dataGridViewImages.SelectedRows;
+            for ( int i = 0; i < SelRows.Count; i++ )
+            {
+                il.Add( this.pictureAlbumView.ImageList[SelRows[i].Index] );
+            }
+            return il;
+        }
+
+        internal int CompareImageData( ImageData x, ImageData y )
+        {
+            int retval = 0;
+
             try
             {
-                if (x == null)
+                string xtemp, ytemp;
+                const string cDateTimeFormat = "yyyy MM dd HH:mm:ss";
+                DateTime dt = new DateTime();
+
+                if ( x == null )
                 {
-                    if (y == null) return 0; // If x is null and y is null, they're equal. 
+                    if ( y == null ) return 0; // If x is null and y is null, they're equal. 
                     else return -1; // If x is null and y is not null, y is greater. 
                 }
                 else
                 {
                     // If x is not null...
-                    if (y == null) return 1;// ...and y is null, x is greater.
+                    if ( y == null ) return 1;// ...and y is null, x is greater.
                     else
                     {
                         // ...and y is not null, compare the dates
-                        int retval = 0;
-                        switch (ActivityPicturePageControl.PluginSettingsData.data.SortMode)
+                        switch ( (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode )
+                        //switch ( ActivityPicturePageControl.PluginSettingsData.data.SortMode )
                         {
                             case PictureAlbum.ImageSortMode.byAltitudeAscending:
-                                retval = x.EW.GPSAltitude.CompareTo(y.EW.GPSAltitude);
+                                retval = x.EW.GPSAltitude.CompareTo( y.EW.GPSAltitude );
                                 break;
                             case PictureAlbum.ImageSortMode.byAltitudeDescending:
-                                retval = y.EW.GPSAltitude.CompareTo(x.EW.GPSAltitude);
+                                retval = y.EW.GPSAltitude.CompareTo( x.EW.GPSAltitude );
                                 break;
                             case PictureAlbum.ImageSortMode.byCameraModelAscending:
-                                retval = x.EquipmentModel.CompareTo(y.EquipmentModel);
+                                retval = x.EquipmentModel.CompareTo( y.EquipmentModel );
                                 break;
                             case PictureAlbum.ImageSortMode.byCameraModelDescending:
-                                retval = y.EquipmentModel.CompareTo(x.EquipmentModel);
+                                retval = y.EquipmentModel.CompareTo( x.EquipmentModel );
                                 break;
                             case PictureAlbum.ImageSortMode.byCommentAscending:
-                                retval = x.Comments.CompareTo(y.Comments);
+                                retval = x.Comments.CompareTo( y.Comments );
                                 break;
                             case PictureAlbum.ImageSortMode.byCommentDescending:
-                                retval = y.Comments.CompareTo(x.Comments);
+                                retval = y.Comments.CompareTo( x.Comments );
                                 break;
                             case PictureAlbum.ImageSortMode.byDateTimeAscending:
-                                retval = x.DateTimeOriginal.CompareTo(y.DateTimeOriginal);
+                                DateTime.TryParse( x.DateTimeOriginal, out dt );
+                                xtemp = dt.ToString( cDateTimeFormat );
+                                DateTime.TryParse( y.DateTimeOriginal, out dt );
+                                ytemp = dt.ToString( cDateTimeFormat );
+                                retval = xtemp.CompareTo( ytemp );
                                 break;
                             case PictureAlbum.ImageSortMode.byDateTimeDescending:
-                                retval = y.DateTimeOriginal.CompareTo(x.DateTimeOriginal);
+                                DateTime.TryParse( x.DateTimeOriginal, out dt );
+                                xtemp = dt.ToString( cDateTimeFormat );
+                                DateTime.TryParse( y.DateTimeOriginal, out dt );
+                                ytemp = dt.ToString( cDateTimeFormat );
+                                retval = ytemp.CompareTo( xtemp );
                                 break;
                             case PictureAlbum.ImageSortMode.byExifGPSAscending:
-                                retval = x.ExifGPS.CompareTo(y.ExifGPS);
+                                retval = x.ExifGPS.CompareTo( y.ExifGPS );
                                 break;
                             case PictureAlbum.ImageSortMode.byExifGPSDescending:
-                                retval = y.ExifGPS.CompareTo(x.ExifGPS);
+                                retval = y.ExifGPS.CompareTo( x.ExifGPS );
                                 break;
                             case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
-                                retval = x.PhotoSource.CompareTo(y.PhotoSource);
+                                retval = x.PhotoSource.CompareTo( y.PhotoSource );
                                 break;
                             case PictureAlbum.ImageSortMode.byPhotoSourceDescending:
-                                retval = y.PhotoSource.CompareTo(x.PhotoSource);
+                                retval = y.PhotoSource.CompareTo( x.PhotoSource );
                                 break;
                             case PictureAlbum.ImageSortMode.byTitleAscending:
-                                retval = x.Title.CompareTo(y.Title);
+                                retval = x.Title.CompareTo( y.Title );
                                 break;
                             case PictureAlbum.ImageSortMode.byTitleDescending:
-                                retval = y.Title.CompareTo(x.Title);
+                                retval = y.Title.CompareTo( x.Title );
                                 break;
                             case PictureAlbum.ImageSortMode.byTypeAscending:
-                                retval = x.Type.CompareTo(y.Type);
+                                retval = x.Type.CompareTo( y.Type );
                                 break;
                             case PictureAlbum.ImageSortMode.byTypeDescending:
-                                retval = y.Type.CompareTo(x.Type);
+                                retval = y.Type.CompareTo( x.Type );
                                 break;
                             case PictureAlbum.ImageSortMode.none:
                                 break;
                         }
-
-                        if (retval != 0) return retval;// If they are not equal, the later date is greater.
-                        else return 0;// If the dates are equal, 0 is returned
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
-                return 0;
                 //throw;
             }
 
+            return retval;
+
         }
 
+        #endregion
 
-        //private void dataGridViewImages_CellEnter(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    //this.CurrentReferenceID = this.this.pictureAlbumView.ImageList[e.RowIndex].ReferenceID;
-        //}
-
-        private void panel1_Resize(object sender, EventArgs e)
+        #region Event handler methods
+        void dataGridViewImages_DataError( object sender, DataGridViewDataErrorEventArgs e )
         {
-            if (this.Mode == ShowMode.Album)
+        }
+
+        void dataGridViewImages_CellDoubleClick( object sender, DataGridViewCellEventArgs e )
+        {
+            try
             {
-                //this.pictureAlbumView.Invalidate();
-                this.pictureAlbumView.PaintAlbumView(false);
+                if ( this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.cPhotoSource.Name
+                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.cThumbnail.Name
+                 || this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.cTypeImage.Name )
+                {
+                    //open the image/video in external window
+                    Helper.Functions.OpenExternal( this.pictureAlbumView.ImageList[e.RowIndex] );
+                }
+                else if ( this.dataGridViewImages.Columns[e.ColumnIndex].Name == this.cDateTimeOriginal.Name )
+                {
+                    //set the time stamp
+                    using ( ModifyTimeStamp frm = new ModifyTimeStamp( this.pictureAlbumView.ImageList[e.RowIndex] ) )
+                    {
+                        frm.ThemeChanged( m_theme );
+                        frm.ShowDialog();
+                    }
+
+                }
+            }
+            catch ( Exception )
+            {
+                //throw;
             }
         }
 
-        private void pictureListToolStripMenuItem_Click(object sender, EventArgs e)
+        void dataGridViewImages_CellValueChanged( object sender, DataGridViewCellEventArgs e )
         {
-            if (this.Mode == ShowMode.Import)
+            if ( _showPage )
             {
+                try
+                {
+                    if ( this._Activity != null )
+                    {
+                        this.PluginExtensionData.GetImageDataSerializable( this.pictureAlbumView.ImageList );
+                        Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
+                    }
+                }
+                catch ( Exception )
+                {
+                    //throw;
+                }
+            }
+        }
+
+        void dataGridViewImages_RowsRemoved( object sender, DataGridViewRowsRemovedEventArgs e )
+        {
+            if ( !PreventRowsRemoved )
+            {
+                if ( this._Activity != null )
+                {
+                    // remove thumbnail image in web folder
+                    Functions.DeleteThumbnails( this.SelectedReferenceIDs );
+                    this.PluginExtensionData.GetImageDataSerializable( this.pictureAlbumView.ImageList );
+                    Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
+                }
+            }
+        }
+
+        private void dataGridViewImages_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
+        {
+            try
+            {
+                PictureAlbum.ImageSortMode oldSortMode = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
+                DataGridViewColumn oldcol = GetSortColumn( oldSortMode );
+                DataGridViewColumn col = this.dataGridViewImages.Columns[e.ColumnIndex];
+
+                if ( col.ValueType == typeof( string ) )
+                {
+                    ActivityPicturePlugin.Source.Settings.SortMode = (int)GetSortMode( col );
+
+                    // Get a list of selected rows
+                    DataGridViewSelectedRowCollection selRows = dataGridViewImages.SelectedRows;
+                    string[] srefs = new string[selRows.Count];
+                    for ( int i = 0; i < selRows.Count; i++ )
+                        srefs[i] = selRows[i].Cells["cReferenceID"].Value.ToString();
+
+                    if ( ActivityPicturePlugin.Source.Settings.SortMode != (int)PictureAlbum.ImageSortMode.none )
+                    {
+                        this.pictureAlbumView.ImageList.Sort( CompareImageData );
+                        UpdateDataGridView();
+                        //ActivityPicturePageControl.PluginSettingsData.WriteSettings();
+                    }
+                    else
+                    {
+                        ActivityPicturePlugin.Source.Settings.SortMode = (int)oldSortMode;
+                    }
+
+                    //Reselect the previously selected rows
+                    int nFirstSelectedRow = Int32.MaxValue;
+                    for ( int i = 0; i < dataGridViewImages.Rows.Count; i++ )
+                    {
+                        dataGridViewImages.Rows[i].Selected = false;
+                        for ( int j = 0; j < srefs.Length; j++ )
+                        {
+                            if ( String.Compare( srefs[j],
+                                dataGridViewImages.Rows[i].Cells["cReferenceID"].Value.ToString(),
+                                true ) == 0 )
+                            {
+                                dataGridViewImages.Rows[i].Selected = true;
+                                if ( i < nFirstSelectedRow ) nFirstSelectedRow = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ( nFirstSelectedRow != Int32.MaxValue )
+                        dataGridViewImages.FirstDisplayedScrollingRowIndex = nFirstSelectedRow;
+
+                    SetSortGlyph();
+                }
+            }
+
+
+            catch ( Exception )
+            {
+                // throw;
+            }
+        }
+
+        private void pictureListToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            if ( this.Mode == ShowMode.Import )
+            {
+                Functions.ClearImageList( this.pictureAlbumView );
                 ReloadData();
             }
             this.Mode = ShowMode.List;
+            ActivityPicturePlugin.Source.Settings.ActivityMode = (Int32)Mode;
             UpdateView();
         }
-        private void actionBanner1_MenuClicked(object sender, EventArgs e)
+
+        private void actionBanner1_MenuClicked( object sender, EventArgs e )
         {
-            this.contextMenuStripView.Show(this.panelViews, this.panelViews.Width - this.contextMenuStripView.Width - 1, 0);
+            this.contextMenuStripView.Show( this.panelViews, this.panelViews.Width - this.contextMenuStripView.Width - 1, 0 );
         }
-        private void pictureAlbumToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void pictureAlbumToolStripMenuItem_Click( object sender, EventArgs e )
         {
-            if (this.Mode == ShowMode.Import)
+            if ( this.Mode == ShowMode.Import )
             {
+                Functions.ClearImageList( this.pictureAlbumView );
                 ReloadData();
             }
             this.Mode = ShowMode.Album;
+            ActivityPicturePlugin.Source.Settings.ActivityMode = (Int32)Mode;
             UpdateView();
         }
-        private void ActivityPicturePageControl_Load(object sender, EventArgs e)
+
+        private void ActivityPicturePageControl_Load( object sender, EventArgs e )
         {
             try
             {
                 //this.pictureAlbumView.ParentCtl = this;
-                this.ThemeChanged(m_theme);
+                this.ThemeChanged( m_theme );
                 InitializeDataGridView();
-                RefreshPage();
+                //RefreshPage();
+
                 //ReloadData();
                 //UpdateView();
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 //throw;
             }
         }
 
-        private void InitializeDataGridView()
-        {
-            this.thumbnailDataGridViewImageColumn.DisplayIndex = 0;
-            this.TypeImage.DisplayIndex = 1;
-            this.ExifGPS.DisplayIndex = 2;
-            this.Altitude.DisplayIndex = 3;
-            this.dateTimeOriginalDataGridViewTextBoxColumn.DisplayIndex = 4;
-            this.titleDataGridViewTextBoxColumn.DisplayIndex = 5;
-            this.commentDataGridViewTextBoxColumn.DisplayIndex = 6;
-            this.equipmentModelDataGridViewTextBoxColumn.DisplayIndex = 7;
-            this.photoSourceDataGridViewTextBoxColumn.DisplayIndex = 8;
-            this.referenceIDDataGridViewTextBoxColumn.DisplayIndex = 9;
-            this.waypointDataGridViewTextBoxColumn.DisplayIndex = 10;
-
-            SortListView();
-        }
-
-        private void SortListView()
-        {
-            DataGridViewColumn col = GetSortColumn(ActivityPicturePageControl.PluginSettingsData.data.SortMode);
-            if (col != null) col.HeaderCell.Style.BackColor = m_theme.MainHeader;
-            this.pictureAlbumView.ImageList.Sort(CompareImageData);
-            UpdateDataGridView();
-        }
-
-
-        private void dataGridViewImages_SelectionChanged(object sender, EventArgs e)
+        private void dataGridViewImages_SelectionChanged( object sender, EventArgs e )
         {
             try
             {
                 SelectedReferenceIDs.Clear();
-                DataGridViewSelectedRowCollection SelRows = ((DataGridView)(sender)).SelectedRows;
+                DataGridViewSelectedRowCollection SelRows = ( (DataGridView)( sender ) ).SelectedRows;
                 IList<ImageData> selImages = new List<ImageData>();
-                for (int i = 0; i < SelRows.Count; i++)
+                for ( int i = 0; i < SelRows.Count; i++ )
                 {
                     ImageData im = this.pictureAlbumView.ImageList[SelRows[i].Index];
-                    SelectedReferenceIDs.Add(im.ReferenceID);
-                    selImages.Add(im);
+                    SelectedReferenceIDs.Add( im.ReferenceID );
+                    selImages.Add( im );
                 }
                 //TODO: Or use zoom button
 #if !ST_2_1
@@ -782,43 +1115,37 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 #endif
                 SelRows = null;
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
 
         }
-        private List<ImageData> GetSelectedImageData()
-        {
-            List<ImageData> il = new List<ImageData>();
-            DataGridViewSelectedRowCollection SelRows = this.dataGridViewImages.SelectedRows;
-            for (int i = 0; i < SelRows.Count; i++)
-            {
-                il.Add(this.pictureAlbumView.ImageList[SelRows[i].Index]);
-            }
-            return il;
-        }
-        #endregion
 
-        private void trackBarImageSize_ValueChanged(object sender, EventArgs e)
+        private void dataGridViewImages_BindingContextChanged( object sender, EventArgs e )
         {
-            if (this.Mode == ShowMode.Album)
+            SetSortGlyph();
+        }
+
+        private void sliderVideo_Scroll( object sender, ScrollEventArgs e )
+        {
+            this.pictureAlbumView.SetVideoPosition( sliderVideo.Value );
+        }
+
+        private void sliderImageSize_ValueChanged( object sender, EventArgs e )
+        {
+            if ( this.Mode == ShowMode.Album )
             {
-                //this.pictureAlbumView.Invalidate();
-                //this.trackBarImageSize.Value
-                TrackBar tb = (TrackBar)(sender);
+                MB.Controls.ColorSlider tb = (MB.Controls.ColorSlider)( sender );
                 this.pictureAlbumView.Zoom = tb.Value;
-                this.pictureAlbumView.PaintAlbumView(false);
+                ActivityPicturePlugin.Source.Settings.ImageZoom = tb.Value;
+                this.pictureAlbumView.Invalidate();
+#if !ST_2_1
                 this.m_layer.PictureSize = tb.Value;
                 this.m_layer.Refresh();
+#endif
             }
         }
-
-
-        //private void pictureAlbum1_MouseClick(object sender, MouseEventArgs e)
-        //{
-
-        //}
 
         //private void btnImpDir_Click(object sender, EventArgs e)
         //    {
@@ -887,139 +1214,370 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         //        }
         //    }
 
-        public void UpdateToolBar()
-        {
-            switch (this.pictureAlbumView.CurrentStatus)
-            {
-                case Helper.PictureAlbum.MediaStatus.None:
-                    toolStripButtonPlay.Enabled = false;
-                    toolStripButtonPause.Enabled = false;
-                    toolStripButtonStop.Enabled = false;
-                    break;
-
-                case Helper.PictureAlbum.MediaStatus.Paused:
-                    toolStripButtonPlay.Enabled = true;
-                    toolStripButtonPause.Enabled = false;
-                    toolStripButtonStop.Enabled = true;
-                    break;
-
-                case Helper.PictureAlbum.MediaStatus.Running:
-                    toolStripButtonPlay.Enabled = false;
-                    toolStripButtonPause.Enabled = true;
-                    toolStripButtonStop.Enabled = true;
-                    break;
-
-                case Helper.PictureAlbum.MediaStatus.Stopped:
-                    toolStripButtonPlay.Enabled = true;
-                    toolStripButtonPause.Enabled = false;
-                    toolStripButtonStop.Enabled = false;
-                    break;
-            }
-        }
-
-        private void toolStripButtonPlay_Click(object sender, EventArgs e)
+        private void toolStripButtonPlay_Click( object sender, EventArgs e )
         {
             this.pictureAlbumView.PlayVideo();
             UpdateToolBar();
         }
-        private void toolStripButtonPause_Click(object sender, EventArgs e)
+
+        private void toolStripButtonPause_Click( object sender, EventArgs e )
         {
             this.pictureAlbumView.PauseVideo();
             UpdateToolBar();
         }
-        private void toolStripButtonStop_Click(object sender, EventArgs e)
+
+        private void toolStripButtonStop_Click( object sender, EventArgs e )
         {
             this.pictureAlbumView.StopVideo();
+            this.sliderVideo.Value = 0;
             UpdateToolBar();
         }
 
-        private void timerVideo_Tick(object sender, EventArgs e)
+        private void toolStripButtonSnapshot_Click( object sender, EventArgs e )
         {
-            this.trackBarVideo.Value = (int)(this.trackBarVideo.Maximum * this.pictureAlbumView.GetVideoPosition());
+            List<ImageData> ids = pictureAlbumView.ImageList;
+            if ( pictureAlbumView.CurrentVideoIndex != -1 )
+            {
+                ImageData id = ids[pictureAlbumView.CurrentVideoIndex];
+                int iFrame = pictureAlbumView.GetCurrentVideoFrame();
+                id.ReplaceVideoThumbnail( iFrame );
+
+                Functions.ClearImageList( this.pictureAlbumView );
+                ReloadData();
+                UpdateView();
+            }
+            else
+                toolStripButtonSnapshot.Enabled = false;
         }
 
-        private void trackBarVideo_Scroll(object sender, EventArgs e)
+        private void timerVideo_Tick( object sender, EventArgs e )
         {
-            this.pictureAlbumView.SetVideoPosition(this.trackBarVideo.Value);
+            this.sliderVideo.Value = (int)( this.sliderVideo.Maximum * this.pictureAlbumView.GetVideoPosition() );
         }
 
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        private void importToolStripMenuItem_Click( object sender, EventArgs e )
         {
             this.Mode = ShowMode.Import;
+            ActivityPicturePlugin.Source.Settings.ActivityMode = (Int32)Mode;
             UpdateView();
         }
 
-        private void pictureAlbumView_ZoomChange(object sender, int increment)
+        private void pictureAlbumView_ZoomChange( object sender, int increment )
         {
-            this.trackBarImageSize.Value += increment;
+            if ( increment != 0 ) this.sliderImageSize.Value += increment;
+            else this.sliderImageSize.Value = this.pictureAlbumView.Zoom;
+
+            ActivityPicturePlugin.Source.Settings.ImageZoom = this.sliderImageSize.Value;
         }
 
-        private void pictureAlbumView_UpdateVideoToolBar(object sender, EventArgs e)
+        private void pictureAlbumView_UpdateVideoToolBar( object sender, EventArgs e )
         {
             UpdateToolBar();
         }
 
-        private void pictureAlbumView_ShowVideoOptions(object sender, EventArgs e)
+        private void pictureAlbumView_ShowVideoOptions( object sender, EventArgs e )
         {
             this.groupBoxVideo.Enabled = true;
         }
 
-        private void pictureAlbumView_Load(object sender, EventArgs e)
+        private void pictureAlbumView_Load( object sender, EventArgs e )
         {
-            PictureAlbum pa = (PictureAlbum)(sender);
-            pa.Zoom = this.trackBarImageSize.Value;
+            PictureAlbum pa = (PictureAlbum)( sender );
+            pa.Zoom = this.sliderImageSize.Value;
         }
 
-        private void btnGeoTag_Click(object sender, EventArgs e)
+        private void btnGeoTag_Click( object sender, EventArgs e )
         {
+            this.UseWaitCursor = true;
+            dataGridViewImages.Enabled = false;
+            btnGeoTag.Enabled = false;
+            btnKML.Enabled = false;
+            btnTimeOffset.Enabled = false;
+            Application.DoEvents();
+
             List<ImageData> iList = GetSelectedImageData();
-            foreach (ImageData id in iList)
+            foreach ( ImageData id in iList )
             {
-                if (id.Type == ImageData.DataTypes.Image)
+                if ( id.Type == ImageData.DataTypes.Image )
                 {
-                    if (System.IO.File.Exists(id.PhotoSource)) Functions.GeoTagWithActivity(id.PhotoSource, this._Activity);
-                    if (System.IO.File.Exists(id.ThumbnailPath)) Functions.GeoTagWithActivity(id.ThumbnailPath, this._Activity);
+                    if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, this._Activity );
+                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
                 }
             }
-            Functions.ClearImageList(this.pictureAlbumView);
+            Functions.ClearImageList( this.pictureAlbumView );
             ReloadData();
             UpdateView();
+
+            this.UseWaitCursor = false;
+            dataGridViewImages.Enabled = true;
+            btnGeoTag.Enabled = true;
+            btnKML.Enabled = true;
+            btnTimeOffset.Enabled = true;
         }
 
-        private void btnKML_Click(object sender, EventArgs e)
+        private void btnKML_Click( object sender, EventArgs e )
         {
             this.saveFileDialog.FileName = "";
             this.saveFileDialog.DefaultExt = "kmz";
             this.saveFileDialog.AddExtension = true;
             this.saveFileDialog.CheckPathExists = true;
             this.saveFileDialog.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
-            this.saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            this.saveFileDialog.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
             DialogResult dres = this.saveFileDialog.ShowDialog();
-            if (dres == DialogResult.OK & this.saveFileDialog.FileName != "")
+            if ( dres == DialogResult.OK & this.saveFileDialog.FileName != "" )
             {
-                Functions.PerformExportToGoogleEarth(GetSelectedImageData(), this._Activity, this.saveFileDialog.FileName);
+                Functions.PerformExportToGoogleEarth( GetSelectedImageData(), this._Activity, this.saveFileDialog.FileName );
             }
+            if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
+                Functions.OpenExternal( this.saveFileDialog.FileName );
 
         }
 
-        private void btnTimeOffset_Click(object sender, EventArgs e)
+        private void btnTimeOffset_Click( object sender, EventArgs e )
         {
-            TimeOffset frm = new TimeOffset(GetSelectedImageData());
-            frm.ThemeChanged(m_theme);
-            frm.ShowDialog();
+            using ( TimeOffset frm = new TimeOffset( GetSelectedImageData() ) )
+            {
+                frm.ThemeChanged( m_theme );
+                frm.ShowDialog();
+            }
         }
 
-        private void pictureAlbumView_ActivityChanged(object sender, EventArgs e)
+        private void ActivityPicturePageControl_VisibleChanged( object sender, EventArgs e )
         {
-            try
+            if ( _Activity == null ) this.Visible = false;
+        }
+
+        private void volumeSlider2_VolumeChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.VolumeValue = volumeSlider2.Volume;
+        }
+
+        #region toolStripMenuTypeImage Event Handlers
+        private void toolStripMenuTypeImage_Click( object sender, EventArgs e )
+        {
+            toolStripMenuTypeImage.Checked = !toolStripMenuTypeImage.Checked;
+        }
+        private void toolStripMenuTypeImage_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CTypeImage = toolStripMenuTypeImage.Checked;
+            dataGridViewImages.Columns["cTypeImage"].Visible = toolStripMenuTypeImage.Checked;
+
+        }
+        private void toolStripMenuExifGPS_Click( object sender, EventArgs e )
+        {
+            toolStripMenuExifGPS.Checked = !toolStripMenuExifGPS.Checked;
+        }
+        private void toolStripMenuExifGPS_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CExifGPS = toolStripMenuExifGPS.Checked;
+            dataGridViewImages.Columns["cExifGPS"].Visible = toolStripMenuExifGPS.Checked;
+
+        }
+        private void toolStripMenuAltitude_Click( object sender, EventArgs e )
+        {
+            toolStripMenuAltitude.Checked = !toolStripMenuAltitude.Checked;
+        }
+        private void toolStripMenuAltitude_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CAltitude = toolStripMenuAltitude.Checked;
+            dataGridViewImages.Columns["cAltitude"].Visible = toolStripMenuAltitude.Checked;
+
+        }
+        private void toolStripMenuComment_Click( object sender, EventArgs e )
+        {
+            toolStripMenuComment.Checked = !toolStripMenuComment.Checked;
+        }
+        private void toolStripMenuComment_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CComment = toolStripMenuComment.Checked;
+            dataGridViewImages.Columns["cComment"].Visible = toolStripMenuComment.Checked;
+
+        }
+        /*private void toolStripMenuThumbnail_Click( object sender, EventArgs e )
+        {
+            toolStripMenuThumbnail.Checked = !toolStripMenuThumbnail.Checked;
+        }
+        private void toolStripMenuThumbnail_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CThumbnail = toolStripMenuThumbnail.Checked;
+            dataGridViewImages.Columns["cThumbnail"].Visible = toolStripMenuThumbnail.Checked;
+
+        }*/
+        private void toolStripMenuDateTime_Click( object sender, EventArgs e )
+        {
+            toolStripMenuDateTime.Checked = !toolStripMenuDateTime.Checked;
+        }
+        private void toolStripMenuDateTime_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CDateTimeOriginal = toolStripMenuDateTime.Checked;
+            dataGridViewImages.Columns["cDateTimeOriginal"].Visible = toolStripMenuDateTime.Checked;
+
+        }
+        private void toolStripMenuTitle_Click( object sender, EventArgs e )
+        {
+            toolStripMenuTitle.Checked = !toolStripMenuTitle.Checked;
+        }
+        private void toolStripMenuTitle_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CPhotoTitle = toolStripMenuTitle.Checked;
+            dataGridViewImages.Columns["cPhotoTitle"].Visible = toolStripMenuTitle.Checked;
+
+        }
+        private void toolStripMenuCamera_Click( object sender, EventArgs e )
+        {
+            toolStripMenuCamera.Checked = !toolStripMenuCamera.Checked;
+        }
+        private void toolStripMenuCamera_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CCamera = toolStripMenuCamera.Checked;
+            dataGridViewImages.Columns["cCamera"].Visible = toolStripMenuCamera.Checked;
+
+        }
+        private void toolStripMenuPhotoSource_Click( object sender, EventArgs e )
+        {
+            toolStripMenuPhotoSource.Checked = !toolStripMenuPhotoSource.Checked;
+        }
+        private void toolStripMenuPhotoSource_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CPhotoSource = toolStripMenuPhotoSource.Checked;
+            dataGridViewImages.Columns["cPhotoSource"].Visible = toolStripMenuPhotoSource.Checked;
+
+        }
+        private void toolStripMenuReferenceID_Click( object sender, EventArgs e )
+        {
+            toolStripMenuReferenceID.Checked = !toolStripMenuReferenceID.Checked;
+        }
+        private void toolStripMenuReferenceID_CheckStateChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.CReferenceID = toolStripMenuReferenceID.Checked;
+            dataGridViewImages.Columns["cReferenceID"].Visible = toolStripMenuReferenceID.Checked;
+        }
+        private void toolStripMenuAll_Click( object sender, EventArgs e )
+        {
+            toolStripMenuTypeImage.Checked = true;
+            toolStripMenuExifGPS.Checked = true;
+            toolStripMenuAltitude.Checked = true;
+            toolStripMenuComment.Checked = true;
+            //toolStripMenuThumbnail.Checked = true;
+            toolStripMenuDateTime.Checked = true;
+            toolStripMenuTitle.Checked = true;
+            toolStripMenuCamera.Checked = true;
+            toolStripMenuPhotoSource.Checked = true;
+            toolStripMenuReferenceID.Checked = true;
+        }
+        private void toolStripMenuNone_Click( object sender, EventArgs e )
+        {
+            toolStripMenuTypeImage.Checked = false;
+            toolStripMenuExifGPS.Checked = false;
+            toolStripMenuAltitude.Checked = false;
+            toolStripMenuComment.Checked = false;
+            //toolStripMenuThumbnail.Checked = false;
+            toolStripMenuDateTime.Checked = false;
+            toolStripMenuTitle.Checked = false;
+            toolStripMenuCamera.Checked = false;
+            toolStripMenuPhotoSource.Checked = false;
+            toolStripMenuReferenceID.Checked = false;
+        }
+        private void toolStripMenuCopy_Click( object sender, EventArgs e )
+        {
+            StringBuilder s = new StringBuilder();
+            foreach ( DataGridViewColumn column in dataGridViewImages.Columns )
             {
-                //PictureAlbum pa = (PictureAlbum)(sender);
-                this.GetSortColumn(ActivityPicturePageControl.PluginSettingsData.data.SortMode).HeaderCell.Style.BackColor = this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor;
+                if ( ( column.Visible ) && ( column.ValueType == typeof( string ) ) )
+                {
+                    string ss = column.HeaderText;
+                    ss = ss.Replace( "\t", " " );
+                    ss = ss.Replace( "\r\n", " " );
+
+                    s.Append( ss + "\t" );
+                }
             }
-            catch (Exception)
+            s.Append( "\r\n" );
+            int rowIndex = 0;
+            foreach ( DataGridViewRow row in dataGridViewImages.Rows )
             {
-                // throw;
+                if ( row.Selected )
+                {
+                    foreach ( DataGridViewCell cell in row.Cells )
+                    {
+                        if ( ( cell.Visible ) && ( cell.ValueType == typeof( string ) ) )
+                        {
+                            string ss = cell.Value + "";
+                            ss = ss.Replace( "\t", " " );
+                            ss = ss.Replace( "\r\n", " " );
+
+                            s.Append( ss + "\t" );
+                        }
+                    }
+                    s.Append( "\r\n" );
+                }
+                rowIndex++;
             }
+            Clipboard.SetText( s.ToString() );
+        }
+
+        #endregion
+
+        private void toolStripMenuFitToWindow_Click( object sender, EventArgs e )
+        {
+            toolStripMenuFitToWindow.Checked = !toolStripMenuFitToWindow.Checked;
+        }
+        private void toolStripMenuFitToWindow_CheckStateChanged( object sender, EventArgs e )
+        {
+            if ( toolStripMenuFitToWindow.Checked )
+            {
+                ActivityPicturePlugin.Source.Settings.MaxImageSize = (int)PictureAlbum.MaxImageSize.FitToWindow;
+                pictureAlbumView.MaximumImageSize = PictureAlbum.MaxImageSize.FitToWindow;
+            }
+            else
+            {
+                ActivityPicturePlugin.Source.Settings.MaxImageSize = (int)PictureAlbum.MaxImageSize.NoLimit;
+                pictureAlbumView.MaximumImageSize = PictureAlbum.MaxImageSize.NoLimit;
+            }
+            this.sliderImageSize.Value = this.sliderImageSize.Value;
+        }
+
+        private void pictureAlbumView_VideoChanged( object sender, EventArgs e )
+        {
+            UpdateToolBar();
+        }
+
+        private void pictureAlbumView_SelectedChanged( object sender, PictureAlbum.SelectedChangedEventArgs e )
+        {
+            if ( e.SelectedIndex != -1 )
+            {
+                // Scroll into view if it is completely or partially hidden
+                Rectangle r = panelPictureAlbumView.DisplayRectangle;
+                if ( ( e.Rect.Y + e.Rect.Height + r.Y ) > panelPictureAlbumView.Height )
+                {
+                    Point p = new Point( e.Rect.X, e.Rect.Y + e.Rect.Height - panelPictureAlbumView.Height );
+                    panelPictureAlbumView.AutoScrollPosition = p;
+                }
+                else if ( ( e.Rect.Y + e.Rect.Height + r.Y ) < e.Rect.Height )
+                {
+                    Point p = new Point( e.Rect.X, e.Rect.Y );
+                    panelPictureAlbumView.AutoScrollPosition = p;
+                }
+            }
+        }
+
+        private void panelPictureAlbumView_Click( object sender, EventArgs e )
+        {
+            this.pictureAlbumView.SelectedIndex = -1;
+        }
+
+        #endregion
+    }
+
+    public class PanelEx : ZoneFiveSoftware.Common.Visuals.Panel
+    {
+        public PanelEx() { }
+
+        protected override Point ScrollToControl( Control activeControl )
+        {
+            // Returning the current location prevents the panel from        
+            // scrolling to the active control when the panel loses and regains focus        
+            return this.DisplayRectangle.Location;
         }
     }
 
