@@ -27,10 +27,16 @@ namespace AviFile
 		private int aviFile = 0;
 		private ArrayList streams = new ArrayList();
 
+        public AviManager(String fileName, bool open, bool readOnly = false)
+            : this(fileName, open)
+        {
+        }
+
 		/// <summary>Open or create an AVI file</summary>
 		/// <param name="fileName">Name of the AVI file</param>
 		/// <param name="open">true: Open the file; false: Create or overwrite the file</param>
-		public AviManager(String fileName, bool open){
+        public AviManager(String fileName, bool open)
+        {
 			Avi.AVIFileInit();
 			int result;
 
