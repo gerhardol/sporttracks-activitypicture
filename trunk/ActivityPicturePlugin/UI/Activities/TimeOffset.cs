@@ -26,12 +26,12 @@ using ActivityPicturePlugin.Helper;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
-    {
+{
     public partial class TimeOffset : Form
-        {
+    {
         List<ImageData> il;
-        public TimeOffset(List<ImageData> ilist)
-            {
+        public TimeOffset( List<ImageData> ilist )
+        {
             il = ilist;
             InitializeComponent();
 
@@ -39,39 +39,38 @@ namespace ActivityPicturePlugin.UI.Activities
             this.Text = Resources.Resources.btnTimeOffset_Text;
             this.btnOK.Text = CommonResources.Text.ActionOk;
             this.btnCancel.Text = CommonResources.Text.ActionCancel;
-            }
+        }
 
-        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
         {
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.ControlText;
         }
-        private void btnOK_Click(object sender, EventArgs e)
-            {
+        private void btnOK_Click( object sender, EventArgs e )
+        {
             ApplyOffset();
             this.Dispose();
             this.Close();
-            }
+        }
 
-        private void btnCancel_Click(object sender, EventArgs e)
-            {
+        private void btnCancel_Click( object sender, EventArgs e )
+        {
             this.Dispose();
             this.Close();
-            }
+        }
         private void ApplyOffset()
-            {
+        {
             try
+            {
+                foreach ( ImageData id in il )
                 {
-                foreach (ImageData id in il)
-                    {
-                    id.OffsetDateTimeOriginal((int)(this.nudHour.Value), (int)(this.nudMinute.Value), (int)(this.nudSecond.Value));
-                    }
+                    id.OffsetDateTimeOriginal( (int)( this.nudHour.Value ), (int)( this.nudMinute.Value ), (int)( this.nudSecond.Value ) );
                 }
-            catch (Exception)
-                {
-
+            }
+            catch ( Exception )
+            {
                 //throw;
-                }
             }
         }
     }
+}

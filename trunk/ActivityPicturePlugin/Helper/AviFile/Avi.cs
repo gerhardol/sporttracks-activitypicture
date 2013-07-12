@@ -29,8 +29,9 @@ namespace AviFile {
 		public static readonly int streamtypeTEXT = mmioFOURCC('t', 'x', 't', 's');
 		
 		public const int OF_SHARE_DENY_WRITE = 32;
-		public const int OF_WRITE			 = 1;
-		public const int OF_READWRITE		 = 2;
+		public const int OF_READ = 0;		//Just a guess
+		public const int OF_WRITE = 1;
+		public const int OF_READWRITE = 2;
 		public const int OF_CREATE			 = 4096;
 
 		public const int BMP_MAGIC_COOKIE = 19778; //ascii string "BM"

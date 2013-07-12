@@ -15,7 +15,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
- using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -30,51 +30,67 @@ namespace ActivityPicturePlugin
 
         public IApplication Application
         {
-            set {
-                ActivityPicturePlugin.Plugin.version = GetType().Assembly.GetName().Version.ToString(4);
-                application = value; 
-            }
-        }
-
-        public Guid Id
-        {
-            get
+            set
             {
-                return GUIDs.PluginMain;
+                ActivityPicturePlugin.Plugin.version = GetType().Assembly.GetName().Version.ToString( 4 );
+                application = value;
             }
         }
 
-        public string Name
-        {
-            get { return "Activity Picture Plugin"; }
-        }
-
-        public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
-        {
-        }
-
-        public string Version
-        {
-            get
-            {
-                return ActivityPicturePlugin.Plugin.version;
-            }
-        }
-
-        public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
-        {
-        }
-
-        #endregion
         public static String version;
-        
+
         public static IApplication GetApplication()
         {
             return application;
         }
 
+
+        public Guid Id
+        {
+            get { return GUIDs.PluginMain; }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return Resources.Resources.ActivityPicturePlugin_Text;
+                //return "Activity Picture Plugin";
+            }
+        }
+
+        public string Version
+        {
+            get { return ActivityPicturePlugin.Plugin.version; }
+        }
+
+        public void ReadOptions( XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode )
+        {
+            String attr;
+            attr = pluginNode.GetAttribute( xmlTags.Verbose );
+            if ( attr.Length > 0 ) { Verbose = XmlConvert.ToInt16( attr ); }
+            Verbose = 1;
+
+            ActivityPicturePlugin.Source.Settings.ReadOptions( xmlDoc, nsmgr, pluginNode );
+        }
+
+        public void WriteOptions( XmlDocument xmlDoc, XmlElement pluginNode )
+        {
+            pluginNode.SetAttribute( xmlTags.Verbose, XmlConvert.ToString( Verbose ) );
+            ActivityPicturePlugin.Source.Settings.WriteOptions( xmlDoc, pluginNode );
+        }
+
+        #endregion
+
         #region Private members
+        private class xmlTags
+        {
+            public const string Verbose = "Verbose";
+        }
         private static IApplication application;
         #endregion
+
+        public static int Verbose = 0;	//Only changed in xml file
+
     }
 }

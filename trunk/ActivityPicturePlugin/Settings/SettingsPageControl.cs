@@ -33,12 +33,14 @@ namespace ActivityPicturePlugin.Settings
         {
             InitializeComponent();
 
-            trackBarQuality.Value = ActivityPicturePageControl.PluginSettingsData.data.Quality;
-            trackBarSize.Value = ActivityPicturePageControl.PluginSettingsData.data.Size;
+            trackBarQuality.Value = ActivityPicturePlugin.Source.Settings.GEQuality;
+            trackBarSize.Value = ActivityPicturePlugin.Source.Settings.GESize;
+            cbOpenGE.Checked = ActivityPicturePlugin.Source.Settings.GEAutoOpen;
+
             lblSizeValue.Text = trackBarSize.Value * baseNum + " x " + trackBarSize.Value * baseNum * 3 / 4;
             lblQualityValue.Text = trackBarQuality.Value * 10 + " %";
         }
-        //ActivityPicturePlugin.UI.Activities.PluginSettings ps;
+
         int baseNum = 50;
         #region ISettingsPage Members
         public Guid Id
@@ -62,9 +64,13 @@ namespace ActivityPicturePlugin.Settings
         }
         public string PageName
         {
-            get { return "Activity Picture Plugin"; }
+            get
+            {
+                return Resources.Resources.ActivityPicturePlugin_Text;
+                //return "Activity Picture Plugin"; 
+            }
         }
-        public void ShowPage(string bookmark)
+        public void ShowPage( string bookmark )
         {
             importControl1.LoadNodes();
             this.Show();
@@ -73,25 +79,45 @@ namespace ActivityPicturePlugin.Settings
         {
             get { return null; }
         }
-        public void ThemeChanged(ZoneFiveSoftware.Common.Visuals.ITheme visualTheme)
+        public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
         {
             this.BackColor = visualTheme.Control;
-            this.importControl1.ThemeChanged(visualTheme);
+            this.importControl1.ThemeChanged( visualTheme );
             this.groupBoxImport.BackColor = visualTheme.Control;
             this.groupBoxImport.ForeColor = visualTheme.ControlText;
             this.groupBox2.BackColor = visualTheme.Control;
             this.groupBox2.ForeColor = visualTheme.ControlText;
+
+            lblImageQuality.ForeColor = visualTheme.ControlText;
+            lblImageSize.ForeColor = visualTheme.ControlText;
+            lblQualityValue.ForeColor = visualTheme.ControlText;
+            lblSizeValue.ForeColor = visualTheme.ControlText;
+            cbOpenGE.ForeColor = visualTheme.ControlText;
+
+            this.trackBarSize.BarInnerColor = visualTheme.SubHeader;
+            this.trackBarSize.BarOuterColor = visualTheme.MainHeader;
+            this.trackBarSize.BarPenColor = visualTheme.SubHeader;
+            this.trackBarSize.ElapsedInnerColor = visualTheme.Window;
+            this.trackBarSize.ElapsedOuterColor = visualTheme.MainHeader;
+
+            this.trackBarQuality.BarInnerColor = visualTheme.SubHeader;
+            this.trackBarQuality.BarOuterColor = visualTheme.MainHeader;
+            this.trackBarQuality.BarPenColor = visualTheme.SubHeader;
+            this.trackBarQuality.ElapsedInnerColor = visualTheme.Window;
+            this.trackBarQuality.ElapsedOuterColor = visualTheme.MainHeader;
+
         }
         public string Title
         {
             get { return "Picture Plugin"; }
         }
-        public void UICultureChanged(System.Globalization.CultureInfo culture)
+        public void UICultureChanged( System.Globalization.CultureInfo culture )
         {
             //localization
             this.groupBoxImport.Text = CommonResources.Text.ActionImport;
             this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
             this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
+            this.cbOpenGE.Text = Resources.Resources.OpenInGoogleEarthWhenCreated_Text;
         }
 
         #endregion
@@ -102,29 +128,29 @@ namespace ActivityPicturePlugin.Settings
 
         #endregion
 
-        private void SettingsPageControl_Load(object sender, EventArgs e)
+        #region Eventhandlers
+        private void SettingsPageControl_Load( object sender, EventArgs e )
         {
             //UpdateControls();
         }
 
-        private void SettingsPageControl_Enter(object sender, EventArgs e)
-        {
-        }
-
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void trackBarSize_ValueChanged( object sender, EventArgs e )
         {
             lblSizeValue.Text = trackBarSize.Value * baseNum + " x " + trackBarSize.Value * baseNum * 3 / 4;
-            ActivityPicturePageControl.PluginSettingsData.data.Size = trackBarSize.Value;
-            ActivityPicturePageControl.PluginSettingsData.WriteSettings();
+            ActivityPicturePlugin.Source.Settings.GESize = trackBarSize.Value;
         }
-      
 
-        private void trackBar2_Scroll(object sender, EventArgs e)
+        private void trackBarQuality_ValueChanged( object sender, EventArgs e )
         {
             lblQualityValue.Text = trackBarQuality.Value * 10 + " %";
-            ActivityPicturePageControl.PluginSettingsData.data.Quality = trackBarQuality.Value;
-            ActivityPicturePageControl.PluginSettingsData.WriteSettings();
+            ActivityPicturePlugin.Source.Settings.GEQuality = trackBarQuality.Value;
         }
+
+        private void cbOpenGE_CheckedChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.GEAutoOpen = cbOpenGE.Checked;
+        }
+        #endregion
     }
 
 }

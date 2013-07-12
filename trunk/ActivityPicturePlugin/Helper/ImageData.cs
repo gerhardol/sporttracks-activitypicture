@@ -32,24 +32,25 @@ namespace ActivityPicturePlugin.Helper
         public ImageData()
         {
         }
-        public ImageData(ImageDataSerializable IDSer)
+
+        public ImageData( ImageDataSerializable IDSer )
         {
             try
             {
-                if (IDSer.Type == DataTypes.Nothing)
+                if ( IDSer.Type == DataTypes.Nothing )
                 {
-                    IDSer.Type = Functions.GetMediaType(IDSer.PhotoSource);
+                    IDSer.Type = Functions.GetMediaType( IDSer.PhotoSource );
                 }
                 this.Type = IDSer.Type;
                 this.photosource = IDSer.PhotoSource;
                 this.referenceID = IDSer.ReferenceID;
                 // this.ThumbnailStoreLocation = StoreLocation.WebFiles;
-                if (this.type == DataTypes.Video) this.SetVideoThumbnail();
+                if ( this.type == DataTypes.Video ) this.SetVideoThumbnail();
                 else this.SetThumbnail();
-                this.EW = new ExifWorks(this.ThumbnailPath);
-                this.Ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
+                this.EW = new ExifWorks( this.ThumbnailPath );
+                this.Ratio = (Single)( this.EW.GetBitmap().Width ) / (Single)( this.EW.GetBitmap().Height );
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 //throw;
@@ -64,6 +65,7 @@ namespace ActivityPicturePlugin.Helper
             Image,
             Video
         }
+
         //public enum StoreLocation
         //{
         //    WebFiles,
@@ -95,38 +97,39 @@ namespace ActivityPicturePlugin.Helper
         //}
 
         //Compare static only, not Exif
-        public bool Equals(ImageData pd1)
+        public bool Equals( ImageData pd1 )
         {
             if (//this.Altitude.Equals(pd1.Altitude) &&
                 //this.Comments.Equals(pd1.Comments) &&
                 //this.DateTimeOriginal.Equals(pd1.DateTimeOriginal) &&
                 //this.EquipmentModel.Equals(pd1.EquipmentModel) &&
-                this.EW.Equals(pd1.EW) &&
+                this.EW.Equals( pd1.EW ) &&
                 //this.ExifGPS.Equals(pd1.ExifGPS) &&
                 //this.KMLGPS.Equals(pd1.KMLGPS) &&
-                this.PhotoSource.Equals(pd1.PhotoSource) &&
+                this.PhotoSource.Equals( pd1.PhotoSource ) &&
                 //this.PhotoSourceFileName.Equals(pd1.PhotoSourceFileName) &&
-                this.Ratio.Equals(pd1.Ratio) &&
-                this.ReferenceID.Equals(pd1.ReferenceID) &&
+                this.Ratio.Equals( pd1.Ratio ) &&
+                this.ReferenceID.Equals( pd1.ReferenceID ) &&
                 //this.ReferenceIDPath.Equals(pd1.ReferenceIDPath) &&
                 //this.Title.Equals(pd1.Title) &&
                 //this.TypeImage.Equals(pd1.TypeImage) &&
                 //this.Waypoint.Equals(pd1.Waypoint) &&
-                this.Type.Equals(pd1.Type))
+                this.Type.Equals( pd1.Type ) )
             {
                 return true;
             }
             return false;
         }
+
         public Image TypeImage
         {
             get
             {
-                if (this.Type == DataTypes.Image)
+                if ( this.Type == DataTypes.Image )
                 {
                     return Resources.Resources.btnimage;
                 }
-                else if (this.Type == DataTypes.Video)
+                else if ( this.Type == DataTypes.Video )
                 {
                     return Resources.Resources.btnvideo;
                 }
@@ -134,54 +137,62 @@ namespace ActivityPicturePlugin.Helper
 
             }
         }
+
         public DataTypes Type
         {
             get { return type; }
             set { type = value; }
         }
+
         public String PhotoSource
         {
             get { return photosource; }
             set { photosource = value; }
         }
+
         public string ReferenceID
         {
             get { return referenceID; }
             set { referenceID = value; }
         }
+
         public ExifWorks EW
         {
             get { return ew; }
             set { ew = value; }
         }
+
         //public ActivityPicturePlugin.UI.Activities.IRouteWaypoint Waypoint
         //{
         //    get { return waypoint; }
         //    set { waypoint = value; }
         //}
+
         public Image Thumbnail
         {
             get { return this.thumbnail; }
             set { this.thumbnail = value; }
         }
-        public void OffsetDateTimeOriginal(int hour, int min, int sec)
+
+        public void OffsetDateTimeOriginal( int hour, int min, int sec )
         {
             DateTime dt = EW.DateTimeOriginal;
-            dt = dt.AddHours(hour);
-            dt = dt.AddMinutes(min);
-            dt = dt.AddSeconds(sec);
-            EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString("yyyy:MM:dd HH:mm:ss"));
-            SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
+            dt = dt.AddHours( hour );
+            dt = dt.AddMinutes( min );
+            dt = dt.AddSeconds( sec );
+            EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
+            SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
+
         public string DateTimeOriginal
         {
             get
             {
-                DateTime dt = new DateTime(1950, 1, 1);
-                if (dt < EW.DateTimeOriginal) return (
-                    EW.DateTimeOriginal.ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern)
-                    + Environment.NewLine
-                    + EW.DateTimeOriginal.ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern));
+                DateTime dt = new DateTime( 1950, 1, 1 );
+                if ( dt < EW.DateTimeOriginal ) return (
+                      EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern )
+                      + Environment.NewLine
+                      + EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) );
                 else return "";
             }
             set
@@ -192,26 +203,27 @@ namespace ActivityPicturePlugin.Helper
                     //EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString("yyyy:MM:dd HH:mm:ss"));
                     //SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     throw;
                 }
             }
         }
+
         public string Title
         {
             get
             {
                 try
                 {
-                    if (this.EW.FileExplorerTitle != null)
+                    if ( this.EW.FileExplorerTitle != null )
                     {
                         //return System.Text.RegularExpressions.Regex.Replace(this.EW.FileExplorerTitle, @"[\W]", "");
-                        return CleanInput(this.EW.FileExplorerTitle);
+                        return CleanInput( this.EW.FileExplorerTitle );
                     }
                     else return "";
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     return "";
                 }
@@ -221,25 +233,26 @@ namespace ActivityPicturePlugin.Helper
                 try
                 {
                     this.EW.FileExplorerTitle = value;
-                    SavePhotoSourceProperty(ExifWorks.TagNames.FileExplorerTitle);
+                    SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerTitle );
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     throw;
                 }
             }
         }
+
         public string Comments
         {
             get
             {
                 try
                 {
-                    if (this.EW.FileExplorerComments != null)
-                        return CleanInput(this.EW.FileExplorerComments);
+                    if ( this.EW.FileExplorerComments != null )
+                        return CleanInput( this.EW.FileExplorerComments );
                     else return "";
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     return "";
                 }
@@ -250,29 +263,31 @@ namespace ActivityPicturePlugin.Helper
                 try
                 {
                     this.EW.FileExplorerComments = value;
-                    SavePhotoSourceProperty(ExifWorks.TagNames.FileExplorerComments);
+                    SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerComments );
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     throw;
                 }
             }
         }
+
         public bool Selected
         {
             get { return selected; }
             set { selected = value; }
         }
+
         public Single Ratio
         {
             get { return ratio; }
             set { ratio = value; }
         }
 
-        String CleanInput(string strIn)
+        String CleanInput( string strIn )
         {
             // Replace invalid characters with empty strings.
-            return System.Text.RegularExpressions.Regex.Replace(strIn, @"[^ -ÿ]", "");
+            return System.Text.RegularExpressions.Regex.Replace( strIn, @"[^ -ÿ]", "" );
         }
 
         public string EquipmentModel
@@ -281,29 +296,25 @@ namespace ActivityPicturePlugin.Helper
             {
                 try
                 {
-                    if (this.EW.EquipmentModel != null)
-                        return CleanInput(this.EW.EquipmentModel);
+                    if ( this.EW.EquipmentModel != null )
+                        return CleanInput( this.EW.EquipmentModel );
                     else return "";
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     return "";
                 }
             }
         }
+
         public IGPSLocation GpsLocation
         {
-            get
-            {
-                return new GPSLocation((float)ew.GPSLatitude, (float)ew.GPSLongitude);
-            }
+            get { return new GPSLocation( (float)ew.GPSLatitude, (float)ew.GPSLongitude ); }
         }
+
         public IGPSPoint GpsPoint
         {
-            get
-            {
-                return new GPSPoint((float)ew.GPSLatitude, (float)ew.GPSLongitude, (float)ew.GPSAltitude);
-            }
+            get { return new GPSPoint( (float)ew.GPSLatitude, (float)ew.GPSLongitude, (float)ew.GPSAltitude ); }
         }
 
         public string ExifGPS
@@ -312,55 +323,55 @@ namespace ActivityPicturePlugin.Helper
             {
                 try
                 {
-                    if ((ew.GPSLatitude == 0) & (ew.GPSLongitude == 0)) return "";
+                    if ( ( ew.GPSLatitude == 0 ) & ( ew.GPSLongitude == 0 ) ) return "";
                     else
                     {
                         string GPSString = "";
                         double degLat, minLat, secLat, degLon, minLon, secLon;
-                        switch (Plugin.GetApplication().SystemPreferences.GPSLocationUnits)
+                        switch ( Plugin.GetApplication().SystemPreferences.GPSLocationUnits )
                         {
                             case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
 
-                                degLat = Math.Abs(Math.Truncate(ew.GPSLatitude));
-                                minLat = Math.Truncate((Math.Abs(ew.GPSLatitude) - degLat) * 60);
-                                secLat = (((Math.Abs(ew.GPSLatitude) - degLat) * 60) - minLat) * 60;
+                                degLat = Math.Abs( Math.Truncate( ew.GPSLatitude ) );
+                                minLat = Math.Truncate( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 );
+                                secLat = ( ( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 ) - minLat ) * 60;
 
-                                degLon = Math.Abs(Math.Truncate(ew.GPSLongitude));
-                                minLon = Math.Truncate((Math.Abs(ew.GPSLongitude) - degLon) * 60);
-                                secLon = (((Math.Abs(ew.GPSLongitude) - degLon) * 60) - minLon) * 60;
+                                degLon = Math.Abs( Math.Truncate( ew.GPSLongitude ) );
+                                minLon = Math.Truncate( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 );
+                                secLon = ( ( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 ) - minLon ) * 60;
 
-                                GPSString = degLat.ToString() + "° " + minLat.ToString() + "' " + secLat.ToString("00")
+                                GPSString = degLat.ToString() + "° " + minLat.ToString() + "' " + secLat.ToString( "00" )
                                     + (char)34 + " " + ew.GPSLatitudeReference + Environment.NewLine +
-                                    degLon.ToString() + "° " + minLon.ToString() + "' " + secLon.ToString("00")
+                                    degLon.ToString() + "° " + minLon.ToString() + "' " + secLon.ToString( "00" )
                                 + (char)34 + " " + ew.GPSLongitudeReference;
                                 break;
                             case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal3:
-                                GPSString = ew.GPSLatitude.ToString("0.000") + Environment.NewLine +
-                                   ew.GPSLongitude.ToString("0.000");
+                                GPSString = ew.GPSLatitude.ToString( "0.000" ) + Environment.NewLine +
+                                   ew.GPSLongitude.ToString( "0.000" );
                                 break;
                             case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal4:
-                                GPSString = ew.GPSLatitude.ToString("0.0000") + Environment.NewLine +
-                                   ew.GPSLongitude.ToString("0.0000");
+                                GPSString = ew.GPSLatitude.ToString( "0.0000" ) + Environment.NewLine +
+                                   ew.GPSLongitude.ToString( "0.0000" );
                                 break;
                             case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Minutes:
-                                degLat = Math.Truncate(Math.Abs(ew.GPSLatitude));
-                                minLat = Math.Truncate((Math.Abs(ew.GPSLatitude) - degLat) * 60);
-                                degLon = Math.Abs(Math.Truncate(ew.GPSLongitude));
-                                minLon = Math.Truncate((Math.Abs(ew.GPSLongitude) - degLon) * 60);
+                                degLat = Math.Truncate( Math.Abs( ew.GPSLatitude ) );
+                                minLat = Math.Truncate( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 );
+                                degLon = Math.Abs( Math.Truncate( ew.GPSLongitude ) );
+                                minLon = Math.Truncate( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 );
                                 GPSString = degLat.ToString() + "° " + minLat.ToString() + "' " + ew.GPSLatitudeReference
                                     + Environment.NewLine + degLon.ToString() + "° " +
                                     minLon.ToString() + "' " + ew.GPSLongitudeReference;
                                 break;
                             default:
-                                GPSString = ew.GPSLatitude.ToString("0.0000") + Environment.NewLine +
-                                    ew.GPSLongitude.ToString("0.0000");
+                                GPSString = ew.GPSLatitude.ToString( "0.0000" ) + Environment.NewLine +
+                                    ew.GPSLongitude.ToString( "0.0000" );
                                 break;
                         }
 
                         return GPSString;
                     }
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     //throw;
                     return "";
@@ -368,24 +379,24 @@ namespace ActivityPicturePlugin.Helper
 
             }
         }
+
         public string KMLGPS
         {
             get
             {
                 string kml = "";
 
-                System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo("en-US");
-                kml = ew.GPSLongitude.ToString("0.00000000", ci) + "," + ew.GPSLatitude.ToString("0.00000000", ci) + "," + ew.GPSAltitude.ToString("0.00", ci);
+                System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo( "en-US" );
+                kml = ew.GPSLongitude.ToString( "0.00000000", ci ) + "," + ew.GPSLatitude.ToString( "0.00000000", ci ) + "," + ew.GPSAltitude.ToString( "0.00", ci );
                 return kml;
             }
         }
+
         public string ThumbnailPath
         {
-            get
-            {
-                return Functions.thumbnailPath(this.referenceID);
-            }
+            get { return Functions.thumbnailPath( this.referenceID ); }
         }
+
         public string Altitude
         {
             get
@@ -395,28 +406,28 @@ namespace ActivityPicturePlugin.Helper
                     string AltStr = "";
                     //string comAlt = com.SimpleRun.ShowOneFileOnlyTagGPSAltitude(this.PhotoSource);
                     double Alt = ew.GPSAltitude;
-                    switch (Plugin.GetApplication().SystemPreferences.ElevationUnits)
+                    switch ( Plugin.GetApplication().SystemPreferences.ElevationUnits )
                     {
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Centimeter:
-                            AltStr = (Alt * 100).ToString("0") + " cm";
+                            AltStr = ( Alt * 100 ).ToString( "0" ) + " cm";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Foot:
-                            AltStr = (Alt * 3.2808399).ToString("0.00") + " ft";
+                            AltStr = ( Alt * 3.2808399 ).ToString( "0.00" ) + " ft";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Inch:
-                            AltStr = (Alt * 39.370079).ToString("0") + " in";
+                            AltStr = ( Alt * 39.370079 ).ToString( "0" ) + " in";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Kilometer:
-                            AltStr = (Alt * 0.001).ToString("0.000") + " km";
+                            AltStr = ( Alt * 0.001 ).ToString( "0.000" ) + " km";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Meter:
-                            AltStr = (Alt).ToString("0.00") + " m";
+                            AltStr = ( Alt ).ToString( "0.00" ) + " m";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Mile:
-                            AltStr = (Alt * 0.00062137119).ToString("0.000") + " miles";
+                            AltStr = ( Alt * 0.00062137119 ).ToString( "0.000" ) + " miles";
                             break;
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Yard:
-                            AltStr = (Alt * 1.0936133).ToString("0.00") + " yd";
+                            AltStr = ( Alt * 1.0936133 ).ToString( "0.00" ) + " yd";
                             break;
                         default:
                             break;
@@ -429,40 +440,42 @@ namespace ActivityPicturePlugin.Helper
                     //}
                     //else return ew.GPSAltitude.ToString() + " m";
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     return "";
                     //throw;
                 }
             }
         }
+
         public string PhotoSourceFileName
         {
             get
             {
-                int i = photosource.LastIndexOf(@"\");
-                if (i > 0) return photosource.Substring(i + 1);
+                int i = photosource.LastIndexOf( @"\" );
+                if ( i > 0 ) return photosource.Substring( i + 1 );
                 else return "";
             }
         }
         #endregion
 
         #region Private Methods
-        public void SetDateTimeOriginal(DateTime dt)
+        public void SetDateTimeOriginal( DateTime dt )
         {
-            this.EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString("yyyy:MM:dd HH:mm:ss"));
-            SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
+            this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
+            SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
-        private void SavePhotoSourceProperty(ExifWorks.TagNames prop)
+
+        private void SavePhotoSourceProperty( ExifWorks.TagNames prop )
         {
             try
             {
-                if ((System.IO.File.Exists(this.photosource)) & (this.Type == DataTypes.Image))
+                if ( ( System.IO.File.Exists( this.photosource ) ) & ( this.Type == DataTypes.Image ) )
                 // Save Exif data to the original source
                 {
-                    ExifWorks EWPhotoSource = new ExifWorks(this.photosource);
+                    ExifWorks EWPhotoSource = new ExifWorks( this.photosource );
 
-                    switch (prop)
+                    switch ( prop )
                     {
                         case ExifWorks.TagNames.ExifDTOrig:
                             EWPhotoSource.DateTimeOriginal = ew.DateTimeOriginal;
@@ -483,16 +496,16 @@ namespace ActivityPicturePlugin.Helper
                             EWPhotoSource.GPSLatitude = ew.GPSLatitude;
                             break;
                     }
-                    EWPhotoSource.GetBitmap().Save(this.photosource);
+                    EWPhotoSource.GetBitmap().Save( this.photosource );
                     EWPhotoSource.Dispose();
                 }
 
                 //Save Exif data to the webfiles image
-                this.EW.GetBitmap().Save(this.ThumbnailPath);
+                this.EW.GetBitmap().Save( this.ThumbnailPath );
                 this.EW.Dispose();
-                this.EW = new ExifWorks(this.ThumbnailPath);
+                this.EW = new ExifWorks( this.ThumbnailPath );
             }
-            catch (Exception)
+            catch ( Exception )
             {
 
                 //throw;
@@ -524,37 +537,122 @@ namespace ActivityPicturePlugin.Helper
                 string defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
-                if (System.IO.File.Exists(defpath))
+                if ( System.IO.File.Exists( defpath ) )
                 {
-                    bmp = (Bitmap)(Resources.Resources.video).Clone();
+                    bmp = new Bitmap( defpath );
                     //The thumbnail is being created
                     //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                     //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                    this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                     bmp.Dispose();
                 }
                 //File has not yet been created
                 else
                 {
                     //Check if image at specified PhotoSource location exists
-                    if (System.IO.File.Exists(this.PhotoSource))
+                    if ( System.IO.File.Exists( this.PhotoSource ) )
                     {
-                        //TODO: Get image from video?
                         // Create new image in the default folder
-                        bmp = (Bitmap)(Resources.Resources.video).Clone();
-                        Functions.SaveThumbnailImage(bmp, defpath, 10);
+                        bmp = (Bitmap)( Resources.Resources.video ).Clone();
+                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
                         //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                         //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                        this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                         bmp.Dispose();
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 throw;
             }
         }
+
+        //Replaces the current thumbnail with the video image at iFrame
+        //If iFrame is -1, default video image is used
+        public bool ReplaceVideoThumbnail( int iFrame )
+        {
+            try
+            {
+                Bitmap bmpOrig;
+                string defpath = this.ThumbnailPath;
+
+                //Check if image at specified PhotoSource location exists
+                if ( System.IO.File.Exists( this.PhotoSource ) )
+                {
+                    // Create new image in the default folder
+                    if ( iFrame == -1 ) bmpOrig = (Bitmap)( Resources.Resources.video ).Clone();
+                    else bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
+                    if ( bmpOrig != null )
+                    {
+                        // Create new image in the default folder
+                        Size size = new Size();
+                        int UpperPixelLimit = 500;
+                        Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
+                        if ( ratio > 1 )
+                        {
+                            size.Width = UpperPixelLimit;
+                            size.Height = (int)( UpperPixelLimit / ratio );
+                        }
+                        else
+                        {
+                            size.Height = UpperPixelLimit;
+                            size.Width = (int)( UpperPixelLimit * ratio );
+                        }
+                        Bitmap bmp = new Bitmap( bmpOrig, size );
+                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
+                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                        bmp.Dispose();
+                        bmpOrig.Dispose();
+                        return true;
+                    }
+                }
+            }
+            catch ( Exception )
+            {
+                //throw;
+            }
+            return false;
+        }
+
+        internal Bitmap GetAviBmp( string VideoFile, int iFrame )
+        {
+            AviFile.AviManager aviManager = null;
+            AviFile.VideoStream stream = null;
+            Bitmap bmp = null;
+            try
+            {
+                aviManager = new AviFile.AviManager( VideoFile, true, true );
+                if ( aviManager != null )
+                {
+                    stream = aviManager.GetVideoStream();
+                    stream.GetFrameOpen();
+                    if ( iFrame <= 0 ) iFrame = 1;
+                    if ( iFrame > stream.CountFrames ) iFrame = stream.CountFrames;
+                    bmp = stream.GetBitmap( iFrame );
+                }
+            }
+            catch ( Exception )
+            {
+            }
+            finally
+            {
+                if ( stream != null )
+                {
+                    stream.GetFrameClose();
+                    stream = null;
+                }
+
+                if ( aviManager != null )
+                {
+                    aviManager.Close();
+                    aviManager = null;
+                }
+            }
+
+            return bmp;
+        }
+
         internal void SetThumbnail()
         {
             try
@@ -564,61 +662,60 @@ namespace ActivityPicturePlugin.Helper
                 defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
-                if (System.IO.File.Exists(defpath))
+                if ( System.IO.File.Exists( defpath ) )
                 {
-                    bmp = new Bitmap(defpath);
+                    bmp = new Bitmap( defpath );
                     //The thumbnail is being created
                     //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                     //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                    this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                     bmp.Dispose();
                 }
                 //File has not yet been created
                 else
                 {
                     //Check if image at specified PhotoSource location exists
-                    if (System.IO.File.Exists(this.PhotoSource))
+                    if ( System.IO.File.Exists( this.PhotoSource ) )
                     {
                         // Create new image in the default folder
                         Size size = new Size();
-                        Bitmap bmpOrig = new Bitmap(this.PhotoSource);
+                        Bitmap bmpOrig = new Bitmap( this.PhotoSource );
 
                         int UpperPixelLimit = 500;
-                        Double ratio = (double)(bmpOrig.Width) / (double)(bmpOrig.Height);
-                        if (ratio > 1)
+                        Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
+                        if ( ratio > 1 )
                         {
                             size.Width = UpperPixelLimit;
-                            size.Height = (int)(UpperPixelLimit / ratio);
+                            size.Height = (int)( UpperPixelLimit / ratio );
                         }
                         else
                         {
                             size.Height = UpperPixelLimit;
-                            size.Width = (int)(UpperPixelLimit * ratio);
+                            size.Width = (int)( UpperPixelLimit * ratio );
                         }
-                        bmp = new Bitmap(bmpOrig, size);
+                        bmp = new Bitmap( bmpOrig, size );
 
                         //copying the metadata of the original file into the new image
-                        foreach (System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems)
+                        foreach ( System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems )
                         {
                             try
                             {
                                 //Mono TODO: NotImplemented
-                                bmp.SetPropertyItem(pItem);
+                                bmp.SetPropertyItem( pItem );
                             }
                             catch { }
                         }
 
-                        Functions.SaveThumbnailImage(bmp, defpath, 10);
+                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
 
                         ////is replaced due to smaller file size with jpg + the ability to store more metadata
                         //bmp.Save(defpath,System.Drawing.Imaging.ImageFormat.Png);
 
                         //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                         //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                        this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                         bmpOrig.Dispose();
                         bmp.Dispose();
-
                     }
                     // Thumbnail cannot be created, both target locations are invalid
                     else
@@ -629,11 +726,12 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 // throw;
             }
         }
+
         //public void CreateWayPoint()
         //{
         //    ActivityPicturePlugin.UI.Activities.IRouteWaypoint rwp;
@@ -649,11 +747,12 @@ namespace ActivityPicturePlugin.Helper
         #region IDisposable Members
         public void Dispose()
         {
-            if (this.Thumbnail != null) this.Thumbnail.Dispose();
+            if ( this.Thumbnail != null ) this.Thumbnail.Dispose();
             // this.Waypoint.Dispose():
         }
         #endregion
     }
+
     //serializable extract of the ImageData class. Only this information of each image will be saved with SetExtensionData
     [Serializable()]
     public class ImageDataSerializable
@@ -661,16 +760,19 @@ namespace ActivityPicturePlugin.Helper
         private ImageData.DataTypes type;
         private string photosource;
         private string referenceID;
+
         public string ReferenceID
         {
             get { return referenceID; }
             set { referenceID = value; }
         }
+
         public string PhotoSource
         {
             get { return photosource; }
             set { photosource = value; }
         }
+
         public ImageData.DataTypes Type
         {
             get { return type; }

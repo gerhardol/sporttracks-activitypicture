@@ -16,9 +16,9 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace ActivityPicturePlugin.UI.Activities
-    {
+{
     partial class ModifyTimeStamp
-        {
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -28,14 +28,14 @@ namespace ActivityPicturePlugin.UI.Activities
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing && ( components != null ) )
             {
-            if (disposing && (components != null))
-                {
                 components.Dispose();
-                }
-            base.Dispose(disposing);
             }
+            base.Dispose( disposing );
+        }
 
         #region Windows Form Designer generated code
 
@@ -44,7 +44,7 @@ namespace ActivityPicturePlugin.UI.Activities
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-            {
+        {
             this.btnOK = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
@@ -53,64 +53,69 @@ namespace ActivityPicturePlugin.UI.Activities
             // btnOK
             // 
             this.btnOK.BackColor = System.Drawing.Color.Transparent;
-            this.btnOK.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnOK.BorderColor = System.Drawing.Color.FromArgb( ( (int)( ( (byte)( 100 ) ) ) ), ( (int)( ( (byte)( 40 ) ) ) ), ( (int)( ( (byte)( 50 ) ) ) ), ( (int)( ( (byte)( 120 ) ) ) ) );
             this.btnOK.CenterImage = null;
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnOK.HyperlinkStyle = false;
             this.btnOK.ImageMargin = 2;
             this.btnOK.LeftImage = null;
-            this.btnOK.Location = new System.Drawing.Point(177, 66);
+            this.btnOK.Location = new System.Drawing.Point( 128, 81 );
+            this.btnOK.Margin = new System.Windows.Forms.Padding( 5 );
             this.btnOK.Name = "btnOK";
             this.btnOK.PushStyle = true;
             this.btnOK.RightImage = null;
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 6;
+            this.btnOK.Size = new System.Drawing.Size( 100, 28 );
+            this.btnOK.TabIndex = 1;
             this.btnOK.Text = "OK";
             this.btnOK.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnOK.TextLeftMargin = 2;
             this.btnOK.TextRightMargin = 2;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            this.btnOK.Click += new System.EventHandler( this.btnOK_Click );
             // 
             // btnCancel
             // 
             this.btnCancel.BackColor = System.Drawing.Color.Transparent;
-            this.btnCancel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnCancel.BorderColor = System.Drawing.Color.FromArgb( ( (int)( ( (byte)( 100 ) ) ) ), ( (int)( ( (byte)( 40 ) ) ) ), ( (int)( ( (byte)( 50 ) ) ) ), ( (int)( ( (byte)( 120 ) ) ) ) );
             this.btnCancel.CenterImage = null;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnCancel.HyperlinkStyle = false;
             this.btnCancel.ImageMargin = 2;
             this.btnCancel.LeftImage = null;
-            this.btnCancel.Location = new System.Drawing.Point(96, 66);
+            this.btnCancel.Location = new System.Drawing.Point( 236, 81 );
+            this.btnCancel.Margin = new System.Windows.Forms.Padding( 5 );
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.PushStyle = true;
             this.btnCancel.RightImage = null;
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.Size = new System.Drawing.Size( 100, 28 );
+            this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnCancel.TextLeftMargin = 2;
             this.btnCancel.TextRightMargin = 2;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler( this.btnCancel_Click );
             // 
             // dateTimePicker1
             // 
             this.dateTimePicker1.CustomFormat = "dd.MM.yyyy, h:m:ss  ";
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(12, 26);
+            this.dateTimePicker1.Location = new System.Drawing.Point( 16, 32 );
+            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding( 4 );
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(138, 20);
-            this.dateTimePicker1.TabIndex = 15;
+            this.dateTimePicker1.Size = new System.Drawing.Size( 183, 22 );
+            this.dateTimePicker1.TabIndex = 0;
             // 
             // ModifyTimeStamp
             // 
             this.AcceptButton = this.btnOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF( 8F, 16F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(264, 101);
+            this.ClientSize = new System.Drawing.Size( 348, 120 );
             this.ControlBox = false;
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOK);
+            this.Controls.Add( this.dateTimePicker1 );
+            this.Controls.Add( this.btnCancel );
+            this.Controls.Add( this.btnOK );
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Margin = new System.Windows.Forms.Padding( 4 );
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ModifyTimeStamp";
@@ -118,14 +123,14 @@ namespace ActivityPicturePlugin.UI.Activities
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Set Time Stamp";
             this.TopMost = true;
-            this.ResumeLayout(false);
+            this.ResumeLayout( false );
 
-            }
+        }
 
         #endregion
 
         private ZoneFiveSoftware.Common.Visuals.Button btnOK;
         private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        }
     }
+}
