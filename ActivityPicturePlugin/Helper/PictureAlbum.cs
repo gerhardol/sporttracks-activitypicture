@@ -1081,6 +1081,10 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        // Note:  Issues with video playback may be corrected by installing the
+        // appropriate codec.  Just because the clip plays in VLC or Windows Media Player
+        // it doesn't mean a codec is available for our uses.
+        // Try installing K-Lite_Codec_Pack_995_Full or something similar.
         private bool OpenVideo( string file, int imageNumber )
         {
             bool bRet = true;

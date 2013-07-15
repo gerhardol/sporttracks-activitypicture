@@ -1079,7 +1079,7 @@ namespace ActivityPicturePlugin.Helper
             System.IO.FileInfo fi = new FileInfo( p );
             //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
             string[] extimg = { ".jpg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
-            string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov" };
+            string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
             foreach ( string str in extimg )
             {
                 //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;

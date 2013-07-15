@@ -600,6 +600,7 @@ namespace ActivityPicturePlugin.Helper
                         else
                         {
                             // DexterLib
+                            // If Interop.DexterLib.dll is missing, exception is thrown (caught)
                             bmpOrig = GetNonAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
                         }
                     }
