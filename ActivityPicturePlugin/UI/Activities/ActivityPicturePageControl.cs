@@ -1272,7 +1272,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 Size sizeFrame = pictureAlbumView.GetVideoSize();
                 if ( sizeFrame.Width == -1 ) sizeFrame.Width = 500;
                 if ( sizeFrame.Height == -1 ) sizeFrame.Height = 375;
-                id.ReplaceVideoThumbnail( iFrame, sizeFrame );
+                double dblTimePerFrame = pictureAlbumView.GetCurrentVideoTimePerFrame();
+                id.ReplaceVideoThumbnail( iFrame, sizeFrame, dblTimePerFrame );
 
                 Functions.ClearImageList( this.pictureAlbumView );
                 ReloadData();

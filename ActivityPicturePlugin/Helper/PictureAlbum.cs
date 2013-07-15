@@ -973,6 +973,23 @@ namespace ActivityPicturePlugin.Helper
             return iFrame;
         }
 
+        // Get frame rate of the video
+        // Used for taking snapshots
+        internal double GetCurrentVideoTimePerFrame()
+        {
+            double dblTimePerFrame = 0;
+            try
+            {
+                if ( FilGrMan != null )
+                {
+                    dblTimePerFrame = FilGrMan.AvgTimePerFrame;
+                }
+            }
+            catch ( Exception )
+            { }
+            return dblTimePerFrame;
+        }
+
         // Get the current frame number
         // Used for taking snapshots
         internal Size GetVideoSize()
