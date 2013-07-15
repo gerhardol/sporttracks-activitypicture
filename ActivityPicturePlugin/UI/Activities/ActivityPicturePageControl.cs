@@ -69,7 +69,13 @@ namespace ActivityPicturePlugin.UI.Activities
             this.Visible = false;
             InitializeComponent();
 
+            // Setting Dock to Fill through Designer causes it to reformat
+            // and marks it as 'changed' everytime you open it.
+            // Workaround until I figure out what's going on.
+            this.importControl1.Dock = DockStyle.Fill;
+
             LoadSettings();
+
             //Create directory if it does not already exist!
             if ( !Directory.Exists( ImageFilesFolder ) ) Directory.CreateDirectory( ImageFilesFolder );
 
@@ -88,7 +94,6 @@ namespace ActivityPicturePlugin.UI.Activities
         private ShowMode Mode = ShowMode.List;
         private PluginData PluginExtensionData = new PluginData();
         private bool _showPage = false;
-
         private List<string> SelectedReferenceIDs = new List<string>();
         private bool PreventRowsRemoved = false;//To prevent recursive calls
         #endregion
@@ -163,9 +168,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         public void LoadSettings()
         {
             Mode = (ShowMode)ActivityPicturePlugin.Source.Settings.ActivityMode; //Activity Picture Mode (Album, List, Import)
-            sliderImageSize.Value = ActivityPicturePlugin.Source.Settings.ImageZoom;
-            //pictureAlbumView.MaximumImageSize = (PictureAlbum.MaxImageSize)ActivityPicturePlugin.Source.Settings.MaxImageSize;
+            //sliderImageSize.Value = ActivityPicturePlugin.Source.Settings.ImageZoom;
 
+            //pictureAlbumView.MaximumImageSize = (PictureAlbum.MaxImageSize)ActivityPicturePlugin.Source.Settings.MaxImageSize;
             toolStripMenuTypeImage.Checked = ActivityPicturePlugin.Source.Settings.CTypeImage;
             toolStripMenuExifGPS.Checked = ActivityPicturePlugin.Source.Settings.CExifGPS;
             toolStripMenuAltitude.Checked = ActivityPicturePlugin.Source.Settings.CAltitude;
@@ -192,6 +197,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
             volumeSlider2.Volume = ActivityPicturePlugin.Source.Settings.VolumeValue;
             //volumeSlider2.Volume = 10u;
+
         }
 
         public void ResetPage()
@@ -284,6 +290,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.groupBoxVideo.BackColor = visualTheme.Control;
             this.groupBoxVideo.ForeColor = visualTheme.ControlText;
             this.toolStripVideo.BackColor = visualTheme.Control;
+            this.toolstripListOptions.BackColor = visualTheme.Control;
 
             this.sliderImageSize.BarInnerColor = visualTheme.Selected;
             this.sliderImageSize.BarOuterColor = visualTheme.MainHeader;
@@ -338,7 +345,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.cComment.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
             this.cDateTimeOriginal.HeaderText = CommonResources.Text.LabelDate;
             this.cCamera.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
-            this.cExifGPS.HeaderText = Functions.UppercaseFirst( CommonResources.Text.LabelGPSLocation );
+            // Not sure how important it is to have this capitalized, nor am I
+            // sure if this should be done for all resources.
+            this.cExifGPS.HeaderText = Functions.CapitalizeAllWords( CommonResources.Text.LabelGPSLocation );
             this.cPhotoSource.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
             this.cReferenceID.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
             this.cThumbnail.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
@@ -383,7 +392,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
             this.toolStripMenuFitToWindow.Text = Resources.Resources.FitImagesToView_Text;
 
-            this.toolStripMenuCopy.Text = Resources.Resources.CopyToClipboard_Text;
+            //this.toolStripMenuCopy.Text = Resources.Resources.CopyToClipboard_Text;
+            this.toolStripMenuCopy.Text = CommonResources.Text.ActionCopy;
             this.toolStripMenuNone.Text = Resources.Resources.HideAllColumns_Text;
             this.toolStripMenuAll.Text = Resources.Resources.ShowAllColumns_Text;
             this.toolStripMenuTypeImage.Text = Resources.Resources.TypeImage_HeaderText;
@@ -467,7 +477,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     this.importControl1.Visible = false;
                     this.panelPictureAlbumView.Visible = true;
                     if ( ( this.pictureAlbumView.ImageList == null ) || ( this.pictureAlbumView.ImageList.Count == 0 ) )
+                    {
                         this.groupBoxImage.Enabled = false;
+                        this.groupBoxVideo.Enabled = false;
+                    }
                     this.pictureAlbumView.Invalidate();
                 }
                 else if ( this.Mode == ShowMode.List )
@@ -534,7 +547,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     toolStripButtonPlay.Enabled = true;
                     toolStripButtonPause.Enabled = false;
                     toolStripButtonStop.Enabled = true;
-                    toolStripButtonSnapshot.Enabled = pictureAlbumView.IsAvi();
+                    toolStripButtonSnapshot.Enabled = true; //pictureAlbumView.IsAvi();
                     sliderVideo.Enabled = true;
                     volumeSlider2.Enabled = true;
                     break;
@@ -544,7 +557,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     toolStripButtonPause.Enabled = true;
                     toolStripButtonStop.Enabled = true;
                     toolStripButtonSnapshot.Enabled = true;
-                    toolStripButtonSnapshot.Enabled = pictureAlbumView.IsAvi();
+                    toolStripButtonSnapshot.Enabled = true; //pictureAlbumView.IsAvi();
                     sliderVideo.Enabled = true;
                     volumeSlider2.Enabled = true;
                     timerVideo.Start();
@@ -579,6 +592,30 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                         this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images );
                         SortListView();
                     }
+                    sliderImageSize.Value = this.PluginExtensionData.ImageZoom;
+
+                    if ( this.PluginExtensionData.GELinks.Count > 0 )
+                    {
+                        this.btnGEList.Visible = true;
+                        contextMenuListGE.Items.Clear();
+                        foreach ( string sFile in this.PluginExtensionData.GELinks )
+                        {
+                            System.IO.FileInfo fi = new FileInfo( sFile );
+                            ToolStripMenuItem tsi = (ToolStripMenuItem)this.contextMenuListGE.Items.Add( fi.Name );
+                            tsi.Tag = fi.FullName;
+                            tsi.ToolTipText = fi.FullName;
+                            System.Windows.Forms.ToolStripMenuItem tsmiRemove = new ToolStripMenuItem( CommonResources.Text.ActionRemove, null, new System.EventHandler( this.toolStripMenuRemove_Click ) );
+                            tsmiRemove.Tag = fi.FullName;
+                            tsmiRemove.Name = "Remove";
+                            tsi.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { tsmiRemove } );                            
+                        }
+                    }
+                    else
+                    {
+                        this.btnGEList.Visible = false;
+                    }
+
+
                     this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
 #if !ST_2_1
                     m_layer.HidePage(); //defer updates
@@ -605,7 +642,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             IEnumerable<IActivity> activities = new List<IActivity>();
             activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
 
-            foreach(IActivity activity in activities)
+            foreach ( IActivity activity in activities )
             {
                 PluginData data = Helper.Functions.ReadExtensionData( activity );
                 if ( data.Images.Count > 0 )
@@ -829,10 +866,6 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
             try
             {
-                string xtemp, ytemp;
-                const string cDateTimeFormat = "yyyy MM dd HH:mm:ss";
-                DateTime dt = new DateTime();
-
                 if ( x == null )
                 {
                     if ( y == null ) return 0; // If x is null and y is null, they're equal. 
@@ -867,18 +900,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                                 retval = y.Comments.CompareTo( x.Comments );
                                 break;
                             case PictureAlbum.ImageSortMode.byDateTimeAscending:
-                                DateTime.TryParse( x.DateTimeOriginal, out dt );
-                                xtemp = dt.ToString( cDateTimeFormat );
-                                DateTime.TryParse( y.DateTimeOriginal, out dt );
-                                ytemp = dt.ToString( cDateTimeFormat );
-                                retval = xtemp.CompareTo( ytemp );
+                                retval = x.EW.DateTimeOriginal.CompareTo( y.EW.DateTimeOriginal );
                                 break;
                             case PictureAlbum.ImageSortMode.byDateTimeDescending:
-                                DateTime.TryParse( x.DateTimeOriginal, out dt );
-                                xtemp = dt.ToString( cDateTimeFormat );
-                                DateTime.TryParse( y.DateTimeOriginal, out dt );
-                                ytemp = dt.ToString( cDateTimeFormat );
-                                retval = ytemp.CompareTo( xtemp );
+                                retval = y.EW.DateTimeOriginal.CompareTo( x.EW.DateTimeOriginal );
                                 break;
                             case PictureAlbum.ImageSortMode.byExifGPSAscending:
                                 retval = x.ExifGPS.CompareTo( y.ExifGPS );
@@ -1138,7 +1163,11 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 MB.Controls.ColorSlider tb = (MB.Controls.ColorSlider)( sender );
                 this.pictureAlbumView.Zoom = tb.Value;
+
                 ActivityPicturePlugin.Source.Settings.ImageZoom = tb.Value;
+                this.PluginExtensionData.ImageZoom = tb.Value;
+                Helper.Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
+
                 this.pictureAlbumView.Invalidate();
 #if !ST_2_1
                 this.m_layer.PictureSize = tb.Value;
@@ -1240,7 +1269,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             {
                 ImageData id = ids[pictureAlbumView.CurrentVideoIndex];
                 int iFrame = pictureAlbumView.GetCurrentVideoFrame();
-                id.ReplaceVideoThumbnail( iFrame );
+                Size sizeFrame = pictureAlbumView.GetVideoSize();
+                if ( sizeFrame.Width == -1 ) sizeFrame.Width = 500;
+                if ( sizeFrame.Height == -1 ) sizeFrame.Height = 375;
+                id.ReplaceVideoThumbnail( iFrame, sizeFrame );
 
                 Functions.ClearImageList( this.pictureAlbumView );
                 ReloadData();
@@ -1327,9 +1359,20 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             if ( dres == DialogResult.OK & this.saveFileDialog.FileName != "" )
             {
                 Functions.PerformExportToGoogleEarth( GetSelectedImageData(), this._Activity, this.saveFileDialog.FileName );
+                if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
+                    Functions.OpenExternal( this.saveFileDialog.FileName );
+
+                if (ActivityPicturePlugin.Source.Settings.GEStoreFileLocation)
+                {
+                    if ( !PluginExtensionData.GELinks.Contains( this.saveFileDialog.FileName ) )
+                    {
+                        PluginExtensionData.GELinks.Add( this.saveFileDialog.FileName );
+                        Helper.Functions.WriteExtensionData( Activity, this.PluginExtensionData );
+                        this.btnGEList.Visible = true;
+                        ReloadData();
+                    }
+                }
             }
-            if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
-                Functions.OpenExternal( this.saveFileDialog.FileName );
 
         }
 
@@ -1566,6 +1609,39 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.pictureAlbumView.SelectedIndex = -1;
         }
 
+        private void btnGEList_Click( object sender, EventArgs e )
+        {
+            //contextMenuListGE.Show( btnGEList, new Point( -( contextMenuListGE.Width + 5 ), 0 ) );
+            contextMenuListGE.Show( btnGEList, new Point( 0, btnGEList.Height + 5 ) );
+        }
+
+        private void contextMenuListGE_ItemClicked( object sender, ToolStripItemClickedEventArgs e )
+        {
+            if ( e.ClickedItem.Tag != null )
+            {
+                if ( !Helper.Functions.OpenExternal( e.ClickedItem.Tag.ToString() ) )
+                {
+                    if ( MessageBox.Show( Resources.Resources.FileNotFound_Text + ".\r\n" + Resources.Resources.RemoveFromList_Text, Resources.Resources.FileNotFound_Text,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
+                    {
+                        //Delete item from list
+                        toolStripMenuRemove_Click( ( (ToolStripMenuItem)e.ClickedItem ).DropDown.Items["Remove"], new EventArgs() );
+                    }
+                }
+            }
+            contextMenuListGE.Close( ToolStripDropDownCloseReason.ItemClicked );
+        }
+
+        private void toolStripMenuRemove_Click( object sender, EventArgs e )
+        {
+            ToolStripMenuItem tsmi = sender as ToolStripMenuItem;
+            if ( tsmi.Tag != null )
+            {
+                PluginExtensionData.GELinks.Remove( tsmi.Tag.ToString() );
+                Helper.Functions.WriteExtensionData( Activity, this.PluginExtensionData );
+                ReloadData();
+            }
+        }
         #endregion
     }
 

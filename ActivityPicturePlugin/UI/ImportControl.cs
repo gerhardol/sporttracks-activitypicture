@@ -90,6 +90,10 @@ namespace ActivityPicturePlugin.UI
                 }
                 else
                 {
+                    // btnExpandAll and btnCollapseAll are not very useful
+                    // in Detail View and just add clutter to an already small
+                    // display.  Either change their text or make them invisible
+                    // Decided to do both.
                     this.btnExpandAll.Text = "+";
                     this.toolTip1.SetToolTip( this.btnExpandAll, Resources.Resources.btnExpandAll_Text );
                     this.btnCollapseAll.Text = "-";
@@ -115,9 +119,11 @@ namespace ActivityPicturePlugin.UI
                 this.colDTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
                 this.colDDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
 
-                this.toolStripMenuAdd.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionAdd;
-                this.toolStripMenuRemove.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRemove;
-                this.toolStripMenuRefresh.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
+                this.toolStripMenuAdd.Text = CommonResources.Text.ActionAdd;
+                this.toolStripMenuCopyToClipboard.Text = CommonResources.Text.ActionCopy;
+                this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
+                this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
+                this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
             }
         }
 
@@ -408,6 +414,8 @@ namespace ActivityPicturePlugin.UI
                             }
                             catch ( Exception )
                             {
+                                // Folder is inaccessible for whatever reason
+                                // Don't add the node
                                 i = 0;
                             }
                             if ( i != 0 ) subNode.Nodes.Add( gDummyFolder );
@@ -543,6 +551,8 @@ namespace ActivityPicturePlugin.UI
             return retNode;
         }
 
+        // Recursively drill down the path until we find the node we're looking for
+        // iDepth is the current index in lFolders that we're looking for.
         private TreeNode GetNextNodeInPath( TreeNode tn, List<string> lFolders, int iDepth )
         {
             TreeNode retNode = null;
@@ -734,6 +744,70 @@ namespace ActivityPicturePlugin.UI
             return ids;
         }
 
+        //Drills from 'node' to find all child activities
+        //Returns tab separated list of fields
+        //Tab separated list of field values added to sFileData
+        //New list item added to sFileData for each image found
+        private string treeViewActivities_GetImageDataFromNodeChildren( TreeNode node, List<string> sFileData )
+        {
+            //Hardcoded fields and order at this time
+            string sFields = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + "\t" +
+                CommonResources.Text.LabelDate + "\t" +
+                CommonResources.Text.LabelGPSLocation + "\t" +
+                Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText + "\t" +
+                Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText + "\t" +
+                Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText + "\t" +
+                Resources.Resources.FilePath_Text + "\t" +
+                Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+
+            if ( node.Nodes.Count > 0 )
+            {
+                foreach ( TreeNode tn in node.Nodes )
+                    sFields = treeViewActivities_GetImageDataFromNodeChildren( tn, sFileData );
+            }
+            else
+            {
+                if ( node.Tag != null )
+                {
+                    System.Diagnostics.Debug.Print( node.FullPath + " " + node.Tag.ToString() );
+
+                    if ( node.Tag is IActivity ) //Node is an Activity
+                    {
+                        IActivity act = (IActivity)( node.Tag );
+                        PluginData data = Helper.Functions.ReadExtensionData( act );
+
+                        List<ImageData> il = data.LoadImageData( data.Images );
+                        foreach ( ImageData id in il )
+                        {
+                            try
+                            {
+                                string sFile = id.PhotoSourceFileName + "\t" +
+                                    id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) + "\t" +
+                                    id.ExifGPS.Replace( Environment.NewLine, ", " ) + "\t" +
+                                    id.Title + "\t" +
+                                    id.Comments + "\t" +
+                                    id.ReferenceID + "\t" +
+                                    id.PhotoSource + "\t" +
+                                    id.ThumbnailPath;
+
+                                sFileData.Add( sFile );
+                            }
+                            catch ( Exception )
+                            {
+                                //throw;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //noop
+                }
+
+            }
+
+            return sFields;
+        }
         #endregion
 
         #region listViewDrive
@@ -1189,6 +1263,7 @@ namespace ActivityPicturePlugin.UI
             progressBar2.Maximum = m_files.Count;
             timerProgressBar.Enabled = false;
 
+            // Get exif data for all files once and only one (slow operation)
             foreach ( FileInfo fi in m_files )
             {
                 lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
@@ -1212,8 +1287,11 @@ namespace ActivityPicturePlugin.UI
 
             this.progressBar2.Value = this.progressBar2.Maximum;
             timerProgressBar.Enabled = true;
+
+            // Sort them
             fiexs.Sort( fs.Compare );
 
+            // Reassign the files to the original m_files member.
             for ( int i = 0; i < m_files.Count; i++ )
                 m_files[i] = fiexs[i].fi;
 
@@ -1326,6 +1404,14 @@ namespace ActivityPicturePlugin.UI
                 treeViewImages.BackColor = Plugin.GetApplication().VisualTheme.Control;	// this.BackColor;
         }
 
+        private void treeViewImages_MouseClick( object sender, MouseEventArgs e )
+        {
+            // Left mouse button already selects properly.
+            // Need to make this distinction here due to issues with 
+            // expanding nodes with left button, autoscroll, and GetNodeAt.
+            if ( e.Button == System.Windows.Forms.MouseButtons.Right )
+                treeViewImages.SelectedNode = treeViewImages.GetNodeAt( e.Location );
+        }
         #endregion
 
         #region treeViewActivities
@@ -1355,6 +1441,14 @@ namespace ActivityPicturePlugin.UI
             //treeViewActivities.BackColor = this.BackColor;
         }
 
+        private void treeViewActivities_NodeMouseClick( object sender, TreeNodeMouseClickEventArgs e )
+        {
+            // Left mouse button already selects properly.
+            // Need to make this distinction here due to issues with
+            // expanding nodes with left button, autoscroll, and GetNodeAt.
+            if ( e.Button == System.Windows.Forms.MouseButtons.Right )
+                treeViewActivities.SelectedNode = treeViewActivities.GetNodeAt( e.Location );
+        }
         #endregion
 
         #region listViewDrive
@@ -1446,13 +1540,17 @@ namespace ActivityPicturePlugin.UI
             {
                 case Keys.Delete:
                 case Keys.Back:
-                    //Delete selected images
-                    ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
-                    ListViewItem[] lvis = new ListViewItem[sel.Count];
-                    sel.CopyTo( (Array)lvis, 0 );
-                    RemoveSelectedImagesFromActivity( lvis );
+                    if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
+                    {
+                        //Delete selected images
+                        ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
+                        ListViewItem[] lvis = new ListViewItem[sel.Count];
+                        sel.CopyTo( (Array)lvis, 0 );
+                        RemoveSelectedImagesFromActivity( lvis );
 
-                    lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+                        lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+                    }
                     break;
                 case Keys.A:
                     foreach ( ListViewItem l in listViewAct.Items )
@@ -1582,11 +1680,15 @@ namespace ActivityPicturePlugin.UI
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
         {
-            ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
-            ListViewItem[] lvis = new ListViewItem[sel.Count];
-            sel.CopyTo( (Array)lvis, 0 );
-            RemoveSelectedImagesFromActivity( lvis );
-            lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+            if ( MessageBox.Show(Resources.Resources.ConfirmDeleteLong_Text , Resources.Resources.ConfirmDeleteShort_Text,
+                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
+            {
+                ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
+                ListViewItem[] lvis = new ListViewItem[sel.Count];
+                sel.CopyTo( (Array)lvis, 0 );
+                RemoveSelectedImagesFromActivity( lvis );
+                lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+            }
         }
 
         private void toolStripMenuAdd_Click( object sender, EventArgs e )
@@ -1634,6 +1736,51 @@ namespace ActivityPicturePlugin.UI
                 if ( this.splitContainer3.SplitterRectangle.Contains( e.X, e.Y ) )
                     this.splitContainer3.SplitterDistance = this.splitContainer2.SplitterDistance;
             }
+        }
+
+        private void toolStripMenuCopyToClipboard_Click( object sender, EventArgs e )
+        {
+            TreeNode selNode = this.treeViewActivities.SelectedNode;
+            if ( selNode != null )
+            {
+                List<string> sFileInfos = new List<string>();
+                string sClipboard = treeViewActivities_GetImageDataFromNodeChildren( selNode, sFileInfos );
+                sClipboard += "\r\n";
+                foreach ( string s in sFileInfos )
+                    sClipboard += s + "\r\n";
+                Clipboard.SetText( sClipboard );
+            }
+        }
+
+        private void toolStripMenuOpenFolder_Click( object sender, EventArgs e )
+        {
+            try
+            {
+                IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
+                PluginData data = Helper.Functions.ReadExtensionData( act );
+
+                List<string> sFolders = new List<string>();
+                foreach ( ListViewItem lvi in listViewAct.SelectedItems )
+                {
+                    string id = (string)( lvi.Tag );
+                    foreach ( ImageDataSerializable ids in data.Images )
+                    {
+                        if ( ids.ReferenceID == id )
+                        {
+                            System.IO.FileInfo fi = new FileInfo( ids.PhotoSource );
+
+                            if ( !sFolders.Contains( fi.DirectoryName ) )
+                                sFolders.Add( fi.DirectoryName );
+                        }
+                    }
+                }
+
+                foreach ( string sFolder in sFolders )
+                    Functions.OpenExternal( sFolder );
+
+            }
+            catch ( Exception )
+            { }
         }
 
         #endregion

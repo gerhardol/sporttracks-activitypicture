@@ -39,6 +39,13 @@ namespace ActivityPicturePlugin.UI.Activities
             this.Text = Resources.Resources.btnTimeOffset_Text;
             this.btnOK.Text = CommonResources.Text.ActionOk;
             this.btnCancel.Text = CommonResources.Text.ActionCancel;
+
+            this.lblYear.Text = CommonResources.Text.LabelYear;
+            this.lblMonth.Text = CommonResources.Text.LabelMonth;
+            this.lblDay.Text = Resources.Resources.labelDay_Text;
+            this.lblHour.Text = Functions.UppercaseFirst( CommonResources.Text.LabelHour_lower );
+            this.lblMin.Text = Resources.Resources.labelMinute_Text;
+            this.lblSec.Text = Resources.Resources.labelSecond_Text;
         }
 
         public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
@@ -64,7 +71,7 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 foreach ( ImageData id in il )
                 {
-                    id.OffsetDateTimeOriginal( (int)( this.nudHour.Value ), (int)( this.nudMinute.Value ), (int)( this.nudSecond.Value ) );
+                    id.OffsetDateTimeOriginal( (int)( this.nudYear.Value ), (int)(this.nudMonth.Value), (int)( this.nudDay.Value ), (int)( this.nudHour.Value ), (int)( this.nudMinute.Value ), (int)( this.nudSecond.Value ) );
                 }
             }
             catch ( Exception )

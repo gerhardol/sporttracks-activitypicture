@@ -28,12 +28,27 @@ namespace ActivityPicturePlugin.Settings
     {
         #region private members
         private List<ImageDataSerializable> images = new List<ImageDataSerializable>();
+        private int imageZoom = 20;
+        private List<string> geLinks = new List<string>();
         #endregion
 
         #region public properties
         public bool Equals(PluginData pd1)
         {
             //Version not checked
+            if ( ( this.NumberOfImages != 0 ) && ( this.imageZoom != pd1.imageZoom ) ) return false;
+
+            if ( this.GELinks.Count == pd1.GELinks.Count )
+            {
+                foreach ( string s in this.GELinks )
+                {
+                    if ( !pd1.GELinks.Contains( s ) )
+                        return false;
+                }
+            }
+            else
+                return false;
+
             if (this.NumberOfImages.Equals(pd1.NumberOfImages))
             {
                 //The lists may not be in the same order
@@ -79,6 +94,17 @@ namespace ActivityPicturePlugin.Settings
         {
             get { return images; }
             set { images = value; }
+        }
+        // Saves the zoom setting for each activity
+        public int ImageZoom
+        {
+            get { return imageZoom; }
+            set { imageZoom = value; }
+        }
+        public List<string> GELinks
+        {
+            get { return geLinks; }
+            set { geLinks = value; }
         }
         #endregion
 

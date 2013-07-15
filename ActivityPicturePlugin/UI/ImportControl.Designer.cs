@@ -66,6 +66,8 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.btnChangeActivityView = new ZoneFiveSoftware.Common.Visuals.Button();
             this.treeViewActivities = new System.Windows.Forms.TreeView();
+            this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip( this.components );
+            this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpandAll = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCollapseAll = new ZoneFiveSoftware.Common.Visuals.Button();
             this.listViewAct = new System.Windows.Forms.ListView();
@@ -75,6 +77,7 @@ namespace ActivityPicturePlugin.UI
             this.colTitle = ( (System.Windows.Forms.ColumnHeader)( new System.Windows.Forms.ColumnHeader() ) );
             this.colDescription = ( (System.Windows.Forms.ColumnHeader)( new System.Windows.Forms.ColumnHeader() ) );
             this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip( this.components );
+            this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.timerProgressBar = new System.Windows.Forms.Timer( this.components );
             this.toolTip1 = new System.Windows.Forms.ToolTip( this.components );
@@ -89,6 +92,7 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.contextMenuTreeViewActivities.SuspendLayout();
             this.contextMenuListViewAct.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -111,7 +115,7 @@ namespace ActivityPicturePlugin.UI
             this.progressBar2.Margin = new System.Windows.Forms.Padding( 4 );
             this.progressBar2.MarqueeAnimationSpeed = 1;
             this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size( 690, 20 );
+            this.progressBar2.Size = new System.Drawing.Size( 700, 20 );
             this.progressBar2.Step = 1;
             this.progressBar2.TabIndex = 9;
             // 
@@ -131,16 +135,14 @@ namespace ActivityPicturePlugin.UI
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add( this.splitContainer2 );
-            this.splitContainer1.Size = new System.Drawing.Size( 688, 563 );
-            this.splitContainer1.SplitterDistance = 222;
+            this.splitContainer1.Size = new System.Drawing.Size( 700, 563 );
+            this.splitContainer1.SplitterDistance = 225;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 11;
             // 
             // splitContainer3
             // 
-            this.splitContainer3.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Left )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point( 0, 0 );
             this.splitContainer3.Margin = new System.Windows.Forms.Padding( 4 );
             this.splitContainer3.Name = "splitContainer3";
@@ -155,8 +157,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add( this.listViewDrive );
-            this.splitContainer3.Size = new System.Drawing.Size( 220, 566 );
-            this.splitContainer3.SplitterDistance = 275;
+            this.splitContainer3.Size = new System.Drawing.Size( 225, 563 );
+            this.splitContainer3.SplitterDistance = 273;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 13;
             this.splitContainer3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler( this.splitContainer3_MouseDoubleClick );
@@ -195,12 +197,13 @@ namespace ActivityPicturePlugin.UI
             this.treeViewImages.Location = new System.Drawing.Point( 0, 38 );
             this.treeViewImages.Margin = new System.Windows.Forms.Padding( 4 );
             this.treeViewImages.Name = "treeViewImages";
-            this.treeViewImages.Size = new System.Drawing.Size( 220, 235 );
+            this.treeViewImages.Size = new System.Drawing.Size( 225, 235 );
             this.treeViewImages.TabIndex = 5;
             this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler( this.treeViewImages_AfterCheck );
             this.treeViewImages.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler( this.treeViewImages_BeforeExpand );
             this.treeViewImages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.treeViewImages_AfterSelect );
             this.treeViewImages.EnabledChanged += new System.EventHandler( this.treeViewImages_EnabledChanged );
+            this.treeViewImages.MouseClick += new System.Windows.Forms.MouseEventHandler( this.treeViewImages_MouseClick );
             // 
             // contextMenuTreeViewImages
             // 
@@ -241,9 +244,6 @@ namespace ActivityPicturePlugin.UI
             // listViewDrive
             // 
             this.listViewDrive.AllowDrop = true;
-            this.listViewDrive.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Left )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.listViewDrive.Columns.AddRange( new System.Windows.Forms.ColumnHeader[] {
             this.colDImage,
             this.colDDateTime,
@@ -251,11 +251,12 @@ namespace ActivityPicturePlugin.UI
             this.colDTitle,
             this.colDDescription} );
             this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
+            this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewDrive.FullRowSelect = true;
-            this.listViewDrive.Location = new System.Drawing.Point( 0, 2 );
+            this.listViewDrive.Location = new System.Drawing.Point( 0, 0 );
             this.listViewDrive.Margin = new System.Windows.Forms.Padding( 4 );
             this.listViewDrive.Name = "listViewDrive";
-            this.listViewDrive.Size = new System.Drawing.Size( 220, 282 );
+            this.listViewDrive.Size = new System.Drawing.Size( 225, 287 );
             this.listViewDrive.TabIndex = 7;
             this.listViewDrive.UseCompatibleStateImageBehavior = false;
             this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler( this.listViewDrive_ColumnClick );
@@ -310,10 +311,8 @@ namespace ActivityPicturePlugin.UI
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Left )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
-            this.splitContainer2.Location = new System.Drawing.Point( 1, 0 );
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point( 0, 0 );
             this.splitContainer2.Margin = new System.Windows.Forms.Padding( 4 );
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -328,8 +327,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add( this.listViewAct );
-            this.splitContainer2.Size = new System.Drawing.Size( 463, 566 );
-            this.splitContainer2.SplitterDistance = 275;
+            this.splitContainer2.Size = new System.Drawing.Size( 472, 563 );
+            this.splitContainer2.SplitterDistance = 273;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 12;
             this.splitContainer2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler( this.splitContainer2_MouseDoubleClick );
@@ -362,16 +361,32 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
             | System.Windows.Forms.AnchorStyles.Left )
             | System.Windows.Forms.AnchorStyles.Right ) ) );
+            this.treeViewActivities.ContextMenuStrip = this.contextMenuTreeViewActivities;
             this.treeViewActivities.FullRowSelect = true;
             this.treeViewActivities.HotTracking = true;
             this.treeViewActivities.ItemHeight = 20;
             this.treeViewActivities.Location = new System.Drawing.Point( 0, 38 );
             this.treeViewActivities.Margin = new System.Windows.Forms.Padding( 4 );
             this.treeViewActivities.Name = "treeViewActivities";
-            this.treeViewActivities.Size = new System.Drawing.Size( 462, 234 );
+            this.treeViewActivities.Size = new System.Drawing.Size( 471, 234 );
             this.treeViewActivities.TabIndex = 6;
             this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.treeViewActivities_AfterSelect );
+            this.treeViewActivities.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler( this.treeViewActivities_NodeMouseClick );
             this.treeViewActivities.EnabledChanged += new System.EventHandler( this.treeViewActivities_EnabledChanged );
+            // 
+            // contextMenuTreeViewActivities
+            // 
+            this.contextMenuTreeViewActivities.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuCopyToClipboard} );
+            this.contextMenuTreeViewActivities.Name = "contextMenuTreeViewActivities";
+            this.contextMenuTreeViewActivities.Size = new System.Drawing.Size( 196, 26 );
+            // 
+            // toolStripMenuCopyToClipboard
+            // 
+            this.toolStripMenuCopyToClipboard.Name = "toolStripMenuCopyToClipboard";
+            this.toolStripMenuCopyToClipboard.Size = new System.Drawing.Size( 195, 22 );
+            this.toolStripMenuCopyToClipboard.Text = "Copy";
+            this.toolStripMenuCopyToClipboard.Click += new System.EventHandler( this.toolStripMenuCopyToClipboard_Click );
             // 
             // btnExpandAll
             // 
@@ -421,9 +436,6 @@ namespace ActivityPicturePlugin.UI
             // listViewAct
             // 
             this.listViewAct.AllowDrop = true;
-            this.listViewAct.Anchor = ( (System.Windows.Forms.AnchorStyles)( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Left )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.listViewAct.Columns.AddRange( new System.Windows.Forms.ColumnHeader[] {
             this.colImage,
             this.colDateTime,
@@ -431,11 +443,12 @@ namespace ActivityPicturePlugin.UI
             this.colTitle,
             this.colDescription} );
             this.listViewAct.ContextMenuStrip = this.contextMenuListViewAct;
+            this.listViewAct.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewAct.FullRowSelect = true;
-            this.listViewAct.Location = new System.Drawing.Point( 0, 2 );
+            this.listViewAct.Location = new System.Drawing.Point( 0, 0 );
             this.listViewAct.Margin = new System.Windows.Forms.Padding( 4 );
             this.listViewAct.Name = "listViewAct";
-            this.listViewAct.Size = new System.Drawing.Size( 462, 280 );
+            this.listViewAct.Size = new System.Drawing.Size( 472, 287 );
             this.listViewAct.TabIndex = 8;
             this.listViewAct.UseCompatibleStateImageBehavior = false;
             this.listViewAct.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler( this.listViewAct_ColumnClick );
@@ -477,15 +490,23 @@ namespace ActivityPicturePlugin.UI
             // contextMenuListViewAct
             // 
             this.contextMenuListViewAct.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuOpenFolder,
             this.toolStripMenuRemove} );
             this.contextMenuListViewAct.Name = "contextMenuListViewAct";
-            this.contextMenuListViewAct.Size = new System.Drawing.Size( 131, 26 );
+            this.contextMenuListViewAct.Size = new System.Drawing.Size( 227, 70 );
             this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler( this.contextMenuListViewAct_Opening );
+            // 
+            // toolStripMenuOpenFolder
+            // 
+            this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
+            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size( 226, 22 );
+            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
+            this.toolStripMenuOpenFolder.Click += new System.EventHandler( this.toolStripMenuOpenFolder_Click );
             // 
             // toolStripMenuRemove
             // 
             this.toolStripMenuRemove.Name = "toolStripMenuRemove";
-            this.toolStripMenuRemove.Size = new System.Drawing.Size( 130, 22 );
+            this.toolStripMenuRemove.Size = new System.Drawing.Size( 226, 22 );
             this.toolStripMenuRemove.Text = "Remove";
             this.toolStripMenuRemove.Click += new System.EventHandler( this.toolStripMenuRemove_Click );
             // 
@@ -518,6 +539,7 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer2.Panel1.ResumeLayout( false );
             this.splitContainer2.Panel2.ResumeLayout( false );
             this.splitContainer2.ResumeLayout( false );
+            this.contextMenuTreeViewActivities.ResumeLayout( false );
             this.contextMenuListViewAct.ResumeLayout( false );
             this.ResumeLayout( false );
             this.PerformLayout();
@@ -558,5 +580,8 @@ namespace ActivityPicturePlugin.UI
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuRemove;
         private System.Windows.Forms.ContextMenuStrip contextMenuTreeViewImages;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuRefresh;
+        private System.Windows.Forms.ContextMenuStrip contextMenuTreeViewActivities;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuCopyToClipboard;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuOpenFolder;
     }
 }

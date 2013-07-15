@@ -33,9 +33,15 @@ namespace ActivityPicturePlugin.Settings
         {
             InitializeComponent();
 
+            // Setting Dock to Fill through Designer causes it to reformat
+            // and marks it as 'changed' everytime you open it.
+            // Workaround until I figure out what's going on.
+            this.importControl1.Dock = DockStyle.Fill;
+
             trackBarQuality.Value = ActivityPicturePlugin.Source.Settings.GEQuality;
             trackBarSize.Value = ActivityPicturePlugin.Source.Settings.GESize;
             cbOpenGE.Checked = ActivityPicturePlugin.Source.Settings.GEAutoOpen;
+            cbStoreGEFileLocations.Checked = ActivityPicturePlugin.Source.Settings.GEStoreFileLocation;
 
             lblSizeValue.Text = trackBarSize.Value * baseNum + " x " + trackBarSize.Value * baseNum * 3 / 4;
             lblQualityValue.Text = trackBarQuality.Value * 10 + " %";
@@ -118,6 +124,7 @@ namespace ActivityPicturePlugin.Settings
             this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
             this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
             this.cbOpenGE.Text = Resources.Resources.OpenInGoogleEarthWhenCreated_Text;
+            this.cbStoreGEFileLocations.Text = Resources.Resources.StoreGEFileLocations_Text;
         }
 
         #endregion
@@ -150,7 +157,13 @@ namespace ActivityPicturePlugin.Settings
         {
             ActivityPicturePlugin.Source.Settings.GEAutoOpen = cbOpenGE.Checked;
         }
+
+        private void cbStoreGEFileLocations_CheckedChanged( object sender, EventArgs e )
+        {
+            ActivityPicturePlugin.Source.Settings.GEStoreFileLocation = cbStoreGEFileLocations.Checked;
+        }
         #endregion
+
     }
 
 }

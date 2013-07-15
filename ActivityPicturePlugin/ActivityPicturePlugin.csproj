@@ -223,6 +223,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="Interop.DexterLib, Version=1.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\References\Interop.DexterLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Common\Common-Files.csproj" />
