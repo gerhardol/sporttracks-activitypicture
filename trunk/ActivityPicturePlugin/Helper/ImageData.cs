@@ -23,6 +23,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using System.Drawing;
 using System.Windows.Forms;
 
+using DexterLib;
 
 namespace ActivityPicturePlugin.Helper
 {
@@ -174,12 +175,16 @@ namespace ActivityPicturePlugin.Helper
             set { this.thumbnail = value; }
         }
 
-        public void OffsetDateTimeOriginal( int hour, int min, int sec )
+        public void OffsetDateTimeOriginal(int year, int month, int day, int hour, int min, int sec )
         {
             DateTime dt = EW.DateTimeOriginal;
+            dt = dt.AddYears( year );
+            dt = dt.AddMonths( month );
+            dt = dt.AddDays( day );
             dt = dt.AddHours( hour );
             dt = dt.AddMinutes( min );
             dt = dt.AddSeconds( sec );
+            // yyyy:MM:dd HH:mm:ss is a text sortable date format
             EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
@@ -462,6 +467,7 @@ namespace ActivityPicturePlugin.Helper
         #region Private Methods
         public void SetDateTimeOriginal( DateTime dt )
         {
+            // yyyy:MM:dd HH:mm:ss is a text sortable date format
             this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
@@ -570,7 +576,7 @@ namespace ActivityPicturePlugin.Helper
 
         //Replaces the current thumbnail with the video image at iFrame
         //If iFrame is -1, default video image is used
-        public bool ReplaceVideoThumbnail( int iFrame )
+        public bool ReplaceVideoThumbnail( int iFrame, Size size )
         {
             try
             {
@@ -582,24 +588,39 @@ namespace ActivityPicturePlugin.Helper
                 {
                     // Create new image in the default folder
                     if ( iFrame == -1 ) bmpOrig = (Bitmap)( Resources.Resources.video ).Clone();
-                    else bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
+                    else
+                    {
+                        System.IO.FileInfo fi = new System.IO.FileInfo( this.PhotoSource );
+                        if ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 )
+                        {
+                            // Although it seems like DexterLib supports Avis we'll let
+                            // AviManager handle them for now.
+                            bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
+                        }
+                        else
+                        {
+                            // DexterLib
+                            bmpOrig = GetNonAviBmp( this.PhotoSource, iFrame, size );
+                        }
+                    }
+
                     if ( bmpOrig != null )
                     {
                         // Create new image in the default folder
-                        Size size = new Size();
+                        Size newsize = new Size();
                         int UpperPixelLimit = 500;
                         Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
                         if ( ratio > 1 )
                         {
-                            size.Width = UpperPixelLimit;
-                            size.Height = (int)( UpperPixelLimit / ratio );
+                            newsize.Width = UpperPixelLimit;
+                            newsize.Height = (int)( UpperPixelLimit / ratio );
                         }
                         else
                         {
-                            size.Height = UpperPixelLimit;
-                            size.Width = (int)( UpperPixelLimit * ratio );
+                            newsize.Height = UpperPixelLimit;
+                            newsize.Width = (int)( UpperPixelLimit * ratio );
                         }
-                        Bitmap bmp = new Bitmap( bmpOrig, size );
+                        Bitmap bmp = new Bitmap( bmpOrig, newsize );
                         Functions.SaveThumbnailImage( bmp, defpath, 10 );
                         this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                         bmp.Dispose();
@@ -608,13 +629,56 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex)
             {
-                //throw;
+                System.Diagnostics.Debug.Print( ex.Message );
             }
             return false;
         }
 
+        internal Bitmap GetNonAviBmp( string VideoFile, int iFrame, Size frameSize )
+        {
+            Bitmap bitmap = null;
+
+            try
+            {
+                MediaDetClass md = new MediaDetClass();
+                md.Filename = VideoFile;
+                md.CurrentStream = 0;
+
+                double fr = md.FrameRate;
+                if ( fr == 0 )
+                {
+                    // Couldn't get framerate to calculate the desired frame's time.
+                    // Is it better to try and return the frame at (iFrame)ms or null?
+                    // Choosing the former.
+                    fr = 1;
+                }
+
+                double time = iFrame / fr;
+                if ( time > md.StreamLength ) time = md.StreamLength;
+
+                string sTempFile = System.IO.Path.GetTempFileName();
+                md.WriteBitmapBits( time, frameSize.Width, frameSize.Height, sTempFile );
+
+                // Creating the bitmap from a stream so we can delete the temporary file
+                System.IO.FileInfo fi = new System.IO.FileInfo( sTempFile );
+                using ( System.IO.FileStream fs = fi.OpenRead() )
+                {
+                    bitmap = (Bitmap)Bitmap.FromStream( fs );
+                    fs.Close();
+                }
+
+                System.IO.File.Delete( sTempFile ); //cleanup the temporary file
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Print( ex.Message );
+            }
+            return bitmap;
+        }
+
+        // Gets the bitmap of the specified frame
         internal Bitmap GetAviBmp( string VideoFile, int iFrame )
         {
             AviFile.AviManager aviManager = null;
@@ -634,6 +698,7 @@ namespace ActivityPicturePlugin.Helper
             }
             catch ( Exception )
             {
+                // Access denied errors could be thrown, etc.
             }
             finally
             {

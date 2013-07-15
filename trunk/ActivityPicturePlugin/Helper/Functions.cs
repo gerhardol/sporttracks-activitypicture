@@ -276,6 +276,7 @@ namespace ActivityPicturePlugin.Helper
             }
             catch ( Exception )
             {
+                // File IO can throw a variety of exceptions (Diskspace, No permission to create/delete files/folders, etc)
             }
         }
 
@@ -545,9 +546,10 @@ namespace ActivityPicturePlugin.Helper
                     File.Delete( Path.GetFileName( docFile ) );
                 }
             }
-            catch ( Exception ex )
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.Print( ex.Message );
+                // File IO can throw a variety of exceptions (Diskspace, No permission to create/delete files/folders, etc)
+                //System.Diagnostics.Debug.Print( ex.Message );
             }
         }
 
@@ -721,17 +723,23 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        public static void OpenExternal( string sFile )
+        public static bool OpenExternal( string sFile )
         {
+            bool ret = true;
             try
             {
                 System.Diagnostics.Process.Start( sFile );
             }
             catch ( Exception )
-            { }
+            {
+                ret = false;
+            }
+            return ret;
         }
-        public static void OpenExternal( ImageData im )
+
+        public static bool OpenExternal( ImageData im )
         {
+            bool ret = true;
             if ( im.Type == ImageData.DataTypes.Image )
             {
                 try
@@ -741,7 +749,9 @@ namespace ActivityPicturePlugin.Helper
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
                 catch ( Exception )
-                { }
+                { 
+                    ret = false; 
+                }
             }
             else if ( im.Type == ImageData.DataTypes.Video )
             {
@@ -752,9 +762,11 @@ namespace ActivityPicturePlugin.Helper
 
                 }
                 catch ( Exception )
-                { }
+                { 
+                    ret = false; 
+                }
             }
-
+            return ret;
         }
 
         public static string thumbnailPath( string referenceID )
@@ -1142,9 +1154,6 @@ namespace ActivityPicturePlugin.Helper
 
         internal static int CompareByDate( ImageData x, ImageData y )
         {
-            const string cDateTimeFormat = "yyyy MM dd HH:mm:ss";
-            DateTime dt = new DateTime();
-            string xtemp, ytemp;
             int retval = 0;
 
             try
@@ -1161,17 +1170,13 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         // ...and y is not null, compare the dates
-                        DateTime.TryParse( x.DateTimeOriginal, out dt );
-                        xtemp = dt.ToString( cDateTimeFormat );
-                        DateTime.TryParse( y.DateTimeOriginal, out dt );
-                        ytemp = dt.ToString( cDateTimeFormat );
-
-                        retval = xtemp.CompareTo( ytemp );
+                        retval = x.EW.DateTimeOriginal.CompareTo( y.EW.DateTimeOriginal );
                     }
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex)
             {
+                System.Diagnostics.Debug.Print( ex.Message );
                 //throw;
             }
 
@@ -1185,7 +1190,30 @@ namespace ActivityPicturePlugin.Helper
                 return string.Empty;
 
             // Return char and concat substring.
-            return char.ToUpper( s[0] ) + s.Substring( 1 );
+            if ( s.Length > 1 )
+                return char.ToUpper( s[0] ) + s.Substring( 1 );
+            else return s.ToUpper();
+        }
+
+        internal static string CapitalizeAllWords( string s )
+        {
+            // Check for empty string.
+            if ( string.IsNullOrEmpty( s ) )
+                return string.Empty;
+
+            string ret = "";
+            string[] split = s.Split( ' ' );
+            foreach ( string word in split )
+            {
+                // Capitalize char and concat substring.
+                if ( word.Length > 1 )
+                    ret += char.ToUpper( word[0] ) + word.Substring( 1 );
+                else ret += word.ToUpper();
+                ret += " ";
+            }
+            // remove the trailing space.
+            if ( ret.Length > 0 ) ret = ret.Substring( 0, ret.Length - 1 );
+            return ret;
         }
 
     }

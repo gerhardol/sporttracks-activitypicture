@@ -22,6 +22,7 @@ using ActivityPicturePlugin.Helper;
 
 namespace ActivityPicturePlugin.Settings
 {
+    // I don't think this class is currently being used
     //data that will be serialized and saved with SetExtensionData
     [Serializable()]
     public class PluginSettings

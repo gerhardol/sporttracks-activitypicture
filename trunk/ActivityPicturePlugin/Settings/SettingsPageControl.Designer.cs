@@ -49,6 +49,7 @@ namespace ActivityPicturePlugin.Settings
             this.importControl1 = new ActivityPicturePlugin.UI.ImportControl();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cbOpenGE = new System.Windows.Forms.CheckBox();
+            this.cbStoreGEFileLocations = new System.Windows.Forms.CheckBox();
             this.lblQualityValue = new System.Windows.Forms.Label();
             this.lblSizeValue = new System.Windows.Forms.Label();
             this.lblImageQuality = new System.Windows.Forms.Label();
@@ -65,29 +66,29 @@ namespace ActivityPicturePlugin.Settings
             | System.Windows.Forms.AnchorStyles.Left )
             | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.groupBoxImport.Controls.Add( this.importControl1 );
-            this.groupBoxImport.Location = new System.Drawing.Point( 4, 150 );
+            this.groupBoxImport.Location = new System.Drawing.Point( 4, 130 );
             this.groupBoxImport.Margin = new System.Windows.Forms.Padding( 4 );
             this.groupBoxImport.Name = "groupBoxImport";
             this.groupBoxImport.Padding = new System.Windows.Forms.Padding( 4 );
-            this.groupBoxImport.Size = new System.Drawing.Size( 775, 409 );
+            this.groupBoxImport.Size = new System.Drawing.Size( 775, 429 );
             this.groupBoxImport.TabIndex = 6;
             this.groupBoxImport.TabStop = false;
             this.groupBoxImport.Text = "Import";
             // 
             // importControl1
             // 
-            this.importControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.importControl1.Location = new System.Drawing.Point( 4, 19 );
             this.importControl1.Margin = new System.Windows.Forms.Padding( 5 );
             this.importControl1.Name = "importControl1";
             this.importControl1.Padding = new System.Windows.Forms.Padding( 4 );
             this.importControl1.ShowAllActivities = true;
-            this.importControl1.Size = new System.Drawing.Size( 767, 386 );
+            this.importControl1.Size = new System.Drawing.Size( 767, 406 );
             this.importControl1.TabIndex = 5;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add( this.cbOpenGE );
+            this.groupBox2.Controls.Add( this.cbStoreGEFileLocations );
             this.groupBox2.Controls.Add( this.lblQualityValue );
             this.groupBox2.Controls.Add( this.lblSizeValue );
             this.groupBox2.Controls.Add( this.lblImageQuality );
@@ -98,7 +99,7 @@ namespace ActivityPicturePlugin.Settings
             this.groupBox2.Margin = new System.Windows.Forms.Padding( 4 );
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding( 4 );
-            this.groupBox2.Size = new System.Drawing.Size( 370, 140 );
+            this.groupBox2.Size = new System.Drawing.Size( 771, 110 );
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Google Earth";
@@ -106,13 +107,24 @@ namespace ActivityPicturePlugin.Settings
             // cbOpenGE
             // 
             this.cbOpenGE.AutoSize = true;
-            this.cbOpenGE.Location = new System.Drawing.Point( 9, 110 );
+            this.cbOpenGE.Location = new System.Drawing.Point( 385, 21 );
             this.cbOpenGE.Name = "cbOpenGE";
             this.cbOpenGE.Size = new System.Drawing.Size( 257, 21 );
             this.cbOpenGE.TabIndex = 2;
             this.cbOpenGE.Text = "Open in Google Earth when created";
             this.cbOpenGE.UseVisualStyleBackColor = true;
             this.cbOpenGE.CheckedChanged += new System.EventHandler( this.cbOpenGE_CheckedChanged );
+            // 
+            // cbStoreGEFileLocations
+            // 
+            this.cbStoreGEFileLocations.AutoSize = true;
+            this.cbStoreGEFileLocations.Location = new System.Drawing.Point( 385, 47 );
+            this.cbStoreGEFileLocations.Name = "cbStoreGEFileLocations";
+            this.cbStoreGEFileLocations.Size = new System.Drawing.Size( 200, 21 );
+            this.cbStoreGEFileLocations.TabIndex = 8;
+            this.cbStoreGEFileLocations.Text = "Store kmz/kml file locations";
+            this.cbStoreGEFileLocations.UseVisualStyleBackColor = true;
+            this.cbStoreGEFileLocations.CheckedChanged += new System.EventHandler( this.cbStoreGEFileLocations_CheckedChanged );
             // 
             // lblQualityValue
             // 
@@ -221,5 +233,7 @@ namespace ActivityPicturePlugin.Settings
         private System.Windows.Forms.Label lblImageSize;
         private MB.Controls.ColorSlider trackBarQuality;
         private System.Windows.Forms.CheckBox cbOpenGE;
+        private System.Windows.Forms.CheckBox cbStoreGEFileLocations;
+
     }
 }

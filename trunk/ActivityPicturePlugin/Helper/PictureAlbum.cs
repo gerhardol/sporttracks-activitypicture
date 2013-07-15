@@ -42,7 +42,7 @@ namespace ActivityPicturePlugin.Helper
             this.SelectedChanged += new SelectedChangedEventHandler( PictureAlbum_SelectedChanged );
             this.ImageRectangles[0] = new Rectangle();
             this.albumToolTipTimer.Tick += new System.EventHandler( ToolTipTimer_Tick );
-            this.albumToolTipTimer.Interval = 1000;
+            this.albumToolTipTimer.Interval = 1000; // Increased delay so it's less annoying
         }
 
         #region Overrides
@@ -170,6 +170,8 @@ namespace ActivityPicturePlugin.Helper
             set { nothumbnails = value; }
         }
 
+        // Determines whether the images are allowed to be zoomed larger
+        // than the display.  Note: Active videos cannot be larger.
         private MaxImageSize m_MaxImageSize = MaxImageSize.NoLimit;
         public MaxImageSize MaximumImageSize
         {
@@ -344,7 +346,7 @@ namespace ActivityPicturePlugin.Helper
                             ImageRectangles[currentVideoIndex].Height );
                     }
 
-                    //draw the images
+                    //draw yellow border around selected image
                     if ( ixSelected != -1 )
                     {
                         //using ( Pen p2 = new Pen( Brushes.Blue, 2 ) )
@@ -643,11 +645,17 @@ namespace ActivityPicturePlugin.Helper
 
                         if ( rSelected.Width >= ImageRectangles[i].Width )
                         {
+                            // At least half of the image overlaps
+                            // Prevents from 'unexpectedly' choosing an image that only overlaps
+                            // by say... 1 pixel or so.
                             if ( ( ( (double)r - x ) / ImageRectangles[i].Width ) >= 0.500 )
                                 ixNew = i;
                         }
                         else
                         {
+                            // At least half of the image overlaps
+                            // Prevents from 'unexpectedly' choosing an image that only overlaps
+                            // by say... 1 pixel or so.
                             if ( ( ( (double)r - x ) / rSelected.Width ) >= 0.500 )
                             {
                                 ixNew = i;
@@ -758,6 +766,9 @@ namespace ActivityPicturePlugin.Helper
                         }
                         else if ( rSelected.Width >= ImageRectangles[i].Width )
                         {
+                            // At least half of the image overlaps
+                            // Prevents from 'unexpectedly' choosing an image that only overlaps
+                            // by say... 1 pixel or so.
                             if ( ( ImageRectangles[i].Left >= rSelected.Left ) ||
                                 ( ( ImageRectangles[i].Right - rSelected.Left ) * 2 > ImageRectangles[i].Width ) )
                             {
@@ -787,6 +798,7 @@ namespace ActivityPicturePlugin.Helper
         }
         private void PictureAlbumMoveSelectionRight()
         {
+            // So much simpler than moving up and down, haha.
             List<ImageData> id = this.ImageList;
             if ( ( id == null ) || ( id.Count < 0 ) ) return;
 
@@ -801,6 +813,7 @@ namespace ActivityPicturePlugin.Helper
         }
         private void PictureAlbumMoveSelectionLeft()
         {
+            // So much simpler than moving up and down, haha.
             List<ImageData> id = this.ImageList;
             if ( ( id == null ) || ( id.Count < 0 ) ) return;
 
@@ -816,6 +829,7 @@ namespace ActivityPicturePlugin.Helper
         }
         private void PictureAlbumMoveSelectionHome()
         {
+            // Select the first image
             List<ImageData> id = this.ImageList;
             if ( ( id == null ) || ( id.Count < 0 ) ) return;
 
@@ -831,6 +845,7 @@ namespace ActivityPicturePlugin.Helper
         }
         private void PictureAlbumMoveSelectionEnd()
         {
+            // Select the last image
             List<ImageData> id = this.ImageList;
             if ( ( id == null ) || ( id.Count < 0 ) ) return;
 
@@ -938,6 +953,8 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        // Get the current frame number
+        // Used for taking snapshots
         internal int GetCurrentVideoFrame()
         {
             int iFrame = 0;
@@ -956,6 +973,27 @@ namespace ActivityPicturePlugin.Helper
             return iFrame;
         }
 
+        // Get the current frame number
+        // Used for taking snapshots
+        internal Size GetVideoSize()
+        {
+            Size size = new System.Drawing.Size( -1, -1 );
+            try
+            {
+                if ( FilGrMan != null )
+                {
+                    size.Height = FilGrMan.SourceHeight;
+                    size.Width = FilGrMan.SourceWidth;
+                }
+            }
+            catch ( Exception )
+            {
+            }
+            return size;
+        }
+
+        // Returns true if video is an avi.
+        // Currently only avis support taking snapshots
         public bool IsAvi()
         {
             if ( ( CurrentVideoIndex != -1 ) && ( this.ImageList != null ) )
@@ -1010,7 +1048,7 @@ namespace ActivityPicturePlugin.Helper
         private const int EC_ERRORABORT = 0x03;
         private const int WS_CHILD = 0x40000000;
         private const int WS_CLIPCHILDREN = 0x2000000;
-        private const int WS_EX_TOOLWINDOW = 0x00000080;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;    // Tool windows don't show up in taskbar, even when they're orphaned.
         private FilgraphManagerClass FilGrMan = null;
         private IMediaEventEx MediaEventEx = null;
 

@@ -204,6 +204,12 @@ namespace ActivityPicturePlugin.Source
             get { return geAutoOpen; }
             set { geAutoOpen = value; }
         }
+        private static bool geStoreFileLocations = true;
+        public static bool GEStoreFileLocation
+        {
+            get { return geStoreFileLocations; }
+            set { geStoreFileLocations = value; }
+        }
 
         public static void defaults()
         {
@@ -228,6 +234,7 @@ namespace ActivityPicturePlugin.Source
             geQuality = 8;
             sortMode = (int)Helper.PictureAlbum.ImageSortMode.byDateTimeAscending;
             geAutoOpen = false;
+            geStoreFileLocations = true;
         }
 
         public static void ReadOptions( XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode )
@@ -280,6 +287,8 @@ namespace ActivityPicturePlugin.Source
             if ( attr.Length > 0 ) { sortMode = XmlConvert.ToInt32( attr ); }
             attr = pluginNode.GetAttribute( xmlTags.geAutoOpen );
             if ( attr.Length > 0 ) { geAutoOpen = XmlConvert.ToBoolean( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.geStoreFileLocations );
+            if ( attr.Length > 0 ) { geStoreFileLocations = XmlConvert.ToBoolean( attr ); }
 
 
         }
@@ -310,6 +319,7 @@ namespace ActivityPicturePlugin.Source
             pluginNode.SetAttribute( xmlTags.geQuality, XmlConvert.ToString( geQuality ) );
             pluginNode.SetAttribute( xmlTags.sortMode, XmlConvert.ToString( sortMode ) );
             pluginNode.SetAttribute( xmlTags.geAutoOpen, XmlConvert.ToString( geAutoOpen ) );
+            pluginNode.SetAttribute( xmlTags.geStoreFileLocations, XmlConvert.ToString( geStoreFileLocations ) );            
         }
 
         private static int settingsVersion = 0; //default when not existing
@@ -339,6 +349,7 @@ namespace ActivityPicturePlugin.Source
             public const string geQuality = "geQuality";
             public const string sortMode = "sortMode";
             public const string geAutoOpen = "geAutoOpen";
+            public const string geStoreFileLocations = "geStoreFileLocations";            
         }
     }
 }
