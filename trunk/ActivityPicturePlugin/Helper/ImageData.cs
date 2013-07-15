@@ -576,7 +576,7 @@ namespace ActivityPicturePlugin.Helper
 
         //Replaces the current thumbnail with the video image at iFrame
         //If iFrame is -1, default video image is used
-        public bool ReplaceVideoThumbnail( int iFrame, Size size )
+        public bool ReplaceVideoThumbnail( int iFrame, Size size, double dblTimePerFrame )
         {
             try
             {
@@ -600,7 +600,7 @@ namespace ActivityPicturePlugin.Helper
                         else
                         {
                             // DexterLib
-                            bmpOrig = GetNonAviBmp( this.PhotoSource, iFrame, size );
+                            bmpOrig = GetNonAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
                         }
                     }
 
@@ -636,7 +636,7 @@ namespace ActivityPicturePlugin.Helper
             return false;
         }
 
-        internal Bitmap GetNonAviBmp( string VideoFile, int iFrame, Size frameSize )
+        internal Bitmap GetNonAviBmp( string VideoFile, int iFrame, Size frameSize, double dblTimePerFrame )
         {
             Bitmap bitmap = null;
 
@@ -646,16 +646,17 @@ namespace ActivityPicturePlugin.Helper
                 md.Filename = VideoFile;
                 md.CurrentStream = 0;
 
-                double fr = md.FrameRate;
+                /*double fr = md.FrameRate;
                 if ( fr == 0 )
                 {
                     // Couldn't get framerate to calculate the desired frame's time.
                     // Is it better to try and return the frame at (iFrame)ms or null?
                     // Choosing the former.
                     fr = 1;
-                }
+                }*/
 
-                double time = iFrame / fr;
+
+                double time = iFrame * dblTimePerFrame;
                 if ( time > md.StreamLength ) time = md.StreamLength;
 
                 string sTempFile = System.IO.Path.GetTempFileName();
