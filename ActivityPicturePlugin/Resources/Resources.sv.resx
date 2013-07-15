@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnCollapseAll_Text" xml:space="preserve">
     <value>Minimera alla</value>
   </data>
@@ -93,6 +93,7 @@
     <value>Lägger till fil</value>
   </data>
   <data name="ImportControl_changeView" xml:space="preserve">
+    <comment>changed</comment>
     <value>Visa</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
@@ -103,6 +104,9 @@
   </data>
   <data name="ImportControl_scanning" xml:space="preserve">
     <value>Skanning av</value>
+  </data>
+  <data name="ImportControl_searchingActivity" xml:space="preserve">
+    <value>Sökning matchade aktivitet för</value>
   </data>
   <data name="labelImageSize_Text" xml:space="preserve">
     <value>Storlek</value>
@@ -144,6 +148,111 @@
     <value>Enbart valda foton</value>
   </data>
   <data name="ImportControl_scanDone" xml:space="preserve">
-    <value>Scan klar: Totalt {0} foton hittades</value>
+    <comment>changed</comment>
+    <value>Scan klar: Totalt {0} nya foton hittades</value>
+  </data>
+  <data name="ActionImport_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Importera automatiskt</value>
+  </data>
+  <data name="HideAllColumns_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Dölj alla kolumner</value>
+  </data>
+  <data name="ShowAllColumns_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Visa alla kolumner</value>
+  </data>
+  <data name="FoundImagesInActivity_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Hittade {0} bilder eller videor för activitet.</value>
+  </data>
+  <data name="FoundImagesInFolder_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Hittade {0} bilder eller videor i folder.</value>
+  </data>
+  <data name="CheckingForDuplicates_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Söker efter duplikata bilder och videor. {0} av {1} kontrollerade.</value>
+  </data>
+  <data name="SortingXImages" xml:space="preserve">
+    <comment>added</comment>
+    <value>Sorterar {0} bilder</value>
+  </data>
+  <data name="SortingXofYImages" xml:space="preserve">
+    <comment>added</comment>
+    <value>Sorterar {0} av {1} bilder</value>
+  </data>
+  <data name="FitImagesToView_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Anpassa bilder till vy</value>
+  </data>
+  <data name="AutoImportFromFolders_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Importera automatiskt från</value>
+  </data>
+  <data name="ChangeFileListview_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Ändra fil listvy</value>
+  </data>
+  <data name="ChangeImageListview_Text" xml:space="preserve">
+    <comment>added</comment>
+    <value>Ändra bild listvy</value>
+  </data>
+  <data name="CreatedWithXForSportTracks_Text" xml:space="preserve">
+    <comment>added July9</comment>
+    <value>Skapad av {0} för SportTracks</value>
+  </data>
+  <data name="FromXActivities_Text" xml:space="preserve">
+    <comment>added July9</comment>
+    <value>från {0} aktiviteter.</value>
+  </data>
+  <data name="OpenInGoogleEarthWhenCreated_Text" xml:space="preserve">
+    <comment>added July9</comment>
+    <value>Öppna i Google Earth då skapad</value>
+  </data>
+  <data name="SportTracksImagesExportedWith_Text" xml:space="preserve">
+    <comment>added July9</comment>
+    <value>SportTracks bilder exporterade med</value>
+  </data>
+  <data name="labelDay_Text" xml:space="preserve">
+    <comment>added July11</comment>
+    <value>Dag</value>
+  </data>
+  <data name="labelMinute_Text" xml:space="preserve">
+    <comment>added July11</comment>
+    <value>Minut</value>
+  </data>
+  <data name="labelSecond_Text" xml:space="preserve">
+    <comment>added July11</comment>
+    <value>Sekund</value>
+  </data>
+  <data name="FilePath_Text" xml:space="preserve">
+    <comment>added July12</comment>
+    <value>Filens sökväg</value>
+  </data>
+  <data name="ConfirmDeleteLong_Text" xml:space="preserve">
+    <comment>added July12</comment>
+    <value>Är du säker att du vill ta bort de valda objekten?</value>
+  </data>
+  <data name="ConfirmDeleteShort_Text" xml:space="preserve">
+    <comment>added July12</comment>
+    <value>Bekräfta borttagning</value>
+  </data>
+  <data name="OpenContainingFolder_Text" xml:space="preserve">
+    <comment>added July12</comment>
+    <value>Öppna katalog</value>
+  </data>
+  <data name="FileNotFound_Text" xml:space="preserve">
+    <comment>added July13</comment>
+    <value>Fil inte hittad</value>
+  </data>
+  <data name="RemoveFromList_Text" xml:space="preserve">
+    <comment>added July13</comment>
+    <value>Ta bort från lista?</value>
+  </data>
+  <data name="StoreGEFileLocations_Text" xml:space="preserve">
+    <comment>added July13</comment>
+    <value>Spara kmz/kml filplatser </value>
   </data>
 </root>
