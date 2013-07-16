@@ -578,9 +578,8 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            catch ( Exception ex )
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.Print( "GetNextNodeInPath: Depth=" + iDepth + " " + ex.Message );
             }
 
             return retNode;
@@ -769,8 +768,6 @@ namespace ActivityPicturePlugin.UI
             {
                 if ( node.Tag != null )
                 {
-                    System.Diagnostics.Debug.Print( node.FullPath + " " + node.Tag.ToString() );
-
                     if ( node.Tag is IActivity ) //Node is an Activity
                     {
                         IActivity act = (IActivity)( node.Tag );

@@ -630,9 +630,8 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception ex)
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.Print( ex.Message );
             }
             return false;
         }
@@ -671,11 +670,18 @@ namespace ActivityPicturePlugin.Helper
                     fs.Close();
                 }
 
+                // Stamp the thumbnail with "Video" so it's easier to distinguish
+                // between movies and pics in Album view.
+                using ( Graphics g = Graphics.FromImage( bitmap ) )
+                using ( Font f = new Font( PictureAlbum.DefaultFont.FontFamily, 15 ) )
+                {
+                    g.DrawString( Resources.Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
+                }
+
                 System.IO.File.Delete( sTempFile ); //cleanup the temporary file
             }
-            catch ( Exception ex )
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.Print( ex.Message );
             }
             return bitmap;
         }

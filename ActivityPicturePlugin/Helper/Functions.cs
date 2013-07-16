@@ -549,7 +549,6 @@ namespace ActivityPicturePlugin.Helper
             catch ( Exception )
             {
                 // File IO can throw a variety of exceptions (Diskspace, No permission to create/delete files/folders, etc)
-                //System.Diagnostics.Debug.Print( ex.Message );
             }
         }
 
@@ -1174,9 +1173,8 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception ex)
+            catch ( Exception )
             {
-                System.Diagnostics.Debug.Print( ex.Message );
                 //throw;
             }
 
