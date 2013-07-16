@@ -197,11 +197,9 @@ namespace ActivityPicturePlugin.Helper
                 }
                 else
                 {
-                    using ( Brush disabled = new SolidBrush( System.Drawing.SystemColors.GrayText ) )
-                    {
-                        e.Graphics.FillPolygon( disabled, vol );
-                        e.Graphics.FillPolygon( disabled, full );
-                    }
+                    Brush disabled = SystemBrushes.GrayText;
+                    e.Graphics.FillPolygon( disabled, vol );
+                    e.Graphics.FillPolygon( disabled, full );
                 }
             }
         }

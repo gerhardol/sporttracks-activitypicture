@@ -448,9 +448,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     if ( !bFound )
                         fi.Delete();
                 }
-                catch ( Exception ex )
+                catch ( Exception )
                 {
-                    System.Diagnostics.Debug.Print( "Error deleting: " + sFile + " " + ex.Message );
                 }
             }
         }
@@ -1267,6 +1266,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             List<ImageData> ids = pictureAlbumView.ImageList;
             if ( pictureAlbumView.CurrentVideoIndex != -1 )
             {
+                // Disable button until operation completes
+                toolStripButtonSnapshot.Enabled = false;
+                Application.DoEvents();
+
                 ImageData id = ids[pictureAlbumView.CurrentVideoIndex];
                 int iFrame = pictureAlbumView.GetCurrentVideoFrame();
                 Size sizeFrame = pictureAlbumView.GetVideoSize();
@@ -1276,6 +1279,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 id.ReplaceVideoThumbnail( iFrame, sizeFrame, dblTimePerFrame );
 
                 Functions.ClearImageList( this.pictureAlbumView );
+
+                toolStripButtonSnapshot.Enabled = true; //Re-enable button
                 ReloadData();
                 UpdateView();
             }
