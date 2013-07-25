@@ -43,6 +43,7 @@ namespace ActivityPicturePlugin.Helper
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
+        [System.Security.Permissions.PermissionSet( System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust" )] 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();

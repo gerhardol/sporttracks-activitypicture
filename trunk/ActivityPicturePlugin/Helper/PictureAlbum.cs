@@ -46,6 +46,8 @@ namespace ActivityPicturePlugin.Helper
         }
 
         #region Overrides
+        [System.Security.Permissions.SecurityPermission( System.Security.Permissions.SecurityAction.LinkDemand,
+            Flags = System.Security.Permissions.SecurityPermissionFlag.UnmanagedCode )]
         protected override void WndProc( ref Message m )
         {
             try
@@ -88,6 +90,25 @@ namespace ActivityPicturePlugin.Helper
             }
             base.WndProc( ref m );
         }
+
+
+        public class ZoomEventArgs : System.EventArgs
+        {
+            public ZoomEventArgs()
+            {
+            }
+            public ZoomEventArgs( int inc )
+            {
+                _increment = inc;
+            }
+            private int _increment = 0;
+            public int Increment
+            {
+                get { return _increment; }
+                set { _increment = value; }
+            }
+        }
+
         protected override void OnPaint( PaintEventArgs e )
         {
             this.PaintAlbumView( false, e );
@@ -98,7 +119,7 @@ namespace ActivityPicturePlugin.Helper
         #region EventHandlers
         public delegate void SelectedChangedEventHandler( System.Object sender, SelectedChangedEventArgs e );
         public delegate void ActivityChangedEventHandler( System.Object sender, System.EventArgs e );
-        public delegate void ZoomChangeEventHandler( System.Object sender, int increment );
+        public delegate void ZoomChangeEventHandler( System.Object sender, ZoomEventArgs e );
         public delegate void UpdateVideoToolBarEventHandler( System.Object sender, System.EventArgs e );
         public delegate void ShowVideoOptionsEventHandler( System.Object sender, System.EventArgs e );
         public delegate void CurrentVideoIndexChangedEventHandler( System.Object sender, System.EventArgs e );
@@ -244,7 +265,7 @@ namespace ActivityPicturePlugin.Helper
                             //Maximum zoom exceeded. Calculate maximum and re-call GetImagePositions
                             double zoomchange = ( ( ( this.Width / ImageList[i].Ratio ) - 30 ) / 5 ) - Zoom;
                             Zoom += (int)Math.Floor( zoomchange );
-                            ZoomChange( this, 0 );	// Signal a zoom change has occurred.
+                            ZoomChange( this, new ZoomEventArgs(0) );	// Signal a zoom change has occurred.
                             return GetImagePositions();
                         }
 
@@ -287,6 +308,7 @@ namespace ActivityPicturePlugin.Helper
 
         private void DrawImages( bool CompleteRedraw, PaintEventArgs e )
         {
+            Image img = null;
             try
             {
                 //int ZoomLevel = this.parentctl.GetZoom();
@@ -294,7 +316,6 @@ namespace ActivityPicturePlugin.Helper
                 //int NewWidth = 120; //reference width
                 //int left = 0, top = 0, row = 0;
 
-                Image img = null;
                 //List<ImageData> imgList = this.ImageList;//.parentctl.Images;
                 if ( this.ImageList.Count > 0 )
                 {
@@ -361,6 +382,12 @@ namespace ActivityPicturePlugin.Helper
             {
                 // throw;
             }
+            finally
+            {
+                if ( img != null )
+                    img.Dispose();
+                img = null;
+            }
         }
 
         private int GetIndexOfCurrentImage( Point p )
@@ -373,9 +400,10 @@ namespace ActivityPicturePlugin.Helper
                     {
                         if ( ImageRectangles[i] != null )
                         {
-                            if ( new Region( ImageRectangles[i] ).IsVisible( p ) )
+                            using ( Region r = new Region( ImageRectangles[i] ) )
                             {
-                                return i;
+                                if ( r.IsVisible( p ) )
+                                    return i;
                             }
                         }
                     }
@@ -866,11 +894,11 @@ namespace ActivityPicturePlugin.Helper
                 {
                     if ( e.KeyCode == Keys.Up )
                     {
-                        if ( this.Zoom < 99 ) this.ZoomChange( this, +2 );
+                        if ( this.Zoom < 99 ) this.ZoomChange( this, new ZoomEventArgs( 2 ) );
                     }
                     else if ( e.KeyCode == Keys.Down )
                     {
-                        if ( this.Zoom > 1 ) this.ZoomChange( this, -2 );
+                        if ( this.Zoom > 1 ) this.ZoomChange( this, new ZoomEventArgs( -2 ) );
                     }
                 }
                 else

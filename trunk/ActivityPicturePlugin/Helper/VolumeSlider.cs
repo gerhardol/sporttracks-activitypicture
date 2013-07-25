@@ -24,16 +24,21 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using ZoneFiveSoftware.Common.Visuals;
+using System.Security;
 
 namespace ActivityPicturePlugin.Helper
 {
     public partial class VolumeSlider : UserControl
     {
-        [DllImport( "winmm.dll" )]
-        public static extern int waveOutGetVolume( IntPtr hwo, out uint dwVolume );
+        [SuppressUnmanagedCodeSecurityAttribute]
+        internal static class SafeNativeMethods
+        {
+            [DllImport( "winmm.dll" )]
+            internal static extern int waveOutGetVolume( IntPtr hwo, out uint dwVolume );
 
-        [DllImport( "winmm.dll" )]
-        public static extern int waveOutSetVolume( IntPtr hwo, uint dwVolume );
+            [DllImport( "winmm.dll" )]
+            internal static extern int waveOutSetVolume( IntPtr hwo, uint dwVolume );
+        }
 
         public VolumeSlider()
         {
@@ -44,7 +49,7 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 //Mono TODO:
-                waveOutGetVolume( IntPtr.Zero, out CurrVol );
+                SafeNativeMethods.waveOutGetVolume( IntPtr.Zero, out CurrVol );
             }
             catch { }
             ushort CalcVol = (ushort)( CurrVol & 0x0000ffff );
@@ -108,7 +113,7 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 //Mono TODO:
-                waveOutSetVolume( IntPtr.Zero, NewVolumeAllChannels );
+                SafeNativeMethods.waveOutSetVolume( IntPtr.Zero, NewVolumeAllChannels );
             }
             catch { }
 

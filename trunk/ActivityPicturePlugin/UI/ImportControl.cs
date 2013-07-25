@@ -280,6 +280,8 @@ namespace ActivityPicturePlugin.UI
 
         private void ShowFolderPics() //Adds the images of a directory to the ListViewDrive
         {
+            ImageList lvImgL = null;
+            ImageList lvImgS = null;
             try
             {
                 m_files.Clear();
@@ -287,49 +289,78 @@ namespace ActivityPicturePlugin.UI
 
                 listViewDrive.Items.Clear();
 
-                ImageList lvImgL = new ImageList();
+                lvImgL = new ImageList();
                 lvImgL.ImageSize = new Size( 100, 100 );
                 lvImgL.ColorDepth = ColorDepth.Depth32Bit;
+
+                if ( listViewDrive.LargeImageList != null )
+                {
+                    listViewDrive.LargeImageList.Dispose();
+                    listViewDrive.LargeImageList = null;
+                }
                 listViewDrive.LargeImageList = lvImgL;
 
-                ImageList lvImgS = new ImageList();
+
+                lvImgS = new ImageList();
                 lvImgS.ImageSize = new Size( 50, 50 );
                 lvImgS.ColorDepth = ColorDepth.Depth32Bit;
+
+                if ( listViewDrive.SmallImageList != null )
+                {
+                    listViewDrive.SmallImageList.Dispose();
+                    listViewDrive.SmallImageList = null;
+                }
                 listViewDrive.SmallImageList = lvImgS;
 
                 progressBar2.Style = ProgressBarStyle.Continuous;
                 timerProgressBar.Enabled = false;
 
                 //Either speed up adding to listview or show progressbar
-                Image bmp = (Bitmap)( Resources.Resources.image ).Clone();
-                for ( int j = 0; j < m_files.Count; j++ ) //add images plus exif data
+                using ( Image bmp = (Bitmap)( Resources.Resources.image ).Clone() )
                 {
-                    if ( progressBar2.Maximum != m_files.Count ) progressBar2.Maximum = m_files.Count;
-                    progressBar2.Value = j;
-                    ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
-                    if ( dt == ImageData.DataTypes.Nothing )
+                    for ( int j = 0; j < m_files.Count; j++ ) //add images plus exif data
                     {
-                        m_files.Remove( m_files[j] );
-                        j--;
+                        if ( progressBar2.Maximum != m_files.Count ) progressBar2.Maximum = m_files.Count;
+                        progressBar2.Value = j;
+                        ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
+                        if ( dt == ImageData.DataTypes.Nothing )
+                        {
+                            m_files.Remove( m_files[j] );
+                            j--;
+                        }
+                        else
+                        {
+                            lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
+                            lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
+                            AddFileToListView( m_files[j], dt );			//read images and add thumbnails
+                            AddImageToListView( lvImgL, lvImgS, dt, j );	//read images and add thumbnails
+                        }
+                        lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
                     }
-                    else
-                    {
-                        lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
-                        lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
-                        AddFileToListView( m_files[j], dt );			//read images and add thumbnails
-                        AddImageToListView( lvImgL, lvImgS, dt, j );	//read images and add thumbnails
-                    }
-                    lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
+                    progressBar2.Value = progressBar2.Maximum;
+                    timerProgressBar.Enabled = true;
+                    //bmp.Dispose();
                 }
-                progressBar2.Value = progressBar2.Maximum;
-                timerProgressBar.Enabled = true;
-
-                bmp.Dispose();
             }
             catch ( Exception )
             {
+                if ( lvImgS != null )
+                    lvImgS.Dispose();
+                lvImgS = null;
+
+                if ( lvImgL != null )
+                    lvImgL.Dispose();
+                lvImgL = null;
+
+                // Apparently we need to set these to null after 
+                // disposing BOTH of the above imagelists.
+                listViewDrive.SmallImageList = null;
+                listViewDrive.LargeImageList = null;
+
                 // throw;
+
             }
+            
 
         }
 
@@ -716,29 +747,31 @@ namespace ActivityPicturePlugin.UI
         private static ImageDataSerializable GetImageDataSerializableFromFile( string file )
         {
             ImageDataSerializable ids = null;
-            ImageData id = new ImageData();
-            id.PhotoSource = file;
-            id.ReferenceID = Guid.NewGuid().ToString();
-
-            ImageData.DataTypes dt = Functions.GetMediaType( file );
-
-            if ( dt == ImageData.DataTypes.Image )
+            using ( ImageData id = new ImageData() )
             {
-                id.Type = ImageData.DataTypes.Image;
-                id.SetThumbnail();
-            }
-            else if ( dt == ImageData.DataTypes.Video )
-            {
-                id.Type = ImageData.DataTypes.Video;
-                id.SetVideoThumbnail();
-            }
+                id.PhotoSource = file;
+                id.ReferenceID = Guid.NewGuid().ToString();
 
-            if ( dt != ImageData.DataTypes.Nothing )
-            {
-                ids = new ImageDataSerializable();
-                ids.PhotoSource = id.PhotoSource;
-                ids.ReferenceID = id.ReferenceID;
-                ids.Type = id.Type;
+                ImageData.DataTypes dt = Functions.GetMediaType( file );
+
+                if ( dt == ImageData.DataTypes.Image )
+                {
+                    id.Type = ImageData.DataTypes.Image;
+                    id.SetThumbnail();
+                }
+                else if ( dt == ImageData.DataTypes.Video )
+                {
+                    id.Type = ImageData.DataTypes.Video;
+                    id.SetVideoThumbnail();
+                }
+
+                if ( dt != ImageData.DataTypes.Nothing )
+                {
+                    ids = new ImageDataSerializable();
+                    ids.PhotoSource = id.PhotoSource;
+                    ids.ReferenceID = id.ReferenceID;
+                    ids.Type = id.Type;
+                }
             }
             return ids;
         }
@@ -888,6 +921,9 @@ namespace ActivityPicturePlugin.UI
         #region listViewAct
         private void AddImagesToListViewAct( TreeNode tn, bool AddThumbs )
         {
+            ImageList lil = null;
+            ImageList lis = null;
+
             try
             {
                 this.listViewAct.Items.Clear();
@@ -911,14 +947,24 @@ namespace ActivityPicturePlugin.UI
                     if ( AddThumbs )
                     {
                         List<ImageData> il = data.LoadImageData( data.Images );
-                        ImageList lil = new ImageList();
-                        ImageList lis = new ImageList();
+                        lil = new ImageList();
+                        lis = new ImageList();
                         lil.ImageSize = new Size( 100, 100 );
                         lis.ImageSize = new Size( 50, 50 );
                         lil.ColorDepth = ColorDepth.Depth32Bit;
                         lis.ColorDepth = ColorDepth.Depth32Bit;
                         int j = 0;
 
+                        // Dispose of the old imagelists if they exist
+                        if ( this.listViewAct.LargeImageList != null )
+                            this.listViewAct.LargeImageList.Dispose();
+                        this.listViewAct.LargeImageList = null;
+
+                        if ( this.listViewAct.SmallImageList != null )
+                            this.listViewAct.SmallImageList.Dispose();
+                        this.listViewAct.SmallImageList = null;
+
+                        // assign the new imagelists
                         this.listViewAct.LargeImageList = lil;
                         this.listViewAct.SmallImageList = lis;
 
@@ -947,6 +993,7 @@ namespace ActivityPicturePlugin.UI
                                 lis.Images.Add( Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
                                 Application.DoEvents();
                                 img.Dispose();
+                                img = null;
                             }
                             catch ( Exception )
                             {
@@ -975,6 +1022,16 @@ namespace ActivityPicturePlugin.UI
             }
             catch ( Exception )
             {
+                if ( lil != null )
+                    lil.Dispose();
+                lil = null;
+
+                if ( lis != null )
+                    lis.Dispose();
+                lis = null;
+
+                listViewAct.LargeImageList = null;
+                listViewAct.SmallImageList = null;
                 //throw;
             }
         }

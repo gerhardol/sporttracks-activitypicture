@@ -151,20 +151,22 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void Run( System.Drawing.Rectangle rectButton )
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.FileName = "";
-            sfd.DefaultExt = "kmz";
-            sfd.AddExtension = true;
-            sfd.CheckPathExists = true;
-            sfd.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
-            sfd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
-            DialogResult dres = sfd.ShowDialog();
-            if ( dres == DialogResult.OK && sfd.FileName != "" )
+            using ( SaveFileDialog sfd = new SaveFileDialog() )
             {
-                Functions.PerformMultipleExportToGoogleEarth( activities, sfd.FileName );
+                sfd.FileName = "";
+                sfd.DefaultExt = "kmz";
+                sfd.AddExtension = true;
+                sfd.CheckPathExists = true;
+                sfd.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
+                sfd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+                DialogResult dres = sfd.ShowDialog();
+                if ( dres == DialogResult.OK && sfd.FileName != "" )
+                {
+                    Functions.PerformMultipleExportToGoogleEarth( activities, sfd.FileName );
+                }
+                if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
+                    Functions.OpenExternal( sfd.FileName );
             }
-            if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
-                Functions.OpenExternal( sfd.FileName );
 
         }
 

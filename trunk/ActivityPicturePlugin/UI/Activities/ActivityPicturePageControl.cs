@@ -63,7 +63,8 @@ namespace ActivityPicturePlugin.UI.Activities
             //}
             m_layer = PicturesLayer.Instance((IView)view);
         }
-#endif
+#endif       
+
         public ActivityPicturePageControl()
         {
             this.Visible = false;
@@ -576,6 +577,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         private void ReloadData()
         {
+            System.Windows.Forms.ToolStripMenuItem tsmiRemove = null;
             try
             {
                 if ( _Activity != null )
@@ -593,20 +595,24 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     }
                     sliderImageSize.Value = this.PluginExtensionData.ImageZoom;
 
+                    for ( int i = 0; i < contextMenuListGE.Items.Count; i++ ) //ToolStripMenuItem mi in contextMenuListGE.Items )
+                        contextMenuListGE.Items[i].Dispose();
+                    contextMenuListGE.Items.Clear();
+
                     if ( this.PluginExtensionData.GELinks.Count > 0 )
                     {
                         this.btnGEList.Visible = true;
-                        contextMenuListGE.Items.Clear();
+
                         foreach ( string sFile in this.PluginExtensionData.GELinks )
                         {
                             System.IO.FileInfo fi = new FileInfo( sFile );
                             ToolStripMenuItem tsi = (ToolStripMenuItem)this.contextMenuListGE.Items.Add( fi.Name );
                             tsi.Tag = fi.FullName;
                             tsi.ToolTipText = fi.FullName;
-                            System.Windows.Forms.ToolStripMenuItem tsmiRemove = new ToolStripMenuItem( CommonResources.Text.ActionRemove, null, new System.EventHandler( this.toolStripMenuRemove_Click ) );
+							tsmiRemove = new ToolStripMenuItem( CommonResources.Text.ActionRemove, null, new System.EventHandler( this.toolStripMenuRemove_Click ) );
                             tsmiRemove.Tag = fi.FullName;
                             tsmiRemove.Name = "Remove";
-                            tsi.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { tsmiRemove } );                            
+                            tsi.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { tsmiRemove } );
                         }
                     }
                     else
@@ -630,6 +636,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
             catch ( Exception )
             {
+                if ( tsmiRemove != null )
+                    tsmiRemove.Dispose();
+                tsmiRemove = null;
                 //throw;
             }
         }
@@ -1300,8 +1309,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             UpdateView();
         }
 
-        private void pictureAlbumView_ZoomChange( object sender, int increment )
+        private void pictureAlbumView_ZoomChange( object sender,ActivityPicturePlugin.Helper.PictureAlbum.ZoomEventArgs e )
         {
+            int increment = e.Increment;
             if ( increment != 0 ) this.sliderImageSize.Value += increment;
             else this.sliderImageSize.Value = this.pictureAlbumView.Zoom;
 

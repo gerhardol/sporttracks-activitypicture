@@ -51,11 +51,13 @@ namespace ActivityPicturePlugin.Settings
                 if ( !( b.Length == 0 ) )
                 {
                     System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( SettingsData ) );
-                    System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    mem.Write( b, 0, b.Length );
-                    mem.Position = 0;
-                    data = dataRead = (SettingsData)xmlSer.Deserialize( mem );
-                    mem.Dispose();
+                    using ( System.IO.MemoryStream mem = new System.IO.MemoryStream() )
+                    {
+                        mem.Write( b, 0, b.Length );
+                        mem.Position = 0;
+                        data = dataRead = (SettingsData)xmlSer.Deserialize( mem );
+                        //mem.Dispose();
+                    }
                     xmlSer = null;
                     b = null;
                 }
@@ -75,12 +77,14 @@ namespace ActivityPicturePlugin.Settings
             {
                 try
                 {
-                    System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( SettingsData ) );
-                    xmlSer.Serialize( mem, data );
-                    log.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
-                    log.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
-                    mem.Close();
+                    using ( System.IO.MemoryStream mem = new System.IO.MemoryStream() )
+                    {
+                        System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( SettingsData ) );
+                        xmlSer.Serialize( mem, data );
+                        log.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
+                        log.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
+                        //mem.Close();
+                    }
                     log.Modified = true;
                 }
                 catch ( Exception )

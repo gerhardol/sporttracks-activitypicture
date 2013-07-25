@@ -324,9 +324,9 @@ namespace AviFile
                 Marshal.Copy(rawData, 0, unmanagedRawData, rawData.Length);
                 newFile.AddAudioStream(unmanagedRawData, streamInfo, streamFormat, rawData.Length);
 				Marshal.FreeHGlobal(unmanagedRawData);
-            } catch (Exception ex) {
+            } catch (Exception) {
                 newFile.Close();
-                throw ex;
+                throw;
             }
 
             return newFile;
