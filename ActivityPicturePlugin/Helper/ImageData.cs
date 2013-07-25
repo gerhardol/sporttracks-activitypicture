@@ -479,31 +479,32 @@ namespace ActivityPicturePlugin.Helper
                 if ( ( System.IO.File.Exists( this.photosource ) ) & ( this.Type == DataTypes.Image ) )
                 // Save Exif data to the original source
                 {
-                    ExifWorks EWPhotoSource = new ExifWorks( this.photosource );
-
-                    switch ( prop )
+                    using ( ExifWorks EWPhotoSource = new ExifWorks( this.photosource ) )
                     {
-                        case ExifWorks.TagNames.ExifDTOrig:
-                            EWPhotoSource.DateTimeOriginal = ew.DateTimeOriginal;
-                            break;
-                        case ExifWorks.TagNames.FileExplorerTitle:
-                            EWPhotoSource.FileExplorerTitle = ew.FileExplorerTitle;
-                            break;
-                        case ExifWorks.TagNames.FileExplorerComments:
-                            EWPhotoSource.FileExplorerComments = ew.FileExplorerComments;
-                            break;
-                        case ExifWorks.TagNames.GpsAltitude:
-                            EWPhotoSource.GPSAltitude = ew.GPSAltitude;
-                            break;
-                        case ExifWorks.TagNames.GpsLongitude:
-                            EWPhotoSource.GPSLongitude = ew.GPSLongitude;
-                            break;
-                        case ExifWorks.TagNames.GpsLatitude:
-                            EWPhotoSource.GPSLatitude = ew.GPSLatitude;
-                            break;
+                        switch ( prop )
+                        {
+                            case ExifWorks.TagNames.ExifDTOrig:
+                                EWPhotoSource.DateTimeOriginal = ew.DateTimeOriginal;
+                                break;
+                            case ExifWorks.TagNames.FileExplorerTitle:
+                                EWPhotoSource.FileExplorerTitle = ew.FileExplorerTitle;
+                                break;
+                            case ExifWorks.TagNames.FileExplorerComments:
+                                EWPhotoSource.FileExplorerComments = ew.FileExplorerComments;
+                                break;
+                            case ExifWorks.TagNames.GpsAltitude:
+                                EWPhotoSource.GPSAltitude = ew.GPSAltitude;
+                                break;
+                            case ExifWorks.TagNames.GpsLongitude:
+                                EWPhotoSource.GPSLongitude = ew.GPSLongitude;
+                                break;
+                            case ExifWorks.TagNames.GpsLatitude:
+                                EWPhotoSource.GPSLatitude = ew.GPSLatitude;
+                                break;
+                        }
+                        EWPhotoSource.GetBitmap().Save( this.photosource );
                     }
-                    EWPhotoSource.GetBitmap().Save( this.photosource );
-                    EWPhotoSource.Dispose();
+                    //EWPhotoSource.Dispose();
                 }
 
                 //Save Exif data to the webfiles image
@@ -537,9 +538,9 @@ namespace ActivityPicturePlugin.Helper
 
         public void SetVideoThumbnail()
         {
+            Bitmap bmp = null;
             try
             {
-                Bitmap bmp;
                 string defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
@@ -551,6 +552,7 @@ namespace ActivityPicturePlugin.Helper
                     //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
                     this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                     bmp.Dispose();
+                    bmp = null;
                 }
                 //File has not yet been created
                 else
@@ -565,12 +567,19 @@ namespace ActivityPicturePlugin.Helper
                         //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
                         this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                         bmp.Dispose();
+                        bmp = null;
                     }
                 }
             }
             catch ( Exception )
             {
                 throw;
+            }
+            finally
+            {
+                if ( bmp != null )
+                    bmp.Dispose();
+                bmp = null;
             }
         }
 
@@ -580,7 +589,7 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                Bitmap bmpOrig;
+                Bitmap bmpOrig = null;
                 string defpath = this.ThumbnailPath;
 
                 //Check if image at specified PhotoSource location exists
@@ -591,18 +600,11 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         System.IO.FileInfo fi = new System.IO.FileInfo( this.PhotoSource );
-                        if ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 )
-                        {
-                            // Although it seems like DexterLib supports Avis we'll let
-                            // AviManager handle them for now.
+                        // DexterLib
+                        // If Interop.DexterLib.dll is missing, exception is thrown (caught)
+                        bmpOrig = GetDexterAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
+                        if ( ( bmpOrig == null ) && ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 ) )
                             bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
-                        }
-                        else
-                        {
-                            // DexterLib
-                            // If Interop.DexterLib.dll is missing, exception is thrown (caught)
-                            bmpOrig = GetNonAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
-                        }
                     }
 
                     if ( bmpOrig != null )
@@ -621,10 +623,12 @@ namespace ActivityPicturePlugin.Helper
                             newsize.Height = UpperPixelLimit;
                             newsize.Width = (int)( UpperPixelLimit * ratio );
                         }
-                        Bitmap bmp = new Bitmap( bmpOrig, newsize );
-                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
-                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                        bmp.Dispose();
+                        using ( Bitmap bmp = new Bitmap( bmpOrig, newsize ) )
+                        {
+                            Functions.SaveThumbnailImage( bmp, defpath, 10 );
+                            this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                            //bmp.Dispose();
+                        }
                         bmpOrig.Dispose();
                         return true;
                     }
@@ -636,7 +640,7 @@ namespace ActivityPicturePlugin.Helper
             return false;
         }
 
-        internal Bitmap GetNonAviBmp( string VideoFile, int iFrame, Size frameSize, double dblTimePerFrame )
+        internal Bitmap GetDexterAviBmp( string VideoFile, int iFrame, Size frameSize, double dblTimePerFrame )
         {
             Bitmap bitmap = null;
 
@@ -645,16 +649,6 @@ namespace ActivityPicturePlugin.Helper
                 MediaDetClass md = new MediaDetClass();
                 md.Filename = VideoFile;
                 md.CurrentStream = 0;
-
-                /*double fr = md.FrameRate;
-                if ( fr == 0 )
-                {
-                    // Couldn't get framerate to calculate the desired frame's time.
-                    // Is it better to try and return the frame at (iFrame)ms or null?
-                    // Choosing the former.
-                    fr = 1;
-                }*/
-
 
                 double time = iFrame * dblTimePerFrame;
                 if ( time > md.StreamLength ) time = md.StreamLength;
@@ -667,7 +661,7 @@ namespace ActivityPicturePlugin.Helper
                 using ( System.IO.FileStream fs = fi.OpenRead() )
                 {
                     bitmap = (Bitmap)Bitmap.FromStream( fs );
-                    fs.Close();
+                    //fs.Close();
                 }
 
                 // Stamp the thumbnail with "Video" so it's easier to distinguish
@@ -687,7 +681,7 @@ namespace ActivityPicturePlugin.Helper
         }
 
         // Gets the bitmap of the specified frame
-        internal Bitmap GetAviBmp( string VideoFile, int iFrame )
+        private Bitmap GetAviBmp( string VideoFile, int iFrame )
         {
             AviFile.AviManager aviManager = null;
             AviFile.VideoStream stream = null;
@@ -737,12 +731,14 @@ namespace ActivityPicturePlugin.Helper
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
                 {
-                    bmp = new Bitmap( defpath );
-                    //The thumbnail is being created
-                    //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                    //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                    bmp.Dispose();
+                    using ( bmp = new Bitmap( defpath ) )
+                    {
+                        //The thumbnail is being created
+                        //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
+                        //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
+                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                    }
+                    //bmp.Dispose();
                 }
                 //File has not yet been created
                 else
@@ -752,43 +748,42 @@ namespace ActivityPicturePlugin.Helper
                     {
                         // Create new image in the default folder
                         Size size = new Size();
-                        Bitmap bmpOrig = new Bitmap( this.PhotoSource );
-
-                        int UpperPixelLimit = 500;
-                        Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
-                        if ( ratio > 1 )
+                        using ( Bitmap bmpOrig = new Bitmap( this.PhotoSource ) )
                         {
-                            size.Width = UpperPixelLimit;
-                            size.Height = (int)( UpperPixelLimit / ratio );
-                        }
-                        else
-                        {
-                            size.Height = UpperPixelLimit;
-                            size.Width = (int)( UpperPixelLimit * ratio );
-                        }
-                        bmp = new Bitmap( bmpOrig, size );
-
-                        //copying the metadata of the original file into the new image
-                        foreach ( System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems )
-                        {
-                            try
+                            int UpperPixelLimit = 500;
+                            Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
+                            if ( ratio > 1 )
                             {
-                                //Mono TODO: NotImplemented
-                                bmp.SetPropertyItem( pItem );
+                                size.Width = UpperPixelLimit;
+                                size.Height = (int)( UpperPixelLimit / ratio );
                             }
-                            catch { }
+                            else
+                            {
+                                size.Height = UpperPixelLimit;
+                                size.Width = (int)( UpperPixelLimit * ratio );
+                            }
+                            using ( bmp = new Bitmap( bmpOrig, size ) )
+                            {
+
+                                //copying the metadata of the original file into the new image
+                                foreach ( System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems )
+                                {
+                                    try
+                                    {
+                                        //Mono TODO: NotImplemented
+                                        bmp.SetPropertyItem( pItem );
+                                    }
+                                    catch { }
+                                }
+
+                                Functions.SaveThumbnailImage( bmp, defpath, 10 );
+
+                                ////is replaced due to smaller file size with jpg + the ability to store more metadata
+                                //bmp.Save(defpath,System.Drawing.Imaging.ImageFormat.Png);
+
+                                this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                            }
                         }
-
-                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
-
-                        ////is replaced due to smaller file size with jpg + the ability to store more metadata
-                        //bmp.Save(defpath,System.Drawing.Imaging.ImageFormat.Png);
-
-                        //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                        //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                        bmpOrig.Dispose();
-                        bmp.Dispose();
                     }
                     // Thumbnail cannot be created, both target locations are invalid
                     else
@@ -820,8 +815,18 @@ namespace ActivityPicturePlugin.Helper
         #region IDisposable Members
         public void Dispose()
         {
-            if ( this.Thumbnail != null ) this.Thumbnail.Dispose();
+            Dispose( true );
+            GC.SuppressFinalize( this );
+            //if ( this.Thumbnail != null ) this.Thumbnail.Dispose();
             // this.Waypoint.Dispose():
+        }
+        protected virtual void Dispose( bool disposing )
+        {
+            if ( ( disposing ) && ( this.Thumbnail != null ) )
+            {
+                this.Thumbnail.Dispose();
+                this.Thumbnail = null;
+            }
         }
         #endregion
     }

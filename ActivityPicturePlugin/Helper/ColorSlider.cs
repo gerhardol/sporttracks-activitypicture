@@ -647,6 +647,8 @@ namespace MB.Controls
                                      Color thumbPenColorPaint, Color barOuterColorPaint, Color barInnerColorPaint,
                                      Color barPenColorPaint, Color elapsedOuterColorPaint, Color elapsedInnerColorPaint )
         {
+            GraphicsPath thumbPath = null;
+
             try
             {
                 //set up thumbRect appropriately
@@ -685,16 +687,19 @@ namespace MB.Controls
                     elapsedRect = barRect;
                     elapsedRect.Height = thumbRect.Top + thumbSize / 2;
                 }
+
                 //get thumb shape path 
-                GraphicsPath thumbPath;
+                //GraphicsPath thumbPath;
                 if ( thumbCustomShape == null )
                     thumbPath = CreateRoundRectPath( thumbRect, thumbRoundRectSize );
                 else
                 {
                     thumbPath = thumbCustomShape;
-                    Matrix m = new Matrix();
-                    m.Translate( thumbRect.Left - thumbPath.GetBounds().Left, thumbRect.Top - thumbPath.GetBounds().Top );
-                    thumbPath.Transform( m );
+                    using ( Matrix m = new Matrix() )
+                    {
+                        m.Translate( thumbRect.Left - thumbPath.GetBounds().Left, thumbRect.Top - thumbPath.GetBounds().Top );
+                        thumbPath.Transform( m );
+                    }
                 }
 
                 //draw bar
@@ -714,9 +719,11 @@ namespace MB.Controls
                         lgbElapsed.WrapMode = WrapMode.TileFlipXY;
                         if ( Capture && drawSemitransparentThumb )
                         {
-                            Region elapsedReg = new Region( elapsedRect );
-                            elapsedReg.Exclude( thumbPath );
-                            e.Graphics.FillRegion( lgbElapsed, elapsedReg );
+                            using ( Region elapsedReg = new Region( elapsedRect ) )
+                            {
+                                elapsedReg.Exclude( thumbPath );
+                                e.Graphics.FillRegion( lgbElapsed, elapsedReg );
+                            }
                         }
                         else
                             e.Graphics.FillRectangle( lgbElapsed, elapsedRect );
@@ -783,6 +790,12 @@ namespace MB.Controls
             }
             finally
             {
+                if ( thumbPath != null )
+                {
+                    thumbPath.Dispose();
+                    thumbPath = null;
+                }
+
             }
         }
 
@@ -1009,6 +1022,8 @@ namespace MB.Controls
         /// <returns>
         /// true if the key was processed by the control; otherwise, false.
         /// </returns>
+        [System.Security.Permissions.UIPermission( System.Security.Permissions.SecurityAction.LinkDemand, 
+            Window = System.Security.Permissions.UIPermissionWindow.AllWindows )]
         protected override bool ProcessDialogKey( Keys keyData )
         {
             if ( keyData == Keys.Tab | ModifierKeys == Keys.Shift )
@@ -1032,18 +1047,35 @@ namespace MB.Controls
         /// <returns></returns>
         public static GraphicsPath CreateRoundRectPath( Rectangle rect, Size size )
         {
-            GraphicsPath gp = new GraphicsPath();
-            gp.AddLine( rect.Left + size.Width / 2, rect.Top, rect.Right - size.Width / 2, rect.Top );
-            gp.AddArc( rect.Right - size.Width, rect.Top, size.Width, size.Height, 270, 90 );
+            GraphicsPath gp = null;
+            try
+            {
+                gp = new GraphicsPath();
+                gp.AddLine( rect.Left + size.Width / 2, rect.Top, rect.Right - size.Width / 2, rect.Top );
+                gp.AddArc( rect.Right - size.Width, rect.Top, size.Width, size.Height, 270, 90 );
 
-            gp.AddLine( rect.Right, rect.Top + size.Height / 2, rect.Right, rect.Bottom - size.Width / 2 );
-            gp.AddArc( rect.Right - size.Width, rect.Bottom - size.Height, size.Width, size.Height, 0, 90 );
+                gp.AddLine( rect.Right, rect.Top + size.Height / 2, rect.Right, rect.Bottom - size.Width / 2 );
+                gp.AddArc( rect.Right - size.Width, rect.Bottom - size.Height, size.Width, size.Height, 0, 90 );
 
-            gp.AddLine( rect.Right - size.Width / 2, rect.Bottom, rect.Left + size.Width / 2, rect.Bottom );
-            gp.AddArc( rect.Left, rect.Bottom - size.Height, size.Width, size.Height, 90, 90 );
+                gp.AddLine( rect.Right - size.Width / 2, rect.Bottom, rect.Left + size.Width / 2, rect.Bottom );
+                gp.AddArc( rect.Left, rect.Bottom - size.Height, size.Width, size.Height, 90, 90 );
 
-            gp.AddLine( rect.Left, rect.Bottom - size.Height / 2, rect.Left, rect.Top + size.Height / 2 );
-            gp.AddArc( rect.Left, rect.Top, size.Width, size.Height, 180, 90 );
+                gp.AddLine( rect.Left, rect.Bottom - size.Height / 2, rect.Left, rect.Top + size.Height / 2 );
+                gp.AddArc( rect.Left, rect.Top, size.Width, size.Height, 180, 90 );
+            }
+            catch ( Exception )
+            {
+                if ( gp != null )
+                {
+                    gp.Dispose();
+                    gp = null;
+                }
+
+                throw;
+            }
+            finally
+            {
+            }
             return gp;
         }
 

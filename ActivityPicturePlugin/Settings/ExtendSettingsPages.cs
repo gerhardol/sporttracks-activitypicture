@@ -24,19 +24,46 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 
 namespace ActivityPicturePlugin.Settings
 {
-    class ExtendSettingsPages : IExtendSettingsPages
+    class ExtendSettingsPages : IExtendSettingsPages, IDisposable
     {
+        SettingsPageControl m_Control = null;
+        IList<ISettingsPage> _settingsPage = null;
+
         #region IExtendSettingsPages Members
 
         public IList<ISettingsPage> SettingsPages
         {
             get
             {
-                return new ISettingsPage[] {
-                    new SettingsPageControl()};
+                if ( m_Control == null )
+                {
+                    m_Control = new SettingsPageControl();
+                    _settingsPage = null;
+                }
+                if ( _settingsPage == null ) _settingsPage = new ISettingsPage[] { m_Control };
+                return _settingsPage;
+
+                //return new ISettingsPage[] {
+                //    new SettingsPageControl()};
             }
         }
-
         #endregion
+
+        #region IDisposable Members
+        public void Dispose()
+        {
+            Dispose( true );
+            GC.SuppressFinalize( this );
+        }
+        protected virtual void Dispose( bool disposing )
+        {
+            if ( ( disposing ) && ( m_Control != null ) )
+            {
+                m_Control.Dispose();
+                m_Control = null;
+            }
+        }
+        #endregion
+
     }
 }

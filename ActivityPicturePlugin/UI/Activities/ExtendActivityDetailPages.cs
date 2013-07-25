@@ -25,16 +25,27 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
-    class ExtendActivityDetailPages : IExtendActivityDetailPages
+    class ExtendActivityDetailPages : IExtendActivityDetailPages, IDisposable
     {
         #region IExtendActivityDetailPages Members
 
 #if ST_2_1
+
+        ActivityPicturePage m_Control = null;
+        IList<IActivityDetailPage> _activityDetailPage = null;
+
         public IList<IActivityDetailPage> ActivityDetailPages
         {
             get
             {
-                return new IActivityDetailPage[] { new ActivityPicturePage() };
+                if ( m_Control == null )
+                {
+                    m_Control = new ActivityPicturePage();
+                    _activityDetailPage = null;
+                }
+                if ( _activityDetailPage == null ) _activityDetailPage = new IActivityDetailPage[] { m_Control };
+                return _activityDetailPage;
+                //return new IActivityDetailPage[] { new ActivityPicturePage() };
             }
         }
 #else
@@ -43,6 +54,19 @@ namespace ActivityPicturePlugin.UI.Activities
             return new IDetailPage[] { new ActivityPicturePage(view) };
         }
 #endif
+        public void Dispose()
+        {
+            Dispose( true );
+            GC.SuppressFinalize( this );
+        }
+        protected virtual void Dispose( bool disposing )
+        {
+            if ( ( disposing ) && ( m_Control != null ) )
+            {
+                m_Control.Dispose();
+                m_Control = null;
+            }
+        }
         #endregion
     }
 }

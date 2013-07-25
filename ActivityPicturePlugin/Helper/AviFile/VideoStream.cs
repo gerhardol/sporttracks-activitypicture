@@ -504,27 +504,49 @@ namespace AviFile
 			}
 		
 			//write a bitmap stream
-			BinaryWriter bw = new BinaryWriter( new MemoryStream() );
+			MemoryStream bwStream = null;
+			Bitmap bmp = null;
+			Bitmap saveableBitmap = null;
+			try
+			{
+				bwStream = new MemoryStream();
+				BinaryWriter bw = new BinaryWriter( bwStream );
 
-			//write header
-			bw.Write(bfh.bfType);
-			bw.Write(bfh.bfSize);
-			bw.Write(bfh.bfReserved1);
-			bw.Write(bfh.bfReserved2);
-			bw.Write(bfh.bfOffBits);
-			//write bitmap info
-			bw.Write(bitmapInfo);
-			//write bitmap data
-			bw.Write(bitmapData);
-			
-			Bitmap bmp = (Bitmap)Image.FromStream(bw.BaseStream);
-			Bitmap saveableBitmap = new Bitmap(bmp.Width, bmp.Height);
-			Graphics g = Graphics.FromImage(saveableBitmap);
-			g.DrawImage(bmp, 0,0);
-			g.Dispose();
-			bmp.Dispose();
+				//write header
+				bw.Write( bfh.bfType );
+				bw.Write( bfh.bfSize );
+				bw.Write( bfh.bfReserved1 );
+				bw.Write( bfh.bfReserved2 );
+				bw.Write( bfh.bfOffBits );
+				//write bitmap info
+				bw.Write( bitmapInfo );
+				//write bitmap data
+				bw.Write( bitmapData );
 
-			bw.Close();
+				bmp = (Bitmap)Image.FromStream( bw.BaseStream );
+				saveableBitmap = new Bitmap( bmp.Width, bmp.Height );
+				Graphics g = Graphics.FromImage( saveableBitmap );
+				g.DrawImage( bmp, 0, 0 );
+				g.Dispose();
+				//bmp.Dispose();
+
+				bw.Close();
+				bwStream = null;
+			}
+			catch ( Exception )
+			{
+				if ( saveableBitmap != null ) saveableBitmap.Dispose();
+				saveableBitmap = null;
+				throw;
+			}
+			finally
+			{
+				if ( bwStream != null ) bwStream.Dispose();
+				bwStream = null;
+
+				if ( bmp != null ) bmp.Dispose();
+				bmp = null;
+			}
 			return saveableBitmap;
 		}
 

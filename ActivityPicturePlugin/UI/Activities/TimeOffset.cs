@@ -56,13 +56,11 @@ namespace ActivityPicturePlugin.UI.Activities
         private void btnOK_Click( object sender, EventArgs e )
         {
             ApplyOffset();
-            this.Dispose();
             this.Close();
         }
 
         private void btnCancel_Click( object sender, EventArgs e )
         {
-            this.Dispose();
             this.Close();
         }
         private void ApplyOffset()

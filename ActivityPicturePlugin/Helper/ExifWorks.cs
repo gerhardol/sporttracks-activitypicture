@@ -23,22 +23,32 @@ namespace ActivityPicturePlugin.Helper
 {
     public class ExifWorks : System.IDisposable
     {
+        private MemoryStream _ImageStream = null;
         private System.Drawing.Bitmap _Image;
         private System.Text.Encoding _Encoding = System.Text.Encoding.Default;
 
         public ExifWorks( string FileName )
         {
+            //MemoryStream ImageStream = null;
             try
             {
                 //the file is not locked and may be modified/deleted later
-                System.IO.FileStream ImageFile = new System.IO.FileStream( FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
-                BinaryReader Reader = new BinaryReader( ImageFile );
-                MemoryStream ImageStream = new MemoryStream( Reader.ReadBytes( (int)ImageFile.Length ) );
-                Reader.Close();
-                _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream( ImageStream );
+                using ( System.IO.FileStream ImageFile = new System.IO.FileStream( FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
+                {
+                    BinaryReader Reader = new BinaryReader( ImageFile );
+
+                    // Disposing of ImageStream destroys the _Image
+                    _ImageStream = new MemoryStream( Reader.ReadBytes( (int)ImageFile.Length ) );
+                    _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream( _ImageStream );
+                    //Reader.Close();
+                }
             }
             catch ( Exception ex )
             {
+                if ( _ImageStream != null )
+                    _ImageStream.Dispose();
+                _ImageStream = null;
+
                 Console.WriteLine( ex.Message );
             }
 
@@ -1519,9 +1529,20 @@ namespace ActivityPicturePlugin.Helper
         #region  IDisposable implementation
         public void Dispose()
         {
-            if ( this._Image != null )
+            Dispose( true );
+            GC.SuppressFinalize( this );
+        }
+        protected virtual void Dispose( bool disposing )
+        {
+            if ( disposing ) 
             {
-                this._Image.Dispose();
+                if ( this._Image != null )
+                    this._Image.Dispose();
+                this._Image = null;
+
+                if ( this._ImageStream != null )
+                    this._ImageStream.Dispose();
+                this._ImageStream = null;
             }
         }
         #endregion

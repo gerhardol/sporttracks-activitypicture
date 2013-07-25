@@ -66,13 +66,11 @@ namespace ActivityPicturePlugin.UI.Activities
         private void btnOK_Click(object sender, EventArgs e)
             {
             ApplyTimeStamp();
-            this.Dispose();
             this.Close();
             }
 
         private void btnCancel_Click(object sender, EventArgs e)
             {
-            this.Dispose();
             this.Close();
             }
         private void ApplyTimeStamp()

@@ -226,14 +226,16 @@ namespace ActivityPicturePlugin.Helper
 
                     // Write the XML to file and close the writer.
                     writer.Flush();
-                    writer.Close();
+                    //writer.Close();
                 }
 
 
                 if ( kmzFile.Extension == ".kmz" )
                 {
-                    using ( ZipOutputStream s = new ZipOutputStream( File.Create( SavePath ) ) )
+                    using (FileStream f=File.Create( SavePath ))
                     {
+                        ZipOutputStream s = new ZipOutputStream( f );
+
                         s.SetLevel( 6 );
                         s.IsStreamOwner = true;
                         FileInfo fi;
@@ -268,7 +270,7 @@ namespace ActivityPicturePlugin.Helper
                             s.Write( buffer, 0, buffer.Length );
                         }
                         s.Finish();
-                        s.Close();
+                        //s.Close();
                     }
                     Directory.Delete( picDir, true );
                     File.Delete( docFile );
@@ -484,7 +486,7 @@ namespace ActivityPicturePlugin.Helper
 
                     // Write the XML to file and close the writer.
                     writer.Flush();
-                    writer.Close();
+                    //writer.Close();
                 }
 
 
@@ -498,8 +500,9 @@ namespace ActivityPicturePlugin.Helper
                 // create zip file
                 if ( kmzFile.Extension == ".kmz" )
                 {
-                    using ( ZipOutputStream s = new ZipOutputStream( File.Create( SavePath ) ) )
+                    using (FileStream f=File.Create( SavePath ))
                     {
+                        ZipOutputStream s = new ZipOutputStream( f );
                         s.SetLevel( 6 );
                         s.IsStreamOwner = true;
                         FileInfo fi;
@@ -541,7 +544,7 @@ namespace ActivityPicturePlugin.Helper
                             s.Write( buffer, 0, buffer.Length );
                         }
                         s.Finish();
-                        s.Close();
+                        //s.Close();
                     }
                     File.Delete( Path.GetFileName( docFile ) );
                 }
@@ -555,59 +558,75 @@ namespace ActivityPicturePlugin.Helper
         private static void CreateKMZImages( String picDir, ImageData id )
         {
             //create small thumbnail
-            Bitmap bmp = CreateSmallThumbnail( id, 108 );
-            Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
+            using ( Bitmap bmp = CreateSmallThumbnail( id, 108 ) )
+            {
+                Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
+            }
 
             if ( !File.Exists( picDir + "\\" + id.ReferenceID + ".jpg" ) )
             //copy image from webfiles folder to the image folder of the zip archive (if not already exist)
             {
-                bmp = CreateSmallThumbnail( id, (int)( ActivityPicturePlugin.Source.Settings.GESize * 50 * 0.75 ) );
-                Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
-                //System.IO.File.Copy(id.ReferenceIDPath, picDir + "\\" + id.ReferenceID + ".jpg");
+                using ( Bitmap bmp = CreateSmallThumbnail( id, (int)( ActivityPicturePlugin.Source.Settings.GESize * 50 * 0.75 ) ) )
+                {
+                    Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
+                    //System.IO.File.Copy(id.ReferenceIDPath, picDir + "\\" + id.ReferenceID + ".jpg");
+                }
             }
 
-            bmp.Dispose();
-            bmp = null;
+            //bmp.Dispose();
+            //bmp = null;
         }
 
         private static Bitmap CreateSmallThumbnail( ImageData id, int minSize )
         {
             Bitmap bmp = null;
+            Bitmap bmpNew = null;
             //if (minSize > 150)
             //{
             //    if (File.Exists(id.PhotoSource)) bmp = new Bitmap(id.PhotoSource);
             //}
 
-            //minsize<=150 or original image not found
-            if ( bmp == null )
+            try
             {
-                bmp = new Bitmap( id.ThumbnailPath );
-            }
+                //minsize<=150 or original image not found
+                if ( bmp == null )
+                    bmp = new Bitmap( id.ThumbnailPath );
 
-            int Swidth, Sheight;
-            double ratio = (double)( bmp.Width ) / (double)( bmp.Height );
-            if ( ratio > 1 )
-            {
-                Swidth = (int)( minSize * ratio );
-                Sheight = minSize;
-            }
-            else
-            {
-                Swidth = minSize;
-                Sheight = (int)( minSize / ratio );
-            }
-            Size size = new Size( Swidth, Sheight );
-            Bitmap bmpNew = new Bitmap( bmp, size );
-
-            //copying the metadata of the original file into the new image
-            foreach ( System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems )
-            {
-                try
+                int Swidth, Sheight;
+                double ratio = (double)( bmp.Width ) / (double)( bmp.Height );
+                if ( ratio > 1 )
                 {
-                    //Mono TODO: NotImplemented
-                    bmpNew.SetPropertyItem( pItem );
+                    Swidth = (int)( minSize * ratio );
+                    Sheight = minSize;
                 }
-                catch { }
+                else
+                {
+                    Swidth = minSize;
+                    Sheight = (int)( minSize / ratio );
+                }
+                Size size = new Size( Swidth, Sheight );
+                bmpNew = new Bitmap( bmp, size );
+
+                //copying the metadata of the original file into the new image
+                foreach ( System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems )
+                {
+                    try
+                    {
+                        //Mono TODO: NotImplemented
+                        bmpNew.SetPropertyItem( pItem );
+                    }
+                    catch { }
+                }
+            }
+            catch ( Exception )
+            {
+                throw;
+            }
+            finally
+            {
+                if ( bmp != null )
+                    bmp.Dispose();
+                bmp = null;
             }
 
             //quality too bad
@@ -882,19 +901,21 @@ namespace ActivityPicturePlugin.Helper
                 if ( !pd.Equals( pd0 ) )
                 {
                     //store data of images in the serializable wrapper class
-                    if ( pd.Images.Count == 0 )
+                    if ( ( pd.Images.Count == 0 ) && ( pd.GELinks.Count == 0 ) )
                     {
                         act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, null );
                         act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "" );
                     }
                     else
                     {
-                        System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                        System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( PluginData ) );
-                        xmlSer.Serialize( mem, pd );
-                        act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
-                        act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
-                        mem.Close();
+                        using ( System.IO.MemoryStream mem = new System.IO.MemoryStream() )
+                        {
+                            System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( PluginData ) );
+                            xmlSer.Serialize( mem, pd );
+                            act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
+                            act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
+                            //mem.Close();
+                        }
                     }
 
                     ActivityPicturePlugin.Plugin.GetApplication().Logbook.Modified = true;
@@ -918,12 +939,14 @@ namespace ActivityPicturePlugin.Helper
                 if ( !( b.Length == 0 ) )
                 {
                     System.Xml.Serialization.XmlSerializer xmlSer = new System.Xml.Serialization.XmlSerializer( typeof( PluginData ) );
-                    System.IO.MemoryStream mem = new System.IO.MemoryStream();
-                    mem.Write( b, 0, b.Length );
-                    mem.Position = 0;
-                    //this.PluginExtensionData = (PluginData)xmlSer.Deserialize(mem);
-                    pd = (PluginData)xmlSer.Deserialize( mem );
-                    mem.Dispose();
+                    using ( System.IO.MemoryStream mem = new System.IO.MemoryStream() )
+                    {
+                        mem.Write( b, 0, b.Length );
+                        mem.Position = 0;
+                        //this.PluginExtensionData = (PluginData)xmlSer.Deserialize(mem);
+                        pd = (PluginData)xmlSer.Deserialize( mem );
+                        //mem.Dispose();
+                    }
                     xmlSer = null;
                     b = null;
                     return pd;
@@ -961,16 +984,18 @@ namespace ActivityPicturePlugin.Helper
                     //save with the changed settings (quality, color depth)
                     System.Drawing.Imaging.Encoder encoderInstance = System.Drawing.Imaging.Encoder.Quality;
                     System.Drawing.Imaging.EncoderParameters encoderParametersInstance;
-                    encoderParametersInstance = new System.Drawing.Imaging.EncoderParameters( 2 );
-                    //100% quality
-                    if ( quality < 1 | quality > 10 ) quality = 10; //check for wrong input;
-                    System.Drawing.Imaging.EncoderParameter encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, (long)( quality * 10 ) );
-                    encoderParametersInstance.Param[0] = encoderParameterInstance;
-                    encoderInstance = System.Drawing.Imaging.Encoder.ColorDepth;
-                    //24bit color depth
-                    encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, 24L );
-                    encoderParametersInstance.Param[1] = encoderParameterInstance;
-                    bmp.Save( defpath, codec, encoderParametersInstance );
+                    using ( encoderParametersInstance = new System.Drawing.Imaging.EncoderParameters( 2 ) )
+                    {
+                        //100% quality
+                        if ( quality < 1 | quality > 10 ) quality = 10; //check for wrong input;
+                        System.Drawing.Imaging.EncoderParameter encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, (long)( quality * 10 ) );
+                        encoderParametersInstance.Param[0] = encoderParameterInstance;
+                        encoderInstance = System.Drawing.Imaging.Encoder.ColorDepth;
+                        //24bit color depth
+                        encoderParameterInstance = new System.Drawing.Imaging.EncoderParameter( encoderInstance, 24L );
+                        encoderParametersInstance.Param[1] = encoderParameterInstance;
+                        bmp.Save( defpath, codec, encoderParametersInstance );
+                    }
                 }
                 else
                 //save with the default settings
@@ -989,13 +1014,15 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                ExifWorks EW = new ExifWorks( filepath );
-                EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LatitudeDegrees;
-                EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LongitudeDegrees;
-                EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.ElevationMeters;
-                // Save Image with new Exif data
+                using ( ExifWorks EW = new ExifWorks( filepath ) )
+                {
+                    EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LatitudeDegrees;
+                    EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LongitudeDegrees;
+                    EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.ElevationMeters;
+                    // Save Image with new Exif data
 
-                EW.GetBitmap().Save( filepath );
+                    EW.GetBitmap().Save( filepath );
+                }
             }
             catch ( Exception )
             {
@@ -1007,10 +1034,12 @@ namespace ActivityPicturePlugin.Helper
 
         internal static Image getThumbnailWithBorder( int width, Image img )
         {
+            Image thumb = null;
+            Image tmp =null;
             try
             {
-                Image thumb = new Bitmap( width, width );
-                Image tmp = null;
+                thumb = new Bitmap( width, width );
+                tmp = null;
                 //If the original image is small than the Thumbnail size, just draw in the center
                 if ( img.Width < width && img.Height < width )
                 {
@@ -1027,6 +1056,9 @@ namespace ActivityPicturePlugin.Helper
                         Image.GetThumbnailImageAbort( ThumbnailCallback );
                     if ( img.Width == img.Height )
                     {
+                        if ( thumb != null )
+                            thumb.Dispose();
+                        thumb = null;
                         thumb = img.GetThumbnailImage(
                                  width, width,
                                  myCallback, IntPtr.Zero );
@@ -1059,10 +1091,20 @@ namespace ActivityPicturePlugin.Helper
                     g.DrawRectangle( Pens.Black, 0, 0, thumb.Width - 1, thumb.Height - 1 );
                 }
                 tmp.Dispose();
+                tmp = null;
+
                 return thumb;
             }
             catch ( Exception )
             {
+                if ( thumb != null )
+                    thumb.Dispose();
+                thumb = null;
+
+                if ( tmp != null )
+                    tmp.Dispose();
+                tmp = null;
+
                 return null;
             }
 
@@ -1094,9 +1136,10 @@ namespace ActivityPicturePlugin.Helper
 
         internal static ImageData AddImage( String ImageLocation, Boolean CreateThumbnail )
         {
+            ImageData ID = null;
             try
             {
-                ImageData ID = new ImageData();
+                ID = new ImageData();
                 ID.PhotoSource = ImageLocation;
                 ID.ReferenceID = Guid.NewGuid().ToString();
                 //Bitmap bmp = new Bitmap(ImageLocation);
@@ -1121,6 +1164,11 @@ namespace ActivityPicturePlugin.Helper
             }
             catch ( Exception )
             {
+                if ( ID != null )
+                {
+                    ID.Dispose();
+                    ID = null;
+                }
                 return null;
             }
 

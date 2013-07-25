@@ -189,215 +189,215 @@ namespace AviFile {
 	
 		//Initialize the AVI library
 		[DllImport("avifil32.dll")]
-		public static extern void AVIFileInit();
+        internal static extern void AVIFileInit();    //CA1401
 
 		//Open an AVI file
 		[DllImport("avifil32.dll", PreserveSig=true)]
-		public static extern int AVIFileOpen(
+		internal static extern int AVIFileOpen(
 			ref int ppfile,
 			String szFile,
 			int uMode,
-			int pclsidHandler);
+            int pclsidHandler ); //CA1401
 
 		//Get a stream from an open AVI file
 		[DllImport("avifil32.dll")]
-		public static extern int AVIFileGetStream(
+		internal static extern int AVIFileGetStream(
 			int pfile,
 			out IntPtr ppavi,  
-			int fccType,       
-			int lParam);
+			int fccType,
+            int lParam );    //CA1401
 
 		//Get the start position of a stream
 		[DllImport("avifil32.dll", PreserveSig=true)]
-		public static extern int AVIStreamStart(int pavi);
+        internal static extern int AVIStreamStart( int pavi );    //CA1401
 
 		//Get the length of a stream in frames
 		[DllImport("avifil32.dll", PreserveSig=true)]
-		public static extern int AVIStreamLength(int pavi);
+        internal static extern int AVIStreamLength( int pavi ); //CA1401
 
 		//Get information about an open stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamInfo(
+		internal static extern int AVIStreamInfo(
 			IntPtr pAVIStream,
 			ref AVISTREAMINFO psi,
-			int lSize);
+            int lSize ); //CA1401
 
 		//Get a pointer to a GETFRAME object (returns 0 on error)
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamGetFrameOpen(
+		internal static extern int AVIStreamGetFrameOpen(
 			IntPtr pAVIStream,
-			ref BITMAPINFOHEADER bih);
+            ref BITMAPINFOHEADER bih );  //CA1401
 
 		//Get a pointer to a packed DIB (returns 0 on error)
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamGetFrame(
+		internal static extern int AVIStreamGetFrame(
 			int pGetFrameObj,
-			int lPos);
+            int lPos );  //CA1401
 
 		//Create a new stream in an open AVI file
 		[DllImport("avifil32.dll")]
-		public static extern int AVIFileCreateStream(
+		internal static extern int AVIFileCreateStream(
 			int pfile,
-			out IntPtr ppavi, 
-			ref AVISTREAMINFO ptr_streaminfo);
+			out IntPtr ppavi,
+            ref AVISTREAMINFO ptr_streaminfo );  //CA1401
 
         //Create an editable stream
         [DllImport("avifil32.dll")]
-        public static extern int CreateEditableStream(
+        internal static extern int CreateEditableStream(
             ref IntPtr ppsEditable,
             IntPtr psSource
-        );
+        );  //CA1401
 
         //Cut samples from an editable stream
         [DllImport("avifil32.dll")]
-        public static extern int EditStreamCut(
+        internal static extern int EditStreamCut(
             IntPtr pStream,
             ref Int32 plStart,
             ref Int32 plLength,
             ref IntPtr ppResult
-        );
+        );  //CA1401
 
         //Copy a part of an editable stream
         [DllImport("avifil32.dll")]
-        public static extern int EditStreamCopy(
+        internal static extern int EditStreamCopy(
             IntPtr pStream,
             ref Int32 plStart,
             ref Int32 plLength,
             ref IntPtr ppResult
-        );
+        );  //CA1401
 
         //Paste an editable stream into another editable stream
         [DllImport("avifil32.dll")]
-        public static extern int EditStreamPaste(
+        internal static extern int EditStreamPaste(
             IntPtr pStream,
             ref Int32 plPos,
             ref Int32 plLength,
             IntPtr pstream,
             Int32 lStart,
             Int32 lLength
-        );
+        );  //CA1401
 
         //Change a stream's header values
         [DllImport("avifil32.dll")]
-        public static extern int EditStreamSetInfo(
+        internal static extern int EditStreamSetInfo(
             IntPtr pStream,
             ref AVISTREAMINFO lpInfo,
             Int32 cbInfo
-        );
+        );  //CA1401
 
         [DllImport("avifil32.dll")]
-        public static extern int AVIMakeFileFromStreams(
+        internal static extern int AVIMakeFileFromStreams(
             ref IntPtr ppfile,
             int nStreams,
             ref IntPtr papStreams
-        );
+        );  //CA1401
 
         //Set the format for a new stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamSetFormat(
-			IntPtr aviStream, Int32 lPos, 
-			ref BITMAPINFOHEADER lpFormat, Int32 cbFormat);
+		internal static extern int AVIStreamSetFormat(
+			IntPtr aviStream, Int32 lPos,
+            ref BITMAPINFOHEADER lpFormat, Int32 cbFormat ); //CA1401
 		
 		//Set the format for a new stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamSetFormat(
-			IntPtr aviStream, Int32 lPos, 
-			ref PCMWAVEFORMAT lpFormat, Int32 cbFormat);
+		internal static extern int AVIStreamSetFormat(
+			IntPtr aviStream, Int32 lPos,
+            ref PCMWAVEFORMAT lpFormat, Int32 cbFormat );    //CA1401
 		
 		//Read the format for a stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamReadFormat(
+		internal static extern int AVIStreamReadFormat(
 			IntPtr aviStream, Int32 lPos,
 			ref BITMAPINFOHEADER lpFormat, ref Int32 cbFormat
-			);
+            );  //CA1401
 
 		//Read the size of the format for a stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamReadFormat(
+		internal static extern int AVIStreamReadFormat(
 			IntPtr aviStream, Int32 lPos,
 			int empty, ref Int32 cbFormat
-			);
+            );  //CA1401
 		
 		//Read the format for a stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamReadFormat(
+		internal static extern int AVIStreamReadFormat(
 			IntPtr aviStream, Int32 lPos,
 			ref PCMWAVEFORMAT lpFormat, ref Int32 cbFormat
-			);
+            );  //CA1401
 
 		//Write a sample to a stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamWrite(
+		internal static extern int AVIStreamWrite(
 			IntPtr aviStream, Int32 lStart, Int32 lSamples, 
-			IntPtr lpBuffer, Int32 cbBuffer, Int32 dwFlags, 
-			Int32 dummy1, Int32 dummy2);
+			IntPtr lpBuffer, Int32 cbBuffer, Int32 dwFlags,
+            Int32 dummy1, Int32 dummy2 );    //CA1401
 
 		//Release the GETFRAME object
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamGetFrameClose(
+        internal static extern int AVIStreamGetFrameClose(  //CA1401
 			int pGetFrameObj);
 
 		//Release an open AVI stream
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamRelease(IntPtr aviStream);
+        internal static extern int AVIStreamRelease( IntPtr aviStream );  //CA1401
 
 		//Release an open AVI file
 		[DllImport("avifil32.dll")]
-		public static extern int AVIFileRelease(int pfile);
+		internal static extern int AVIFileRelease(int pfile);   //CA1401
 
 		//Close the AVI library
 		[DllImport("avifil32.dll")]
-		public static extern void AVIFileExit();
+		internal static extern void AVIFileExit();    //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern int AVIMakeCompressedStream(
-			out IntPtr ppsCompressed, IntPtr aviStream, 
-			ref AVICOMPRESSOPTIONS ao, int dummy);
+		internal static extern int AVIMakeCompressedStream(
+			out IntPtr ppsCompressed, IntPtr aviStream,
+            ref AVICOMPRESSOPTIONS ao, int dummy );  //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern bool AVISaveOptions(
+		internal static extern bool AVISaveOptions(
 			IntPtr hwnd,
 			UInt32 uiFlags,              
 			Int32 nStreams,                      
 			ref IntPtr ppavi,
-			ref AVICOMPRESSOPTIONS_CLASS plpOptions  
-			);
+			ref AVICOMPRESSOPTIONS_CLASS plpOptions
+            );  //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern long AVISaveOptionsFree(
+		internal static extern long AVISaveOptionsFree(
 			int nStreams,
-			ref AVICOMPRESSOPTIONS_CLASS plpOptions  
-			);
+			ref AVICOMPRESSOPTIONS_CLASS plpOptions
+            );  //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern int AVIFileInfo(
+		internal static extern int AVIFileInfo(
 			int pfile, 
 			ref AVIFILEINFO pfi,
-			int lSize);
+            int lSize ); //CA1401
 
 		[DllImport("winmm.dll", EntryPoint="mmioStringToFOURCCA")]
-		public static extern int mmioStringToFOURCC(String sz, int uFlags);
+		internal static extern int mmioStringToFOURCC(String sz, int uFlags);   //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern int AVIStreamRead(
+		internal static extern int AVIStreamRead(
 			IntPtr pavi, 
 			Int32 lStart,     
 			Int32 lSamples,   
 			IntPtr lpBuffer, 
 			Int32 cbBuffer,   
 			Int32  plBytes,  
-			Int32  plSamples 
-			);
+			Int32  plSamples
+            );  //CA1401
 
 		[DllImport("avifil32.dll")]
-		public static extern int AVISaveV(
+		internal static extern int AVISaveV(
 			String szFile,
 			Int16 empty,
 			Int16 lpfnCallback,
 			Int16 nStreams,
 			ref IntPtr ppavi,
 			ref AVICOMPRESSOPTIONS_CLASS plpOptions
-			);
+            );  //CA1401
 
 		#endregion method declarations
 
