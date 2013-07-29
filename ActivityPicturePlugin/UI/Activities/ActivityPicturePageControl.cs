@@ -63,7 +63,7 @@ namespace ActivityPicturePlugin.UI.Activities
             //}
             m_layer = PicturesLayer.Instance((IView)view);
         }
-#endif       
+#endif
 
         public ActivityPicturePageControl()
         {
@@ -407,6 +407,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             this.toolStripMenuPhotoSource.Text = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
             this.toolStripMenuReferenceID.Text = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
 
+            this.toolStripMenuResetSnapshot.Text = Resources.Resources.ResetSnapshot_Text;
+            this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
+            this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
+
             this.importControl1.UpdateUICulture( culture );
         }
 
@@ -588,7 +592,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
                     //Read data and add new controls
                     this.PluginExtensionData = Helper.Functions.ReadExtensionData( _Activity );
-                    if ( this.PluginExtensionData.Images.Count != 0 )
+                    //if ( this.PluginExtensionData.Images.Count != 0 )
+                    if ( ( this.PluginExtensionData.Images.Count != 0 ) || ( this.PluginExtensionData.Images.Count != this.pictureAlbumView.ImageList.Count ) )
                     {
                         this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images );
                         SortListView();
@@ -609,7 +614,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                             ToolStripMenuItem tsi = (ToolStripMenuItem)this.contextMenuListGE.Items.Add( fi.Name );
                             tsi.Tag = fi.FullName;
                             tsi.ToolTipText = fi.FullName;
-							tsmiRemove = new ToolStripMenuItem( CommonResources.Text.ActionRemove, null, new System.EventHandler( this.toolStripMenuRemove_Click ) );
+                            tsmiRemove = new ToolStripMenuItem( CommonResources.Text.ActionRemove, null, new System.EventHandler( this.toolStripMenuRemove_Click ) );
                             tsmiRemove.Tag = fi.FullName;
                             tsmiRemove.Name = "Remove";
                             tsi.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { tsmiRemove } );
@@ -1309,7 +1314,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             UpdateView();
         }
 
-        private void pictureAlbumView_ZoomChange( object sender,ActivityPicturePlugin.Helper.PictureAlbum.ZoomEventArgs e )
+        private void pictureAlbumView_ZoomChange( object sender, ActivityPicturePlugin.Helper.PictureAlbum.ZoomEventArgs e )
         {
             int increment = e.Increment;
             if ( increment != 0 ) this.sliderImageSize.Value += increment;
@@ -1378,7 +1383,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
                     Functions.OpenExternal( this.saveFileDialog.FileName );
 
-                if (ActivityPicturePlugin.Source.Settings.GEStoreFileLocation)
+                if ( ActivityPicturePlugin.Source.Settings.GEStoreFileLocation )
                 {
                     if ( !PluginExtensionData.GELinks.Contains( this.saveFileDialog.FileName ) )
                     {
@@ -1658,7 +1663,97 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 ReloadData();
             }
         }
+
+        private void pictureAlbumView_MouseClick( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Right )
+            {
+                int i = this.pictureAlbumView.SelectedIndex;
+                if ( i >= 0 )
+                {
+                    if ( this.pictureAlbumView.ImageList[i].Type == ImageData.DataTypes.Video )
+                        contextMenuPictureAlbum.Items["toolStripMenuResetSnapshot"].Visible = true;
+                    else
+                        contextMenuPictureAlbum.Items["toolStripMenuResetSnapshot"].Visible = false;
+
+                    contextMenuPictureAlbum.Show( pictureAlbumView.PointToScreen( e.Location ) );
+                }
+            }
+        }
+
+        private void toolStripMenuResetSnapshot_Click( object sender, EventArgs e )
+        {
+            List<ImageData> ids = this.pictureAlbumView.ImageList;
+            ImageData id = ids[this.pictureAlbumView.SelectedIndex];
+            if ( id.Type == ImageData.DataTypes.Video )
+            {
+                id.ResetVideoThumbnail();
+                Functions.ClearImageList( this.pictureAlbumView );
+                ReloadData();
+                UpdateView();
+            }
+        }
+
+        private void toolStripMenuOpenFolder_Click( object sender, EventArgs e )
+        {
+            try
+            {
+                int ixImage = this.pictureAlbumView.SelectedIndex;
+                if ( ixImage != -1 )
+                {
+                    string sFile = this.pictureAlbumView.ImageList[ixImage].PhotoSource;
+                    System.IO.FileInfo fi = new FileInfo( sFile );
+
+                    Functions.OpenExternal( fi.DirectoryName );
+                }
+            }
+            catch ( System.IO.IOException )
+            {
+            }
+
+        }
+
+        private void toolStripMenuRemove_Click_1( object sender, EventArgs e )
+        {
+            int ixSelected = this.pictureAlbumView.SelectedIndex;
+            if ( ixSelected != -1 )
+            {
+                if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
+                {
+                    string sRefID = this.pictureAlbumView.ImageList[ixSelected].ReferenceID;
+                    RemoveImageFromActivity( sRefID );
+                }
+            }
+        }
+
+        private void RemoveImageFromActivity( string referenceID )
+        {
+            //Delete selected images
+            PluginData data = Helper.Functions.ReadExtensionData( Activity );
+
+            foreach ( ImageDataSerializable ids in data.Images )
+            {
+                if ( ids.ReferenceID == referenceID )
+                {
+                    data.Images.Remove( ids );
+                    break;
+                }
+            }
+
+            Functions.WriteExtensionData( Activity, data );
+            List<string> referenceIDs=new List<string>();
+            referenceIDs.Add( referenceID );
+            Functions.DeleteThumbnails( referenceIDs );
+
+            ReloadData();
+            UpdateView();
+
+        }
+
+
         #endregion
+
     }
 
     public class PanelEx : ZoneFiveSoftware.Common.Visuals.Panel

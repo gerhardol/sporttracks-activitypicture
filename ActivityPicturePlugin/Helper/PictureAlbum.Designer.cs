@@ -47,29 +47,30 @@ namespace ActivityPicturePlugin.Helper
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.toolTip1 = new System.Windows.Forms.ToolTip( this.components );
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // toolTip1
             // 
             this.toolTip1.AutomaticDelay = 1000;
+            this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
             // 
             // PictureAlbum
             // 
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size( 50, 50 );
+            this.AutoScrollMinSize = new System.Drawing.Size(50, 50);
             this.AutoSize = true;
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding( 0 );
+            this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "PictureAlbum";
-            this.Size = new System.Drawing.Size( 344, 294 );
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler( this.PictureAlbum_MouseClick );
-            this.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler( this.PictureAlbum_MouseDoubleClick );
-            this.MouseEnter += new System.EventHandler( this.PictureAlbum_MouseEnter );
-            this.MouseLeave += new System.EventHandler( this.PictureAlbum_MouseLeave );
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler( this.PictureAlbum_MouseMove );
-            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler( this.PictureAlbum_PreviewKeyDown );
-            this.ResumeLayout( false );
+            this.Size = new System.Drawing.Size(344, 294);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.PictureAlbum_MouseClick);
+            this.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.PictureAlbum_MouseDoubleClick);
+            this.MouseEnter += new System.EventHandler(this.PictureAlbum_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.PictureAlbum_MouseLeave);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureAlbum_MouseMove);
+            this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.PictureAlbum_PreviewKeyDown);
+            this.ResumeLayout(false);
 
         }
 
