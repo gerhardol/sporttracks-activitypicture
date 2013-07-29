@@ -465,53 +465,101 @@ namespace ActivityPicturePlugin.Helper
         // private member variables of the Control - initialization omitted
         Timer albumToolTipTimer = new Timer();
         //bool albumTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
-        int IndexOfLastImage = -1;
+        int IndexOfLastHoveredImage = -1;
+
+        private string GenerateToolTipText()
+        {
+            string tooltip = "";
+            int i = IndexOfLastHoveredImage;
+            if ( i >= 0 )
+            {
+                tooltip = this.ImageList[i].PhotoSource;
+                DateTime dt = DateTime.MinValue;
+                if ( dt < this.ImageList[i].EW.DateTimeOriginal ) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
+                if ( this.ImageList[i].EW.GPSLatitude != 0 ) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace( Environment.NewLine, ", " );
+                if ( !String.IsNullOrEmpty(this.ImageList[i].Title) ) tooltip += Environment.NewLine + this.ImageList[i].Title;
+            }
+            return tooltip;
+        }
 
         private void ToolTipTimer_Tick( object sender, EventArgs e )
         {
             albumToolTipTimer.Stop();
-            if ( IndexOfLastImage >= 0 &&
-                    this.ImageList[IndexOfLastImage].Type == ImageData.DataTypes.Image )
+
+            if ( IndexOfLastHoveredImage >= 0 &&
+                    (this.ImageList[IndexOfLastHoveredImage].Type == ImageData.DataTypes.Image ||
+                    this.ImageList[IndexOfLastHoveredImage].Type==ImageData.DataTypes.Video))
             {
-                int i = IndexOfLastImage;
-                string tooltip = "";
-                tooltip = this.ImageList[i].PhotoSource;
-                DateTime dt = new DateTime( 1950, 1, 1 );
-                if ( dt < this.ImageList[i].EW.DateTimeOriginal ) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
-                if ( this.ImageList[i].EW.GPSLatitude != 0 ) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace( Environment.NewLine, ", " );
-                if ( this.ImageList[i].Title != "" ) tooltip += Environment.NewLine + this.ImageList[i].Title;
+                string tooltip = GenerateToolTipText();
                 this.toolTip1.SetToolTip( this, tooltip );
+                //this.toolTip1.Show( tooltip, this );
             }
             else
-            {
-                toolTip1.Hide( this );
-            }
+                this.toolTip1.Hide( this );
         }
 
         private void PictureAlbum_MouseEnter( object sender, EventArgs e )
         {
+            //Activate tooltip
+            toolTip1.Active = true; 
             this.Focus();
         }
 
         private void PictureAlbum_MouseLeave( object sender, EventArgs e )
         {
+            //Deactivate tooltip
             albumToolTipTimer.Stop();
-            toolTip1.Hide( this );
-            IndexOfLastImage = -1;
+            IndexOfLastHoveredImage = -1;
+            toolTip1.Active = false;
         }
 
         private void PictureAlbum_MouseMove( object sender, MouseEventArgs e )
         {
             int i = GetIndexOfCurrentImage( e.Location );
-            if ( i == IndexOfLastImage )
-                return;
-            else
-                toolTip1.Hide( this );
+            // Activate tip if mouse is over a valid section of the control (ie. an image).
+            toolTip1.Active = ( i >= 0 );   
 
-            IndexOfLastImage = i;
-            albumToolTipTimer.Stop();
-            if ( i >= 0 )
+            if ( i == IndexOfLastHoveredImage )
+                return; // Return if we've already processed a tip for this index
+            else
+            {
+                // It's a new index so hide the old tip and reactivate the timer
+                // so that a new tip will popup after a time.
+                if ( this.toolTip1.Active )
+                    toolTip1.Hide( this );
+                IndexOfLastHoveredImage = i;
+                albumToolTipTimer.Stop();
                 albumToolTipTimer.Start();
+            }
+
+        }
+
+        private void toolTip1_Popup( object sender, PopupEventArgs e )
+        {
+            // Zero length string used here as a flag of a message that should be cancelled. 
+            // ie. Invalid IndexOfLastHoveredImage.
+            string s = "";  
+
+            if ( IndexOfLastHoveredImage >= 0 ) s = GenerateToolTipText();
+            if ( toolTip1.GetToolTip( this ) != s )
+            {
+                // It seems that when the tip first attempts to popup, it shows with its previous message.
+                // If this message doesn't match what the tip should be for this image, cancel the operation.
+                if ( string.IsNullOrEmpty( s ) )
+                {
+                    // Attempting to set a zero length string.  This seems to cause the tooltip to disable
+                    // temporarily causing odd behaviour.  Instead, hide it.
+                    toolTip1.Hide( this );
+                    e.Cancel = true;        // Do not set the zero length tooltip.
+                }
+                else
+                    e.Cancel = true;    // Do not show the previous tooltip message
+            }
+            else
+            {
+                // noop: Nothing to do.  Seems good.
+            }
+
         }
 
         private void PictureAlbum_MouseDoubleClick( object sender, MouseEventArgs e )
@@ -531,33 +579,29 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+                if ( ( e.Button == System.Windows.Forms.MouseButtons.Left ) || ( e.Button == System.Windows.Forms.MouseButtons.Right ) )
                 {
                     CurrentVideoIndex = -1;
                     int i = this.GetIndexOfCurrentImage( e.Location );
                     if ( i >= 0 )
                     {
-                        string s = this.ImageList[i].PhotoSource;
-
                         // Select it if it isn't already
                         if ( !this.ImageList[i].Selected )
-                        {
                             SelectedIndex = i;
-                        }
-
-                        if ( this.ImageList[i].Type == ImageData.DataTypes.Video )
-                        {
-                            this.OpenVideo( this.ImageList[i].PhotoSource, i );
-                        }
                     }
                     else
                     {
                         // Deselect all images
                         SelectedIndex = -1;
-                        //for ( int j = 0; j < this.ImageList.Count; j++ )
-                        //this.ImageList[j].Selected = false;
-                        //this.SelectedChanged( this, new SelectedChangedEventArgs( -1, new Rectangle( -1, -1, -1, -1 ) ) );
-                        //this.Invalidate();
+                    }
+                }
+
+                if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+                {
+                    if ( selectedIndex != -1 )
+                    {
+                        if ( this.ImageList[selectedIndex].Type == ImageData.DataTypes.Video )
+                            this.OpenVideo( this.ImageList[selectedIndex].PhotoSource, selectedIndex );
                     }
                 }
             }

@@ -583,6 +583,22 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        public void ResetVideoThumbnail()
+        {
+            string defpath = this.ThumbnailPath;
+
+            //Check if image on the WebFiles folder exists
+            if ( System.IO.File.Exists( defpath ) )
+            {
+                // Create new image in the default folder
+                using ( Bitmap bmp = (Bitmap)( Resources.Resources.video ).Clone() )
+                {
+                    Functions.SaveThumbnailImage( bmp, defpath, 10 );
+                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                }
+            }
+        }
+
         //Replaces the current thumbnail with the video image at iFrame
         //If iFrame is -1, default video image is used
         public bool ReplaceVideoThumbnail( int iFrame, Size size, double dblTimePerFrame )
