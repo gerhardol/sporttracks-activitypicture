@@ -13,7 +13,30 @@
     <DefineConstants>$(DefineConstants);ACTIVITYPICTURESPLUGIN</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.QuartzTypeLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\References\Interop.QuartzTypeLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MetaDataExtractor\MetaDataExtractor.csproj">
+      <Project>{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}</Project>
+      <Name>MetaDataExtractor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.DexterLib, Version=1.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\References\Interop.DexterLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUIDs.cs" />
@@ -169,65 +192,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="QuartzTypeLib">
-      <Guid>{56A868B0-0AD4-11CE-B03A-0020AF0BA770}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Play.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Pause.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Stop.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\video.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\btnimage.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\btnvideo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MetaDataExtractor\MetaDataExtractor.csproj">
-      <Project>{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}</Project>
-      <Name>MetaDataExtractor</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\image.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\GE.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\GE1.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\camera.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\GE2.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Interop.DexterLib, Version=1.0.0.0, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\References\Interop.DexterLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Common\Common-Files.csproj" />
