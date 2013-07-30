@@ -1117,19 +1117,22 @@ namespace ActivityPicturePlugin.Helper
 
         internal static ImageData.DataTypes GetMediaType( string p )
         {
-            System.IO.FileInfo fi = new FileInfo( p );
-            //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
-            string[] extimg = { ".jpg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
-            string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
-            foreach ( string str in extimg )
+            if (!string.IsNullOrEmpty(p))
             {
-                //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
-                if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Image;
-            }
-            foreach ( string str in extvid )
-            {
-                //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
-                if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Video;
+                System.IO.FileInfo fi = new FileInfo(p);
+                //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
+                string[] extimg = { ".jpg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
+                string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
+                foreach (string str in extimg)
+                {
+                    //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
+                    if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Image;
+                }
+                foreach (string str in extvid)
+                {
+                    //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
+                    if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Video;
+                }
             }
             return ImageData.DataTypes.Nothing;
         }
