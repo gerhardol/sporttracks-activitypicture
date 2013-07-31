@@ -1,4 +1,4 @@
-REM Copyright (C) 2011 Gerhard Olsson
+REM Copyright (C) 2011-2013 Gerhard Olsson
 REM
 REM This library is free software; you can redistribute it and/or
 REM modify it under the terms of the GNU Lesser General Public
@@ -58,29 +58,41 @@ rem DEL %tempfile%
 set stPlgFile=%ProjectDir%%ProjectName%-%PluginVersion%.st%StPluginVersion%plugin
 IF NOT "%ConfigurationType%"=="Release" set stPlgFile="%ProjectDir%%ProjectName%-%PluginVersion%-%ConfigurationType%.st%StPluginVersion%plugin"
 REM To move a .stplugin to common area, create environment variable (or set it below)
-REM set stPlgoutdir=g:\Users\go\dev\web
-
-REM Vista+ / XP compatibility
-set C_APPDATA=%PROGRAMDATA%
-IF "%C_APPDATA%"=="" set C_APPDATA=%ALLUSERSPROFILE%\Application Data
-IF EXIST "%C_APPDATA%" GOTO COPY_REL
-GOTO END_COPY_REL
-
-:COPY_REL
-set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%ProjectName%"
-IF NOT EXIST %StTarget% mkdir %StTarget%
-
-REM XCOPY depreciated in Vista, use for XP compatibility
-XCOPY  "%TargetDir%*.*" %StTarget% /I/Y/Q/E <NUL:
-:END_COPY_REL
-
-REM Project specific
-copy "%ProjectDir%\..\MetaDataExtractor\bin\%ConfigurationType%\MetaDataExtractor.dll" "%StTarget%"
+REM set stPlgoutdir=f:\dev\web
 
 REM generate the plugin.xml file
 ECHO ^<?xml version="1.0" encoding="utf-8" ?^> >  "%TargetDir%plugin.xml"
 ECHO ^<plugin id="%guid%" minimumCommonVersion="%StVersion%" /^> >> "%TargetDir%plugin.xml"
 
+REM **************** COPY_FILES *************************
+REM Vista+ / XP compatibility
+set C_APPDATA=%PROGRAMDATA%
+IF "%C_APPDATA%"=="" set C_APPDATA=%ALLUSERSPROFILE%\Application Data
+IF NOT EXIST "%C_APPDATA%" GOTO END_COPY_FILES
+
+:COPY_FILES
+set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%ProjectName%"
+IF NOT "%ConfigurationType%"=="Profile" GOTO DO_COPY_FILES
+REM Copy directly to active dir (ST must be stopped)
+set StTarget="%C_APPDATA%\%StPluginPath%\Installed\%guid%\%ProjectName%"
+
+:DO_COPY_FILES
+IF EXIST %C_APPDATA%\%StPluginPath%\Update ECHO Delete %C_APPDATA%\%StPluginPath%\Update\%guid%
+IF NOT EXIST %StTarget% mkdir %StTarget%
+
+REM XCOPY depreciated in Vista, use for XP compatibility
+XCOPY  "%TargetDir%*.*"                                      %StTarget% /I/Y/Q/E <NUL:
+
+REM Project specific files
+REM copy "%ProjectDir%\..\MetaDataExtractor\bin\%ConfigurationType%\MetaDataExtractor.dll" "%StTarget%"
+
+IF NOT "%ConfigurationType%"=="Profile" GOTO END_COPY_FILES
+XCOPY  "%ProgramFiles%\Zone Five Software\SportTracks %StPluginVersion%\*.*" %StTarget% /I/Y/Q <NUL:
+
+:END_COPY_FILES
+
+REM **************** ZIP_PACKAGE *************************
+IF "%ConfigurationType%"=="Profile" GOTO END_ZIP_PACKAGE
 IF EXIST "%stPlgFile%" DEL "%stPlgFile%"
 IF EXIST "%sevenzip%" GOTO ZIP_PACKAGE
 
@@ -102,6 +114,7 @@ GOTO COPY_ZIP_PACKAGE
 IF "%stPlgoutdir%"=="" GOTO END
 IF not EXIST "%stPlgoutdir%" GOTO END
 COPY "%stPlgFile%" "%stPlgoutdir%"
+
 :END_ZIP_PACKAGE
 
 :END

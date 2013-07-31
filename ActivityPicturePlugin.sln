@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityPicturePlugin", "ActivityPicturePlugin\ActivityPicturePlugin.csproj", "{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaDataExtractor", "MetaDataExtractor\MetaDataExtractor.csproj", "{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}"
@@ -8,15 +8,20 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ST3.0Debug|Any CPU = ST3.0Debug|Any CPU
+		ST3.0Profile|Any CPU = ST3.0Profile|Any CPU
 		ST3.0Release|Any CPU = ST3.0Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
 		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Profile|Any CPU.ActiveCfg = ST3.0Profile|Any CPU
+		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Profile|Any CPU.Build.0 = ST3.0Profile|Any CPU
 		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
 		{AFB2A288-5E9D-4291-9B1C-5323114D2FF6}.ST3.0Release|Any CPU.Build.0 = ST3.0Release|Any CPU
 		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Profile|Any CPU.Build.0 = Release|Any CPU
 		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}.ST3.0Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
