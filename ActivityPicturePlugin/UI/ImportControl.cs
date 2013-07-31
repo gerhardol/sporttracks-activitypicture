@@ -877,8 +877,6 @@ namespace ActivityPicturePlugin.UI
 
         private void AddFileToListView( FileInfo file, ImageData.DataTypes dt )
         {
-            //   try
-            //     {
             ListViewItem lvi = new ListViewItem();
             lvi.Text = file.Name;
             lvi.ImageIndex = m_files.IndexOf( file );
@@ -886,27 +884,38 @@ namespace ActivityPicturePlugin.UI
 
             if ( dt == ImageData.DataTypes.Image )
             {
-                string dts = "";
                 try
                 {
-                    ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory( file.FullName );
-                    GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory( file.FullName );
+                    if (Functions.IsJpeg(file))
+                    {
+                        ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
+                        GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
 
-                    string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    dts = DateTime.ParseExact( s, "yyyy:MM:dd HH:mm:ss", culture ).ToString();
-                    lvi.SubItems.Add( dts );
+                        if (ed != null)
+                        {
+                            string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                            IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
+                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                            lvi.SubItems.Add(dts);
+                        }
 
-                    string latref = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE_REF );
-                    string latitude = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE );
-                    string longitude = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE );
-                    string longref = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE_REF );
-                    string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
-                    if ( latitude != null ) lvi.SubItems.Add( gpsstr );
-                    else lvi.SubItems.Add( "" );
+                        if (gps != null)
+                        {
+                            string latref = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE_REF);
+                            string latitude = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE);
+                            string longitude = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE);
+                            string longref = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                            string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
+                            if (latitude != null) lvi.SubItems.Add(gpsstr);
+                            else lvi.SubItems.Add("");
+                        }
 
-                    lvi.SubItems.Add( (string)( ed.GetDescription( ExifDirectory.TAG_XP_TITLE ) ) );
-                    lvi.SubItems.Add( (string)( ed.GetDescription( ExifDirectory.TAG_XP_COMMENTS ) ) );
+                        if (ed != null)
+                        {
+                            lvi.SubItems.Add((string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE)));
+                            lvi.SubItems.Add((string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS)));
+                        }
+                    }
                 }
                 catch ( Exception )
                 {
@@ -1322,14 +1331,20 @@ namespace ActivityPicturePlugin.UI
             {
                 lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
                 progressBar2.Value = j;
-                try
+                strx = "9999";
+                if (Functions.IsJpeg(fi))
                 {
-                    ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( fi.FullName );
-                    strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                }
-                catch ( Exception )
-                {
-                    strx = "9999";
+                    try
+                    {
+                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(fi.FullName);
+                        if (ex != null)
+                        {
+                            strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
@@ -1945,24 +1960,35 @@ namespace ActivityPicturePlugin.UI
             {
                 FileInfo tx = x as FileInfo;
                 FileInfo ty = y as FileInfo;
-                string strx, stry;
-                try
+                string strx = "9999";
+                string stry = "9999";
+                if (Functions.IsJpeg(tx))
                 {
-                    ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( tx.FullName );
-                    strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
+                    try
+                    {
+                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(tx.FullName);
+                        if (ex != null)
+                        {
+                            strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
-                catch ( Exception )
+                if (Functions.IsJpeg(ty))
                 {
-                    strx = "9999";
-                }
-                try
-                {
-                    ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory( ty.FullName );
-                    stry = ey.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                }
-                catch ( Exception )
-                {
-                    stry = "9999";
+                    try
+                    {
+                        ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory(ty.FullName);
+                        if (ey != null)
+                        {
+                            stry = ey.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 return string.Compare( strx, stry );
             }

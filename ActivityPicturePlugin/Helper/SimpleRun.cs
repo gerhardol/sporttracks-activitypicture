@@ -77,7 +77,7 @@ namespace ActivityPicturePlugin.Helper
             catch (JpegProcessingException e)
                 {
                 Console.Error.WriteLine(e.Message);
-                return "Error";
+                return "";
                 }
 
             // Now try to print them

@@ -32,20 +32,36 @@ namespace ActivityPicturePlugin.Helper
 {
     static class Functions
     {
+        internal static bool IsJpeg(FileInfo file)
+        {
+            if (file.Extension.ToLower() == ".jpg" || file.Extension.ToLower() == ".jpeg")
+            {
+                return true;
+            }
+            return false;
+        }
+
         internal static DateTime GetFileTime( String filename )
         {
             try
             {
-                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime( filename );
-                IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                DateTime dt = DateTime.ParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture );
-                return dt;
+                //TODO: Get file date, also for non-jpeg
+                FileInfo file = new FileInfo(filename);
+                if (IsJpeg(file))
+                {
+                    string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
+                    if (!string.IsNullOrEmpty(fileTime))
+                    {
+                        IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
+                        DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
+                        return dt;
+                    }
+                }
             }
-            catch ( Exception )
+            catch (Exception)
             {
-                return new DateTime();
-                //throw;
             }
+            return new DateTime();
         }
 
         internal static bool ValidVideoFile( string s )
@@ -1090,20 +1106,27 @@ namespace ActivityPicturePlugin.Helper
                 {
                     g.DrawRectangle( Pens.Black, 0, 0, thumb.Width - 1, thumb.Height - 1 );
                 }
-                tmp.Dispose();
-                tmp = null;
+                if (tmp != null)
+                {
+                    tmp.Dispose();
+                    tmp = null;
+                }
 
                 return thumb;
             }
             catch ( Exception )
             {
-                if ( thumb != null )
+                if (thumb != null)
+                {
                     thumb.Dispose();
-                thumb = null;
+                    thumb = null;
+                }
 
-                if ( tmp != null )
+                if (tmp != null)
+                {
                     tmp.Dispose();
-                tmp = null;
+                    tmp = null;
+                }
 
                 return null;
             }
@@ -1121,7 +1144,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.IO.FileInfo fi = new FileInfo(p);
                 //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
-                string[] extimg = { ".jpg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
+                string[] extimg = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
                 string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
                 foreach (string str in extimg)
                 {
