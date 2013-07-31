@@ -32,11 +32,19 @@ namespace ActivityPicturePlugin.Helper
 {
     static class Functions
     {
-        internal static bool IsJpeg(FileInfo file)
+        private static readonly string[] ExifExt = { ".jpg", ".jpeg", ".tif", ".tiff" };
+        private static readonly string[] ImageExt = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
+        private static readonly string[] VideoExt = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
+
+        internal static bool IsExifFileExt(FileInfo file)
         {
-            if (file.Extension.ToLower() == ".jpg" || file.Extension.ToLower() == ".jpeg")
+            foreach (string iExt in ImageExt)
             {
-                return true;
+                string ext = file.Extension.ToLower();
+                if (ext == iExt)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -47,7 +55,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 //TODO: Get file date, also for non-jpeg
                 FileInfo file = new FileInfo(filename);
-                if (IsJpeg(file))
+                if (IsExifFileExt(file))
                 {
                     string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
                     if (!string.IsNullOrEmpty(fileTime))
@@ -1144,14 +1152,12 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.IO.FileInfo fi = new FileInfo(p);
                 //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
-                string[] extimg = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
-                string[] extvid = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
-                foreach (string str in extimg)
+                foreach (string str in ImageExt)
                 {
                     //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
                     if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Image;
                 }
-                foreach (string str in extvid)
+                foreach (string str in VideoExt)
                 {
                     //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
                     if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Video;
