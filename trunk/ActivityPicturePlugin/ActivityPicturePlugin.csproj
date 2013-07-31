@@ -24,7 +24,7 @@
     <ProjectReference Include="..\MetaDataExtractor\MetaDataExtractor.csproj">
       <Project>{B46F6C6C-9184-41AF-8F8B-E0084752CA7C}</Project>
       <Name>MetaDataExtractor</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
