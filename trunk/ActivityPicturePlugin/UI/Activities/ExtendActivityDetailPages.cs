@@ -48,17 +48,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 //return new IActivityDetailPage[] { new ActivityPicturePage() };
             }
         }
-#else
-        public IList<IDetailPage> GetDetailPages(IDailyActivityView view, ExtendViewDetailPages.Location location)
-        {
-            return new IDetailPage[] { new ActivityPicturePage(view) };
-        }
-#endif
-        public void Dispose()
-        {
-            Dispose( true );
-            GC.SuppressFinalize( this );
-        }
+
         protected virtual void Dispose( bool disposing )
         {
             if ( ( disposing ) && ( m_Control != null ) )
@@ -66,6 +56,21 @@ namespace ActivityPicturePlugin.UI.Activities
                 m_Control.Dispose();
                 m_Control = null;
             }
+        }
+
+#else
+        public IList<IDetailPage> GetDetailPages(IDailyActivityView view, ExtendViewDetailPages.Location location)
+        {
+            return new IDetailPage[] { new ActivityPicturePage(view) };
+        }
+#endif
+
+        public void Dispose()
+        {
+#if ST_2_1
+            Dispose( true );
+#endif
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
