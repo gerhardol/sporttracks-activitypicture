@@ -76,6 +76,7 @@ namespace ActivityPicturePlugin.Helper
                 }
             catch (JpegProcessingException e)
                 {
+                //TODO: fall back on standard file time
                 Console.Error.WriteLine(e.Message);
                 return "";
                 }

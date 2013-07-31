@@ -886,7 +886,7 @@ namespace ActivityPicturePlugin.UI
             {
                 try
                 {
-                    if (Functions.IsJpeg(file))
+                    if (Functions.IsExifFileExt(file))
                     {
                         ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
                         GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
@@ -1332,7 +1332,7 @@ namespace ActivityPicturePlugin.UI
                 lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
                 progressBar2.Value = j;
                 strx = "9999";
-                if (Functions.IsJpeg(fi))
+                if (Functions.IsExifFileExt(fi))
                 {
                     try
                     {
@@ -1962,7 +1962,7 @@ namespace ActivityPicturePlugin.UI
                 FileInfo ty = y as FileInfo;
                 string strx = "9999";
                 string stry = "9999";
-                if (Functions.IsJpeg(tx))
+                if (Functions.IsExifFileExt(tx))
                 {
                     try
                     {
@@ -1976,7 +1976,7 @@ namespace ActivityPicturePlugin.UI
                     {
                     }
                 }
-                if (Functions.IsJpeg(ty))
+                if (Functions.IsExifFileExt(ty))
                 {
                     try
                     {
