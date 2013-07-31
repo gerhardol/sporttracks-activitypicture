@@ -1742,7 +1742,7 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
 
             Functions.WriteExtensionData( Activity, data );
-            List<string> referenceIDs=new List<string>();
+            List<string> referenceIDs = new List<string>();
             referenceIDs.Add( referenceID );
             Functions.DeleteThumbnails( referenceIDs );
 

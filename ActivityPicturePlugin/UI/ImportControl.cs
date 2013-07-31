@@ -129,6 +129,7 @@ namespace ActivityPicturePlugin.UI
 
         public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
         {
+            m_visualTheme = visualTheme;
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.ControlText;
             this.progressBar2.BackColor = visualTheme.Control;
@@ -184,6 +185,11 @@ namespace ActivityPicturePlugin.UI
         private int m_NumDayNodes = 0; //needed for progress bar
         private int m_numFilesImported = 0;
         private System.Globalization.CultureInfo m_culture = System.Globalization.CultureInfo.CurrentUICulture;
+
+        private TreeNode CapturedTreeViewActNode = null;
+        private TreeNode CapturedTreeViewImagesNode = null;
+        private ZoneFiveSoftware.Common.Visuals.ITheme m_visualTheme = null;
+
         #endregion
 
         #region Public properties
@@ -201,7 +207,7 @@ namespace ActivityPicturePlugin.UI
         {
             m_numFilesImported = 0;
             m_files.Clear();
-            // Remove? 
+            // Remove?
             ResetProgressBar();
 
             UpdateUICulture( m_culture );
@@ -250,35 +256,35 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void GetSubDirectoryNodes(TreeNode parentNode)
+        private void GetSubDirectoryNodes( TreeNode parentNode )
         {
             try
             {
-                DirectoryInfo dir = new DirectoryInfo(parentNode.FullPath);
+                DirectoryInfo dir = new DirectoryInfo( parentNode.FullPath );
                 DirectoryInfo[] dirSubs = dir.GetDirectories();
-                foreach (DirectoryInfo dirsub in dirSubs)
+                foreach ( DirectoryInfo dirsub in dirSubs )
                 {
-                    if (((dirsub.Attributes & FileAttributes.System) == FileAttributes.System) ||
-                        ((dirsub.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
+                    if ( ( ( dirsub.Attributes & FileAttributes.System ) == FileAttributes.System ) ||
+                        ( ( dirsub.Attributes & FileAttributes.Hidden ) == FileAttributes.Hidden ) )
                         continue;	// Do not display hidden or system folders
 
-                    TreeNode subNode = new TreeNode(dirsub.Name);
+                    TreeNode subNode = new TreeNode( dirsub.Name );
                     try
                     {
-                        if (dirsub.GetDirectories().Length != 0) subNode.Nodes.Add(gDummyFolder);
+                        if ( dirsub.GetDirectories().Length != 0 ) subNode.Nodes.Add( gDummyFolder );
                         subNode.Tag = dirsub;
-                        parentNode.Nodes.Add(subNode);
+                        parentNode.Nodes.Add( subNode );
                         subNode.Checked = parentNode.Checked;
                     }
-                    catch (UnauthorizedAccessException ex)
+                    catch ( UnauthorizedAccessException ex )
                     { /* Move on to the next folder.*/
                     }
-                    catch (Exception e)
+                    catch ( Exception e )
                     {
                     }
                 }
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
@@ -292,6 +298,18 @@ namespace ActivityPicturePlugin.UI
             {
                 m_files.Clear();
                 m_files.InsertRange( 0, m_DriveDir.GetFiles() );
+
+                for ( int i = 0; i < m_files.Count; i++ )
+                {
+                    if ( ( ( m_files[i].Attributes & FileAttributes.Hidden ) != 0 ) ||
+                        ( ( m_files[i].Attributes & FileAttributes.Encrypted ) != 0 ) ||
+                        ( ( m_files[i].Attributes & FileAttributes.System ) != 0 ) )
+                    {
+                        m_files.RemoveAt( i );
+                        i--;
+                    }
+                }
+
 
                 listViewDrive.Items.Clear();
 
@@ -368,7 +386,7 @@ namespace ActivityPicturePlugin.UI
                 // throw;
 
             }
-            
+
 
         }
 
@@ -652,7 +670,7 @@ namespace ActivityPicturePlugin.UI
             this.progressBar2.Minimum = 0;
             this.progressBar2.Maximum = m_NumDayNodes;
             this.progressBar2.Step = 1;
-            // Remove? 
+            // Remove?
             this.ResetProgressBar();
             this.listViewAct.Items.Clear();
             foreach ( TreeNode year in this.treeViewActivities.Nodes )
@@ -898,44 +916,44 @@ namespace ActivityPicturePlugin.UI
             {
                 try
                 {
-                    if (Functions.IsExifFileExt(file))
+                    if ( Functions.IsExifFileExt( file ) )
                     {
-                        ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
-                        GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
+                        ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory( file.FullName );
+                        GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory( file.FullName );
 
-                        if (ed != null)
+                        if ( ed != null )
                         {
-                            string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
-                            IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                            if (!string.IsNullOrEmpty(s))
+                            string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
+                            IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                            if ( !string.IsNullOrEmpty( s ) )
                             {
-                                string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
-                                lvi.SubItems.Add(dts);
+                                string dts = DateTime.ParseExact( s, "yyyy:MM:dd HH:mm:ss", culture ).ToString();
+                                lvi.SubItems.Add( dts );
                             }
                         }
 
-                        if (gps != null)
+                        if ( gps != null )
                         {
-                            string latref = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE_REF);
-                            string latitude = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE);
-                            string longitude = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE);
-                            string longref = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                            string latref = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE_REF );
+                            string latitude = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE );
+                            string longitude = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE );
+                            string longref = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE_REF );
                             string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
-                            if (latitude != null) lvi.SubItems.Add(gpsstr);
-                            else lvi.SubItems.Add("");
+                            if ( latitude != null ) lvi.SubItems.Add( gpsstr );
+                            else lvi.SubItems.Add( "" );
                         }
 
-                        if (ed != null)
+                        if ( ed != null )
                         {
-                            string s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE));
-                            if (!string.IsNullOrEmpty(s))
+                            string s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_TITLE ) );
+                            if ( !string.IsNullOrEmpty( s ) )
                             {
-                                lvi.SubItems.Add(s);
+                                lvi.SubItems.Add( s );
                             }
-                            s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS)); 
-                            if (!string.IsNullOrEmpty(s))
+                            s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_COMMENTS ) );
+                            if ( !string.IsNullOrEmpty( s ) )
                             {
-                                lvi.SubItems.Add(s);
+                                lvi.SubItems.Add( s );
                             }
                         }
                     }
@@ -947,6 +965,7 @@ namespace ActivityPicturePlugin.UI
             }
             this.listViewDrive.Items.Add( lvi );
         }
+
 
         #endregion
 
@@ -1003,7 +1022,7 @@ namespace ActivityPicturePlugin.UI
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
                         // Remove? this.ResetProgressBar();
-                        //fix call timerProgressBar.Enabled = false;
+                        // fix timerProgressBar.Enabled = false;
                         foreach ( ImageData id in il )
                         {
                             try
@@ -1021,15 +1040,28 @@ namespace ActivityPicturePlugin.UI
                                 this.listViewAct.Items.Add( lvi );
 
                                 //images (large and small icons)
-                                Image img = Image.FromFile( id.ThumbnailPath );
+                                Image img = null;
+                                try
+                                {
+                                    img = Image.FromFile( id.ThumbnailPath );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    //Something was wrong with the thumbnail.
+                                    //Add a 'delete' thumbnail as a placeholder so the item can
+                                    //officially be deleted by the user.
+                                    System.Diagnostics.Debug.Print( ex.Message );
+                                    img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
+                                }
                                 lil.Images.Add( Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
                                 lis.Images.Add( Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
                                 Application.DoEvents();
                                 img.Dispose();
                                 img = null;
                             }
-                            catch ( Exception )
+                            catch ( Exception ex )
                             {
+                                System.Diagnostics.Debug.Print( ex.Message );
                                 //throw;
                             }
                             j++;
@@ -1118,7 +1150,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.Visible = true;
         }
 
-        private void SetLabelText(string text)
+        private void SetLabelText( string text )
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
@@ -1141,27 +1173,27 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 NodeSorter ns = new NodeSorter();
-                this.m_ActivityNodes.Sort(ns.Compare);
+                this.m_ActivityNodes.Sort( ns.Compare );
 
                 DateTime FirstStart = new DateTime();
                 DateTime LastEnd = new DateTime();
                 IActivity FirstAct, LastAct;
 
-                if (this.m_ActivityNodes[0].Tag is IActivity)
+                if ( this.m_ActivityNodes[0].Tag is IActivity )
                 {
-                    FirstAct = (IActivity)(this.m_ActivityNodes[0].Tag);
+                    FirstAct = (IActivity)( this.m_ActivityNodes[0].Tag );
                     FirstStart = FirstAct.StartTime.ToLocalTime();
                 }
 
-                if (this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity)
+                if ( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity )
                 {
-                    LastAct = (IActivity)(this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag);
-                    LastEnd = GetActivityEndTime(LastAct);
+                    LastAct = (IActivity)( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag );
+                    LastEnd = GetActivityEndTime( LastAct );
                 }
 
                 IActivity CurrentActivity;
                 int CurrentIndex = 0;
-                CurrentActivity = (IActivity)(this.m_ActivityNodes[0].Tag);
+                CurrentActivity = (IActivity)( this.m_ActivityNodes[0].Tag );
 
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
@@ -1169,55 +1201,55 @@ namespace ActivityPicturePlugin.UI
                 this.ResetProgressBar();
                 int i = 0;
                 DateTime FileTime = new DateTime();
-                foreach (FileInfo file in m_files)
+                foreach ( FileInfo file in m_files )
                 {
                     Application.DoEvents();
 
                     i++;
-                    this.progressBar2.Value = (int)(100 * (double)(i) / (double)(m_files.Count));
+                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
 
-                    FileTime = Functions.GetFileTime(file.FullName);
+                    FileTime = Functions.GetFileTime( file.FullName );
 
                     //{ //A valid EXIF metadata has been found                
-                    if ((FileTime > FirstStart) &
-                        (FileTime < LastEnd))
+                    if ( ( FileTime > FirstStart ) &
+                        ( FileTime < LastEnd ) )
                     {//dateTime im picture is within the range of all activities
 
-                        if (FileTime > CurrentActivity.StartTime.ToLocalTime())
+                        if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                         {
-                            if (FileTime > GetActivityEndTime(CurrentActivity))
+                            if ( FileTime > GetActivityEndTime( CurrentActivity ) )
                             {
                                 //picture has been taken later => cycle to next activity
-                                while (CurrentIndex < this.m_ActivityNodes.Count)
+                                while ( CurrentIndex < this.m_ActivityNodes.Count )
                                 {
                                     CurrentIndex++;
-                                    CurrentActivity = (IActivity)(this.m_ActivityNodes[CurrentIndex].Tag);
-                                    if (FileTime < GetActivityEndTime(CurrentActivity)) break;
+                                    CurrentActivity = (IActivity)( this.m_ActivityNodes[CurrentIndex].Tag );
+                                    if ( FileTime < GetActivityEndTime( CurrentActivity ) ) break;
                                 }
-                                if (!(CurrentIndex < this.m_ActivityNodes.Count)) //cycled through all activities, no match found
+                                if ( !( CurrentIndex < this.m_ActivityNodes.Count ) ) //cycled through all activities, no match found
                                 {
                                     break;//break foreach file loop
                                 }
                             }
 
-                            if (FileTime > CurrentActivity.StartTime.ToLocalTime())
+                            if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                             {
                                 //the picture has been taken during the activity
-                                PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
+                                PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
 
                                 //Check if Image does already exist in the current activity
-                                if (!ImageAlreadyExistsInActivity(file.Name, data))
+                                if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
                                 {
                                     this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = GetImageDataSerializableFromFile(file.FullName);
-                                    if (ids != null) data.Images.Add(ids);
-                                    Functions.WriteExtensionData(CurrentActivity, data);
+                                    ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
+                                    if ( ids != null ) data.Images.Add( ids );
+                                    Functions.WriteExtensionData( CurrentActivity, data );
                                     m_numFilesImported++;
 
-                                    using (ImageData ID = new ImageData(ids))
+                                    using ( ImageData ID = new ImageData( ids ) )
                                     {
                                         ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
                                     }
@@ -1230,11 +1262,11 @@ namespace ActivityPicturePlugin.UI
                 }
 
                 this.HideProgressBar();
-                this.lblProgress.Text = String.Format(Resources.Resources.ImportControl_scanDone,
-                    m_numFilesImported);
+                this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone,
+                    m_numFilesImported );
 
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 //throw;
             }
@@ -1242,7 +1274,7 @@ namespace ActivityPicturePlugin.UI
 
         private static DateTime GetActivityEndTime( IActivity Act )
         {
-            ActivityInfo info = ActivityInfoCache.Instance.GetInfo(Act);
+            ActivityInfo info = ActivityInfoCache.Instance.GetInfo( Act );
             return info.EndTime.ToLocalTime();
         }
 
@@ -1264,7 +1296,7 @@ namespace ActivityPicturePlugin.UI
             {
                 if ( node.Tag is DirectoryInfo )
                 {
-                    if (this.progressBar2.Value >= this.progressBar2.Maximum)
+                    if ( this.progressBar2.Value >= this.progressBar2.Maximum )
                     {
                         this.progressBar2.Value = 0;
                     }
@@ -1272,7 +1304,7 @@ namespace ActivityPicturePlugin.UI
                     {
                         this.progressBar2.Value++;
                     }
-                    
+
                     DirectoryInfo dir = (DirectoryInfo)( node.Tag );
 
                     //Check if directory has been expanded before
@@ -1298,7 +1330,10 @@ namespace ActivityPicturePlugin.UI
                     {
                         if ( Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing )
                         {
-                            if ( !m_files.Contains( file ) )
+                            if ( ( !m_files.Contains( file ) ) &&
+                                ( ( file.Attributes & FileAttributes.Hidden ) == 0 ) &&
+                                ( ( file.Attributes & FileAttributes.Encrypted ) == 0 ) &
+                                ( ( file.Attributes & FileAttributes.System ) == 0 ) )
                             {
                                 //TODO: Filter when importing
                                 m_files.Add( file );
@@ -1339,17 +1374,17 @@ namespace ActivityPicturePlugin.UI
                 lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
                 progressBar2.Value = j;
                 strx = "9999";
-                if (Functions.IsExifFileExt(fi))
+                if ( Functions.IsExifFileExt( fi ) )
                 {
                     try
                     {
-                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(fi.FullName);
-                        if (ex != null)
+                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( fi.FullName );
+                        if ( ex != null )
                         {
-                            strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                            strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
                         }
                     }
-                    catch (Exception)
+                    catch ( Exception )
                     {
                     }
                 }
@@ -1407,6 +1442,293 @@ namespace ActivityPicturePlugin.UI
                 sorter.SortDirection = SortOrder.Ascending;
 
             return sorter;
+        }
+
+        private static Bitmap MakeSelectedBitmap( Bitmap bmp, Color bgColor )
+        {
+            double dblAlpha = 128f / 255;
+            for ( int x = 0; x < bmp.Width; x++ )
+            {
+                for ( int y = 0; y < bmp.Height; y++ )
+                {
+                    Color c = bmp.GetPixel( x, y );
+                    Color c2 = Color.FromArgb( 255,
+                        (byte)( dblAlpha * c.R + ( 1 - dblAlpha ) * bgColor.R ),
+                        (byte)( dblAlpha * c.G + ( 1 - dblAlpha ) * bgColor.G ),
+                        (byte)( dblAlpha * c.B + ( 1 - dblAlpha ) * bgColor.B ) );
+                    bmp.SetPixel( x, y, c2 );
+                }
+            }
+            return bmp;
+        }
+
+        private void listView_DrawTile( SolidBrush backBrush, SolidBrush foreBrush, DrawListViewItemEventArgs e )
+        {
+            Rectangle rectIcon = e.Item.GetBounds( ItemBoundsPortion.Icon );
+            Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.Label );
+
+            //Draw the icon
+            ImageList il = e.Item.ImageList;
+            RectangleF rectImage = new RectangleF();
+            if ( il != null )
+            {
+                Image img = il.Images[e.ItemIndex];
+
+                rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
+                    (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
+                    img.Width,
+                    img.Height );
+
+                System.Drawing.Bitmap bmpSelected = (Bitmap)img;
+                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                    bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
+
+                e.Graphics.DrawImage( bmpSelected, rectImage );
+            }
+
+            using ( StringFormat sf = new StringFormat() )
+            {
+                sf.LineAlignment = StringAlignment.Near;
+                sf.Alignment = StringAlignment.Near;
+                sf.FormatFlags |= StringFormatFlags.NoWrap;
+                sf.Trimming = StringTrimming.EllipsisCharacter | StringTrimming.Word;
+
+                // The first 'subitem' is the item which we already drew above.
+                string sDetails = "";
+                for ( int i = 0; i < e.Item.SubItems.Count; i++ )
+                    sDetails += e.Item.SubItems[i].Text + Environment.NewLine;
+                sDetails = sDetails.Trim();
+
+                SizeF layoutArea = new SizeF( rectItem.Width, rectItem.Height );
+                SizeF s = e.Graphics.MeasureString( sDetails, e.Item.ListView.Font, layoutArea );
+
+                RectangleF rectF = new RectangleF( rectItem.X,
+                    rectItem.Top + ( rectItem.Height - s.Height ) / 2,
+                    s.Width,
+                    s.Height );
+
+                e.Graphics.FillRectangle( backBrush, rectF );
+                e.Graphics.DrawString( sDetails,
+                    e.Item.ListView.Font,
+                    foreBrush,
+                    rectF, sf );
+            }
+        }
+
+        private void listView_DrawSmallIcon( SolidBrush backBrush, SolidBrush foreBrush, DrawListViewItemEventArgs e )
+        {
+            //Paint the background
+            Rectangle rectIcon = e.Item.GetBounds( ItemBoundsPortion.Icon );
+            Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.Label );
+            e.Graphics.FillRectangle( backBrush, rectItem.X + 2,
+                rectItem.Y,
+                rectItem.Width - 2,
+                rectItem.Height );
+
+            //Draw the icon
+            ImageList il = e.Item.ImageList;
+            RectangleF rectImage = new RectangleF();
+            if ( il != null )
+            {
+                Image img = il.Images[e.ItemIndex];
+
+                rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
+                    (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
+                    img.Width,
+                    img.Height );
+
+                System.Drawing.Bitmap bmpSelected = (Bitmap)img;
+                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                    bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
+                e.Graphics.DrawImage( bmpSelected, rectImage );
+            }
+
+            SizeF s = e.Graphics.MeasureString( e.Item.Text, e.Item.ListView.Font );
+            RectangleF rectF = new RectangleF( rectItem.Left,
+                ( rectItem.Height - s.Height ) / 2 + rectItem.Top,
+                rectItem.Width,
+                rectItem.Height );
+
+            using ( StringFormat sf = new StringFormat() )
+            {
+                sf.LineAlignment = StringAlignment.Near;
+                sf.Alignment = StringAlignment.Near;
+                sf.FormatFlags |= StringFormatFlags.NoWrap;
+                sf.Trimming = StringTrimming.EllipsisCharacter | StringTrimming.Word;
+
+                e.Graphics.DrawString( e.Item.Text,
+                    e.Item.ListView.Font,
+                    foreBrush,
+                    rectF.X, rectF.Y, sf );
+            }
+        }
+
+        private void listView_DrawList( SolidBrush backBrush, SolidBrush foreBrush, DrawListViewItemEventArgs e )
+        {
+            //Paint the background
+            Rectangle rectIcon = e.Item.GetBounds( ItemBoundsPortion.Icon );
+            Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.Label );
+            e.Graphics.FillRectangle( backBrush, rectItem.X + 2,
+                rectItem.Y,
+                rectItem.Width - 2,
+                rectItem.Height );
+
+            //Draw the icon
+            ImageList il = e.Item.ImageList;
+            RectangleF rectImage = new RectangleF();
+            if ( il != null )
+            {
+                Image img = il.Images[e.ItemIndex];
+
+                rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
+                    (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
+                    img.Width,
+                    img.Height );
+
+                System.Drawing.Bitmap bmpSelected = (Bitmap)img;
+                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                    bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
+                e.Graphics.DrawImage( bmpSelected, rectImage );
+
+            }
+
+            SizeF s = e.Graphics.MeasureString( e.Item.Text, e.Item.ListView.Font );
+
+            RectangleF rectF = new RectangleF( rectItem.Left,
+                rectItem.Top,
+                rectItem.Width,
+                rectItem.Height );
+
+            using ( StringFormat sf = new StringFormat() )
+            {
+                sf.LineAlignment = StringAlignment.Center;
+                sf.Alignment = StringAlignment.Near;
+                sf.FormatFlags |= StringFormatFlags.NoWrap;
+                sf.Trimming = StringTrimming.EllipsisCharacter | StringTrimming.Word;
+
+                e.Graphics.DrawString( e.Item.Text,
+                    e.Item.ListView.Font,
+                    foreBrush,
+                    rectF, sf );
+            }
+        }
+
+        private void listView_DrawLargeIcon( SolidBrush backBrush, SolidBrush foreBrush, DrawListViewItemEventArgs e )
+        {
+            //Paint the background
+            Rectangle rectIcon = e.Item.GetBounds( ItemBoundsPortion.Icon );
+            Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.Label );
+            e.Graphics.FillRectangle( backBrush, rectItem );
+
+            //Draw the icon
+            ImageList il = e.Item.ImageList;
+            RectangleF rectImage = new RectangleF();
+            if ( il != null )
+            {
+                Image img = il.Images[e.ItemIndex];
+
+                rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
+                    (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
+                    img.Width,
+                    img.Height );
+
+                System.Drawing.Bitmap bmpSelected = (Bitmap)img;
+                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                    bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
+                e.Graphics.DrawImage( bmpSelected, rectImage );
+            }
+
+            RectangleF rectF = new RectangleF( rectItem.Left - 5,
+                rectItem.Top,
+                rectItem.Width + 10,
+                rectItem.Height );
+
+            using ( StringFormat sf = new StringFormat() )
+            {
+                sf.LineAlignment = StringAlignment.Far;
+                sf.Alignment = StringAlignment.Center;
+                sf.FormatFlags |= StringFormatFlags.LineLimit;
+                sf.Trimming = StringTrimming.EllipsisCharacter | StringTrimming.Word;
+
+                e.Graphics.DrawString( e.Item.Text,
+                    e.Item.ListView.Font,
+                    foreBrush,
+                    rectF, sf );
+            }
+        }
+
+        private void listView_DrawDetails( SolidBrush backBrush, SolidBrush foreBrush, DrawListViewItemEventArgs e )
+        {
+            //Paint the background
+            Rectangle rectIcon = e.Item.GetBounds( ItemBoundsPortion.Icon );
+            Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.ItemOnly );
+            e.Graphics.FillRectangle( backBrush, rectIcon.Right + 2,
+                rectItem.Y,
+                rectItem.Width - ( rectIcon.Right + 2 ),
+                rectItem.Height );
+
+            //Draw the icon
+            e.Item.IndentCount = 0;	// Set the indent
+            ImageList il = e.Item.ImageList;
+            if ( il != null )
+            {
+                System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.ItemIndex];
+                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                    bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
+                e.Graphics.DrawImage( bmpSelected, rectIcon );
+            }
+
+            // Calculate the rectangle for the first label
+            int colTextWidth = e.Item.ListView.Columns[0].Width;
+            if ( rectItem.Width < e.Item.ListView.Columns[0].Width )
+                colTextWidth = rectItem.Width;
+
+            colTextWidth -= ( rectIcon.Width + 2 );
+
+            RectangleF rectF = new RectangleF( rectIcon.Right + 2,
+                rectItem.Y,
+                colTextWidth,
+                rectItem.Height );
+
+            using ( StringFormat sf = new StringFormat() )
+            {
+                // Set an appropriate alignment
+                sf.LineAlignment = StringAlignment.Center;
+                sf.Trimming = StringTrimming.EllipsisWord;
+
+                if ( e.Item.Text.Contains( " " ) )
+                    sf.FormatFlags |= StringFormatFlags.LineLimit;
+                else
+                    sf.FormatFlags |= StringFormatFlags.NoWrap;
+
+                // Draw the string
+                e.Graphics.DrawString( e.Item.Text,
+                    e.Item.ListView.Font,
+                    foreBrush,
+                    rectF, sf );
+            }
+
+            // The first 'subitem' is the item which we alredy drew above.
+            for ( int i = 1; i < e.Item.SubItems.Count; i++ )
+            {
+                using ( StringFormat sf = new StringFormat() )
+                {
+                    // Set an appropriate alignment
+                    sf.LineAlignment = StringAlignment.Center;
+                    sf.Trimming = StringTrimming.EllipsisWord;
+                    if ( e.Item.SubItems[i].Text.Contains( " " ) )
+                        sf.FormatFlags |= StringFormatFlags.LineLimit;
+                    else
+                        sf.FormatFlags |= StringFormatFlags.NoWrap;
+
+                    // Draw the subitems.
+                    Rectangle rSubs = e.Item.SubItems[i].Bounds;
+                    e.Graphics.DrawString( e.Item.SubItems[i].Text,
+                        e.Item.ListView.Font,
+                        foreBrush, rSubs, sf );
+                }
+            }
+
         }
 
         #endregion
@@ -1488,6 +1810,104 @@ namespace ActivityPicturePlugin.UI
             if ( e.Button == System.Windows.Forms.MouseButtons.Right )
                 treeViewImages.SelectedNode = treeViewImages.GetNodeAt( e.Location );
         }
+
+        private void treeViewImages_DrawNode( object sender, DrawTreeNodeEventArgs e )
+        {
+            using ( SolidBrush selectedBrush = new SolidBrush( m_visualTheme.Selected ) )
+            using ( SolidBrush highlightedBrush = new SolidBrush( m_visualTheme.Highlight ) )
+            using ( SolidBrush treeBackBrush = new SolidBrush( treeViewImages.BackColor ) )
+            {
+                Color foreColor = e.Node.TreeView.ForeColor;
+                // Highlight the captured node and only the captured node
+                if ( CapturedTreeViewImagesNode != null )
+                {
+                    if ( e.Node == CapturedTreeViewImagesNode )
+                    {
+                        if ( treeViewImages.Focused )
+                        {
+                            foreColor = m_visualTheme.SelectedText;
+                            e.Graphics.FillRectangle( selectedBrush, e.Node.Bounds );
+                        }
+                        else
+                        {
+                            foreColor = m_visualTheme.HighlightText;
+                            e.Graphics.FillRectangle( highlightedBrush, e.Node.Bounds );
+                        }
+                    }
+                    else  // This node is not captured.  Use default background
+                    {
+                        e.Graphics.FillRectangle( treeBackBrush, e.Node.Bounds );
+                    }
+                }
+                else  // No node is captured.  If a node is selected, highlight it.
+                {
+                    if ( e.Node.IsSelected )
+                    {
+                        if ( treeViewImages.Focused )
+                        {
+                            foreColor = m_visualTheme.SelectedText;
+                            e.Graphics.FillRectangle( selectedBrush, e.Node.Bounds );
+                        }
+                        else
+                        {
+                            foreColor = m_visualTheme.HighlightText;
+                            e.Graphics.FillRectangle( highlightedBrush, e.Node.Bounds );
+                        }
+                    }
+                    else  // This node is not selected.  Use default background
+                        e.Graphics.FillRectangle( treeBackBrush, e.Node.Bounds );
+                }
+
+                Rectangle rZero = new Rectangle( 0, 0, 0, 0 );
+                if ( e.Node.Bounds != rZero )
+                {
+                    using ( SolidBrush foreBrush = new SolidBrush( foreColor ) )
+                    {
+                        // Must pass e.Bounds.X and e.Bounds.Y.
+                        // Using the e.Bounds overload can result in
+                        // node length vs string length issues.
+                        e.Graphics.DrawString( e.Node.Text,
+                            e.Node.TreeView.Font,
+                            foreBrush,
+                            e.Bounds.X, e.Bounds.Y );
+                    }
+                }
+            }
+
+        }
+
+        private void treeViewImages_MouseDown( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                TreeViewHitTestInfo hit = treeViewImages.HitTest( e.Location );
+
+                // We want to make sure they hit the item and not the +- or checkbox
+                if ( ( hit.Node != null ) && ( hit.Node.Bounds.Right >= e.X ) && ( hit.Node.Bounds.Left <= e.X ) )
+                {
+                    System.Diagnostics.Debug.Print( hit.Node.Bounds.Left.ToString() + " " + e.X.ToString() );
+                    CapturedTreeViewImagesNode = hit.Node;
+                }
+            }
+        }
+
+        private void treeViewImages_MouseUp( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                if ( CapturedTreeViewImagesNode != null )
+                    CapturedTreeViewImagesNode = null;
+            }
+        }
+
+        private void treeViewImages_MouseMove( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                if ( CapturedTreeViewImagesNode != null )
+                    CapturedTreeViewImagesNode = null;
+            }
+        }
         #endregion
 
         #region treeViewActivities
@@ -1526,6 +1946,109 @@ namespace ActivityPicturePlugin.UI
             if ( e.Button == System.Windows.Forms.MouseButtons.Right )
                 treeViewActivities.SelectedNode = treeViewActivities.GetNodeAt( e.Location );
         }
+
+        private void treeViewActivities_DrawNode( object sender, DrawTreeNodeEventArgs e )
+        {
+            using ( SolidBrush selectedBrush = new SolidBrush( m_visualTheme.Selected ) )
+            using ( SolidBrush highlightedBrush = new SolidBrush( m_visualTheme.Highlight ) )
+            using ( SolidBrush unselectedBrush = new SolidBrush( e.Node.BackColor ) )
+            {
+                Color foreColor = e.Node.TreeView.ForeColor;
+                // Highlight the captured node and only the captured node
+                if ( CapturedTreeViewActNode != null )
+                {
+                    if ( e.Node == CapturedTreeViewActNode )
+                    {
+                        if ( treeViewActivities.Focused )
+                        {
+                            foreColor = m_visualTheme.SelectedText;
+                            e.Graphics.FillRectangle( selectedBrush, e.Node.Bounds );
+                        }
+                        else
+                        {
+                            foreColor = m_visualTheme.HighlightText;
+                            e.Graphics.FillRectangle( highlightedBrush, e.Node.Bounds );
+                        }
+                    }
+                    else  // This node is not captured.  Use default background
+                    {
+                        e.Graphics.FillRectangle( unselectedBrush, e.Node.Bounds );
+                    }
+                }
+                else  // No node is captured.  If a node is selected, highlight it.
+                {
+                    if ( e.Node.IsSelected )
+                    {
+                        if ( treeViewActivities.Focused )
+                        {
+                            foreColor = m_visualTheme.SelectedText;
+                            e.Graphics.FillRectangle( selectedBrush, e.Node.Bounds );
+                        }
+                        else
+                        {
+                            foreColor = m_visualTheme.HighlightText;
+                            e.Graphics.FillRectangle( highlightedBrush, e.Node.Bounds );
+                        }
+                    }
+                    else  // This node is not selected.  Use default background
+                        e.Graphics.FillRectangle( unselectedBrush, e.Node.Bounds );
+                }
+
+                using ( SolidBrush foreBrush = new SolidBrush( foreColor ) )
+                {
+                    Rectangle rZero = new Rectangle( 0, 0, 0, 0 );
+                    if ( e.Node.Bounds != rZero )
+                    {
+                        e.Graphics.DrawString( e.Node.Text,
+                            e.Node.TreeView.Font,
+                            foreBrush,
+                            e.Bounds.X, e.Bounds.Y );
+
+                        if ( e.State == TreeNodeStates.Hot )
+                        {
+                            Pen penHot = SystemPens.HotTrack;
+                            SizeF fSize = e.Graphics.MeasureString( e.Node.Text, e.Node.TreeView.Font );
+                            PointF p1 = new PointF( e.Node.Bounds.Left, e.Node.Bounds.Top + fSize.Height - 2 );
+                            PointF p2 = new PointF( e.Node.Bounds.Right - 4, e.Node.Bounds.Top + fSize.Height - 2 );
+
+                            e.Graphics.DrawLine( penHot,
+                                p1,
+                                p2 );
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private void treeViewActivities_MouseDown( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                TreeViewHitTestInfo hit = treeViewActivities.HitTest( e.Location );
+                if ( ( hit.Node != null ) && ( hit.Node.Bounds.Right >= e.X ) && ( hit.Node.Bounds.Left <= e.X ) )
+                    CapturedTreeViewActNode = hit.Node;
+            }
+        }
+
+        private void treeViewActivities_MouseUp( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                if ( CapturedTreeViewActNode != null )
+                    CapturedTreeViewActNode = null;
+            }
+        }
+
+        private void treeViewActivities_MouseMove( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == System.Windows.Forms.MouseButtons.Left )
+            {
+                if ( CapturedTreeViewActNode != null )
+                    CapturedTreeViewActNode = null;
+            }
+        }
+
         #endregion
 
         #region listViewDrive
@@ -1585,6 +2108,54 @@ namespace ActivityPicturePlugin.UI
 
             listViewDrive.ListViewItemSorter = sorter;
             listViewDrive.Sort();
+        }
+
+        private void listViewDrive_DrawItem( object sender, DrawListViewItemEventArgs e )
+        {
+            Color foreColor = e.Item.ListView.ForeColor;
+            Color backColor = listViewDrive.BackColor;
+
+            if ( e.Item.Selected )
+            {
+                if ( listViewDrive.Focused )
+                {
+                    foreColor = m_visualTheme.SelectedText;
+                    backColor = m_visualTheme.Selected;
+                }
+                else if ( !e.Item.ListView.HideSelection )
+                {
+                    foreColor = m_visualTheme.HighlightText;
+                    backColor = m_visualTheme.Highlight;
+                }
+            }
+
+            using ( SolidBrush backBrush = new SolidBrush( backColor ),
+                               foreBrush = new SolidBrush( foreColor ) )
+            {
+                switch ( e.Item.ListView.View )
+                {
+                    case View.Details:
+                        listView_DrawDetails( backBrush, foreBrush, e );
+                        break;
+                    case View.LargeIcon:
+                        listView_DrawLargeIcon( backBrush, foreBrush, e );
+                        break;
+                    case View.List:
+                        listView_DrawList( backBrush, foreBrush, e );
+                        break;
+                    case View.SmallIcon:
+                        listView_DrawSmallIcon( backBrush, foreBrush, e );
+                        break;
+                    case View.Tile:
+                        listView_DrawTile( backBrush, foreBrush, e );
+                        break;
+                }
+            }
+        }
+
+        private void listViewDrive_DrawColumnHeader( object sender, DrawListViewColumnHeaderEventArgs e )
+        {
+            e.DrawDefault = true;
         }
 
         #endregion
@@ -1687,6 +2258,54 @@ namespace ActivityPicturePlugin.UI
             listViewAct.Sort();
         }
 
+        private void listViewAct_DrawItem( object sender, DrawListViewItemEventArgs e )
+        {
+            Color foreColor = e.Item.ListView.ForeColor;
+            Color backColor = listViewAct.BackColor;
+
+            if ( e.Item.Selected )
+            {
+                if ( listViewAct.Focused )
+                {
+                    foreColor = m_visualTheme.SelectedText;
+                    backColor = m_visualTheme.Selected;
+                }
+                else if ( !e.Item.ListView.HideSelection )
+                {
+                    foreColor = m_visualTheme.HighlightText;
+                    backColor = m_visualTheme.Highlight;
+                }
+            }
+
+            using ( SolidBrush backBrush = new SolidBrush( backColor ),
+                               foreBrush = new SolidBrush( foreColor ) )
+            {
+                switch ( e.Item.ListView.View )
+                {
+                    case View.Details:
+                        listView_DrawDetails( backBrush, foreBrush, e );
+                        break;
+                    case View.LargeIcon:
+                        listView_DrawLargeIcon( backBrush, foreBrush, e );
+                        break;
+                    case View.List:
+                        listView_DrawList( backBrush, foreBrush, e );
+                        break;
+                    case View.SmallIcon:
+                        listView_DrawSmallIcon( backBrush, foreBrush, e );
+                        break;
+                    case View.Tile:
+                        listView_DrawTile( backBrush, foreBrush, e );
+                        break;
+                }
+            }
+        }
+
+        private void listViewAct_DrawColumnHeader( object sender, DrawListViewColumnHeaderEventArgs e )
+        {
+            e.DrawDefault = true;
+        }
+
         #endregion
 
         private void btnExpandAll_Click( object sender, EventArgs e )
@@ -1696,6 +2315,8 @@ namespace ActivityPicturePlugin.UI
 
         private void btnCollapsAll_Click( object sender, EventArgs e )
         {
+            while ( this.treeViewActivities.SelectedNode.Parent != null )
+                this.treeViewActivities.SelectedNode = this.treeViewActivities.SelectedNode.Parent;
             this.treeViewActivities.CollapseAll();
         }
 
@@ -1712,7 +2333,6 @@ namespace ActivityPicturePlugin.UI
             this.progressBar2.Style = ProgressBarStyle.Marquee;
             Application.DoEvents();
             m_files.Clear();
-
             ThreadGetImages(); //collects images of all selected paths
             SortFiles();
             FindAndImportImages();
@@ -1751,7 +2371,7 @@ namespace ActivityPicturePlugin.UI
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
         {
-            if ( MessageBox.Show(Resources.Resources.ConfirmDeleteLong_Text , Resources.Resources.ConfirmDeleteShort_Text,
+            if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
                  MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
             {
                 ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
@@ -1852,6 +2472,37 @@ namespace ActivityPicturePlugin.UI
             }
             catch ( Exception )
             { }
+        }
+
+        private void ImportControl_Resize( object sender, EventArgs e )
+        {
+            this.SuspendLayout();
+            //57 is the distance from bottom of splitContainer1 to the bottom of this
+            //splitContainer1.Height = this.Height - ( splitContainer1.Top + 57 );
+            splitContainer1.Height = this.Height - ( splitContainer1.Top );
+            splitContainer1.Width = this.Width - ( splitContainer1.Left * 2 );
+            splitContainer3.Height = splitContainer1.Height - splitContainer3.Top;
+            splitContainer2.Height = splitContainer1.Height - splitContainer2.Top;
+            splitContainer3.Width = splitContainer1.Panel1.Width;
+            splitContainer2.Width = splitContainer1.Panel2.Width;
+            /*progressBar2.Top = splitContainer1.Bottom + 5;
+            progressBar2.Width = splitContainer1.Width;
+            lblProgress.Top = progressBar2.Bottom + 4;
+            lblProgress.Width = splitContainer1.Width;*/
+
+            //progressBar2.Top = splitContainer3.Panel2.Bottom - progressBar2.Height;
+            progressBar2.Top = listViewDrive.Bottom- progressBar2.Height;
+            progressBar2.Width = splitContainer1.Width;
+            lblProgress.Top = progressBar2.Top;
+            lblProgress.Width = splitContainer1.Width;
+
+            this.ResumeLayout();
+        }
+
+        private void splitContainer1_SplitterMoved( object sender, SplitterEventArgs e )
+        {
+            splitContainer3.Width = splitContainer1.Panel1.Width - splitContainer3.Left;
+            splitContainer2.Width = splitContainer1.Panel2.Width;
         }
 
         #endregion
@@ -1964,31 +2615,31 @@ namespace ActivityPicturePlugin.UI
                 FileInfo ty = y as FileInfo;
                 string strx = "9999";
                 string stry = "9999";
-                if (Functions.IsExifFileExt(tx))
+                if ( Functions.IsExifFileExt( tx ) )
                 {
                     try
                     {
-                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(tx.FullName);
-                        if (ex != null)
+                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( tx.FullName );
+                        if ( ex != null )
                         {
-                            strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                            strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
                         }
                     }
-                    catch (Exception)
+                    catch ( Exception )
                     {
                     }
                 }
-                if (Functions.IsExifFileExt(ty))
+                if ( Functions.IsExifFileExt( ty ) )
                 {
                     try
                     {
-                        ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory(ty.FullName);
-                        if (ey != null)
+                        ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory( ty.FullName );
+                        if ( ey != null )
                         {
-                            stry = ey.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                            stry = ey.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
                         }
                     }
-                    catch (Exception)
+                    catch ( Exception )
                     {
                     }
                 }

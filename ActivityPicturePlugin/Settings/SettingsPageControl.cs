@@ -36,7 +36,7 @@ namespace ActivityPicturePlugin.Settings
             // Setting Dock to Fill through Designer causes it to reformat
             // and marks it as 'changed' everytime you open it.
             // Workaround until I figure out what's going on.
-            this.importControl1.Dock = DockStyle.Fill;
+            //this.importControl1.Dock = DockStyle.Fill;
 
             trackBarQuality.Value = ActivityPicturePlugin.Source.Settings.GEQuality;
             trackBarSize.Value = ActivityPicturePlugin.Source.Settings.GESize;
@@ -161,6 +161,12 @@ namespace ActivityPicturePlugin.Settings
         private void cbStoreGEFileLocations_CheckedChanged( object sender, EventArgs e )
         {
             ActivityPicturePlugin.Source.Settings.GEStoreFileLocation = cbStoreGEFileLocations.Checked;
+        }
+
+        private void groupBoxImport_Resize( object sender, EventArgs e )
+        {
+            importControl1.Height = groupBoxImport.Height - ( importControl1.Top + 10 );
+            importControl1.Width = groupBoxImport.Width - ( importControl1.Left * 2 );
         }
         #endregion
 

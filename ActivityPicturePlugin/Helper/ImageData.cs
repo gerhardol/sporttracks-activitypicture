@@ -175,7 +175,7 @@ namespace ActivityPicturePlugin.Helper
             set { this.thumbnail = value; }
         }
 
-        public void OffsetDateTimeOriginal(int year, int month, int day, int hour, int min, int sec )
+        public void OffsetDateTimeOriginal( int year, int month, int day, int hour, int min, int sec )
         {
             DateTime dt = EW.DateTimeOriginal;
             dt = dt.AddYears( year );
@@ -618,9 +618,15 @@ namespace ActivityPicturePlugin.Helper
                         System.IO.FileInfo fi = new System.IO.FileInfo( this.PhotoSource );
                         // DexterLib
                         // If Interop.DexterLib.dll is missing, exception is thrown (caught)
-                        bmpOrig = GetDexterAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
-                        if ( ( bmpOrig == null ) && ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 ) )
+                        //bmpOrig = GetDexterAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
+                        //if ( ( bmpOrig == null ) && ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 ) )
+                            //bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
+
+                        if ( String.Compare( fi.Extension.ToLower(), ".avi" ) == 0 )
                             bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
+                        if ( bmpOrig == null )
+                            bmpOrig = GetDexterAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
+
                     }
 
                     if ( bmpOrig != null )
@@ -674,10 +680,10 @@ namespace ActivityPicturePlugin.Helper
 
                 // Creating the bitmap from a stream so we can delete the temporary file
                 System.IO.FileInfo fi = new System.IO.FileInfo( sTempFile );
+
                 using ( System.IO.FileStream fs = fi.OpenRead() )
                 {
                     bitmap = (Bitmap)Bitmap.FromStream( fs );
-                    //fs.Close();
                 }
 
                 // Stamp the thumbnail with "Video" so it's easier to distinguish
@@ -712,6 +718,15 @@ namespace ActivityPicturePlugin.Helper
                     if ( iFrame <= 0 ) iFrame = 1;
                     if ( iFrame > stream.CountFrames ) iFrame = stream.CountFrames;
                     bmp = stream.GetBitmap( iFrame );
+
+                    // Stamp the thumbnail with "Video" so it's easier to distinguish
+                    // between movies and pics in Album view.
+                    using ( Graphics g = Graphics.FromImage( bmp ) )
+                    using ( Font f = new Font( PictureAlbum.DefaultFont.FontFamily, 15 ) )
+                    {
+                        g.DrawString( Resources.Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
+                    }
+
                 }
             }
             catch ( Exception )

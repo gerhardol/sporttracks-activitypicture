@@ -36,12 +36,12 @@ namespace ActivityPicturePlugin.Helper
         private static readonly string[] ImageExt = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
         private static readonly string[] VideoExt = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
 
-        internal static bool IsExifFileExt(FileInfo file)
+        internal static bool IsExifFileExt( FileInfo file )
         {
-            foreach (string iExt in ExifExt)
+            foreach ( string iExt in ExifExt )
             {
                 string ext = file.Extension.ToLower();
-                if (ext == iExt)
+                if ( ext == iExt )
                 {
                     return true;
                 }
@@ -54,14 +54,14 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 //TODO: Get file date, also for non-jpeg
-                FileInfo file = new FileInfo(filename);
-                if (IsExifFileExt(file))
+                FileInfo file = new FileInfo( filename );
+                if ( IsExifFileExt( file ) )
                 {
-                    string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(filename);
-                    if (!string.IsNullOrEmpty(fileTime))
+                    string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime( filename );
+                    if ( !string.IsNullOrEmpty( fileTime ) )
                     {
-                        IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                        DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
+                        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                        DateTime dt = DateTime.ParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture );
                         return dt;
                     }
                 }
@@ -256,7 +256,7 @@ namespace ActivityPicturePlugin.Helper
 
                 if ( kmzFile.Extension == ".kmz" )
                 {
-                    using (FileStream f=File.Create( SavePath ))
+                    using ( FileStream f = File.Create( SavePath ) )
                     {
                         ZipOutputStream s = new ZipOutputStream( f );
 
@@ -524,7 +524,7 @@ namespace ActivityPicturePlugin.Helper
                 // create zip file
                 if ( kmzFile.Extension == ".kmz" )
                 {
-                    using (FileStream f=File.Create( SavePath ))
+                    using ( FileStream f = File.Create( SavePath ) )
                     {
                         ZipOutputStream s = new ZipOutputStream( f );
                         s.SetLevel( 6 );
@@ -791,8 +791,8 @@ namespace ActivityPicturePlugin.Helper
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
                 catch ( Exception )
-                { 
-                    ret = false; 
+                {
+                    ret = false;
                 }
             }
             else if ( im.Type == ImageData.DataTypes.Video )
@@ -804,8 +804,8 @@ namespace ActivityPicturePlugin.Helper
 
                 }
                 catch ( Exception )
-                { 
-                    ret = false; 
+                {
+                    ret = false;
                 }
             }
             return ret;
@@ -1059,7 +1059,7 @@ namespace ActivityPicturePlugin.Helper
         internal static Image getThumbnailWithBorder( int width, Image img )
         {
             Image thumb = null;
-            Image tmp =null;
+            Image tmp = null;
             try
             {
                 thumb = new Bitmap( width, width );
@@ -1148,19 +1148,19 @@ namespace ActivityPicturePlugin.Helper
 
         internal static ImageData.DataTypes GetMediaType( string p )
         {
-            if (!string.IsNullOrEmpty(p))
+            if ( !string.IsNullOrEmpty( p ) )
             {
-                System.IO.FileInfo fi = new FileInfo(p);
+                System.IO.FileInfo fi = new FileInfo( p );
                 //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
-                foreach (string str in ImageExt)
+                foreach ( string str in ImageExt )
                 {
                     //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
-                    if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Image;
+                    if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Image;
                 }
-                foreach (string str in VideoExt)
+                foreach ( string str in VideoExt )
                 {
                     //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
-                    if (str == fi.Extension.ToLower()) return ImageData.DataTypes.Video;
+                    if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Video;
                 }
             }
             return ImageData.DataTypes.Nothing;
