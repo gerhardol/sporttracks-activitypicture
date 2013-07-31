@@ -17,17 +17,11 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using ActivityPicturePlugin.UI.Activities;
 using QuartzTypeLib;
-using ZoneFiveSoftware.Common.Data.GPS;
 
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace ActivityPicturePlugin.Helper
 {
