@@ -443,9 +443,15 @@ namespace ActivityPicturePlugin.UI
                             {
                                 i = dirsub.GetDirectories().Length;
                             }
+                            catch ( UnauthorizedAccessException ex )
+                            {
+                                //Nothing to do
+                                // Folder is inaccessible for whatever reason
+                                // Don't add the node
+                                i = 0;
+                            }
                             catch ( Exception )
                             {
-                                // Folder is inaccessible for whatever reason
                                 // Don't add the node
                                 i = 0;
                             }
@@ -458,9 +464,6 @@ namespace ActivityPicturePlugin.UI
                 }
 
                 m_DriveDir = new DirectoryInfo( parentNode.FullPath );
-                //Thread td1 = new Thread(new ThreadStart(ShowFolderPics));
-                //td1.Start();
-                //td1.Join();
                 ShowFolderPics();
 
                 if ( m_DriveDir.GetDirectories().Length != 0 ) parentNode.Nodes.Add( gDummyFolder );
@@ -895,8 +898,11 @@ namespace ActivityPicturePlugin.UI
                         {
                             string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                             IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
-                            lvi.SubItems.Add(dts);
+                            if (!string.IsNullOrEmpty(s))
+                            {
+                                string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                                lvi.SubItems.Add(dts);
+                            }
                         }
 
                         if (gps != null)
@@ -912,8 +918,16 @@ namespace ActivityPicturePlugin.UI
 
                         if (ed != null)
                         {
-                            lvi.SubItems.Add((string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE)));
-                            lvi.SubItems.Add((string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS)));
+                            string s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE));
+                            if (!string.IsNullOrEmpty(s))
+                            {
+                                lvi.SubItems.Add(s);
+                            }
+                            s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS)); 
+                            if (!string.IsNullOrEmpty(s))
+                            {
+                                lvi.SubItems.Add(s);
+                            }
                         }
                     }
                 }
@@ -1098,32 +1112,32 @@ namespace ActivityPicturePlugin.UI
 
         }
 
-        private void FindAndImportImages( bool sorted )
+        private void FindAndImportImages()
         {
             try
             {
                 NodeSorter ns = new NodeSorter();
-                this.m_ActivityNodes.Sort( ns.Compare );
+                this.m_ActivityNodes.Sort(ns.Compare);
 
                 DateTime FirstStart = new DateTime();
                 DateTime LastEnd = new DateTime();
                 IActivity FirstAct, LastAct;
 
-                if ( this.m_ActivityNodes[0].Tag is IActivity )
+                if (this.m_ActivityNodes[0].Tag is IActivity)
                 {
-                    FirstAct = (IActivity)( this.m_ActivityNodes[0].Tag );
+                    FirstAct = (IActivity)(this.m_ActivityNodes[0].Tag);
                     FirstStart = FirstAct.StartTime.ToLocalTime();
                 }
 
-                if ( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity )
+                if (this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity)
                 {
-                    LastAct = (IActivity)( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag );
-                    LastEnd = GetActivityEndTime( LastAct );
+                    LastAct = (IActivity)(this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag);
+                    LastEnd = GetActivityEndTime(LastAct);
                 }
 
                 IActivity CurrentActivity;
                 int CurrentIndex = 0;
-                CurrentActivity = (IActivity)( this.m_ActivityNodes[0].Tag );
+                CurrentActivity = (IActivity)(this.m_ActivityNodes[0].Tag);
 
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
@@ -1132,99 +1146,60 @@ namespace ActivityPicturePlugin.UI
                 this.timerProgressBar.Enabled = false;
                 int i = 0;
                 DateTime FileTime = new DateTime();
-                foreach ( FileInfo file in m_files )
+                foreach (FileInfo file in m_files)
                 {
                     Application.DoEvents();
 
                     i++;
-                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
+                    this.progressBar2.Value = (int)(100 * (double)(i) / (double)(m_files.Count));
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
 
-                    FileTime = Functions.GetFileTime( file.FullName );
+                    FileTime = Functions.GetFileTime(file.FullName);
 
                     //{ //A valid EXIF metadata has been found                
-                    if ( ( FileTime > FirstStart ) &
-                        ( FileTime < LastEnd ) )
+                    if ((FileTime > FirstStart) &
+                        (FileTime < LastEnd))
                     {//dateTime im picture is within the range of all activities
 
-                        if ( sorted ) //only if number of files <500, importing with a prior sorting is faster. For large amounts of files, sortings gets very slow
+                        if (FileTime > CurrentActivity.StartTime.ToLocalTime())
                         {
-                            if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
+                            if (FileTime > GetActivityEndTime(CurrentActivity))
                             {
-                                if ( FileTime > GetActivityEndTime( CurrentActivity ) )
+                                //picture has been taken later => cycle to next activity
+                                while (CurrentIndex < this.m_ActivityNodes.Count)
                                 {
-                                    //picture has been taken later => cycle to next activity
-                                    while ( CurrentIndex < this.m_ActivityNodes.Count )
-                                    {
-                                        CurrentIndex++;
-                                        CurrentActivity = (IActivity)( this.m_ActivityNodes[CurrentIndex].Tag );
-                                        if ( FileTime < GetActivityEndTime( CurrentActivity ) ) break;
-                                    }
-                                    if ( !( CurrentIndex < this.m_ActivityNodes.Count ) ) //cycled through all activities, no match found
-                                    {
-                                        break;//break foreach file loop
-                                    }
+                                    CurrentIndex++;
+                                    CurrentActivity = (IActivity)(this.m_ActivityNodes[CurrentIndex].Tag);
+                                    if (FileTime < GetActivityEndTime(CurrentActivity)) break;
                                 }
-
-                                if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
+                                if (!(CurrentIndex < this.m_ActivityNodes.Count)) //cycled through all activities, no match found
                                 {
-                                    //the picture has been taken during the activity
-                                    PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
-
-                                    //Check if Image does already exist in the current activity
-                                    if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
-                                    {
-                                        this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
-                                        this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
-                                        this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                        ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
-                                        if ( ids != null ) data.Images.Add( ids );
-                                        Functions.WriteExtensionData( CurrentActivity, data );
-                                        m_numFilesImported++;
-
-                                        using ( ImageData ID = new ImageData( ids ) )
-                                        {
-                                            ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
-                                        }
-
-                                        continue; //proceed to next file
-                                    }
+                                    break;//break foreach file loop
                                 }
                             }
 
-                        }
-                        else //importing without prior sorting
-                        {
-                            foreach ( TreeNode tn in this.m_ActivityNodes )
+                            if (FileTime > CurrentActivity.StartTime.ToLocalTime())
                             {
-                                IActivity act = (IActivity)( tn.Tag );
-
-                                // picture has been taken before => abort search (list is sorted after datetime)
-                                if ( FileTime < act.StartTime.ToLocalTime() ) break;
-
-                                // picture has been taken after end => cycle to next activity
-                                if ( FileTime > GetActivityEndTime( act ) ) continue;
-
-                                // if the code comes here, the picture should have been taken during the activity!
-                                PluginData data = Helper.Functions.ReadExtensionData( act );
+                                //the picture has been taken during the activity
+                                PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
 
                                 //Check if Image does already exist in the current activity
-                                if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
+                                if (!ImageAlreadyExistsInActivity(file.Name, data))
                                 {
-                                    tn.BackColor = Color.Yellow;
-                                    tn.Parent.BackColor = Color.Yellow;
-                                    tn.Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
-                                    if ( ids != null ) data.Images.Add( ids );
-                                    Functions.WriteExtensionData( act, data );
+                                    this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
+                                    this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
+                                    this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
+                                    ImageDataSerializable ids = GetImageDataSerializableFromFile(file.FullName);
+                                    if (ids != null) data.Images.Add(ids);
+                                    Functions.WriteExtensionData(CurrentActivity, data);
                                     m_numFilesImported++;
 
-                                    using ( ImageData ID = new ImageData( ids ) )
+                                    using (ImageData ID = new ImageData(ids))
                                     {
                                         ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
                                     }
 
-
+                                    continue; //proceed to next file
                                 }
                             }
                         }
@@ -1233,11 +1208,11 @@ namespace ActivityPicturePlugin.UI
 
                 this.progressBar2.Value = this.progressBar2.Maximum;
                 this.timerProgressBar.Enabled = true;
-                this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone,
-                    m_numFilesImported );
+                this.lblProgress.Text = String.Format(Resources.Resources.ImportControl_scanDone,
+                    m_numFilesImported);
 
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 //throw;
             }
@@ -1245,12 +1220,8 @@ namespace ActivityPicturePlugin.UI
 
         private static DateTime GetActivityEndTime( IActivity Act )
         {
-            TimeSpan Pauses = new TimeSpan();
-            foreach ( IValueRange<DateTime> pause in Act.TimerPauses )
-            {
-                Pauses += ( pause.Upper - pause.Lower );
-            }
-            return Act.StartTime.ToLocalTime() + Act.TotalTimeEntered + Pauses;
+            ActivityInfo info = ActivityInfoCache.Instance.GetInfo(Act);
+            return info.EndTime.ToLocalTime();
         }
 
         private void ThreadGetImages()
@@ -1295,6 +1266,7 @@ namespace ActivityPicturePlugin.UI
                         {
                             if ( !m_files.Contains( file ) )
                             {
+                                //TODO: Filter when importing
                                 m_files.Add( file );
                                 SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
                                 Application.DoEvents();
@@ -1306,6 +1278,7 @@ namespace ActivityPicturePlugin.UI
             }
             catch ( UnauthorizedAccessException ex )
             {
+                //Nothing to do
                 Console.WriteLine( ex.Message );
             }
             catch ( Exception )
@@ -1324,6 +1297,7 @@ namespace ActivityPicturePlugin.UI
             int j = 0;
             progressBar2.Style = ProgressBarStyle.Continuous;
             progressBar2.Maximum = m_files.Count;
+            progressBar2.BringToFront();
             timerProgressBar.Enabled = false;
 
             // Get exif data for all files once and only one (slow operation)
@@ -1704,16 +1678,10 @@ namespace ActivityPicturePlugin.UI
             this.progressBar2.Style = ProgressBarStyle.Marquee;
             Application.DoEvents();
             m_files.Clear();
-            //Thread td1 = new Thread(new ThreadStart(ThreadGetImages));
-            //td1.Start();
-            //td1.Join();
+
             ThreadGetImages(); //collects images of all selected paths
-            //if ( m_files.Count < 400 )
-            //{
             SortFiles();
-            FindAndImportImages( true );
-            //}
-            //else FindAndImportImages( false );
+            FindAndImportImages();
 
             AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
             EnableControl( true );

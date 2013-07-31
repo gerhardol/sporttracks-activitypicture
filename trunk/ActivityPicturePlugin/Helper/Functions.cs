@@ -38,7 +38,7 @@ namespace ActivityPicturePlugin.Helper
 
         internal static bool IsExifFileExt(FileInfo file)
         {
-            foreach (string iExt in ImageExt)
+            foreach (string iExt in ExifExt)
             {
                 string ext = file.Extension.ToLower();
                 if (ext == iExt)
