@@ -259,7 +259,7 @@ namespace ActivityPicturePlugin.Helper
                             //Maximum zoom exceeded. Calculate maximum and re-call GetImagePositions
                             double zoomchange = ( ( ( this.Width / ImageList[i].Ratio ) - 30 ) / 5 ) - Zoom;
                             Zoom += (int)Math.Floor( zoomchange );
-                            ZoomChange( this, new ZoomEventArgs(0) );	// Signal a zoom change has occurred.
+                            ZoomChange( this, new ZoomEventArgs( 0 ) );	// Signal a zoom change has occurred.
                             return GetImagePositions();
                         }
 
@@ -322,6 +322,12 @@ namespace ActivityPicturePlugin.Helper
                         {
                             if ( NoThumbNails ) img = new Bitmap( this.ImageList[i].PhotoSource );
                             else img = this.ImageList[i].EW.GetBitmap();
+
+                            if ( img == null )
+                            {
+                                //Image is missing.  Load the 'delete' image
+                                img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
+                            }
                             //    NewWidth = (int)((double)(img.Width) / (double)(img.Height) * NewHeight);
                         }
 
@@ -471,7 +477,7 @@ namespace ActivityPicturePlugin.Helper
                 DateTime dt = DateTime.MinValue;
                 if ( dt < this.ImageList[i].EW.DateTimeOriginal ) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
                 if ( this.ImageList[i].EW.GPSLatitude != 0 ) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace( Environment.NewLine, ", " );
-                if ( !String.IsNullOrEmpty(this.ImageList[i].Title) ) tooltip += Environment.NewLine + this.ImageList[i].Title;
+                if ( !String.IsNullOrEmpty( this.ImageList[i].Title ) ) tooltip += Environment.NewLine + this.ImageList[i].Title;
             }
             return tooltip;
         }
@@ -481,8 +487,8 @@ namespace ActivityPicturePlugin.Helper
             albumToolTipTimer.Stop();
 
             if ( IndexOfLastHoveredImage >= 0 &&
-                    (this.ImageList[IndexOfLastHoveredImage].Type == ImageData.DataTypes.Image ||
-                    this.ImageList[IndexOfLastHoveredImage].Type==ImageData.DataTypes.Video))
+                    ( this.ImageList[IndexOfLastHoveredImage].Type == ImageData.DataTypes.Image ||
+                    this.ImageList[IndexOfLastHoveredImage].Type == ImageData.DataTypes.Video ) )
             {
                 string tooltip = GenerateToolTipText();
                 this.toolTip1.SetToolTip( this, tooltip );
@@ -495,7 +501,7 @@ namespace ActivityPicturePlugin.Helper
         private void PictureAlbum_MouseEnter( object sender, EventArgs e )
         {
             //Activate tooltip
-            toolTip1.Active = true; 
+            toolTip1.Active = true;
             this.Focus();
         }
 
@@ -511,7 +517,7 @@ namespace ActivityPicturePlugin.Helper
         {
             int i = GetIndexOfCurrentImage( e.Location );
             // Activate tip if mouse is over a valid section of the control (ie. an image).
-            toolTip1.Active = ( i >= 0 );   
+            toolTip1.Active = ( i >= 0 );
 
             if ( i == IndexOfLastHoveredImage )
                 return; // Return if we've already processed a tip for this index
@@ -532,7 +538,7 @@ namespace ActivityPicturePlugin.Helper
         {
             // Zero length string used here as a flag of a message that should be cancelled. 
             // ie. Invalid IndexOfLastHoveredImage.
-            string s = "";  
+            string s = "";
 
             if ( IndexOfLastHoveredImage >= 0 ) s = GenerateToolTipText();
             if ( toolTip1.GetToolTip( this ) != s )
