@@ -201,6 +201,7 @@ namespace ActivityPicturePlugin.UI
         {
             m_numFilesImported = 0;
             m_files.Clear();
+            // Remove? 
             ResetProgressBar();
 
             UpdateUICulture( m_culture );
@@ -216,6 +217,7 @@ namespace ActivityPicturePlugin.UI
 
                 m_standardpathalreadyshown = true;
             }
+            this.HideProgressBar();
         }
 
         private void SetCheck( TreeNode node, bool check )
@@ -248,31 +250,35 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void GetSubDirectoryNodes( TreeNode parentNode )
+        private void GetSubDirectoryNodes(TreeNode parentNode)
         {
             try
             {
-                DirectoryInfo dir = new DirectoryInfo( parentNode.FullPath );
+                DirectoryInfo dir = new DirectoryInfo(parentNode.FullPath);
                 DirectoryInfo[] dirSubs = dir.GetDirectories();
-                foreach ( DirectoryInfo dirsub in dirSubs )
+                foreach (DirectoryInfo dirsub in dirSubs)
                 {
-                    if ( ( ( dirsub.Attributes & FileAttributes.System ) == FileAttributes.System ) ||
-                        ( ( dirsub.Attributes & FileAttributes.Hidden ) == FileAttributes.Hidden ) )
+                    if (((dirsub.Attributes & FileAttributes.System) == FileAttributes.System) ||
+                        ((dirsub.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden))
                         continue;	// Do not display hidden or system folders
 
-                    TreeNode subNode = new TreeNode( dirsub.Name );
+                    TreeNode subNode = new TreeNode(dirsub.Name);
                     try
                     {
-                        if ( dirsub.GetDirectories().Length != 0 ) subNode.Nodes.Add( gDummyFolder );
+                        if (dirsub.GetDirectories().Length != 0) subNode.Nodes.Add(gDummyFolder);
                         subNode.Tag = dirsub;
-                        parentNode.Nodes.Add( subNode );
+                        parentNode.Nodes.Add(subNode);
                         subNode.Checked = parentNode.Checked;
                     }
-                    catch ( Exception )
-                    { /* Probably an Access Denied error.  Move on to the next folder.*/ }
+                    catch (UnauthorizedAccessException ex)
+                    { /* Move on to the next folder.*/
+                    }
+                    catch (Exception e)
+                    {
+                    }
                 }
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 //throw;
             }
@@ -313,7 +319,8 @@ namespace ActivityPicturePlugin.UI
                 listViewDrive.SmallImageList = lvImgS;
 
                 progressBar2.Style = ProgressBarStyle.Continuous;
-                timerProgressBar.Enabled = false;
+                // Remove? this.ResetProgressBar();
+                //timerProgressBar.Enabled = false;
 
                 //Either speed up adding to listview or show progressbar
                 using ( Image bmp = (Bitmap)( Resources.Resources.image ).Clone() )
@@ -337,8 +344,9 @@ namespace ActivityPicturePlugin.UI
                         }
                         lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
                     }
-                    progressBar2.Value = progressBar2.Maximum;
-                    timerProgressBar.Enabled = true;
+                    // Remove? this.HideProgressBar();
+                    //progressBar2.Value = progressBar2.Maximum;
+                    //timerProgressBar.Enabled = true;
                     //bmp.Dispose();
                 }
             }
@@ -643,9 +651,9 @@ namespace ActivityPicturePlugin.UI
         {
             this.progressBar2.Minimum = 0;
             this.progressBar2.Maximum = m_NumDayNodes;
-            this.progressBar2.Value = 0;
             this.progressBar2.Step = 1;
-            this.timerProgressBar.Enabled = false;
+            // Remove? 
+            this.ResetProgressBar();
             this.listViewAct.Items.Clear();
             foreach ( TreeNode year in this.treeViewActivities.Nodes )
             {
@@ -661,8 +669,7 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            this.progressBar2.Value = this.progressBar2.Maximum;
-            this.timerProgressBar.Enabled = true;
+            this.HideProgressBar();
         }
 
         private void RemoveSelectedImagesFromActivity( ListViewItem[] lvisel )
@@ -710,7 +717,8 @@ namespace ActivityPicturePlugin.UI
                 int iCount = 0;
                 progressBar2.Style = ProgressBarStyle.Continuous;
                 progressBar2.Maximum = lvisel.Length;
-                timerProgressBar.Enabled = false;
+                // Remove? this.ResetProgressBar();
+                //timerProgressBar.Enabled = false;
 
                 //Check if Image does already exist in the current activity
                 foreach ( ListViewItem lvi in lvisel )
@@ -735,8 +743,9 @@ namespace ActivityPicturePlugin.UI
 
                     Application.DoEvents();
                 }
-                this.progressBar2.Value = this.progressBar2.Maximum;
-                timerProgressBar.Enabled = true;
+                // Remove? this.HideProgressBar();
+                //this.progressBar2.Value = this.progressBar2.Maximum;
+                //timerProgressBar.Enabled = true;
 
                 //to refresh the ListView
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
@@ -993,7 +1002,8 @@ namespace ActivityPicturePlugin.UI
 
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
-                        timerProgressBar.Enabled = false;
+                        // Remove? this.ResetProgressBar();
+                        //fix call timerProgressBar.Enabled = false;
                         foreach ( ImageData id in il )
                         {
                             try
@@ -1027,8 +1037,7 @@ namespace ActivityPicturePlugin.UI
                             lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
 
                         }
-                        this.progressBar2.Value = this.progressBar2.Maximum;
-                        timerProgressBar.Enabled = true;
+                        this.HideProgressBar();
 
                         //this.listViewAct.LargeImageList = lil;
                         //this.listViewAct.SmallImageList = lis;
@@ -1089,12 +1098,27 @@ namespace ActivityPicturePlugin.UI
 
         private void ResetProgressBar()
         {
-            lblProgress.Text = "";
-            progressBar2.Value = 0;
-            timerProgressBar.Enabled = false;
+            this.lblProgress.Text = "";
+            this.lblProgress.Visible = true;
+            this.progressBar2.Value = 0;
+            this.progressBar2.Visible = true;
+            this.timerProgressBar.Enabled = false;
+            this.listViewAct.Visible = false;
+            this.treeViewActivities.Visible = false;
         }
 
-        private void SetLabelText( string text )
+        private void HideProgressBar()
+        {
+            this.lblProgress.Text = "";
+            this.lblProgress.Visible = false;
+            this.progressBar2.Visible = false;
+            this.progressBar2.Value = this.progressBar2.Maximum;
+            this.timerProgressBar.Enabled = false;
+            this.listViewAct.Visible = true;
+            this.treeViewActivities.Visible = true;
+        }
+
+        private void SetLabelText(string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
@@ -1142,8 +1166,7 @@ namespace ActivityPicturePlugin.UI
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
                 this.progressBar2.Maximum = 100;
-                this.progressBar2.Value = 0;
-                this.timerProgressBar.Enabled = false;
+                this.ResetProgressBar();
                 int i = 0;
                 DateTime FileTime = new DateTime();
                 foreach (FileInfo file in m_files)
@@ -1206,8 +1229,7 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
 
-                this.progressBar2.Value = this.progressBar2.Maximum;
-                this.timerProgressBar.Enabled = true;
+                this.HideProgressBar();
                 this.lblProgress.Text = String.Format(Resources.Resources.ImportControl_scanDone,
                     m_numFilesImported);
 
@@ -1226,11 +1248,14 @@ namespace ActivityPicturePlugin.UI
 
         private void ThreadGetImages()
         {
+            this.ResetProgressBar();
+            this.progressBar2.Maximum = 100;
             foreach ( TreeNode n in this.m_SelectedNodes )
             {
                 GetImageFiles( n );
             }
             BeginInvoke( onImagesComplete, new object[] { this, EventArgs.Empty } );
+            this.HideProgressBar();
         }
 
         private void GetImageFiles( TreeNode node ) //finds all images of the selected directory
@@ -1239,6 +1264,15 @@ namespace ActivityPicturePlugin.UI
             {
                 if ( node.Tag is DirectoryInfo )
                 {
+                    if (this.progressBar2.Value >= this.progressBar2.Maximum)
+                    {
+                        this.progressBar2.Value = 0;
+                    }
+                    else
+                    {
+                        this.progressBar2.Value++;
+                    }
+                    
                     DirectoryInfo dir = (DirectoryInfo)( node.Tag );
 
                     //Check if directory has been expanded before
@@ -1295,10 +1329,9 @@ namespace ActivityPicturePlugin.UI
             List<FileInfoEx> fiexs = new List<FileInfoEx>();
             string strx = "";
             int j = 0;
-            progressBar2.Style = ProgressBarStyle.Continuous;
-            progressBar2.Maximum = m_files.Count;
-            progressBar2.BringToFront();
-            timerProgressBar.Enabled = false;
+            this.progressBar2.Style = ProgressBarStyle.Continuous;
+            this.progressBar2.Maximum = m_files.Count;
+            this.ResetProgressBar();
 
             // Get exif data for all files once and only one (slow operation)
             foreach ( FileInfo fi in m_files )
@@ -1328,8 +1361,7 @@ namespace ActivityPicturePlugin.UI
                 Application.DoEvents();
             }
 
-            this.progressBar2.Value = this.progressBar2.Maximum;
-            timerProgressBar.Enabled = true;
+            this.HideProgressBar();
 
             // Sort them
             fiexs.Sort( fs.Compare );
@@ -1416,7 +1448,7 @@ namespace ActivityPicturePlugin.UI
         }
         private void treeViewImages_AfterSelect( object sender, TreeViewEventArgs e )
         {
-            ResetProgressBar();
+            // Remove? ResetProgressBar();
             //lblProgress.Text = "";
 
             if ( e.Node.Tag is DirectoryInfo )
@@ -1436,6 +1468,7 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
+            // Remove? HideProgressBar();
         }
 
         private void treeViewImages_EnabledChanged( object sender, EventArgs e )
@@ -1461,7 +1494,7 @@ namespace ActivityPicturePlugin.UI
         private void treeViewActivities_AfterSelect( object sender, TreeViewEventArgs e )
         {
             //lblProgress.Text = "";
-            ResetProgressBar();
+            /// Remove?  ResetProgressBar();
             if ( e.Node.Tag != null )
             {
                 if ( e.Node.Tag is IActivity ) //Activity is selected
@@ -1470,6 +1503,7 @@ namespace ActivityPicturePlugin.UI
                     return;
                 }
             }
+            //HideProgressBar();
             //if no activity is selected
             this.listViewAct.Items.Clear();
         }
