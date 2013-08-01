@@ -408,6 +408,7 @@ namespace ActivityPicturePlugin.UI
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeViewActivities.ContextMenuStrip = this.contextMenuTreeViewActivities;
+            this.treeViewActivities.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.treeViewActivities.FullRowSelect = true;
             this.treeViewActivities.HotTracking = true;
             this.treeViewActivities.ItemHeight = 20;
@@ -450,6 +451,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.Location = new System.Drawing.Point(0, 0);
             this.listViewAct.Margin = new System.Windows.Forms.Padding(4);
             this.listViewAct.Name = "listViewAct";
+            this.listViewAct.OwnerDraw = true;
             this.listViewAct.Size = new System.Drawing.Size(473, 318);
             this.listViewAct.TabIndex = 8;
             this.listViewAct.UseCompatibleStateImageBehavior = false;
