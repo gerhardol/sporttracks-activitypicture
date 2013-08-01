@@ -55,12 +55,6 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewImages = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuRefresh = new System.Windows.Forms.ToolStripMenuItem();
             this.btnScan = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.listViewDrive = new ActivityPicturePlugin.UI.ListViewEx();
-            this.colDImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuListViewDrive = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -70,17 +64,23 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities = new System.Windows.Forms.TreeView();
             this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerProgressBar = new System.Windows.Forms.Timer(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.listViewDrive = new ActivityPicturePlugin.UI.ListViewEx();
+            this.colDImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewAct = new ActivityPicturePlugin.UI.ListViewEx();
             this.colImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
-            this.timerProgressBar = new System.Windows.Forms.Timer(this.components);
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -240,63 +240,6 @@ namespace ActivityPicturePlugin.UI
             this.btnScan.TextRightMargin = 2;
             this.btnScan.Click += new System.EventHandler(this.btnScan_Click);
             // 
-            // listViewDrive
-            // 
-            this.listViewDrive.AllowDrop = true;
-            this.listViewDrive.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colDImage,
-            this.colDDateTime,
-            this.colDGPS,
-            this.colDTitle,
-            this.colDDescription});
-            this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
-            this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewDrive.DoubleBufferedEnabled = true;
-            this.listViewDrive.FullRowSelect = true;
-            this.listViewDrive.Location = new System.Drawing.Point(0, 0);
-            this.listViewDrive.Margin = new System.Windows.Forms.Padding(4);
-            this.listViewDrive.Name = "listViewDrive";
-            this.listViewDrive.OwnerDraw = true;
-            this.listViewDrive.Size = new System.Drawing.Size(224, 318);
-            this.listViewDrive.TabIndex = 7;
-            this.listViewDrive.UseCompatibleStateImageBehavior = false;
-            this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
-            this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
-            this.listViewDrive.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewDrive_DrawItem);
-            this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
-            this.listViewDrive.DoubleClick += new System.EventHandler(this.listViewDrive_DoubleClick);
-            this.listViewDrive.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewDrive_KeyDown);
-            // 
-            // colDImage
-            // 
-            this.colDImage.Tag = "colImage";
-            this.colDImage.Text = "Image";
-            this.colDImage.Width = 150;
-            // 
-            // colDDateTime
-            // 
-            this.colDDateTime.Tag = "colDateTime";
-            this.colDDateTime.Text = "DateTime";
-            this.colDDateTime.Width = 100;
-            // 
-            // colDGPS
-            // 
-            this.colDGPS.Tag = "colGPS";
-            this.colDGPS.Text = "GPS coord.";
-            this.colDGPS.Width = 120;
-            // 
-            // colDTitle
-            // 
-            this.colDTitle.Tag = "colTitle";
-            this.colDTitle.Text = "Title";
-            this.colDTitle.Width = 100;
-            // 
-            // colDDescription
-            // 
-            this.colDDescription.Tag = "colDescription";
-            this.colDDescription.Text = "Description";
-            this.colDDescription.Width = 100;
-            // 
             // contextMenuListViewDrive
             // 
             this.contextMenuListViewDrive.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -437,6 +380,91 @@ namespace ActivityPicturePlugin.UI
             this.toolStripMenuCopyToClipboard.Text = "Copy";
             this.toolStripMenuCopyToClipboard.Click += new System.EventHandler(this.toolStripMenuCopyToClipboard_Click);
             // 
+            // contextMenuListViewAct
+            // 
+            this.contextMenuListViewAct.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuOpenFolder,
+            this.toolStripMenuRemove});
+            this.contextMenuListViewAct.Name = "contextMenuListViewAct";
+            this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
+            this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
+            // 
+            // toolStripMenuOpenFolder
+            // 
+            this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
+            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
+            this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
+            // 
+            // toolStripMenuRemove
+            // 
+            this.toolStripMenuRemove.Name = "toolStripMenuRemove";
+            this.toolStripMenuRemove.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuRemove.Text = "Remove";
+            this.toolStripMenuRemove.Click += new System.EventHandler(this.toolStripMenuRemove_Click);
+            // 
+            // timerProgressBar
+            // 
+            this.timerProgressBar.Interval = 5000;
+            this.timerProgressBar.Tick += new System.EventHandler(this.timerProgressBar_Tick);
+            // 
+            // listViewDrive
+            // 
+            this.listViewDrive.AllowDrop = true;
+            this.listViewDrive.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colDImage,
+            this.colDDateTime,
+            this.colDGPS,
+            this.colDTitle,
+            this.colDDescription});
+            this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
+            this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDrive.DoubleBufferedEnabled = true;
+            this.listViewDrive.FullRowSelect = true;
+            this.listViewDrive.Location = new System.Drawing.Point(0, 0);
+            this.listViewDrive.Margin = new System.Windows.Forms.Padding(4);
+            this.listViewDrive.Name = "listViewDrive";
+            this.listViewDrive.OwnerDraw = true;
+            this.listViewDrive.Size = new System.Drawing.Size(224, 318);
+            this.listViewDrive.TabIndex = 7;
+            this.listViewDrive.UseCompatibleStateImageBehavior = false;
+            this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
+            this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
+            this.listViewDrive.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewDrive_DrawItem);
+            this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
+            this.listViewDrive.DoubleClick += new System.EventHandler(this.listViewDrive_DoubleClick);
+            this.listViewDrive.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewDrive_KeyDown);
+            // 
+            // colDImage
+            // 
+            this.colDImage.Tag = "colImage";
+            this.colDImage.Text = "Image";
+            this.colDImage.Width = 150;
+            // 
+            // colDDateTime
+            // 
+            this.colDDateTime.Tag = "colDateTime";
+            this.colDDateTime.Text = "DateTime";
+            this.colDDateTime.Width = 100;
+            // 
+            // colDGPS
+            // 
+            this.colDGPS.Tag = "colGPS";
+            this.colDGPS.Text = "GPS coord.";
+            this.colDGPS.Width = 120;
+            // 
+            // colDTitle
+            // 
+            this.colDTitle.Tag = "colTitle";
+            this.colDTitle.Text = "Title";
+            this.colDTitle.Width = 100;
+            // 
+            // colDDescription
+            // 
+            this.colDDescription.Tag = "colDescription";
+            this.colDDescription.Text = "Description";
+            this.colDDescription.Width = 100;
+            // 
             // listViewAct
             // 
             this.listViewAct.AllowDrop = true;
@@ -448,7 +476,7 @@ namespace ActivityPicturePlugin.UI
             this.colDescription});
             this.listViewAct.ContextMenuStrip = this.contextMenuListViewAct;
             this.listViewAct.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewAct.DoubleBufferedEnabled = false;
+            this.listViewAct.DoubleBufferedEnabled = true;
             this.listViewAct.FullRowSelect = true;
             this.listViewAct.Location = new System.Drawing.Point(0, 0);
             this.listViewAct.Margin = new System.Windows.Forms.Padding(4);
@@ -494,34 +522,6 @@ namespace ActivityPicturePlugin.UI
             this.colDescription.Tag = "colDescription";
             this.colDescription.Text = "Description";
             this.colDescription.Width = 100;
-            // 
-            // contextMenuListViewAct
-            // 
-            this.contextMenuListViewAct.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuOpenFolder,
-            this.toolStripMenuRemove});
-            this.contextMenuListViewAct.Name = "contextMenuListViewAct";
-            this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
-            this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
-            // 
-            // toolStripMenuOpenFolder
-            // 
-            this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
-            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
-            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
-            this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
-            // 
-            // toolStripMenuRemove
-            // 
-            this.toolStripMenuRemove.Name = "toolStripMenuRemove";
-            this.toolStripMenuRemove.Size = new System.Drawing.Size(226, 22);
-            this.toolStripMenuRemove.Text = "Remove";
-            this.toolStripMenuRemove.Click += new System.EventHandler(this.toolStripMenuRemove_Click);
-            // 
-            // timerProgressBar
-            // 
-            this.timerProgressBar.Interval = 5000;
-            this.timerProgressBar.Tick += new System.EventHandler(this.timerProgressBar_Tick);
             // 
             // ImportControl
             // 
