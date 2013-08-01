@@ -144,7 +144,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                             UpdateView();
                         }
                         else
+                        {
+                            DefaultView();
                             ResetPage();
+                        }
                     }
                 }
             }
@@ -427,6 +430,29 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated = "";
         }
 
+        private void DefaultView()
+        {
+            if ( _Activity != null )
+            {
+                if ( this.PluginExtensionData.Images.Count == 0 )
+                {
+                    this.contextMenuStripView.Enabled = false;
+                    this.Mode = ShowMode.Import;
+                }
+                else
+                {
+                    this.contextMenuStripView.Enabled = true; 
+                    this.Mode = (ShowMode)ActivityPicturePlugin.Source.Settings.ActivityMode;
+                }
+            }
+            else
+            {
+                this.Visible = false;
+                this.contextMenuStripView.Enabled = false;
+                this.Mode = ShowMode.Import;
+            }
+        }
+
         private void RunCleanup( object sNewThumbs )
         {
             string s = sNewThumbs as string;
@@ -464,7 +490,8 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         {
             try
             {
-                this.contextMenuStripView.Enabled = true;
+                DefaultView();
+                //this.contextMenuStripView.Enabled = true;
                 this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
 
                 //Load controls depending on selected view
