@@ -125,6 +125,7 @@ namespace ActivityPicturePlugin.Settings
             this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
             this.cbOpenGE.Text = Resources.Resources.OpenInGoogleEarthWhenCreated_Text;
             this.cbStoreGEFileLocations.Text = Resources.Resources.StoreGEFileLocations_Text;
+            this.importControl1.UpdateUICulture( culture );
         }
 
         #endregion
