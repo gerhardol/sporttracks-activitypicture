@@ -54,6 +54,7 @@ namespace ActivityPicturePlugin.UI
             m_viewFolder = ActivityPicturePlugin.Source.Settings.FolderView;	 //View of ListviewDrive
             this.listViewDrive.View = (View)( m_viewFolder );
             this.listViewAct.View = (View)( m_viewActivity );
+            this.HideProgressBar();
         }
 
         // Used for file sorting
@@ -65,7 +66,7 @@ namespace ActivityPicturePlugin.UI
 
         public void UpdateUICulture( System.Globalization.CultureInfo culture )
         {
-            m_culture = culture;
+            //m_culture = culture;
 
             using ( Graphics g = this.CreateGraphics() )
             {
@@ -176,15 +177,11 @@ namespace ActivityPicturePlugin.UI
         private List<FileInfo> m_files = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
         private List<TreeNode> m_ActivityNodes = new List<TreeNode>();//List of all activities (used for comparing and organizing)
         private List<TreeNode> m_SelectedNodes = new List<TreeNode>();//Nodes that are selected in the Drive TreeView
-        private DirectoryInfo m_DriveDir;
         private bool m_showallactivities;
-        private bool m_notfireevent;
         private bool m_standardpathalreadyshown;
         private int m_viewActivity = 0; //View of ListviewAct
         private int m_viewFolder = 0; //View of ListviewDrive
-        private int m_NumDayNodes = 0; //needed for progress bar
-        private int m_numFilesImported = 0;
-        private System.Globalization.CultureInfo m_culture = System.Globalization.CultureInfo.CurrentUICulture;
+        //private System.Globalization.CultureInfo m_culture = System.Globalization.CultureInfo.CurrentUICulture;
 
         private TreeNode CapturedTreeViewActNode = null;
         private TreeNode CapturedTreeViewImagesNode = null;
@@ -205,12 +202,10 @@ namespace ActivityPicturePlugin.UI
         #region TreeViewImages
         public void LoadNodes()
         {
-            m_numFilesImported = 0;
             m_files.Clear();
-            // Remove?
-            ResetProgressBar();
 
-            UpdateUICulture( m_culture );
+            //TODO: Is this call needed?
+            //UpdateUICulture( m_culture );
 
             if ( !m_standardpathalreadyshown )
             {
@@ -223,11 +218,31 @@ namespace ActivityPicturePlugin.UI
 
                 m_standardpathalreadyshown = true;
             }
-            this.HideProgressBar();
+        }
+
+        private void SetTreeEvents(bool t)
+        {
+            if (t)
+            {
+                this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+                this.treeViewImages.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewImages_BeforeExpand);
+                //this.treeViewImages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterSelect);
+                //this.treeViewImages.EnabledChanged += new System.EventHandler(this.treeViewImages_EnabledChanged);
+                //this.treeViewImages.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeViewImages_MouseClick);
+            }
+            else
+            {
+                this.treeViewImages.AfterCheck -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+                this.treeViewImages.BeforeExpand -= new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewImages_BeforeExpand);
+                //this.treeViewImages.AfterSelect -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterSelect);
+                //this.treeViewImages.EnabledChanged -= new System.EventHandler(this.treeViewImages_EnabledChanged);
+                //this.treeViewImages.MouseClick -= new System.Windows.Forms.MouseEventHandler(this.treeViewImages_MouseClick);
+            }
         }
 
         private void SetCheck( TreeNode node, bool check )
         {
+            //TODO: Should sub nodes be set here?
             if ( node.Checked )
             {
                 if ( !this.m_SelectedNodes.Contains( node ) ) this.m_SelectedNodes.Add( node );
@@ -238,9 +253,9 @@ namespace ActivityPicturePlugin.UI
             }
             foreach ( TreeNode n in node.Nodes )
             {
-                m_notfireevent = true;
+                this.SetTreeEvents(false);
                 n.Checked = check;
-                m_notfireevent = false;
+                this.SetTreeEvents(true);
                 if ( ( n.Tag is FileInfo ) | ( n.Tag is DirectoryInfo ) )
                 {
                     if ( n.Checked )
@@ -256,54 +271,65 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void GetSubDirectoryNodes( TreeNode parentNode )
+        private void GetSubDirectoryNodes(TreeNode parentNode)
         {
             try
             {
-                DirectoryInfo dir = new DirectoryInfo( parentNode.FullPath );
-                DirectoryInfo[] dirSubs = dir.GetDirectories();
-                foreach ( DirectoryInfo dirsub in dirSubs )
+                DirectoryInfo dir = new DirectoryInfo(parentNode.FullPath);
+                DirectoryInfo[] dirSubs;
+                try
                 {
-                    if ( ( ( dirsub.Attributes & FileAttributes.System ) == FileAttributes.System ) ||
-                        ( ( dirsub.Attributes & FileAttributes.Hidden ) == FileAttributes.Hidden ) )
+                    dirSubs = dir.GetDirectories();
+                }
+                catch (UnauthorizedAccessException ex)
+                { /* Move on to the next folder.*/
+                    return;
+                }
+                foreach (DirectoryInfo dirsub in dirSubs)
+                {
+                    if (!Functions.IsNormalFile(dirsub))
+                    {
                         continue;	// Do not display hidden or system folders
+                    }
 
-                    TreeNode subNode = new TreeNode( dirsub.Name );
+                    TreeNode subNode = new TreeNode(dirsub.Name);
                     try
                     {
-                        if ( dirsub.GetDirectories().Length != 0 ) subNode.Nodes.Add( gDummyFolder );
+                        if (dirsub.GetDirectories().Length != 0) subNode.Nodes.Add(gDummyFolder);
                         subNode.Tag = dirsub;
-                        parentNode.Nodes.Add( subNode );
+                        parentNode.Nodes.Add(subNode);
                         subNode.Checked = parentNode.Checked;
                     }
-                    catch ( UnauthorizedAccessException ex )
+                    catch (UnauthorizedAccessException ex)
                     { /* Move on to the next folder.*/
-                    }
-                    catch ( Exception e )
-                    {
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 //throw;
             }
         }
 
-        private void ShowFolderPics() //Adds the images of a directory to the ListViewDrive
+        private void ShowFolderPics(DirectoryInfo driveDir) //Adds the images of a directory to the ListViewDrive
         {
             ImageList lvImgL = null;
             ImageList lvImgS = null;
             try
             {
                 m_files.Clear();
-                m_files.InsertRange( 0, m_DriveDir.GetFiles() );
+                try
+                {
+                    m_files.InsertRange(0, driveDir.GetFiles());
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    return;
+                }
 
                 for ( int i = 0; i < m_files.Count; i++ )
                 {
-                    if ( ( ( m_files[i].Attributes & FileAttributes.Hidden ) != 0 ) ||
-                        ( ( m_files[i].Attributes & FileAttributes.Encrypted ) != 0 ) ||
-                        ( ( m_files[i].Attributes & FileAttributes.System ) != 0 ) )
+                    if (!Functions.IsNormalFile(m_files[i]))
                     {
                         m_files.RemoveAt( i );
                         i--;
@@ -386,7 +412,7 @@ namespace ActivityPicturePlugin.UI
                 // throw;
 
             }
-
+            
 
         }
 
@@ -416,6 +442,10 @@ namespace ActivityPicturePlugin.UI
                     {
                         ndRoot.Nodes.Add( gDummyFolder );
                     }
+                }
+                if (this.treeViewImages.Nodes.Count == 0)
+                {
+                    //TODO: Add standardpath?
                 }
             }
             catch ( Exception )
@@ -455,10 +485,10 @@ namespace ActivityPicturePlugin.UI
                     DirectoryInfo[] dirSubs = dir.GetDirectories();
                     foreach ( DirectoryInfo dirsub in dirSubs )
                     {
-                        if ( ( ( dirsub.Attributes & FileAttributes.System ) == FileAttributes.System ) ||
-                            ( ( dirsub.Attributes & FileAttributes.Hidden ) == FileAttributes.Hidden ) )
+                        if (!Functions.IsNormalFile(dirsub))
+                        {
                             continue;	// Do not display hidden or system folders
-
+                        }
                         DirectoryInfo dirP = (DirectoryInfo)( subNodeP.Tag );
                         if ( dirsub.Name != dirP.Name )
                         //otherwise the folders of the standard path will be created twice
@@ -489,14 +519,14 @@ namespace ActivityPicturePlugin.UI
                     parentNode = subNodeP;
                 }
 
-                m_DriveDir = new DirectoryInfo( parentNode.FullPath );
-                ShowFolderPics();
+                DirectoryInfo driveDir = new DirectoryInfo( parentNode.FullPath );
+                ShowFolderPics(driveDir);
 
-                if ( m_DriveDir.GetDirectories().Length != 0 ) parentNode.Nodes.Add( gDummyFolder );
-                m_notfireevent = true;
+                if ( driveDir.GetDirectories().Length != 0 ) parentNode.Nodes.Add( gDummyFolder );
+                this.SetTreeEvents(false);
                 parentNode.EnsureVisible();
                 parentNode.TreeView.SelectedNode = parentNode;
-                m_notfireevent = false;
+                this.SetTreeEvents(true);
             }
             catch ( Exception )
             {
@@ -508,64 +538,63 @@ namespace ActivityPicturePlugin.UI
 
         #region TreeViewActivities
 
-        private void FillTreeViewActivities( bool bSelectCurrentActivity = true )
+        private void FillTreeViewActivities(bool bSelectCurrentActivity = true)
         {
             this.treeViewActivities.Nodes.Clear();
+            //TODO: Get current activity, select if still in list (otherwise newest?)
             this.m_ActivityNodes.Clear();
-            this.m_NumDayNodes = 0;
             try
             {
                 IEnumerable<IActivity> activities = GetActivities();
                 TreeNode yearNode, monthNode, dayNode;
                 dayNode = null;
-                foreach ( IActivity act in activities )
+                foreach (IActivity act in activities)
                 {
+                    DateTime localTime = act.StartTime.ToLocalTime();
                     //Year
-                    string year = act.StartTime.ToLocalTime().Year.ToString();
-                    TreeNode[] yearNodes = treeViewActivities.Nodes.Find( year, false );
-                    if ( yearNodes.Length == 0 )
+                    string year = localTime.Year.ToString();
+                    TreeNode[] yearNodes = treeViewActivities.Nodes.Find(year, false);
+                    if (yearNodes.Length == 0)
                     {
-                        yearNode = new TreeNode( year );
+                        yearNode = new TreeNode(year);
                         yearNode.Name = year;
-                        treeViewActivities.Nodes.Add( yearNode );
+                        treeViewActivities.Nodes.Add(yearNode);
                     }
                     else yearNode = yearNodes[0];
 
                     //Month
-                    string month = act.StartTime.ToLocalTime().ToString( "MM" );
-                    TreeNode[] monthNodes = yearNode.Nodes.Find( month, false );
-                    if ( monthNodes.Length == 0 )
+                    string month = localTime.ToString("MM");
+                    TreeNode[] monthNodes = yearNode.Nodes.Find(month, false);
+                    if (monthNodes.Length == 0)
                     {
-                        monthNode = new TreeNode( act.StartTime.ToLocalTime().ToString( "MMMM" ) );
+                        monthNode = new TreeNode(localTime.ToString("MMMM"));
                         monthNode.Name = month;
-                        yearNode.Nodes.Add( monthNode );
+                        yearNode.Nodes.Add(monthNode);
                     }
                     else monthNode = monthNodes[0];
 
                     //Day
-                    string day = act.StartTime.ToLocalTime().ToString( "dd" );
+                    string day = localTime.ToString("dd");
 
                     /*dayNode = new TreeNode( act.StartTime.ToLocalTime().ToString( "dd, dddd, " +
                         System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) + " "
                         + Resources.Resources.ImportControl_in + " " + act.Location );*/
 
-                    dayNode = new TreeNode( act.StartTime.ToLocalTime().ToLongDateString() + " " +
-                        act.StartTime.ToLocalTime().ToShortTimeString() + " "
-                        + Resources.Resources.ImportControl_in + " " + act.Location );
+                    dayNode = new TreeNode(localTime.ToLongDateString() + " " +
+                        localTime.ToShortTimeString() + " "
+                        + Resources.Resources.ImportControl_in + " " + act.Location);
 
-                    dayNode.Name = act.StartTime.ToString( "u" );
+                    dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
                     dayNode.Tag = act;
-                    this.m_ActivityNodes.Add( dayNode );
-                    this.m_NumDayNodes += 1;
-                    monthNode.Nodes.Add( dayNode );
+                    this.m_ActivityNodes.Add(dayNode);
+                    monthNode.Nodes.Add(dayNode);
                 }
                 this.treeViewActivities.Sort();
                 this.treeViewActivities.CollapseAll();
-                if ( bSelectCurrentActivity ) treeViewActivities.SelectedNode = dayNode;
-                //if ( !this.ShowAllActivities ) treeViewActivities.SelectedNode = dayNode;
-
+                //Gets the latest added activity in list (if several selected), normally latest in time
+                if (bSelectCurrentActivity) treeViewActivities.SelectedNode = dayNode;
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 throw;
             }
@@ -656,10 +685,9 @@ namespace ActivityPicturePlugin.UI
             { //add only current activity
                 if ( ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity != null )
                 {
-                    //TODO:
-                    IList<IActivity> activities2 = new List<IActivity>();
-                    activities2.Add( ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity );
-                    activities = activities2;
+                    activities = new List<IActivity>{
+                        ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity
+                    };
                 }
             }
             return activities;
@@ -668,10 +696,9 @@ namespace ActivityPicturePlugin.UI
         private void FindImagesInActivities()
         {
             this.progressBar2.Minimum = 0;
-            this.progressBar2.Maximum = m_NumDayNodes;
+            this.progressBar2.Maximum = this.m_ActivityNodes.Count;
             this.progressBar2.Step = 1;
-            // Remove?
-            this.ResetProgressBar();
+            //ProgressBar not set
             this.listViewAct.Items.Clear();
             foreach ( TreeNode year in this.treeViewActivities.Nodes )
             {
@@ -687,7 +714,6 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            this.HideProgressBar();
         }
 
         private void RemoveSelectedImagesFromActivity( ListViewItem[] lvisel )
@@ -735,9 +761,6 @@ namespace ActivityPicturePlugin.UI
                 int iCount = 0;
                 progressBar2.Style = ProgressBarStyle.Continuous;
                 progressBar2.Maximum = lvisel.Length;
-                // Remove? this.ResetProgressBar();
-                //timerProgressBar.Enabled = false;
-
                 //Check if Image does already exist in the current activity
                 foreach ( ListViewItem lvi in lvisel )
                 {
@@ -761,9 +784,6 @@ namespace ActivityPicturePlugin.UI
 
                     Application.DoEvents();
                 }
-                // Remove? this.HideProgressBar();
-                //this.progressBar2.Value = this.progressBar2.Maximum;
-                //timerProgressBar.Enabled = true;
 
                 //to refresh the ListView
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
@@ -916,49 +936,62 @@ namespace ActivityPicturePlugin.UI
             {
                 try
                 {
-                    if ( Functions.IsExifFileExt( file ) )
+                    ExifDirectory ed = null;
+                    GpsDirectory gps = null;
+
+                    if (Functions.IsExifFileExt(file))
                     {
-                        ExifDirectory ed = SimpleRun.ShowOneFileExifDirectory( file.FullName );
-                        GpsDirectory gps = SimpleRun.ShowOneFileGPSDirectory( file.FullName );
+                        ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
+                        gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
+                    }
 
-                        if ( ed != null )
+
+                    IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
+                    if (ed != null)
+                    {
+                        string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                        if (!string.IsNullOrEmpty(s))
                         {
-                            string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                            IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                            if ( !string.IsNullOrEmpty( s ) )
-                            {
-                                string dts = DateTime.ParseExact( s, "yyyy:MM:dd HH:mm:ss", culture ).ToString();
-                                lvi.SubItems.Add( dts );
-                            }
+                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                            lvi.SubItems.Add(dts);
                         }
-
-                        if ( gps != null )
+                    }
+                    if (lvi.SubItems.Count == 0)
+                    {
+                        string s = Functions.GetFileTimeString(file);
+                        if (!string.IsNullOrEmpty(s))
                         {
-                            string latref = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE_REF );
-                            string latitude = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE );
-                            string longitude = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE );
-                            string longref = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE_REF );
-                            string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
-                            if ( latitude != null ) lvi.SubItems.Add( gpsstr );
-                            else lvi.SubItems.Add( "" );
+                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                            lvi.SubItems.Add(dts);
                         }
+                    }
 
-                        if ( ed != null )
+                    if (gps != null)
+                    {
+                        string latref = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE_REF);
+                        string latitude = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE);
+                        string longitude = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE);
+                        string longref = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                        string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
+                        if (latitude != null) lvi.SubItems.Add(gpsstr);
+                        else lvi.SubItems.Add("");
+                    }
+
+                    if (ed != null)
+                    {
+                        string s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE));
+                        if (!string.IsNullOrEmpty(s))
                         {
-                            string s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_TITLE ) );
-                            if ( !string.IsNullOrEmpty( s ) )
-                            {
-                                lvi.SubItems.Add( s );
-                            }
-                            s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_COMMENTS ) );
-                            if ( !string.IsNullOrEmpty( s ) )
-                            {
-                                lvi.SubItems.Add( s );
-                            }
+                            lvi.SubItems.Add(s);
+                        }
+                        s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS));
+                        if (!string.IsNullOrEmpty(s))
+                        {
+                            lvi.SubItems.Add(s);
                         }
                     }
                 }
-                catch ( Exception )
+                catch (Exception)
                 {
                 }
 
@@ -978,6 +1011,11 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 this.listViewAct.Items.Clear();
+                if (tn == null)
+                {
+                    //No selection, nothing to do
+                    return;
+                }
                 IActivity act = (IActivity)( tn.Tag );
                 PluginData data = Helper.Functions.ReadExtensionData( act );
 
@@ -1021,8 +1059,7 @@ namespace ActivityPicturePlugin.UI
 
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
-                        // Remove? this.ResetProgressBar();
-                        // fix timerProgressBar.Enabled = false;
+                        //this.ResetProgressBar();
                         foreach ( ImageData id in il )
                         {
                             try
@@ -1069,7 +1106,7 @@ namespace ActivityPicturePlugin.UI
                             lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
 
                         }
-                        this.HideProgressBar();
+                        //this.HideProgressBar();
 
                         //this.listViewAct.LargeImageList = lil;
                         //this.listViewAct.SmallImageList = lis;
@@ -1150,7 +1187,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.Visible = true;
         }
 
-        private void SetLabelText( string text )
+        private void SetLabelText(string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
@@ -1168,32 +1205,33 @@ namespace ActivityPicturePlugin.UI
 
         }
 
-        private void FindAndImportImages()
+        private int FindAndImportImages()
         {
+            int numFilesImported = 0;
             try
             {
                 NodeSorter ns = new NodeSorter();
-                this.m_ActivityNodes.Sort( ns.Compare );
+                this.m_ActivityNodes.Sort(ns.Compare);
 
                 DateTime FirstStart = new DateTime();
                 DateTime LastEnd = new DateTime();
                 IActivity FirstAct, LastAct;
 
-                if ( this.m_ActivityNodes[0].Tag is IActivity )
+                if (this.m_ActivityNodes[0].Tag is IActivity)
                 {
-                    FirstAct = (IActivity)( this.m_ActivityNodes[0].Tag );
+                    FirstAct = (IActivity)(this.m_ActivityNodes[0].Tag);
                     FirstStart = FirstAct.StartTime.ToLocalTime();
                 }
 
-                if ( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity )
+                if (this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity)
                 {
-                    LastAct = (IActivity)( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag );
-                    LastEnd = GetActivityEndTime( LastAct );
+                    LastAct = (IActivity)(this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag);
+                    LastEnd = GetActivityEndTime(LastAct);
                 }
 
                 IActivity CurrentActivity;
                 int CurrentIndex = 0;
-                CurrentActivity = (IActivity)( this.m_ActivityNodes[0].Tag );
+                CurrentActivity = (IActivity)(this.m_ActivityNodes[0].Tag);
 
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
@@ -1201,55 +1239,56 @@ namespace ActivityPicturePlugin.UI
                 this.ResetProgressBar();
                 int i = 0;
                 DateTime FileTime = new DateTime();
-                foreach ( FileInfo file in m_files )
+                foreach (FileInfo file in m_files)
                 {
                     Application.DoEvents();
 
                     i++;
-                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
+                    this.progressBar2.Value = (int)(100 * (double)(i) / (double)(m_files.Count));
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
 
-                    FileTime = Functions.GetFileTime( file.FullName );
+                    //TODO: Handle non-exif
+                    FileTime = Functions.GetFileTime(file);
 
                     //{ //A valid EXIF metadata has been found                
-                    if ( ( FileTime > FirstStart ) &
-                        ( FileTime < LastEnd ) )
+                    if ((FileTime > FirstStart) &
+                        (FileTime < LastEnd))
                     {//dateTime im picture is within the range of all activities
 
-                        if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
+                        if (FileTime > CurrentActivity.StartTime.ToLocalTime())
                         {
-                            if ( FileTime > GetActivityEndTime( CurrentActivity ) )
+                            if (FileTime > GetActivityEndTime(CurrentActivity))
                             {
                                 //picture has been taken later => cycle to next activity
-                                while ( CurrentIndex < this.m_ActivityNodes.Count )
+                                while (CurrentIndex < this.m_ActivityNodes.Count)
                                 {
                                     CurrentIndex++;
-                                    CurrentActivity = (IActivity)( this.m_ActivityNodes[CurrentIndex].Tag );
-                                    if ( FileTime < GetActivityEndTime( CurrentActivity ) ) break;
+                                    CurrentActivity = (IActivity)(this.m_ActivityNodes[CurrentIndex].Tag);
+                                    if (FileTime < GetActivityEndTime(CurrentActivity)) break;
                                 }
-                                if ( !( CurrentIndex < this.m_ActivityNodes.Count ) ) //cycled through all activities, no match found
+                                if (!(CurrentIndex < this.m_ActivityNodes.Count)) //cycled through all activities, no match found
                                 {
                                     break;//break foreach file loop
                                 }
                             }
 
-                            if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
+                            if (FileTime > CurrentActivity.StartTime.ToLocalTime())
                             {
                                 //the picture has been taken during the activity
-                                PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
+                                PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
 
                                 //Check if Image does already exist in the current activity
-                                if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
+                                if (!ImageAlreadyExistsInActivity(file.Name, data))
                                 {
                                     this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
-                                    if ( ids != null ) data.Images.Add( ids );
-                                    Functions.WriteExtensionData( CurrentActivity, data );
-                                    m_numFilesImported++;
+                                    ImageDataSerializable ids = GetImageDataSerializableFromFile(file.FullName);
+                                    if (ids != null) data.Images.Add(ids);
+                                    Functions.WriteExtensionData(CurrentActivity, data);
+                                    numFilesImported++;
 
-                                    using ( ImageData ID = new ImageData( ids ) )
+                                    using (ImageData ID = new ImageData(ids))
                                     {
                                         ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
                                     }
@@ -1262,41 +1301,70 @@ namespace ActivityPicturePlugin.UI
                 }
 
                 this.HideProgressBar();
-                this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone,
-                    m_numFilesImported );
-
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 //throw;
             }
+            return numFilesImported;
         }
 
         private static DateTime GetActivityEndTime( IActivity Act )
         {
-            ActivityInfo info = ActivityInfoCache.Instance.GetInfo( Act );
+            ActivityInfo info = ActivityInfoCache.Instance.GetInfo(Act);
             return info.EndTime.ToLocalTime();
         }
 
         private void ThreadGetImages()
         {
+            DateTime first = DateTime.MaxValue;
+            foreach (TreeNode tn in this.m_ActivityNodes)
+            {
+                IActivity act = (IActivity)(tn.Tag);
+                DateTime first2;
+                if (act.HasStartTime)
+                {
+                    first2 = act.StartTime;
+                }
+                else
+                {
+                    //not normally occurring as activities should have tracks...
+                   first2 = ActivityInfoCache.Instance.GetInfo(act).ActualTrackStart;
+                }
+                if (first2 > DateTime.MinValue && first2 < first)
+                {
+                    first = first2;
+                }
+            }
+            if (first == DateTime.MaxValue && this.m_ActivityNodes.Count>0)
+            {
+                //This should not occur...
+                first = DateTime.MinValue;
+            }
+            else if (first > DateTime.MinValue)
+            {
+                //Some slack for time zone etc
+                first -= TimeSpan.FromDays(1);
+            }
+
             this.ResetProgressBar();
             this.progressBar2.Maximum = 100;
+
             foreach ( TreeNode n in this.m_SelectedNodes )
             {
-                GetImageFiles( n );
+                GetImageFiles( n, first );
             }
             BeginInvoke( onImagesComplete, new object[] { this, EventArgs.Empty } );
             this.HideProgressBar();
         }
 
-        private void GetImageFiles( TreeNode node ) //finds all images of the selected directory
+        private void GetImageFiles( TreeNode node, DateTime first ) //finds all images of the selected directory
         {
             try
             {
                 if ( node.Tag is DirectoryInfo )
                 {
-                    if ( this.progressBar2.Value >= this.progressBar2.Maximum )
+                    if (this.progressBar2.Value >= this.progressBar2.Maximum)
                     {
                         this.progressBar2.Value = 0;
                     }
@@ -1304,7 +1372,7 @@ namespace ActivityPicturePlugin.UI
                     {
                         this.progressBar2.Value++;
                     }
-
+                    
                     DirectoryInfo dir = (DirectoryInfo)( node.Tag );
 
                     //Check if directory has been expanded before
@@ -1320,27 +1388,30 @@ namespace ActivityPicturePlugin.UI
                                 TreeNode subNode = new TreeNode( dirsub.Name );
                                 subNode.Nodes.Add( gDummyFolder );
                                 subNode.Tag = dirsub;
-                                GetImageFiles( subNode );
+                                GetImageFiles( subNode, first );
                             }
                         }
                     }
-
-                    FileInfo[] dirfiles = dir.GetFiles();
+                    FileInfo[] dirfiles;
+                    try
+                    {
+                        dirfiles = dir.GetFiles();
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        return;
+                    }
                     foreach ( FileInfo file in dirfiles )
                     {
-                        if ( Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing )
+                        if (Functions.IsNormalFile(file) &&
+                            Functions.GetMediaType(file.Extension) != ImageData.DataTypes.Nothing &&
+                            (!m_files.Contains(file)) &&
+                            //prune filter: Use file modified date
+                                file.LastWriteTimeUtc > first)
                         {
-                            if ( ( !m_files.Contains( file ) ) &&
-                                ( ( file.Attributes & FileAttributes.Hidden ) == 0 ) &&
-                                ( ( file.Attributes & FileAttributes.Encrypted ) == 0 ) &
-                                ( ( file.Attributes & FileAttributes.System ) == 0 ) )
-                            {
-                                //TODO: Filter when importing
-                                m_files.Add( file );
-                                SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
-                                Application.DoEvents();
-                            }
-
+                            m_files.Add(file);
+                            SetLabelText(Resources.Resources.ImportControl_addingFile + " " + file.Name);
+                            Application.DoEvents();
                         }
                     }
                 }
@@ -1362,7 +1433,6 @@ namespace ActivityPicturePlugin.UI
             Application.DoEvents();
             FileExSorter fs = new FileExSorter();
             List<FileInfoEx> fiexs = new List<FileInfoEx>();
-            string strx = "";
             int j = 0;
             this.progressBar2.Style = ProgressBarStyle.Continuous;
             this.progressBar2.Maximum = m_files.Count;
@@ -1373,24 +1443,9 @@ namespace ActivityPicturePlugin.UI
             {
                 lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
                 progressBar2.Value = j;
-                strx = "9999";
-                if ( Functions.IsExifFileExt( fi ) )
-                {
-                    try
-                    {
-                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( fi.FullName );
-                        if ( ex != null )
-                        {
-                            strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                        }
-                    }
-                    catch ( Exception )
-                    {
-                    }
-                }
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
-                fiex.strDateTime = strx;
+                fiex.strDateTime = Functions.GetFileTimeString(fi);
                 fiexs.Add( fiex );
 
                 Application.DoEvents();
@@ -1623,7 +1678,7 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
-            if ( il != null )
+            if (il != null && il.Images.Count > e.ItemIndex)
             {
                 Image img = il.Images[e.ItemIndex];
 
@@ -1745,52 +1800,46 @@ namespace ActivityPicturePlugin.UI
         }
 
         #region treeViewImages
-        private void treeViewImages_BeforeExpand( object sender, TreeViewCancelEventArgs e )
+        private void treeViewImages_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
-            if ( !m_notfireevent ) //prevent recursive firing of events
-            {
-                TreeView tvw = (TreeView)( sender );
-                TreeNode currentNode = e.Node;
 
-                //Check if the node has been expanded before,
-                // if not, add new nodes
-                if ( e.Node.Nodes.Count > 0 )
+            //prevent recursive firing of events, disable callbacks when setting
+            TreeView tvw = (TreeView)(sender);
+            TreeNode currentNode = e.Node;
+
+            //Check if the node has been expanded before,
+            // if not, add new nodes
+            if (currentNode.Nodes.Count > 0)
+            {
+                if (currentNode.Nodes[0].Text == gDummyFolder)
                 {
-                    if ( e.Node.Nodes[0].Text == gDummyFolder )
-                    {
-                        e.Node.Nodes.Clear();
-                        GetSubDirectoryNodes( e.Node );
-                    }
+                    currentNode.Nodes.Clear();
+                    GetSubDirectoryNodes(currentNode);
                 }
             }
         }
+
         private void treeViewImages_AfterCheck( object sender, TreeViewEventArgs e )
         {
-            if ( !m_notfireevent ) SetCheck( e.Node, e.Node.Checked );
+            SetCheck( e.Node, e.Node.Checked );
         }
         private void treeViewImages_AfterSelect( object sender, TreeViewEventArgs e )
         {
-            // Remove? ResetProgressBar();
-            //lblProgress.Text = "";
-
-            if ( e.Node.Tag is DirectoryInfo )
+            TreeNode currentNode = e.Node;
+            if (currentNode.Tag is DirectoryInfo)
             {
-                m_DriveDir = new DirectoryInfo( e.Node.FullPath );
-                //Thread td1 = new Thread(new ThreadStart(ShowFolderPics));
-                //td1.Start();
-                //td1.Join();
+                DirectoryInfo driveDir = new DirectoryInfo(currentNode.FullPath);
 
-                ShowFolderPics();
-                if ( e.Node.Nodes.Count > 0 )
+                ShowFolderPics(driveDir);
+                if (currentNode.Nodes.Count > 0)
                 {
-                    if ( e.Node.Nodes[0].Text == gDummyFolder )
+                    if (currentNode.Nodes[0].Text == gDummyFolder)
                     {
-                        e.Node.Nodes.Clear();
-                        GetSubDirectoryNodes( e.Node );
+                        currentNode.Nodes.Clear();
+                        GetSubDirectoryNodes(currentNode);
                     }
                 }
             }
-            // Remove? HideProgressBar();
         }
 
         private void treeViewImages_EnabledChanged( object sender, EventArgs e )
@@ -1913,8 +1962,6 @@ namespace ActivityPicturePlugin.UI
         #region treeViewActivities
         private void treeViewActivities_AfterSelect( object sender, TreeViewEventArgs e )
         {
-            //lblProgress.Text = "";
-            /// Remove?  ResetProgressBar();
             if ( e.Node.Tag != null )
             {
                 if ( e.Node.Tag is IActivity ) //Activity is selected
@@ -1923,7 +1970,6 @@ namespace ActivityPicturePlugin.UI
                     return;
                 }
             }
-            //HideProgressBar();
             //if no activity is selected
             this.listViewAct.Items.Clear();
         }
@@ -2335,14 +2381,15 @@ namespace ActivityPicturePlugin.UI
             m_files.Clear();
             ThreadGetImages(); //collects images of all selected paths
             SortFiles();
-            FindAndImportImages();
+            int numFilesImported = FindAndImportImages();
 
             AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
             EnableControl( true );
 
             this.UseWaitCursor = false;
 
-            this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, m_numFilesImported );
+            //May not be shown....
+            this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
         }
 
         private void btnChangeFolderView_Click( object sender, EventArgs e )
@@ -2371,7 +2418,7 @@ namespace ActivityPicturePlugin.UI
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
         {
-            if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+            if ( MessageBox.Show(Resources.Resources.ConfirmDeleteLong_Text , Resources.Resources.ConfirmDeleteShort_Text,
                  MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
             {
                 ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
@@ -2620,36 +2667,8 @@ namespace ActivityPicturePlugin.UI
             {
                 FileInfo tx = x as FileInfo;
                 FileInfo ty = y as FileInfo;
-                string strx = "9999";
-                string stry = "9999";
-                if ( Functions.IsExifFileExt( tx ) )
-                {
-                    try
-                    {
-                        ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory( tx.FullName );
-                        if ( ex != null )
-                        {
-                            strx = ex.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                        }
-                    }
-                    catch ( Exception )
-                    {
-                    }
-                }
-                if ( Functions.IsExifFileExt( ty ) )
-                {
-                    try
-                    {
-                        ExifDirectory ey = SimpleRun.ShowOneFileExifDirectory( ty.FullName );
-                        if ( ey != null )
-                        {
-                            stry = ey.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                        }
-                    }
-                    catch ( Exception )
-                    {
-                    }
-                }
+                string strx = Functions.GetFileTimeString(tx);
+                string stry = Functions.GetFileTimeString(ty);
                 return string.Compare( strx, stry );
             }
             catch ( Exception )
