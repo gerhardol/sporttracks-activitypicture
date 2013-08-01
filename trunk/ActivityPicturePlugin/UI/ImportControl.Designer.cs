@@ -100,7 +100,7 @@ namespace ActivityPicturePlugin.UI
             // 
             this.lblProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(4, 298);
+            this.lblProgress.Location = new System.Drawing.Point(4, 600);
             this.lblProgress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(65, 17);
@@ -111,11 +111,11 @@ namespace ActivityPicturePlugin.UI
             // 
             this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(0, 294);
+            this.progressBar2.Location = new System.Drawing.Point(4, 600);
             this.progressBar2.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar2.MarqueeAnimationSpeed = 1;
             this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(700, 20);
+            this.progressBar2.Size = new System.Drawing.Size(700, 22);
             this.progressBar2.Step = 1;
             this.progressBar2.TabIndex = 9;
             // 
@@ -153,8 +153,6 @@ namespace ActivityPicturePlugin.UI
             // 
             // splitContainer3.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.progressBar2);
-            this.splitContainer3.Panel2.Controls.Add(this.lblProgress);
             this.splitContainer3.Panel2.Controls.Add(this.listViewDrive);
             this.splitContainer3.Size = new System.Drawing.Size(224, 617);
             this.splitContainer3.SplitterDistance = 297;
@@ -410,7 +408,6 @@ namespace ActivityPicturePlugin.UI
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeViewActivities.ContextMenuStrip = this.contextMenuTreeViewActivities;
-            this.treeViewActivities.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
             this.treeViewActivities.FullRowSelect = true;
             this.treeViewActivities.HotTracking = true;
             this.treeViewActivities.ItemHeight = 20;
@@ -453,7 +450,6 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.Location = new System.Drawing.Point(0, 0);
             this.listViewAct.Margin = new System.Windows.Forms.Padding(4);
             this.listViewAct.Name = "listViewAct";
-            this.listViewAct.OwnerDraw = true;
             this.listViewAct.Size = new System.Drawing.Size(473, 318);
             this.listViewAct.TabIndex = 8;
             this.listViewAct.UseCompatibleStateImageBehavior = false;
@@ -527,6 +523,8 @@ namespace ActivityPicturePlugin.UI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblProgress);
+            this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.splitContainer1);
             this.DoubleBuffered = true;
             this.Margin = new System.Windows.Forms.Padding(5);
@@ -540,7 +538,6 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
-            this.splitContainer3.Panel2.PerformLayout();
             this.splitContainer3.ResumeLayout(false);
             this.contextMenuTreeViewImages.ResumeLayout(false);
             this.contextMenuListViewDrive.ResumeLayout(false);
@@ -550,6 +547,7 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewActivities.ResumeLayout(false);
             this.contextMenuListViewAct.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
