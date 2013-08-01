@@ -613,7 +613,7 @@ namespace ActivityPicturePlugin.UI
                     break;
                 }
             }
-            if ( !foundimages ) node.BackColor = Color.White;
+            if ( !foundimages ) node.BackColor = node.TreeView.BackColor;   // Color.White;
         }
 
         private TreeNode GetNodeFromPath( TreeView tv, string sPath )
@@ -737,12 +737,16 @@ namespace ActivityPicturePlugin.UI
                         break;
                     }
                 }
+                if ( lvi.ListView.SmallImageList.Images.Count > lvi.Index )
+                    lvi.ListView.SmallImageList.Images.RemoveAt( lvi.Index );
+                if ( lvi.ListView.LargeImageList.Images.Count > lvi.Index )
+                    lvi.ListView.LargeImageList.Images.RemoveAt( lvi.Index );
                 lvi.Remove();
             }
             listViewAct.ResumeLayout();
             Functions.WriteExtensionData( act, data );
             Functions.DeleteThumbnails( idList );
-            if ( data.Images.Count == 0 ) this.treeViewActivities.SelectedNode.BackColor = Color.White;
+            if ( data.Images.Count == 0 ) this.treeViewActivities.SelectedNode.BackColor = treeViewActivities.BackColor;    // Color.White;
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent );
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent.Parent );
         }
