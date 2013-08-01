@@ -27,31 +27,37 @@ namespace ActivityPicturePlugin.Helper
         private System.Drawing.Bitmap _Image;
         private System.Text.Encoding _Encoding = System.Text.Encoding.Default;
 
+        public ExifWorks()
+        {
+        }
+
         public ExifWorks( string FileName )
         {
             //MemoryStream ImageStream = null;
-            try
+            if (!string.IsNullOrEmpty(FileName))
             {
-                //the file is not locked and may be modified/deleted later
-                using ( System.IO.FileStream ImageFile = new System.IO.FileStream( FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite ) )
+                try
                 {
-                    BinaryReader Reader = new BinaryReader( ImageFile );
+                    //the file is not locked and may be modified/deleted later
+                    using (System.IO.FileStream ImageFile = new System.IO.FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        BinaryReader Reader = new BinaryReader(ImageFile);
 
-                    // Disposing of ImageStream destroys the _Image
-                    _ImageStream = new MemoryStream( Reader.ReadBytes( (int)ImageFile.Length ) );
-                    _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream( _ImageStream );
-                    //Reader.Close();
+                        // Disposing of ImageStream destroys the _Image
+                        _ImageStream = new MemoryStream(Reader.ReadBytes((int)ImageFile.Length));
+                        _Image = (System.Drawing.Bitmap)System.Drawing.Image.FromStream(_ImageStream);
+                        //Reader.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (_ImageStream != null)
+                        _ImageStream.Dispose();
+                    _ImageStream = null;
+
+                    Console.WriteLine(ex.Message);
                 }
             }
-            catch ( Exception ex )
-            {
-                if ( _ImageStream != null )
-                    _ImageStream.Dispose();
-                _ImageStream = null;
-
-                Console.WriteLine( ex.Message );
-            }
-
         }
 
         public System.Drawing.Bitmap GetBitmap()

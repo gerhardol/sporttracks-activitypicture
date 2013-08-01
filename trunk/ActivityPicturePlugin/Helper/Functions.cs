@@ -27,6 +27,7 @@ using System.Xml;
 using System.IO;
 using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
+using com.drew.metadata.exif;
 
 namespace ActivityPicturePlugin.Helper
 {
@@ -49,27 +50,47 @@ namespace ActivityPicturePlugin.Helper
             return false;
         }
 
-        internal static DateTime GetFileTime( String filename )
+        internal static DateTime GetFileTime(FileInfo file)
         {
-            try
+            if (IsExifFileExt(file))
             {
-                //TODO: Get file date, also for non-jpeg
-                FileInfo file = new FileInfo( filename );
-                if ( IsExifFileExt( file ) )
+                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(file.FullName);
+                if (!string.IsNullOrEmpty(fileTime))
                 {
-                    string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime( filename );
-                    if ( !string.IsNullOrEmpty( fileTime ) )
-                    {
-                        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                        DateTime dt = DateTime.ParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture );
-                        return dt;
-                    }
+                    IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
+                    DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
+                    return dt;
                 }
             }
-            catch (Exception)
+            else
             {
             }
             return new DateTime();
+        }
+
+        //TODO: Merge these methods. However, the use slightly differs too...
+        internal static string GetFileTimeString(FileInfo file)
+        {
+            string strx = null;
+            if (Functions.IsExifFileExt(file))
+            {
+                ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(file.FullName);
+                if (ex != null)
+                {
+                    strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+                }
+            }
+            if (string.IsNullOrEmpty(strx))
+            {
+                strx = file.CreationTimeUtc.ToString();
+            }
+            return strx;
+        }
+
+        internal static bool IsNormalFile(FileSystemInfo file)
+        {
+            return ( (file.Attributes & 
+                (FileAttributes.Hidden | FileAttributes.Encrypted | FileAttributes.System )) == 0 );
         }
 
         internal static bool ValidVideoFile( string s )
