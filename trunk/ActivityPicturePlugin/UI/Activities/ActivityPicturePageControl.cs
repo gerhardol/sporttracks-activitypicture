@@ -1779,7 +1779,13 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
         }
 
-
+        private void importControl1_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
+        {
+            if ( ( e.Items != null ) && ( e.Items.Count > 0 ) )
+                this.contextMenuStripView.Enabled = true;
+            else
+                this.contextMenuStripView.Enabled = false;
+        }
         #endregion
 
     }

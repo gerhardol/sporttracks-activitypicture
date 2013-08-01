@@ -63,6 +63,22 @@ namespace ActivityPicturePlugin.UI
             public FileInfo fi;
             public string strDateTime;
         }
+        public class ActivityImagesChangedEventArgs : EventArgs
+        {
+            public ActivityImagesChangedEventArgs()
+            {
+            }
+            public ActivityImagesChangedEventArgs(ListView.ListViewItemCollection items)
+            {
+                _items = items;
+            }
+
+            private ListView.ListViewItemCollection _items = null;
+            public ListView.ListViewItemCollection Items
+            {
+                get { return _items; }
+            }
+        }
 
         public void UpdateUICulture( System.Globalization.CultureInfo culture )
         {
@@ -155,6 +171,9 @@ namespace ActivityPicturePlugin.UI
         #region Callbacks
         delegate void SetTextCallback( string text );
         private EventHandler onImagesComplete;
+        public delegate void ActivityImagesChangedEventHandler( System.Object sender, ActivityImagesChangedEventArgs e );
+        public event ActivityImagesChangedEventHandler ActivityImagesChanged;
+
         #endregion
 
         //private void InitializeListViewDrive()
@@ -446,7 +465,7 @@ namespace ActivityPicturePlugin.UI
                         ndRoot.Nodes.Add( gDummyFolder );
                     }
                 }
-                if (this.treeViewImages.Nodes.Count == 0)
+                if ( this.treeViewImages.Nodes.Count == 0 )
                 {
                     //TODO: Add standardpath?
                 }
@@ -1277,7 +1296,7 @@ namespace ActivityPicturePlugin.UI
 
                     i++;
                     this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
-                    this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
+                    this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
 
                     //TODO: Handle non-exif
                     FileTime = Functions.GetFileTime( file );
@@ -2295,6 +2314,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     ListViewItem[] l = (ListViewItem[])( e.Data.GetData( "System.Windows.Forms.ListViewItem[]" ) );
                     AddSelectedImagesToActivity( l );
+                    this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
                 }
             }
             catch ( Exception )
@@ -2317,7 +2337,7 @@ namespace ActivityPicturePlugin.UI
                         ListViewItem[] lvis = new ListViewItem[sel.Count];
                         sel.CopyTo( (Array)lvis, 0 );
                         RemoveSelectedImagesFromActivity( lvis );
-
+                        this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
                         lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
                     }
                     break;
@@ -2464,8 +2484,11 @@ namespace ActivityPicturePlugin.UI
 
             this.UseWaitCursor = false;
 
+            if ( numFilesImported > 0 )
+                this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
+
             //May not be shown....
-            this.lblProgress.Text += "\t" + String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
+            this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
         }
 
         private void btnChangeFolderView_Click( object sender, EventArgs e )
@@ -2504,6 +2527,7 @@ namespace ActivityPicturePlugin.UI
                 sel.CopyTo( (Array)lvis, 0 );
                 RemoveSelectedImagesFromActivity( lvis );
                 lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+                this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
             }
         }
 
@@ -2514,6 +2538,7 @@ namespace ActivityPicturePlugin.UI
             sel.CopyTo( (Array)lvis, 0 );
             AddSelectedImagesToActivity( lvis );
             lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+            this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
         }
 
         private void contextMenuListViewDrive_Opening( object sender, CancelEventArgs e )
@@ -2633,7 +2658,6 @@ namespace ActivityPicturePlugin.UI
             splitContainer3.Width = splitContainer1.Panel1.Width - splitContainer3.Left;
             splitContainer2.Width = splitContainer1.Panel2.Width;
         }
-        
         #endregion
     }
 
