@@ -55,7 +55,7 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewImages = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuRefresh = new System.Windows.Forms.ToolStripMenuItem();
             this.btnScan = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.listViewDrive = new System.Windows.Forms.ListView();
+            this.listViewDrive = new ActivityPicturePlugin.UI.ListViewEx();
             this.colDImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -70,7 +70,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities = new System.Windows.Forms.TreeView();
             this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
-            this.listViewAct = new System.Windows.Forms.ListView();
+            this.listViewAct = new ListViewEx();
             this.colImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -251,6 +251,7 @@ namespace ActivityPicturePlugin.UI
             this.colDDescription});
             this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
             this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDrive.DoubleBufferedEnabled = true;
             this.listViewDrive.FullRowSelect = true;
             this.listViewDrive.Location = new System.Drawing.Point(0, 0);
             this.listViewDrive.Margin = new System.Windows.Forms.Padding(4);
@@ -565,7 +566,7 @@ namespace ActivityPicturePlugin.UI
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.ProgressBar progressBar2;
         private ZoneFiveSoftware.Common.Visuals.Button btnScan;
-        private System.Windows.Forms.ListView listViewAct;
+        private ListViewEx listViewAct;
         private System.Windows.Forms.ColumnHeader colImage;
         private System.Windows.Forms.ColumnHeader colDateTime;
         private System.Windows.Forms.ColumnHeader colTitle;
@@ -576,7 +577,7 @@ namespace ActivityPicturePlugin.UI
         private System.Windows.Forms.ColumnHeader colDTitle;
         private System.Windows.Forms.ColumnHeader colDDescription;
         private System.Windows.Forms.ColumnHeader colDGPS;
-        private System.Windows.Forms.ListView listViewDrive;
+        private ListViewEx listViewDrive;
         private ZoneFiveSoftware.Common.Visuals.Button btnChangeFolderView;
         private ZoneFiveSoftware.Common.Visuals.Button btnChangeActivityView;
         private System.Windows.Forms.Timer timerProgressBar;
