@@ -58,8 +58,10 @@ namespace ActivityPicturePlugin.Helper
                 if (!string.IsNullOrEmpty(fileTime))
                 {
                     IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                    DateTime dt = DateTime.ParseExact(fileTime, "yyyy:MM:dd HH:mm:ss", culture);
-                    return dt;
+                    DateTime dt = new DateTime();
+                    // fileTime may not be a valid date time.
+                    if ( DateTime.TryParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.None, out dt ) )
+                        return dt;
                 }
             }
             else

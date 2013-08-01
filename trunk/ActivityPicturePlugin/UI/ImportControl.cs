@@ -1304,11 +1304,14 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
 
-                this.HideProgressBar();
             }
             catch (Exception)
             {
                 //throw;
+            }
+            finally
+            {
+                this.HideProgressBar();
             }
             return numFilesImported;
         }
