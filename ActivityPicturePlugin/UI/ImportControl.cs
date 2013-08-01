@@ -2491,10 +2491,17 @@ namespace ActivityPicturePlugin.UI
             lblProgress.Width = splitContainer1.Width;*/
 
             //progressBar2.Top = splitContainer3.Panel2.Bottom - progressBar2.Height;
-            progressBar2.Top = listViewDrive.Bottom- progressBar2.Height;
+            /*progressBar2.Top = listViewDrive.Bottom- progressBar2.Height;
             progressBar2.Width = splitContainer1.Width;
             lblProgress.Top = progressBar2.Top;
-            lblProgress.Width = splitContainer1.Width;
+            lblProgress.Width = splitContainer1.Width;*/
+
+            progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
+            progressBar2.Left = splitContainer1.Left;
+            progressBar2.Width = splitContainer1.Width;
+            lblProgress.Top = progressBar2.Top + ( progressBar2.Height - lblProgress.Height ) / 2;
+            lblProgress.Left = progressBar2.Left + 5;
+            lblProgress.Width = progressBar2.Width;
 
             this.ResumeLayout();
         }
