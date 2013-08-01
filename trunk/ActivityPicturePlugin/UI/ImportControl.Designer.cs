@@ -70,7 +70,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities = new System.Windows.Forms.TreeView();
             this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
-            this.listViewAct = new ListViewEx();
+            this.listViewAct = new ActivityPicturePlugin.UI.ListViewEx();
             this.colImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -111,11 +111,11 @@ namespace ActivityPicturePlugin.UI
             // 
             this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(4, 600);
+            this.progressBar2.Location = new System.Drawing.Point(4, 599);
             this.progressBar2.Margin = new System.Windows.Forms.Padding(4);
-            this.progressBar2.MarqueeAnimationSpeed = 1;
+            this.progressBar2.MarqueeAnimationSpeed = 1000;
             this.progressBar2.Name = "progressBar2";
-            this.progressBar2.Size = new System.Drawing.Size(700, 22);
+            this.progressBar2.Size = new System.Drawing.Size(700, 23);
             this.progressBar2.Step = 1;
             this.progressBar2.TabIndex = 9;
             // 
@@ -209,12 +209,12 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewImages.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuRefresh});
             this.contextMenuTreeViewImages.Name = "contextMenuTreeViewImages";
-            this.contextMenuTreeViewImages.Size = new System.Drawing.Size(114, 26);
+            this.contextMenuTreeViewImages.Size = new System.Drawing.Size(127, 26);
             // 
             // toolStripMenuRefresh
             // 
             this.toolStripMenuRefresh.Name = "toolStripMenuRefresh";
-            this.toolStripMenuRefresh.Size = new System.Drawing.Size(113, 22);
+            this.toolStripMenuRefresh.Size = new System.Drawing.Size(126, 22);
             this.toolStripMenuRefresh.Text = "Refresh";
             this.toolStripMenuRefresh.Click += new System.EventHandler(this.toolStripMenuRefresh_Click);
             // 
@@ -302,13 +302,13 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuListViewDrive.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuAdd});
             this.contextMenuListViewDrive.Name = "contextMenuListViewDrive";
-            this.contextMenuListViewDrive.Size = new System.Drawing.Size(97, 26);
+            this.contextMenuListViewDrive.Size = new System.Drawing.Size(102, 26);
             this.contextMenuListViewDrive.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewDrive_Opening);
             // 
             // toolStripMenuAdd
             // 
             this.toolStripMenuAdd.Name = "toolStripMenuAdd";
-            this.toolStripMenuAdd.Size = new System.Drawing.Size(96, 22);
+            this.toolStripMenuAdd.Size = new System.Drawing.Size(101, 22);
             this.toolStripMenuAdd.Text = "Add";
             this.toolStripMenuAdd.Click += new System.EventHandler(this.toolStripMenuAdd_Click);
             // 
@@ -428,12 +428,12 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewActivities.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuCopyToClipboard});
             this.contextMenuTreeViewActivities.Name = "contextMenuTreeViewActivities";
-            this.contextMenuTreeViewActivities.Size = new System.Drawing.Size(103, 26);
+            this.contextMenuTreeViewActivities.Size = new System.Drawing.Size(110, 26);
             // 
             // toolStripMenuCopyToClipboard
             // 
             this.toolStripMenuCopyToClipboard.Name = "toolStripMenuCopyToClipboard";
-            this.toolStripMenuCopyToClipboard.Size = new System.Drawing.Size(102, 22);
+            this.toolStripMenuCopyToClipboard.Size = new System.Drawing.Size(109, 22);
             this.toolStripMenuCopyToClipboard.Text = "Copy";
             this.toolStripMenuCopyToClipboard.Click += new System.EventHandler(this.toolStripMenuCopyToClipboard_Click);
             // 
@@ -448,6 +448,7 @@ namespace ActivityPicturePlugin.UI
             this.colDescription});
             this.listViewAct.ContextMenuStrip = this.contextMenuListViewAct;
             this.listViewAct.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewAct.DoubleBufferedEnabled = false;
             this.listViewAct.FullRowSelect = true;
             this.listViewAct.Location = new System.Drawing.Point(0, 0);
             this.listViewAct.Margin = new System.Windows.Forms.Padding(4);
@@ -500,20 +501,20 @@ namespace ActivityPicturePlugin.UI
             this.toolStripMenuOpenFolder,
             this.toolStripMenuRemove});
             this.contextMenuListViewAct.Name = "contextMenuListViewAct";
-            this.contextMenuListViewAct.Size = new System.Drawing.Size(202, 48);
+            this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
             this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
             // 
             // toolStripMenuOpenFolder
             // 
             this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
-            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(201, 22);
+            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
             this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
             this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
             // 
             // toolStripMenuRemove
             // 
             this.toolStripMenuRemove.Name = "toolStripMenuRemove";
-            this.toolStripMenuRemove.Size = new System.Drawing.Size(201, 22);
+            this.toolStripMenuRemove.Size = new System.Drawing.Size(226, 22);
             this.toolStripMenuRemove.Text = "Remove";
             this.toolStripMenuRemove.Click += new System.EventHandler(this.toolStripMenuRemove_Click);
             // 

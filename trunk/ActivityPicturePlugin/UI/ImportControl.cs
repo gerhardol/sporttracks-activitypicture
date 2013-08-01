@@ -1355,11 +1355,15 @@ namespace ActivityPicturePlugin.UI
             }
 
             this.ResetProgressBar();
-            this.progressBar2.Maximum = 100;
+            //this.progressBar2.Maximum = 100;
+            this.progressBar2.Style = ProgressBarStyle.Continuous;
+            this.progressBar2.Maximum = this.m_SelectedNodes.Count; // *100; ;
+            this.progressBar2.Value = 0;
 
             foreach ( TreeNode n in this.m_SelectedNodes )
-            {
+            {                
                 GetImageFiles( n, first );
+                //this.progressBar2.Value++;
             }
             BeginInvoke( onImagesComplete, new object[] { this, EventArgs.Empty } );
             this.HideProgressBar();
@@ -1371,13 +1375,20 @@ namespace ActivityPicturePlugin.UI
             {
                 if ( node.Tag is DirectoryInfo )
                 {
-                    if (this.progressBar2.Value >= this.progressBar2.Maximum)
+                    /*if (this.progressBar2.Value >= this.progressBar2.Maximum)
                     {
                         this.progressBar2.Value = 0;
                     }
                     else
                     {
                         this.progressBar2.Value++;
+                    }*/
+                    if ( this.progressBar2.Value < this.progressBar2.Maximum )
+                        this.progressBar2.Value++;
+                    else
+                    {
+                        //Should not get here
+                        System.Diagnostics.Debug.Assert( this.progressBar2.Value < this.progressBar2.Maximum );
                     }
                     
                     DirectoryInfo dir = (DirectoryInfo)( node.Tag );
@@ -1390,6 +1401,11 @@ namespace ActivityPicturePlugin.UI
                             //node is checked and has not been expanded before!
                             //==> check all paths below
                             DirectoryInfo[] dirSubs = dir.GetDirectories();
+
+                            // We found more nodes!  Increase the progressbar maximum.
+                            // The alternative is to get an accurate number of nodes/subnodes
+                            // before we start.
+                            progressBar2.Maximum += dirSubs.Length;
                             foreach ( DirectoryInfo dirsub in dirSubs )
                             {
                                 TreeNode subNode = new TreeNode( dirsub.Name );
@@ -1416,8 +1432,7 @@ namespace ActivityPicturePlugin.UI
                             //prune filter: Use file modified date
                                 file.LastWriteTimeUtc > first)
                         {
-                            m_files.Add(file);
-                            SetLabelText(Resources.Resources.ImportControl_addingFile + " " + file.Name);
+                            SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
                         }
                     }
@@ -2559,12 +2574,19 @@ namespace ActivityPicturePlugin.UI
             splitContainer3.Width = splitContainer1.Panel1.Width;
             splitContainer2.Width = splitContainer1.Panel2.Width;
 
-            progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
+            /*progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
             progressBar2.Left = splitContainer1.Left;
             progressBar2.Width = splitContainer1.Width;
             lblProgress.Top = progressBar2.Top + ( progressBar2.Height - lblProgress.Height ) / 2;
             lblProgress.Left = progressBar2.Left + 5;
-            lblProgress.Width = progressBar2.Width;
+            lblProgress.Width = progressBar2.Width;*/
+
+            progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
+            progressBar2.Left = splitContainer1.Left;
+            progressBar2.Width = splitContainer1.Width;
+            lblProgress.Top = progressBar2.Top + ( progressBar2.Height - lblProgress.Height ) / 2;
+            lblProgress.Left = progressBar2.Left + 3;
+            //lblProgress.Width = progressBar2.Width;
 
             this.ResumeLayout();
         }
