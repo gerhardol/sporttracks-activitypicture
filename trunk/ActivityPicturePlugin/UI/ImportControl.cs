@@ -1215,27 +1215,27 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 NodeSorter ns = new NodeSorter();
-                this.m_ActivityNodes.Sort(ns.Compare);
+                this.m_ActivityNodes.Sort( ns.Compare );
 
                 DateTime FirstStart = new DateTime();
                 DateTime LastEnd = new DateTime();
                 IActivity FirstAct, LastAct;
 
-                if (this.m_ActivityNodes[0].Tag is IActivity)
+                if ( this.m_ActivityNodes[0].Tag is IActivity )
                 {
-                    FirstAct = (IActivity)(this.m_ActivityNodes[0].Tag);
+                    FirstAct = (IActivity)( this.m_ActivityNodes[0].Tag );
                     FirstStart = FirstAct.StartTime.ToLocalTime();
                 }
 
-                if (this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity)
+                if ( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity )
                 {
-                    LastAct = (IActivity)(this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag);
-                    LastEnd = GetActivityEndTime(LastAct);
+                    LastAct = (IActivity)( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag );
+                    LastEnd = GetActivityEndTime( LastAct );
                 }
 
                 IActivity CurrentActivity;
                 int CurrentIndex = 0;
-                CurrentActivity = (IActivity)(this.m_ActivityNodes[0].Tag);
+                CurrentActivity = (IActivity)( this.m_ActivityNodes[0].Tag );
 
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
@@ -1243,56 +1243,56 @@ namespace ActivityPicturePlugin.UI
                 this.ResetProgressBar();
                 int i = 0;
                 DateTime FileTime = new DateTime();
-                foreach (FileInfo file in m_files)
+                foreach ( FileInfo file in m_files )
                 {
                     Application.DoEvents();
 
                     i++;
-                    this.progressBar2.Value = (int)(100 * (double)(i) / (double)(m_files.Count));
+                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + file.FullName;
 
                     //TODO: Handle non-exif
-                    FileTime = Functions.GetFileTime(file);
+                    FileTime = Functions.GetFileTime( file );
 
                     //{ //A valid EXIF metadata has been found                
-                    if ((FileTime > FirstStart) &
-                        (FileTime < LastEnd))
+                    if ( ( FileTime > FirstStart ) &
+                        ( FileTime < LastEnd ) )
                     {//dateTime im picture is within the range of all activities
 
-                        if (FileTime > CurrentActivity.StartTime.ToLocalTime())
+                        if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                         {
-                            if (FileTime > GetActivityEndTime(CurrentActivity))
+                            if ( FileTime > GetActivityEndTime( CurrentActivity ) )
                             {
                                 //picture has been taken later => cycle to next activity
-                                while (CurrentIndex < this.m_ActivityNodes.Count)
+                                while ( CurrentIndex < this.m_ActivityNodes.Count )
                                 {
                                     CurrentIndex++;
-                                    CurrentActivity = (IActivity)(this.m_ActivityNodes[CurrentIndex].Tag);
-                                    if (FileTime < GetActivityEndTime(CurrentActivity)) break;
+                                    CurrentActivity = (IActivity)( this.m_ActivityNodes[CurrentIndex].Tag );
+                                    if ( FileTime < GetActivityEndTime( CurrentActivity ) ) break;
                                 }
-                                if (!(CurrentIndex < this.m_ActivityNodes.Count)) //cycled through all activities, no match found
+                                if ( !( CurrentIndex < this.m_ActivityNodes.Count ) ) //cycled through all activities, no match found
                                 {
                                     break;//break foreach file loop
                                 }
                             }
 
-                            if (FileTime > CurrentActivity.StartTime.ToLocalTime())
+                            if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                             {
                                 //the picture has been taken during the activity
-                                PluginData data = Helper.Functions.ReadExtensionData(CurrentActivity);
+                                PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
 
                                 //Check if Image does already exist in the current activity
-                                if (!ImageAlreadyExistsInActivity(file.Name, data))
+                                if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
                                 {
                                     this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = GetImageDataSerializableFromFile(file.FullName);
-                                    if (ids != null) data.Images.Add(ids);
-                                    Functions.WriteExtensionData(CurrentActivity, data);
+                                    ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
+                                    if ( ids != null ) data.Images.Add( ids );
+                                    Functions.WriteExtensionData( CurrentActivity, data );
                                     numFilesImported++;
 
-                                    using (ImageData ID = new ImageData(ids))
+                                    using ( ImageData ID = new ImageData( ids ) )
                                     {
                                         ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
                                     }
@@ -1303,9 +1303,8 @@ namespace ActivityPicturePlugin.UI
                         }
                     }
                 }
-
             }
-            catch (Exception)
+            catch ( Exception ex )
             {
                 //throw;
             }
@@ -1313,6 +1312,7 @@ namespace ActivityPicturePlugin.UI
             {
                 this.HideProgressBar();
             }
+
             return numFilesImported;
         }
 
@@ -1542,7 +1542,8 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
 
                 e.Graphics.DrawImage( bmpSelected, rectImage );
@@ -1570,6 +1571,10 @@ namespace ActivityPicturePlugin.UI
                     s.Height );
 
                 e.Graphics.FillRectangle( backBrush, rectF );
+
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
+                    e.DrawFocusRectangle();
+
                 e.Graphics.DrawString( sDetails,
                     e.Item.ListView.Font,
                     foreBrush,
@@ -1587,6 +1592,9 @@ namespace ActivityPicturePlugin.UI
                 rectItem.Width - 2,
                 rectItem.Height );
 
+            if ( ( e.State & ListViewItemStates.Selected ) != 0 )
+                e.DrawFocusRectangle();
+
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
@@ -1600,7 +1608,8 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
             }
@@ -1635,6 +1644,9 @@ namespace ActivityPicturePlugin.UI
                 rectItem.Width - 2,
                 rectItem.Height );
 
+            if ( ( e.State & ListViewItemStates.Selected ) != 0 )
+                e.DrawFocusRectangle();
+
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
@@ -1648,7 +1660,8 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
 
@@ -1682,6 +1695,9 @@ namespace ActivityPicturePlugin.UI
             Rectangle rectItem = e.Item.GetBounds( ItemBoundsPortion.Label );
             e.Graphics.FillRectangle( backBrush, rectItem );
 
+            if ( ( e.State & ListViewItemStates.Selected ) != 0 )
+                e.DrawFocusRectangle();
+
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
@@ -1695,7 +1711,8 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
             }
@@ -1729,13 +1746,17 @@ namespace ActivityPicturePlugin.UI
                 rectItem.Width - ( rectIcon.Right + 2 ),
                 rectItem.Height );
 
+            if ( ( e.State & ListViewItemStates.Selected ) != 0 )
+                e.DrawFocusRectangle();
+
             //Draw the icon
             e.Item.IndentCount = 0;	// Set the indent
             ImageList il = e.Item.ImageList;
             if ( il != null )
             {
                 System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.ItemIndex];
-                if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
+                if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectIcon );
             }
@@ -2531,24 +2552,12 @@ namespace ActivityPicturePlugin.UI
         private void ImportControl_Resize( object sender, EventArgs e )
         {
             this.SuspendLayout();
-            //57 is the distance from bottom of splitContainer1 to the bottom of this
-            //splitContainer1.Height = this.Height - ( splitContainer1.Top + 57 );
             splitContainer1.Height = this.Height - ( splitContainer1.Top );
             splitContainer1.Width = this.Width - ( splitContainer1.Left * 2 );
             splitContainer3.Height = splitContainer1.Height - splitContainer3.Top;
             splitContainer2.Height = splitContainer1.Height - splitContainer2.Top;
             splitContainer3.Width = splitContainer1.Panel1.Width;
             splitContainer2.Width = splitContainer1.Panel2.Width;
-            /*progressBar2.Top = splitContainer1.Bottom + 5;
-            progressBar2.Width = splitContainer1.Width;
-            lblProgress.Top = progressBar2.Bottom + 4;
-            lblProgress.Width = splitContainer1.Width;*/
-
-            //progressBar2.Top = splitContainer3.Panel2.Bottom - progressBar2.Height;
-            /*progressBar2.Top = listViewDrive.Bottom- progressBar2.Height;
-            progressBar2.Width = splitContainer1.Width;
-            lblProgress.Top = progressBar2.Top;
-            lblProgress.Width = splitContainer1.Width;*/
 
             progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
             progressBar2.Left = splitContainer1.Left;
@@ -2565,7 +2574,7 @@ namespace ActivityPicturePlugin.UI
             splitContainer3.Width = splitContainer1.Panel1.Width - splitContainer3.Left;
             splitContainer2.Width = splitContainer1.Panel2.Width;
         }
-
+        
         #endregion
     }
 
@@ -2699,4 +2708,18 @@ namespace ActivityPicturePlugin.UI
 
     #endregion
 
+    #region ListViewEx
+    public class ListViewEx : System.Windows.Forms.ListView
+    {
+        public bool DoubleBufferedEnabled
+        {
+            get { return base.DoubleBuffered; }
+            set { base.DoubleBuffered = value; }
+        }
+
+        public ListViewEx()
+        {
+        }
+    }
+    #endregion
 }
