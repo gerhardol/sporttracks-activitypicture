@@ -271,7 +271,7 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void GetSubDirectoryNodes(TreeNode parentNode)
+        private static void GetSubDirectoryNodes(TreeNode parentNode)
         {
             try
             {
@@ -305,8 +305,9 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false ,ex.Message );
                 //throw;
             }
         }
@@ -394,8 +395,10 @@ namespace ActivityPicturePlugin.UI
                     //bmp.Dispose();
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+
                 if ( lvImgS != null )
                     lvImgS.Dispose();
                 lvImgS = null;
@@ -448,8 +451,9 @@ namespace ActivityPicturePlugin.UI
                     //TODO: Add standardpath?
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 // throw;
             }
 
@@ -506,8 +510,9 @@ namespace ActivityPicturePlugin.UI
                                 // Don't add the node
                                 i = 0;
                             }
-                            catch ( Exception )
+                            catch ( Exception ex )
                             {
+                                System.Diagnostics.Debug.Assert( false, ex.Message );
                                 // Don't add the node
                                 i = 0;
                             }
@@ -528,8 +533,9 @@ namespace ActivityPicturePlugin.UI
                 parentNode.TreeView.SelectedNode = parentNode;
                 this.SetTreeEvents(true);
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
         }
@@ -642,7 +648,7 @@ namespace ActivityPicturePlugin.UI
 
         // Recursively drill down the path until we find the node we're looking for
         // iDepth is the current index in lFolders that we're looking for.
-        private TreeNode GetNextNodeInPath( TreeNode tn, List<string> lFolders, int iDepth )
+        private static TreeNode GetNextNodeInPath( TreeNode tn, List<string> lFolders, int iDepth )
         {
             TreeNode retNode = null;
             try
@@ -667,8 +673,9 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
             }
 
             return retNode;
@@ -876,8 +883,9 @@ namespace ActivityPicturePlugin.UI
 
                                 sFileData.Add( sFile );
                             }
-                            catch ( Exception )
+                            catch ( Exception ex )
                             {
+                                System.Diagnostics.Debug.Assert( false, ex.Message );
                                 //throw;
                             }
                         }
@@ -923,8 +931,9 @@ namespace ActivityPicturePlugin.UI
                 }
                 Application.DoEvents();
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
         }
@@ -995,8 +1004,9 @@ namespace ActivityPicturePlugin.UI
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert( false, ex.Message );
                 }
 
             }
@@ -1084,10 +1094,16 @@ namespace ActivityPicturePlugin.UI
                                 Image img = null;
                                 try
                                 {
-                                    img = Image.FromFile( id.ThumbnailPath );
+                                    if (  new FileInfo( id.ThumbnailPath ).Exists )
+                                        img = Image.FromFile( id.ThumbnailPath );
+                                    else
+                                        img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
+
                                 }
                                 catch ( Exception ex )
                                 {
+                                    System.Diagnostics.Debug.Assert( false, ex.Message );
+
                                     //Something was wrong with the thumbnail.
                                     //Add a 'delete' thumbnail as a placeholder so the item can
                                     //officially be deleted by the user.
@@ -1102,6 +1118,7 @@ namespace ActivityPicturePlugin.UI
                             }
                             catch ( Exception ex )
                             {
+                                System.Diagnostics.Debug.Assert( false, ex.Message );
                                 System.Diagnostics.Debug.Print( ex.Message );
                                 //throw;
                             }
@@ -1125,8 +1142,10 @@ namespace ActivityPicturePlugin.UI
                     this.listViewAct.Items.Clear();
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+
                 if ( lil != null )
                     lil.Dispose();
                 lil = null;
@@ -1180,13 +1199,22 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.Visible = false;
         }
 
-        private void HideProgressBar()
+        private void HideProgressBar( int hideDelay = 0 )
         {
-            this.lblProgress.Text = "";
-            this.lblProgress.Visible = false;
-            this.progressBar2.Visible = false;
-            this.progressBar2.Value = this.progressBar2.Maximum;
-            this.timerProgressBar.Enabled = false;
+            if ( hideDelay > 0 )
+            {
+                timerProgressBar.Interval = hideDelay;
+                timerProgressBar.Enabled = true;
+                timerProgressBar.Start();
+            }
+            else
+            {
+                this.timerProgressBar.Enabled = false;
+                this.lblProgress.Text = "";
+                this.lblProgress.Visible = false;
+                this.progressBar2.Visible = false;
+                this.progressBar2.Value = this.progressBar2.Maximum;
+            }
             this.listViewAct.Visible = true;
             this.treeViewActivities.Visible = true;
         }
@@ -1306,11 +1334,12 @@ namespace ActivityPicturePlugin.UI
             }
             catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
             finally
             {
-                this.HideProgressBar();
+                this.HideProgressBar(5000);
             }
 
             return numFilesImported;
@@ -1432,6 +1461,8 @@ namespace ActivityPicturePlugin.UI
                             //prune filter: Use file modified date
                                 file.LastWriteTimeUtc > first)
                         {
+                            //TODO: Filter when importing
+                            m_files.Add( file ); 
                             SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
                         }
@@ -2185,8 +2216,9 @@ namespace ActivityPicturePlugin.UI
                 }
                 return;
             }
-            catch ( Exception )
+            catch ( Exception ex)
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
         }
@@ -2332,8 +2364,9 @@ namespace ActivityPicturePlugin.UI
                     }
                 }
             }
-            catch ( Exception )
+            catch ( Exception ex )
             {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
 
@@ -2432,7 +2465,7 @@ namespace ActivityPicturePlugin.UI
             this.UseWaitCursor = false;
 
             //May not be shown....
-            this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
+            this.lblProgress.Text += "\t" + String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
         }
 
         private void btnChangeFolderView_Click( object sender, EventArgs e )
@@ -2455,8 +2488,10 @@ namespace ActivityPicturePlugin.UI
 
         private void timerProgressBar_Tick( object sender, EventArgs e )
         {
-            if ( this.progressBar2.Value == this.progressBar2.Maximum )
-                ResetProgressBar();
+            timerProgressBar.Stop();
+            HideProgressBar();
+            //if ( this.progressBar2.Value == this.progressBar2.Maximum )
+                //ResetProgressBar();
         }
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
@@ -2560,8 +2595,10 @@ namespace ActivityPicturePlugin.UI
                     Functions.OpenExternal( sFolder );
 
             }
-            catch ( Exception )
-            { }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+            }
         }
 
         private void ImportControl_Resize( object sender, EventArgs e )
@@ -2669,8 +2706,10 @@ namespace ActivityPicturePlugin.UI
                         break;
                 }
             }
-            catch ( Exception )
-            { }
+            catch ( Exception ex)
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+            }
 
             if ( sortDirection == SortOrder.None ) return 0;
             else if ( sortDirection == SortOrder.Descending ) return -iResult;
