@@ -28,11 +28,23 @@ using System.IO;
 using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
 using com.drew.metadata.exif;
+using System.Runtime.InteropServices;
 
 namespace ActivityPicturePlugin.Helper
 {
     static class Functions
     {
+        [DllImport( "shlwapi.dll" )]
+        private static extern bool PathCompactPathEx( [Out] StringBuilder pszOut, string szPath, int cchMax, int dwFlags );
+
+        internal static string TruncatePath( string path, int length )
+        {
+            StringBuilder sb = new StringBuilder();
+            PathCompactPathEx( sb, path, length, 0 );
+            System.Diagnostics.Debug.Print( sb.ToString() );
+            return sb.ToString();
+        }
+
         private static readonly string[] ExifExt = { ".jpg", ".jpeg", ".tif", ".tiff" };
         private static readonly string[] ImageExt = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
         private static readonly string[] VideoExt = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
