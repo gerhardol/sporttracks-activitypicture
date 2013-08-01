@@ -48,8 +48,22 @@ namespace ActivityPicturePlugin.Helper
                 // this.ThumbnailStoreLocation = StoreLocation.WebFiles;
                 if ( this.type == DataTypes.Video ) this.SetVideoThumbnail();
                 else this.SetThumbnail();
-                this.EW = new ExifWorks( this.ThumbnailPath );
-                this.Ratio = (Single)( this.EW.GetBitmap().Width ) / (Single)( this.EW.GetBitmap().Height );
+                if (this.Thumbnail != null)
+                {
+                    this.EW = new ExifWorks(this.ThumbnailPath);
+                }
+                else{
+                    this.EW = new ExifWorks();
+                }
+                System.Drawing.Bitmap b = this.EW.GetBitmap();
+                if (b == null)
+                {
+                    this.Ratio = 1;
+                }
+                else
+                {
+                    this.Ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
+                }
             }
             catch ( Exception )
             {
