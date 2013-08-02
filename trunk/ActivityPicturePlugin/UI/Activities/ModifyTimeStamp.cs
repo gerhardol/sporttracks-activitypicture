@@ -26,12 +26,12 @@ using ActivityPicturePlugin.Helper;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
-    {
+{
     public partial class ModifyTimeStamp : Form
-        {
+    {
         ImageData imgD;
         public ModifyTimeStamp(ImageData id)
-            {
+        {
             InitializeComponent();
 
             //localization
@@ -49,14 +49,16 @@ namespace ActivityPicturePlugin.UI.Activities
 
             this.dateTimePicker1.CustomFormat = datePattern;
             try
-                {
+            {
                 this.dateTimePicker1.Value = id.EW.DateTimeOriginal;
-                }
-            catch (Exception)
-                {           
-               // throw;
-                }
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+
+                // throw;
+            }
+        }
 
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -64,25 +66,26 @@ namespace ActivityPicturePlugin.UI.Activities
             this.ForeColor = visualTheme.ControlText;
         }
         private void btnOK_Click(object sender, EventArgs e)
-            {
+        {
             ApplyTimeStamp();
             this.Close();
-            }
+        }
 
         private void btnCancel_Click(object sender, EventArgs e)
-            {
+        {
             this.Close();
-            }
+        }
         private void ApplyTimeStamp()
-            {
+        {
             try
-                {
+            {
                 imgD.SetDateTimeOriginal(dateTimePicker1.Value);
-                }
-            catch (Exception)
-                {
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
-                }
             }
         }
     }
+}

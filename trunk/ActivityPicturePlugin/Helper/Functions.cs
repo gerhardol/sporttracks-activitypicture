@@ -161,8 +161,9 @@ namespace ActivityPicturePlugin.Helper
                 return true;
 
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return false;
             }
 
@@ -379,8 +380,9 @@ namespace ActivityPicturePlugin.Helper
                     File.Delete( docFile );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // File IO can throw a variety of exceptions (Diskspace, No permission to create/delete files/folders, etc)
             }
         }
@@ -652,8 +654,9 @@ namespace ActivityPicturePlugin.Helper
                     File.Delete( Path.GetFileName( docFile ) );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // File IO can throw a variety of exceptions (Diskspace, No permission to create/delete files/folders, etc)
             }
         }
@@ -721,8 +724,9 @@ namespace ActivityPicturePlugin.Helper
                     catch { }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
             finally
@@ -819,8 +823,9 @@ namespace ActivityPicturePlugin.Helper
         //        img.Dispose();
         //        return true;
         //        }
-        //    catch (Exception)
+        //    catch (Exception ex)
         //        {
+        //        System.Diagnostics.Debug.Assert(false, ex.Message);
         //        return false;
         //        }
         //    }
@@ -838,8 +843,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -851,8 +857,9 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.Diagnostics.Process.Start( sFile );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 ret = false;
             }
             return ret;
@@ -869,8 +876,9 @@ namespace ActivityPicturePlugin.Helper
                     string sPath = GetBestImage( im.PhotoSource, im.ReferenceID );
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     ret = false;
                 }
             }
@@ -882,8 +890,9 @@ namespace ActivityPicturePlugin.Helper
                     System.Diagnostics.Process.Start( im.PhotoSource );
 
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     ret = false;
                 }
             }
@@ -917,8 +926,9 @@ namespace ActivityPicturePlugin.Helper
                     // if both locations are not found, nothing will happen
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
             return path;
@@ -941,12 +951,15 @@ namespace ActivityPicturePlugin.Helper
                     string sPath = GetBestImage( photoSource, referenceID );
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
-                catch ( Exception )
-                { }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                }
 
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -963,8 +976,9 @@ namespace ActivityPicturePlugin.Helper
                 ImageLocation );
                 System.Diagnostics.Process.Start( f );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
         }
 
@@ -974,8 +988,10 @@ namespace ActivityPicturePlugin.Helper
             {
                 if ( p != null ) System.Diagnostics.Process.Start( p );
             }
-            catch ( Exception )
-            { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+            }
 
             /*try
             {
@@ -988,8 +1004,9 @@ namespace ActivityPicturePlugin.Helper
                 // Show file. 
                 mc.Run();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
             Console.WriteLine("Press Enter to continue.");*/
@@ -1024,9 +1041,9 @@ namespace ActivityPicturePlugin.Helper
                     ActivityPicturePlugin.Plugin.GetApplication().Logbook.Modified = true;
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -1060,8 +1077,9 @@ namespace ActivityPicturePlugin.Helper
                     return new PluginData();
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return new PluginData();
                 //throw;
             }
@@ -1106,8 +1124,9 @@ namespace ActivityPicturePlugin.Helper
                     bmp.Save( defpath, System.Drawing.Imaging.ImageFormat.Jpeg );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -1127,9 +1146,9 @@ namespace ActivityPicturePlugin.Helper
                     EW.GetBitmap().Save( filepath );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -1201,8 +1220,9 @@ namespace ActivityPicturePlugin.Helper
 
                 return thumb;
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 if (thumb != null)
                 {
                     thumb.Dispose();
@@ -1273,8 +1293,9 @@ namespace ActivityPicturePlugin.Helper
 
                 return ID;
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 if ( ID != null )
                 {
                     ID.Dispose();
@@ -1303,9 +1324,9 @@ namespace ActivityPicturePlugin.Helper
                     pa.ImageList.Clear();
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -1332,8 +1353,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 

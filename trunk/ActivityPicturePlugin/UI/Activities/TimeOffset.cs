@@ -72,8 +72,9 @@ namespace ActivityPicturePlugin.UI.Activities
                     id.OffsetDateTimeOriginal( (int)( this.nudYear.Value ), (int)(this.nudMonth.Value), (int)( this.nudDay.Value ), (int)( this.nudHour.Value ), (int)( this.nudMinute.Value ), (int)( this.nudSecond.Value ) );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }

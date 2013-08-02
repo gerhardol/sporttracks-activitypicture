@@ -982,10 +982,9 @@ namespace ActivityPicturePlugin.UI
                         gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
                     }
 
-                    // TODO: Why is de-DE used?  Any particular reason?
-                    //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    IFormatProvider culture = System.Globalization.CultureInfo.CurrentUICulture;
+                    // TODO: de-DE is used as en is default and cannot be set. Rewrite the use of culture
+                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                    //IFormatProvider culture = System.Globalization.CultureInfo.CurrentUICulture;
                     if ( ed != null )
                     {
                         string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);

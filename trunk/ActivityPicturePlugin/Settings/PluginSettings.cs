@@ -65,8 +65,9 @@ namespace ActivityPicturePlugin.Settings
                 {
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -87,8 +88,9 @@ namespace ActivityPicturePlugin.Settings
                     }
                     log.Modified = true;
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     throw;
                 }
             }

@@ -65,9 +65,9 @@ namespace ActivityPicturePlugin.Helper
                     this.Ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -222,8 +222,9 @@ namespace ActivityPicturePlugin.Helper
                     //EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString("yyyy:MM:dd HH:mm:ss"));
                     //SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     throw;
                 }
             }
@@ -242,8 +243,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                     else return "";
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
                 }
             }
@@ -254,8 +256,9 @@ namespace ActivityPicturePlugin.Helper
                     this.EW.FileExplorerTitle = value;
                     SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerTitle );
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     throw;
                 }
             }
@@ -271,8 +274,9 @@ namespace ActivityPicturePlugin.Helper
                         return CleanInput( this.EW.FileExplorerComments );
                     else return "";
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
                 }
 
@@ -284,8 +288,9 @@ namespace ActivityPicturePlugin.Helper
                     this.EW.FileExplorerComments = value;
                     SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerComments );
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     throw;
                 }
             }
@@ -319,8 +324,9 @@ namespace ActivityPicturePlugin.Helper
                         return CleanInput( this.EW.EquipmentModel );
                     else return "";
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
                 }
             }
@@ -390,8 +396,9 @@ namespace ActivityPicturePlugin.Helper
                         return GPSString;
                     }
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     //throw;
                     return "";
                 }
@@ -459,8 +466,9 @@ namespace ActivityPicturePlugin.Helper
                     //}
                     //else return ew.GPSAltitude.ToString() + " m";
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
                     //throw;
                 }
@@ -526,9 +534,9 @@ namespace ActivityPicturePlugin.Helper
                 this.EW.Dispose();
                 this.EW = new ExifWorks( this.ThumbnailPath );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -585,8 +593,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
             finally
@@ -670,8 +679,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
             return false;
         }
@@ -710,8 +720,9 @@ namespace ActivityPicturePlugin.Helper
 
                 System.IO.File.Delete( sTempFile ); //cleanup the temporary file
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
             return bitmap;
         }
@@ -743,8 +754,9 @@ namespace ActivityPicturePlugin.Helper
 
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // Access denied errors could be thrown, etc.
             }
             finally
@@ -839,8 +851,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // throw;
             }
         }

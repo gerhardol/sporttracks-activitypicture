@@ -51,6 +51,7 @@ namespace ActivityPicturePlugin.Helper
                 }
                 catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     if (_ImageStream != null)
                         _ImageStream.Dispose();
                     _ImageStream = null;
@@ -490,9 +491,9 @@ namespace ActivityPicturePlugin.Helper
                 {
                     this.SetPropertyString( (int)( TagNames.EquipModel ), value );
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
-
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     throw;
                 }
             }
@@ -1107,8 +1108,9 @@ namespace ActivityPicturePlugin.Helper
                         }
                     }
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                 }
                 return result;
             }
@@ -1149,8 +1151,9 @@ namespace ActivityPicturePlugin.Helper
                         }
                     }
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                 }
                 return result;
             }
@@ -1180,8 +1183,9 @@ namespace ActivityPicturePlugin.Helper
                     double d = this.GetPropertyRational( (int)( TagNames.GpsAltitude ) ).ToDouble();
                     return d;
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return 0;
                     //throw;
                 }
@@ -1204,7 +1208,7 @@ namespace ActivityPicturePlugin.Helper
         #region  Support methods for working with EXIF properties
         public string GetPropertyString( Int32 PID )
         {
-            if ( this.IsPropertyDefined( PID ) )
+            if (this._Image != null && this.IsPropertyDefined(PID))
             {
                 return GetString( this._Image.GetPropertyItem( PID ).Value );
             }
@@ -1303,7 +1307,7 @@ namespace ActivityPicturePlugin.Helper
         /// </history> 
         public byte[] GetProperty( Int32 PID, byte[] DefaultValue )
         {
-            if ( this.IsPropertyDefined( PID ) )
+            if (this._Image != null && this.IsPropertyDefined(PID))
             {
                 return this._Image.GetPropertyItem( PID ).Value;
             }

@@ -78,8 +78,9 @@ namespace ActivityPicturePlugin.Helper
                         break;
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //break;
             }
             base.WndProc( ref m );
@@ -294,9 +295,10 @@ namespace ActivityPicturePlugin.Helper
                 }
                 else return new Rectangle( 0, 0, 0, 0 );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-                return new Rectangle( 0, 0, 0, 0 );
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                return new Rectangle(0, 0, 0, 0);
             }
         }
 
@@ -378,8 +380,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // throw;
             }
             finally
@@ -410,8 +413,9 @@ namespace ActivityPicturePlugin.Helper
                 }
                 return -1;
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return -1;
             }
 
@@ -605,8 +609,9 @@ namespace ActivityPicturePlugin.Helper
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
         }
 
@@ -980,8 +985,9 @@ namespace ActivityPicturePlugin.Helper
 
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -1019,8 +1025,9 @@ namespace ActivityPicturePlugin.Helper
                 }
                 return 0;
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return 0;
             }
         }
@@ -1038,8 +1045,9 @@ namespace ActivityPicturePlugin.Helper
                         iFrame = (int)( FilGrMan.CurrentPosition / FilGrMan.AvgTimePerFrame );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return 0;
             }
             return iFrame;
@@ -1052,13 +1060,15 @@ namespace ActivityPicturePlugin.Helper
             double dblTimePerFrame = 0;
             try
             {
-                if ( FilGrMan != null )
+                if (FilGrMan != null)
                 {
                     dblTimePerFrame = FilGrMan.AvgTimePerFrame;
                 }
             }
-            catch ( Exception )
-            { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+            }
             return dblTimePerFrame;
         }
 
@@ -1075,8 +1085,9 @@ namespace ActivityPicturePlugin.Helper
                     size.Width = FilGrMan.SourceWidth;
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
             return size;
         }
@@ -1194,8 +1205,9 @@ namespace ActivityPicturePlugin.Helper
                         ImageRectangles[imageNumber].Width,
                         ImageRectangles[imageNumber].Height );*/
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     bRet = false;
                     FilGrMan.Visible = 0;
                     FilGrMan.Owner = 0;
@@ -1210,8 +1222,9 @@ namespace ActivityPicturePlugin.Helper
                 ShowVideoOptions( this, new EventArgs() );
                 UpdateVideoToolBar( this, new EventArgs() );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 bRet = false;
                 if ( FilGrMan != null ) FilGrMan = null;
                 if ( MediaEventEx != null ) MediaEventEx = null;
@@ -1298,8 +1311,9 @@ namespace ActivityPicturePlugin.Helper
 
                 this.Invalidate();
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
 
         }
