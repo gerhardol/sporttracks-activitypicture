@@ -694,7 +694,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 {
                     for (int j = 0; j < data.Images.Count; j++)
                     {
-                        s.Add(Functions.thumbnailPath(data.Images[j].ReferenceID));
+                        s.Add((new ImageData(data.Images[j])).ThumbnailPath);
                     }
                 }
             }
