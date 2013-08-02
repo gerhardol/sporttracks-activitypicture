@@ -303,7 +303,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     dirSubs = dir.GetDirectories();
                 }
-                catch (UnauthorizedAccessException ex)
+                catch (UnauthorizedAccessException)
                 { /* Move on to the next folder.*/
                     return;
                 }
@@ -322,14 +322,14 @@ namespace ActivityPicturePlugin.UI
                         parentNode.Nodes.Add(subNode);
                         subNode.Checked = parentNode.Checked;
                     }
-                    catch (UnauthorizedAccessException ex)
+                    catch (UnauthorizedAccessException)
                     { /* Move on to the next folder.*/
                     }
                 }
             }
             catch (Exception ex )
             {
-                System.Diagnostics.Debug.Assert( false ,ex.Message );
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
             }
         }
@@ -345,7 +345,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     m_files.InsertRange(0, driveDir.GetFiles());
                 }
-                catch (UnauthorizedAccessException ex)
+                catch (UnauthorizedAccessException)
                 {
                     return;
                 }
@@ -525,7 +525,7 @@ namespace ActivityPicturePlugin.UI
                             {
                                 i = dirsub.GetDirectories().Length;
                             }
-                            catch ( UnauthorizedAccessException ex )
+                            catch (UnauthorizedAccessException)
                             {
                                 //Nothing to do
                                 // Folder is inaccessible for whatever reason
@@ -622,8 +622,9 @@ namespace ActivityPicturePlugin.UI
                 //Gets the latest added activity in list (if several selected), normally latest in time
                 if (bSelectCurrentActivity) treeViewActivities.SelectedNode = dayNode;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -821,8 +822,9 @@ namespace ActivityPicturePlugin.UI
                 //to refresh the ListView
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -1487,7 +1489,7 @@ namespace ActivityPicturePlugin.UI
                     {
                         dirfiles = dir.GetFiles();
                     }
-                    catch (UnauthorizedAccessException ex)
+                    catch (UnauthorizedAccessException)
                     {
                         return;
                     }
@@ -1512,8 +1514,9 @@ namespace ActivityPicturePlugin.UI
                 //Nothing to do
                 Console.WriteLine( ex.Message );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -2337,8 +2340,9 @@ namespace ActivityPicturePlugin.UI
                     this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
         }
@@ -2800,8 +2804,9 @@ namespace ActivityPicturePlugin.UI
                 string stry = Functions.GetFileTimeString( ty );  //"yyyy:MM:dd HH:mm:ss"
                 return string.Compare( strx, stry );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 return 0;
                 //throw;
             }
