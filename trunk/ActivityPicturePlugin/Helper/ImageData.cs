@@ -419,6 +419,24 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        private static string thumbnailPath(string referenceID)
+        {
+            string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+#if !ST_2_1
+            //If thumbnails created in ST2 (or earlier versions of the plugin..), keep them
+            //TODO: They should be migrated eventually instead
+            if (!System.IO.File.Exists(ThumbnailPath))
+            {
+                string ThumbnailPathST2 = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolderST2 + referenceID + ".jpg";
+                if (System.IO.File.Exists(ThumbnailPathST2))
+                {
+                    return ThumbnailPathST2;
+                }
+            }
+#endif
+            return ThumbnailPath;
+        }
+
         public string ThumbnailPath
         {
             get
@@ -426,7 +444,7 @@ namespace ActivityPicturePlugin.Helper
                 if (m_thumbnailPath == null)
                 {
                     //Cached, as (ST3) call make fileIO
-                    m_thumbnailPath = Functions.thumbnailPath(this.referenceID);
+                    m_thumbnailPath = thumbnailPath(this.referenceID);
                 }
                 return m_thumbnailPath;
             }

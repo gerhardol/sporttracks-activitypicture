@@ -878,24 +878,6 @@ namespace ActivityPicturePlugin.Helper
             return ret;
         }
 
-        public static string thumbnailPath( string referenceID )
-        {
-            string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
-#if !ST_2_1
-            //If thumbnails created in ST2 (or earlier versions of the plugin..), keep them
-            //TODO: They should be migrated eventually instead
-            if (!System.IO.File.Exists(ThumbnailPath))
-            {
-                string ThumbnailPathST2 = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolderST2 + referenceID + ".jpg";
-                if (System.IO.File.Exists(ThumbnailPathST2))
-                {
-                    return ThumbnailPathST2;
-                }
-            }
-#endif
-            return ThumbnailPath;
-        }
-
         public static void OpenImage(ImageData im)
         {
             //try to open Photosource first
