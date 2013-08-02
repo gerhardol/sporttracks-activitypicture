@@ -432,6 +432,49 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        internal void DeleteThumbnail()
+        {
+            try
+            {
+                if (System.IO.File.Exists(this.ThumbnailPath))
+                {
+                    System.IO.File.Delete(this.ThumbnailPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+            }
+        }
+
+        public string GetBestImage()
+        {
+            string path = null;
+            //try to open Photosource first
+            try
+            {
+                if (System.IO.File.Exists(this.PhotoSource))
+                {
+                    path = this.PhotoSource;
+                }
+                // if not found, try next to open image from ...\Web Files\Images folder
+                else
+                {
+                    if (System.IO.File.Exists(this.ThumbnailPath))
+                    {
+                        path = this.ThumbnailPath;
+                    }
+                    // if both locations are not found, nothing will happen
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                throw;
+            }
+            return path;
+        }
+
         public string Altitude
         {
             get

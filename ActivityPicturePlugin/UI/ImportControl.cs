@@ -753,7 +753,6 @@ namespace ActivityPicturePlugin.UI
             //Delete selected images
             IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
             PluginData data = Helper.Functions.ReadExtensionData( act );
-            List<string> idList = new List<string>();
             listViewAct.SuspendLayout();
 
             //foreach ( ListViewItem lvi in this.listViewAct.SelectedItems )
@@ -764,8 +763,8 @@ namespace ActivityPicturePlugin.UI
                 {
                     if ( ids.ReferenceID == id )
                     {
+                        (new ImageData(ids)).DeleteThumbnail();
                         data.Images.Remove( ids );
-                        idList.Add( id );
                         break;
                     }
                 }
@@ -777,7 +776,6 @@ namespace ActivityPicturePlugin.UI
             }
             listViewAct.ResumeLayout();
             Functions.WriteExtensionData( act, data );
-            Functions.DeleteThumbnails( idList );
             if ( data.Images.Count == 0 ) this.treeViewActivities.SelectedNode.BackColor = treeViewActivities.BackColor;    // Color.White;
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent );
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent.Parent );
@@ -2276,7 +2274,11 @@ namespace ActivityPicturePlugin.UI
                 ImageData.DataTypes dt = Functions.GetMediaType( file );
                 if ( dt == ImageData.DataTypes.Image )
                 {
-                    Functions.OpenImage( file, "" );
+                    ImageDataSerializable ids = new ImageDataSerializable();
+                    ids.PhotoSource = file;
+                    ids.ReferenceID = "";
+                    ids.Type = dt;
+                    Functions.OpenImage(new ImageData(ids));
                 }
                 else if ( dt == ImageData.DataTypes.Video )
                 {
@@ -2424,7 +2426,7 @@ namespace ActivityPicturePlugin.UI
                         photosource = ids.PhotoSource;
                         if ( ids.Type == ImageData.DataTypes.Image )
                         {
-                            Functions.OpenImage( photosource, id );
+                            Functions.OpenImage(new ImageData(ids));
                         }
                         else if ( ids.Type == ImageData.DataTypes.Video )
                         {
