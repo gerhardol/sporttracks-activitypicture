@@ -51,6 +51,7 @@ namespace ActivityPicturePlugin.UI
 
         public void InitComponent()
         {
+            ImportControl_Resize( this, new EventArgs() );
             m_viewActivity = ActivityPicturePlugin.Source.Settings.ActivityView; //View of ListviewAct
             m_viewFolder = ActivityPicturePlugin.Source.Settings.FolderView;	 //View of ListviewDrive
             this.listViewDrive.View = (View)( m_viewFolder );
@@ -406,8 +407,9 @@ namespace ActivityPicturePlugin.UI
                         {
                             lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
                             lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
-                            AddFileToListView( m_files[j], dt );			//read images and add thumbnails
-                            AddImageToListView( lvImgL, lvImgS, dt, j );	//read images and add thumbnails
+                            //AddImageToListView( lvImgL, lvImgS, dt, j );	//read images and add thumbnails
+                            AddImageToListView( lvImgL, lvImgS, dt,j, m_files[j].FullName );	//read images and add thumbnails
+                            AddFileToListView( m_files[j], dt, m_files[j].FullName );			//read images and add thumbnails
                         }
                         lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
                     }
@@ -809,6 +811,10 @@ namespace ActivityPicturePlugin.UI
                         if ( ids != null ) data.Images.Add( ids );
                         Functions.WriteExtensionData( act, data );
 
+                        // Maintain a list of thumbnails that were created.
+                        // The next time Sporttracks runs and the plugin in launched
+                        // these images will be deleted if the logbook wasn't saved
+                        // removing orphaned thumbnails.
                         using ( ImageData ID = new ImageData( ids ) )
                         {
                             ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
@@ -927,7 +933,8 @@ namespace ActivityPicturePlugin.UI
         #endregion
 
         #region listViewDrive
-        private void AddImageToListView( ImageList lvImgL, ImageList lvImgS, ImageData.DataTypes dt, int ixImage )
+        //private void AddImageToListView( ImageList lvImgL, ImageList lvImgS, ImageData.DataTypes dt, int ixImage )
+        private void AddImageToListView( ImageList lvImgL, ImageList lvImgS, ImageData.DataTypes dt, int ixImage, string strKey )
         {
             try
             {
@@ -943,14 +950,18 @@ namespace ActivityPicturePlugin.UI
 
                     Image img = Image.FromFile( m_files[ixImage].FullName );
                     lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, img );
+                    lvImgL.Images.SetKeyName( ixImage, strKey );
                     lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, img );
+                    lvImgS.Images.SetKeyName( ixImage, strKey );
                     img.Dispose();
                 }
                 else if ( dt == ImageData.DataTypes.Video )
                 {
                     Image bmp = (Bitmap)( Resources.Resources.video ).Clone();
                     lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp );
+                    lvImgL.Images.SetKeyName( ixImage, strKey );
                     lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp );
+                    lvImgS.Images.SetKeyName( ixImage, strKey );
                     bmp.Dispose();
                 }
                 Application.DoEvents();
@@ -962,11 +973,12 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void AddFileToListView( FileInfo file, ImageData.DataTypes dt )
+        private void AddFileToListView( FileInfo file, ImageData.DataTypes dt, string strImgKey )
         {
             ListViewItem lvi = new ListViewItem();
             lvi.Text = file.Name;
-            lvi.ImageIndex = m_files.IndexOf( file );
+            //lvi.ImageIndex = m_files.IndexOf( file );
+            lvi.ImageKey = strImgKey;
             lvi.Tag = file.FullName;
 
             if ( dt == ImageData.DataTypes.Image )
@@ -984,7 +996,6 @@ namespace ActivityPicturePlugin.UI
 
                     // TODO: de-DE is used as en is default and cannot be set. Rewrite the use of culture
                     IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    //IFormatProvider culture = System.Globalization.CultureInfo.CurrentUICulture;
                     if ( ed != null )
                     {
                         string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
@@ -992,8 +1003,9 @@ namespace ActivityPicturePlugin.UI
                         {
                             //string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             DateTime dtTmp = new DateTime();
+                            // If we're hardcoding the format, we need to use an appropriate culture
                             if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                lvi.SubItems.Add( dtTmp.ToString( culture ) );
+                                lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
                         }
                     }
                     // The first item is considered a SubItem.  We want to check to
@@ -1007,7 +1019,7 @@ namespace ActivityPicturePlugin.UI
                             lvi.SubItems.Add(dts);*/
                             DateTime dtTmp = new DateTime();
                             if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                lvi.SubItems.Add( dtTmp.ToString( culture ) );
+                                lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
                         }
                     }
 
@@ -1114,9 +1126,26 @@ namespace ActivityPicturePlugin.UI
                                 ListViewItem lvi = new ListViewItem();
                                 lvi.Text = id.PhotoSourceFileName;
                                 lvi.Tag = id.ReferenceID;
-                                lvi.ImageIndex = j;
+                                lvi.ImageKey = id.PhotoSource;
                                 //this.listViewAct.Items[j].ImageIndex = j;
+
+                                string strDate = id.DateTimeOriginal;
+                                if ( String.IsNullOrEmpty( strDate ) )
+                                {
+                                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                                    strDate = Functions.GetFileTimeString( new FileInfo(id.PhotoSource) );
+                                    if ( !string.IsNullOrEmpty( strDate ) )
+                                    {
+                                        DateTime dtTmp = new DateTime();
+                                        if ( DateTime.TryParseExact( strDate, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                                            lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                                    }
+                                }
+
                                 lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
+
+
+
                                 lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
                                 lvi.SubItems.Add( id.Title );
                                 lvi.SubItems.Add( id.Comments );
@@ -1142,8 +1171,8 @@ namespace ActivityPicturePlugin.UI
                                     System.Diagnostics.Debug.Print( ex.Message );
                                     img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
                                 }
-                                lil.Images.Add( Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
-                                lis.Images.Add( Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
+                                lil.Images.Add( lvi.ImageKey, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
+                                lis.Images.Add( lvi.ImageKey, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
                                 Application.DoEvents();
                                 img.Dispose();
                                 img = null;
@@ -1842,7 +1871,7 @@ namespace ActivityPicturePlugin.UI
             ImageList il = e.Item.ImageList;
             if ( il != null )
             {
-                System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.ItemIndex];
+                System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.Item.ImageKey];
                 //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
@@ -2661,19 +2690,11 @@ namespace ActivityPicturePlugin.UI
             splitContainer3.Width = splitContainer1.Panel1.Width;
             splitContainer2.Width = splitContainer1.Panel2.Width;
 
-            /*progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
-            progressBar2.Left = splitContainer1.Left;
-            progressBar2.Width = splitContainer1.Width;
-            lblProgress.Top = progressBar2.Top + ( progressBar2.Height - lblProgress.Height ) / 2;
-            lblProgress.Left = progressBar2.Left + 5;
-            lblProgress.Width = progressBar2.Width;*/
-
             progressBar2.Top = splitContainer1.Bottom - progressBar2.Height;
             progressBar2.Left = splitContainer1.Left;
             progressBar2.Width = splitContainer1.Width;
             lblProgress.Top = progressBar2.Top + ( progressBar2.Height - lblProgress.Height ) / 2;
             lblProgress.Left = progressBar2.Left + 3;
-            //lblProgress.Width = progressBar2.Width;
 
             this.ResumeLayout();
         }
