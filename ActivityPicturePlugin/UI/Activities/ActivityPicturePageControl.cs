@@ -100,15 +100,11 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Public members
-        //TODO: GetFullPath required due to relative paths
-        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().
 #if ST_2_1
-            //TODO:
-            SystemPreferences.WebFilesFolder + "\\Images\\" );
+        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
 #else
-            //TODO: Still ST2
-Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
-       // + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar);
+        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + Path.DirectorySeparatorChar + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
+        public static string ImageFilesFolderST2 = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 #endif
 
         public static PluginSettings PluginSettingsData = new PluginSettings();
@@ -478,8 +474,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                             }
                         }
                     }
-                    if ( !bFound )
+                    if (!bFound && System.IO.File.Exists(fi.FullName))
+                    {
                         fi.Delete();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -694,8 +692,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 PluginData data = Helper.Functions.ReadExtensionData( activity );
                 if ( data.Images.Count > 0 )
                 {
-                    for ( int j = 0; j < data.Images.Count; j++ )
-                        s.Add( Functions.thumbnailPath( data.Images[j].ReferenceID ) );
+                    for (int j = 0; j < data.Images.Count; j++)
+                    {
+                        s.Add(Functions.thumbnailPath(data.Images[j].ReferenceID));
+                    }
                 }
             }
             return s;
