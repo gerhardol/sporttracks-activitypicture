@@ -1138,13 +1138,11 @@ namespace ActivityPicturePlugin.UI
                                     {
                                         DateTime dtTmp = new DateTime();
                                         if ( DateTime.TryParseExact( strDate, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                            lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                                            strDate = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
                                     }
                                 }
 
-                                lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
-
-
+                                lvi.SubItems.Add( strDate.Replace( Environment.NewLine, ", " ) );
 
                                 lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
                                 lvi.SubItems.Add( id.Title );
