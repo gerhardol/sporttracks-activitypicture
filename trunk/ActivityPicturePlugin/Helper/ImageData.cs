@@ -96,6 +96,7 @@ namespace ActivityPicturePlugin.Helper
         private ExifWorks ew;
         private Image thumbnail;
         private Single ratio;
+        private string m_thumbnailPath;
         #endregion
 
         #region Public Members
@@ -420,7 +421,15 @@ namespace ActivityPicturePlugin.Helper
 
         public string ThumbnailPath
         {
-            get { return Functions.thumbnailPath( this.referenceID ); }
+            get
+            {
+                if (m_thumbnailPath == null)
+                {
+                    //Cached, as (ST3) call make fileIO
+                    m_thumbnailPath = Functions.thumbnailPath(this.referenceID);
+                }
+                return m_thumbnailPath;
+            }
         }
 
         public string Altitude
@@ -432,6 +441,9 @@ namespace ActivityPicturePlugin.Helper
                     string AltStr = "";
                     //string comAlt = com.SimpleRun.ShowOneFileOnlyTagGPSAltitude(this.PhotoSource);
                     double Alt = ew.GPSAltitude;
+                    //TODO: simplify...
+                    //AltStr = ZoneFiveSoftware.Common.Data.Measurement.Length.ToString(Alt,
+                    //    Plugin.GetApplication().SystemPreferences.ElevationUnits,"u");
                     switch ( Plugin.GetApplication().SystemPreferences.ElevationUnits )
                     {
                         case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Centimeter:

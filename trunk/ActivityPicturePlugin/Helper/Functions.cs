@@ -830,23 +830,23 @@ namespace ActivityPicturePlugin.Helper
         //        }
         //    }
 
+        //TODO: Move this to ImageData instead
         internal static void DeleteThumbnails( List<string> referenceIDs )
         {
             try
             {
                 foreach ( string referenceID in referenceIDs )
                 {
-                    string ThumbnailPath = thumbnailPath( referenceID );
-                    if ( System.IO.File.Exists( ThumbnailPath ) )
+                    string ThumbnailPath = thumbnailPath(referenceID);
+                    if (System.IO.File.Exists(ThumbnailPath))
                     {
-                        System.IO.File.Delete( ThumbnailPath );
+                        System.IO.File.Delete(ThumbnailPath);
                     }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -901,11 +901,24 @@ namespace ActivityPicturePlugin.Helper
 
         public static string thumbnailPath( string referenceID )
         {
-            //Could be several paths here
-            return ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+            string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+#if !ST_2_1
+            //If thumbnails created in ST2 (or earlier versions of the plugin..), keep them
+            //TODO: They should be migrated eventually instead
+            if (!System.IO.File.Exists(ThumbnailPath))
+            {
+                string ThumbnailPathST2 = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolderST2 + referenceID + ".jpg";
+                if (System.IO.File.Exists(ThumbnailPathST2))
+                {
+                    return ThumbnailPathST2;
+                }
+            }
+#endif
+            return ThumbnailPath;
         }
 
-        public static string GetBestImage( string photoSource, string referenceID )
+        //TODO: Move this to ImageData instead
+        public static string GetBestImage(string photoSource, string referenceID)
         {
             string path = null;
             //try to open Photosource first
@@ -919,7 +932,7 @@ namespace ActivityPicturePlugin.Helper
                 else
                 {
                     string ThumbnailPath = thumbnailPath( referenceID );
-                    if ( System.IO.File.Exists( ThumbnailPath ) )
+                    if (System.IO.File.Exists(ThumbnailPath))
                     {
                         path = ThumbnailPath;
                     }
