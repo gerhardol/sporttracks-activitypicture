@@ -55,6 +55,12 @@ namespace ActivityPicturePlugin.UI
             this.contextMenuTreeViewImages = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuRefresh = new System.Windows.Forms.ToolStripMenuItem();
             this.btnScan = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.listViewDrive = new ActivityPicturePlugin.UI.ListViewEx();
+            this.colDImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colDDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuListViewDrive = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -64,23 +70,17 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities = new System.Windows.Forms.TreeView();
             this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
-            this.timerProgressBar = new System.Windows.Forms.Timer(this.components);
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.listViewDrive = new ActivityPicturePlugin.UI.ListViewEx();
-            this.colDImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colDDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewAct = new ActivityPicturePlugin.UI.ListViewEx();
             this.colImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colGPS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerProgressBar = new System.Windows.Forms.Timer(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -100,7 +100,7 @@ namespace ActivityPicturePlugin.UI
             // 
             this.lblProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(4, 600);
+            this.lblProgress.Location = new System.Drawing.Point(4, 404);
             this.lblProgress.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(65, 17);
@@ -111,7 +111,7 @@ namespace ActivityPicturePlugin.UI
             // 
             this.progressBar2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar2.Location = new System.Drawing.Point(4, 599);
+            this.progressBar2.Location = new System.Drawing.Point(4, 403);
             this.progressBar2.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar2.MarqueeAnimationSpeed = 1000;
             this.progressBar2.Name = "progressBar2";
@@ -132,7 +132,7 @@ namespace ActivityPicturePlugin.UI
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(700, 617);
+            this.splitContainer1.Size = new System.Drawing.Size(700, 421);
             this.splitContainer1.SplitterDistance = 224;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 11;
@@ -154,8 +154,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.listViewDrive);
-            this.splitContainer3.Size = new System.Drawing.Size(224, 617);
-            this.splitContainer3.SplitterDistance = 297;
+            this.splitContainer3.Size = new System.Drawing.Size(224, 421);
+            this.splitContainer3.SplitterDistance = 202;
             this.splitContainer3.SplitterWidth = 2;
             this.splitContainer3.TabIndex = 13;
             this.splitContainer3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer3_MouseDoubleClick);
@@ -195,7 +195,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewImages.Location = new System.Drawing.Point(0, 38);
             this.treeViewImages.Margin = new System.Windows.Forms.Padding(4);
             this.treeViewImages.Name = "treeViewImages";
-            this.treeViewImages.Size = new System.Drawing.Size(224, 259);
+            this.treeViewImages.Size = new System.Drawing.Size(224, 164);
             this.treeViewImages.TabIndex = 5;
             this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
             this.treeViewImages.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeViewImages_BeforeExpand);
@@ -240,6 +240,63 @@ namespace ActivityPicturePlugin.UI
             this.btnScan.TextRightMargin = 2;
             this.btnScan.Click += new System.EventHandler(this.btnScan_Click);
             // 
+            // listViewDrive
+            // 
+            this.listViewDrive.AllowDrop = true;
+            this.listViewDrive.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colDImage,
+            this.colDDateTime,
+            this.colDGPS,
+            this.colDTitle,
+            this.colDDescription});
+            this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
+            this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDrive.DoubleBufferedEnabled = true;
+            this.listViewDrive.FullRowSelect = true;
+            this.listViewDrive.Location = new System.Drawing.Point(0, 0);
+            this.listViewDrive.Margin = new System.Windows.Forms.Padding(4);
+            this.listViewDrive.Name = "listViewDrive";
+            this.listViewDrive.OwnerDraw = true;
+            this.listViewDrive.Size = new System.Drawing.Size(224, 217);
+            this.listViewDrive.TabIndex = 7;
+            this.listViewDrive.UseCompatibleStateImageBehavior = false;
+            this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
+            this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
+            this.listViewDrive.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewDrive_DrawItem);
+            this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
+            this.listViewDrive.DoubleClick += new System.EventHandler(this.listViewDrive_DoubleClick);
+            this.listViewDrive.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewDrive_KeyDown);
+            // 
+            // colDImage
+            // 
+            this.colDImage.Tag = "colImage";
+            this.colDImage.Text = "Image";
+            this.colDImage.Width = 150;
+            // 
+            // colDDateTime
+            // 
+            this.colDDateTime.Tag = "colDateTime";
+            this.colDDateTime.Text = "DateTime";
+            this.colDDateTime.Width = 100;
+            // 
+            // colDGPS
+            // 
+            this.colDGPS.Tag = "colGPS";
+            this.colDGPS.Text = "GPS coord.";
+            this.colDGPS.Width = 120;
+            // 
+            // colDTitle
+            // 
+            this.colDTitle.Tag = "colTitle";
+            this.colDTitle.Text = "Title";
+            this.colDTitle.Width = 100;
+            // 
+            // colDDescription
+            // 
+            this.colDDescription.Tag = "colDescription";
+            this.colDDescription.Text = "Description";
+            this.colDDescription.Width = 100;
+            // 
             // contextMenuListViewDrive
             // 
             this.contextMenuListViewDrive.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -272,8 +329,8 @@ namespace ActivityPicturePlugin.UI
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.listViewAct);
-            this.splitContainer2.Size = new System.Drawing.Size(473, 617);
-            this.splitContainer2.SplitterDistance = 297;
+            this.splitContainer2.Size = new System.Drawing.Size(473, 421);
+            this.splitContainer2.SplitterDistance = 202;
             this.splitContainer2.SplitterWidth = 2;
             this.splitContainer2.TabIndex = 12;
             this.splitContainer2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer2_MouseDoubleClick);
@@ -359,7 +416,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.Location = new System.Drawing.Point(0, 38);
             this.treeViewActivities.Margin = new System.Windows.Forms.Padding(4);
             this.treeViewActivities.Name = "treeViewActivities";
-            this.treeViewActivities.Size = new System.Drawing.Size(472, 258);
+            this.treeViewActivities.Size = new System.Drawing.Size(472, 163);
             this.treeViewActivities.TabIndex = 6;
             this.treeViewActivities.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.treeViewActivities_DrawNode);
             this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewActivities_AfterSelect);
@@ -380,91 +437,6 @@ namespace ActivityPicturePlugin.UI
             this.toolStripMenuCopyToClipboard.Text = "Copy";
             this.toolStripMenuCopyToClipboard.Click += new System.EventHandler(this.toolStripMenuCopyToClipboard_Click);
             // 
-            // contextMenuListViewAct
-            // 
-            this.contextMenuListViewAct.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuOpenFolder,
-            this.toolStripMenuRemove});
-            this.contextMenuListViewAct.Name = "contextMenuListViewAct";
-            this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
-            this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
-            // 
-            // toolStripMenuOpenFolder
-            // 
-            this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
-            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
-            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
-            this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
-            // 
-            // toolStripMenuRemove
-            // 
-            this.toolStripMenuRemove.Name = "toolStripMenuRemove";
-            this.toolStripMenuRemove.Size = new System.Drawing.Size(226, 22);
-            this.toolStripMenuRemove.Text = "Remove";
-            this.toolStripMenuRemove.Click += new System.EventHandler(this.toolStripMenuRemove_Click);
-            // 
-            // timerProgressBar
-            // 
-            this.timerProgressBar.Interval = 5000;
-            this.timerProgressBar.Tick += new System.EventHandler(this.timerProgressBar_Tick);
-            // 
-            // listViewDrive
-            // 
-            this.listViewDrive.AllowDrop = true;
-            this.listViewDrive.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colDImage,
-            this.colDDateTime,
-            this.colDGPS,
-            this.colDTitle,
-            this.colDDescription});
-            this.listViewDrive.ContextMenuStrip = this.contextMenuListViewDrive;
-            this.listViewDrive.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewDrive.DoubleBufferedEnabled = true;
-            this.listViewDrive.FullRowSelect = true;
-            this.listViewDrive.Location = new System.Drawing.Point(0, 0);
-            this.listViewDrive.Margin = new System.Windows.Forms.Padding(4);
-            this.listViewDrive.Name = "listViewDrive";
-            this.listViewDrive.OwnerDraw = true;
-            this.listViewDrive.Size = new System.Drawing.Size(224, 318);
-            this.listViewDrive.TabIndex = 7;
-            this.listViewDrive.UseCompatibleStateImageBehavior = false;
-            this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
-            this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
-            this.listViewDrive.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewDrive_DrawItem);
-            this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
-            this.listViewDrive.DoubleClick += new System.EventHandler(this.listViewDrive_DoubleClick);
-            this.listViewDrive.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewDrive_KeyDown);
-            // 
-            // colDImage
-            // 
-            this.colDImage.Tag = "colImage";
-            this.colDImage.Text = "Image";
-            this.colDImage.Width = 150;
-            // 
-            // colDDateTime
-            // 
-            this.colDDateTime.Tag = "colDateTime";
-            this.colDDateTime.Text = "DateTime";
-            this.colDDateTime.Width = 100;
-            // 
-            // colDGPS
-            // 
-            this.colDGPS.Tag = "colGPS";
-            this.colDGPS.Text = "GPS coord.";
-            this.colDGPS.Width = 120;
-            // 
-            // colDTitle
-            // 
-            this.colDTitle.Tag = "colTitle";
-            this.colDTitle.Text = "Title";
-            this.colDTitle.Width = 100;
-            // 
-            // colDDescription
-            // 
-            this.colDDescription.Tag = "colDescription";
-            this.colDDescription.Text = "Description";
-            this.colDDescription.Width = 100;
-            // 
             // listViewAct
             // 
             this.listViewAct.AllowDrop = true;
@@ -482,7 +454,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.Margin = new System.Windows.Forms.Padding(4);
             this.listViewAct.Name = "listViewAct";
             this.listViewAct.OwnerDraw = true;
-            this.listViewAct.Size = new System.Drawing.Size(473, 318);
+            this.listViewAct.Size = new System.Drawing.Size(473, 217);
             this.listViewAct.TabIndex = 8;
             this.listViewAct.UseCompatibleStateImageBehavior = false;
             this.listViewAct.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewAct_ColumnClick);
@@ -523,6 +495,34 @@ namespace ActivityPicturePlugin.UI
             this.colDescription.Text = "Description";
             this.colDescription.Width = 100;
             // 
+            // contextMenuListViewAct
+            // 
+            this.contextMenuListViewAct.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuOpenFolder,
+            this.toolStripMenuRemove});
+            this.contextMenuListViewAct.Name = "contextMenuListViewAct";
+            this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
+            this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
+            // 
+            // toolStripMenuOpenFolder
+            // 
+            this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
+            this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
+            this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
+            // 
+            // toolStripMenuRemove
+            // 
+            this.toolStripMenuRemove.Name = "toolStripMenuRemove";
+            this.toolStripMenuRemove.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuRemove.Text = "Remove";
+            this.toolStripMenuRemove.Click += new System.EventHandler(this.toolStripMenuRemove_Click);
+            // 
+            // timerProgressBar
+            // 
+            this.timerProgressBar.Interval = 5000;
+            this.timerProgressBar.Tick += new System.EventHandler(this.timerProgressBar_Tick);
+            // 
             // ImportControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -534,7 +534,7 @@ namespace ActivityPicturePlugin.UI
             this.Margin = new System.Windows.Forms.Padding(5);
             this.Name = "ImportControl";
             this.Padding = new System.Windows.Forms.Padding(4);
-            this.Size = new System.Drawing.Size(708, 625);
+            this.Size = new System.Drawing.Size(708, 429);
             this.Load += new System.EventHandler(this.ImportControl_Load);
             this.Resize += new System.EventHandler(this.ImportControl_Resize);
             this.splitContainer1.Panel1.ResumeLayout(false);

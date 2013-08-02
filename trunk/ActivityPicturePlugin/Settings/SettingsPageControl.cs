@@ -80,6 +80,7 @@ namespace ActivityPicturePlugin.Settings
         {
             importControl1.LoadNodes();
             this.Show();
+            this.groupBoxImport_Resize( this, new EventArgs() );
         }
         public ZoneFiveSoftware.Common.Visuals.IPageStatus Status
         {

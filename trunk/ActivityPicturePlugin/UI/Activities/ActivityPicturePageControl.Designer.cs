@@ -179,6 +179,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.panelViews.Padding = new System.Windows.Forms.Padding(6);
             this.panelViews.Size = new System.Drawing.Size(596, 365);
             this.panelViews.TabIndex = 1;
+            this.panelViews.Resize += new System.EventHandler(this.panelViews_Resize);
             // 
             // dataGridViewImages
             // 

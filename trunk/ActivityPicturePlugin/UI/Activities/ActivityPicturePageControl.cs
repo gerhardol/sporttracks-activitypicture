@@ -1798,6 +1798,13 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             else
                 this.contextMenuStripView.Enabled = false;
         }
+
+        private void panelViews_Resize( object sender, EventArgs e )
+        {
+            // Not doing anything here but we may need to.
+            /*importControl1.Height = panelViews.Height - ( importControl1.Top + 6 );
+            importControl1.Width = panelViews.Width - ( importControl1.Left * 2 );*/
+        }
         #endregion
 
     }
