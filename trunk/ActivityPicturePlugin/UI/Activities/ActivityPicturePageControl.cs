@@ -95,7 +95,7 @@ namespace ActivityPicturePlugin.UI.Activities
         private ShowMode Mode = ShowMode.List;
         private PluginData PluginExtensionData = new PluginData();
         private bool _showPage = false;
-        private List<string> SelectedReferenceIDs = new List<string>();
+        private List<ImageData> SelectedImages = new List<ImageData>();
         private bool PreventRowsRemoved = false;//To prevent recursive calls
         #endregion
 
@@ -1056,7 +1056,10 @@ namespace ActivityPicturePlugin.UI.Activities
                 if ( this._Activity != null )
                 {
                     // remove thumbnail image in web folder
-                    Functions.DeleteThumbnails( this.SelectedReferenceIDs );
+                    foreach (ImageData im in this.SelectedImages)
+                    {
+                        im.DeleteThumbnail();
+                    }
                     this.PluginExtensionData.GetImageDataSerializable( this.pictureAlbumView.ImageList );
                     Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
                 }
@@ -1177,13 +1180,13 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             try
             {
-                SelectedReferenceIDs.Clear();
+                SelectedImages.Clear();
                 DataGridViewSelectedRowCollection SelRows = ( (DataGridView)( sender ) ).SelectedRows;
                 IList<ImageData> selImages = new List<ImageData>();
                 for ( int i = 0; i < SelRows.Count; i++ )
                 {
                     ImageData im = this.pictureAlbumView.ImageList[SelRows[i].Index];
-                    SelectedReferenceIDs.Add( im.ReferenceID );
+                    SelectedImages.Add(im);
                     selImages.Add( im );
                 }
                 //TODO: Or use zoom button
@@ -1761,30 +1764,27 @@ namespace ActivityPicturePlugin.UI.Activities
                 if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
                      MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
                 {
-                    string sRefID = this.pictureAlbumView.ImageList[ixSelected].ReferenceID;
-                    RemoveImageFromActivity( sRefID );
+                    RemoveImageFromActivity(this.pictureAlbumView.ImageList[ixSelected]);
                 }
             }
         }
 
-        private void RemoveImageFromActivity( string referenceID )
+        private void RemoveImageFromActivity(ImageData im)
         {
             //Delete selected images
             PluginData data = Helper.Functions.ReadExtensionData( Activity );
 
             foreach ( ImageDataSerializable ids in data.Images )
             {
-                if ( ids.ReferenceID == referenceID )
+                if ( ids.ReferenceID == im.ReferenceID )
                 {
+                    im.DeleteThumbnail();
                     data.Images.Remove( ids );
                     break;
                 }
             }
 
             Functions.WriteExtensionData( Activity, data );
-            List<string> referenceIDs = new List<string>();
-            referenceIDs.Add( referenceID );
-            Functions.DeleteThumbnails( referenceIDs );
 
             ReloadData();
             UpdateView();

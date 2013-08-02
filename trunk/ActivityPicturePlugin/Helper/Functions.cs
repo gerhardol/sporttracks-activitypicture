@@ -830,26 +830,6 @@ namespace ActivityPicturePlugin.Helper
         //        }
         //    }
 
-        //TODO: Move this to ImageData instead
-        internal static void DeleteThumbnails( List<string> referenceIDs )
-        {
-            try
-            {
-                foreach ( string referenceID in referenceIDs )
-                {
-                    string ThumbnailPath = thumbnailPath(referenceID);
-                    if (System.IO.File.Exists(ThumbnailPath))
-                    {
-                        System.IO.File.Delete(ThumbnailPath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-            }
-        }
-
         public static bool OpenExternal( string sFile )
         {
             bool ret = true;
@@ -872,8 +852,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 try
                 {
-                    //Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
-                    string sPath = GetBestImage( im.PhotoSource, im.ReferenceID );
+                    string sPath = im.GetBestImage();
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
                 catch (Exception ex)
@@ -917,51 +896,14 @@ namespace ActivityPicturePlugin.Helper
             return ThumbnailPath;
         }
 
-        //TODO: Move this to ImageData instead
-        public static string GetBestImage(string photoSource, string referenceID)
-        {
-            string path = null;
-            //try to open Photosource first
-            try
-            {
-                if ( System.IO.File.Exists( photoSource ) )
-                {
-                    path = photoSource;
-                }
-                // if not found, try next to open image from ...\Web Files\Images folder
-                else
-                {
-                    string ThumbnailPath = thumbnailPath( referenceID );
-                    if (System.IO.File.Exists(ThumbnailPath))
-                    {
-                        path = ThumbnailPath;
-                    }
-                    // if both locations are not found, nothing will happen
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                throw;
-            }
-            return path;
-        }
-
-        public static void OpenImage( string photoSource, string referenceID )
+        public static void OpenImage(ImageData im)
         {
             //try to open Photosource first
             try
             {
-                /*string path = GetBestImage(photoSource, referenceID);
-                if(null != path)
-                {
-                    OpenImageWithWindowsViewer(path);
-                }*/
-
                 try
                 {
-                    //Helper.Functions.OpenImage(im.PhotoSource, im.ReferenceID);
-                    string sPath = GetBestImage( photoSource, referenceID );
+                    string sPath = im.GetBestImage();
                     if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
                 }
                 catch (Exception ex)
