@@ -29,6 +29,7 @@ using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
 using com.drew.metadata.exif;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace ActivityPicturePlugin.Helper
 {
@@ -41,7 +42,6 @@ namespace ActivityPicturePlugin.Helper
         {
             StringBuilder sb = new StringBuilder();
             PathCompactPathEx( sb, path, length, 0 );
-            System.Diagnostics.Debug.Print( sb.ToString() );
             return sb.ToString();
         }
 
@@ -64,7 +64,7 @@ namespace ActivityPicturePlugin.Helper
 
         internal static DateTime GetFileTime(FileInfo file)
         {
-            if (IsExifFileExt(file))
+            /*if (IsExifFileExt(file))
             {
                 string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(file.FullName);
                 if (!string.IsNullOrEmpty(fileTime))
@@ -78,11 +78,37 @@ namespace ActivityPicturePlugin.Helper
             }
             else
             {
+            }*/
+
+            string fileTime = GetFileTimeString( file );
+            if ( !string.IsNullOrEmpty( fileTime ) )
+            {
+                // Why was de-DE used?  Does it even matter?
+
+                //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                IFormatProvider culture = CultureInfo.InvariantCulture;    //.CurrentUICulture;
+                DateTime dt = new DateTime();
+
+                // fileTime may not be a valid date time.
+                // The call above to GetFileTimeString may return in UTC or an unknown timezone
+                // If it's unknown it's probably best to assume it's in LocalTime
+
+                // Therefore... maybe it's better if GetFileTimeString returned in Local time
+                if ( DateTime.TryParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture, DateTimeStyles.None, out dt ) )
+                {
+                    //dt = DateTime.SpecifyKind( dt, DateTimeKind.Utc );
+
+                    // Ok, now we're returning in LocalTime
+                    dt = DateTime.SpecifyKind( dt, DateTimeKind.Local );
+                    return dt;
+                }
             }
+
             return new DateTime();
         }
 
         //TODO: Merge these methods. However, the use slightly differs too...
+        // Returns in format "yyyy:MM:dd HH:mm:ss"
         internal static string GetFileTimeString(FileInfo file)
         {
             string strx = null;
@@ -91,12 +117,30 @@ namespace ActivityPicturePlugin.Helper
                 ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(file.FullName);
                 if (ex != null)
                 {
+                    // unspecified timezone
+                    // ignores current timezone
+                    // format yyyy:MM:dd HH:mm:ss
+                    // this doesn't return in UTC.  Is there a way to distinguish which
+                    // time zone it is?
+
+                    //TODO:
+                    // This may also return an invalid (non-null) date/time.  Do we check here or should the caller?
                     strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                 }
             }
             if (string.IsNullOrEmpty(strx))
             {
-                strx = file.CreationTimeUtc.ToString();
+                // converts to utc
+                // format MM/dd/yyyy HH:mm:ss
+                //strx = file.CreationTimeUtc.ToString();
+
+                // ok, now this returns in the same format as SimpleRun
+                //strx = file.CreationTimeUtc.ToString( "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture );
+
+                // Changed to LocalTime since SimpleRun returns an unspecified timezone
+                // and it's probably best to assume it's in Local time.
+                // We should be consistent.
+                strx = file.CreationTime.ToString( "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture );
             }
             return strx;
         }

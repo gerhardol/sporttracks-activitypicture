@@ -260,6 +260,11 @@ namespace ActivityPicturePlugin.UI
         private void SetCheck( TreeNode node, bool check )
         {
             //TODO: Should sub nodes be set here?
+            // If by sub nodes you mean ALL sub nodes, then only 
+            // if it's done in a separate thread.  It could make
+            // the progress bar work better if it knew in advance
+            // the number of folders.  Not worth holding up the GUI
+            // as it checks 100,000 folders, though.
             if ( node.Checked )
             {
                 if ( !this.m_SelectedNodes.Contains( node ) ) this.m_SelectedNodes.Add( node );
@@ -284,7 +289,6 @@ namespace ActivityPicturePlugin.UI
                         if ( this.m_SelectedNodes.Contains( n ) ) this.m_SelectedNodes.Remove( n );
                     }
                 }
-
                 if ( n.Nodes.Count != 0 ) SetCheck( n, check );
             }
         }
@@ -976,24 +980,33 @@ namespace ActivityPicturePlugin.UI
                         gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
                     }
 
-
-                    IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                    if (ed != null)
+                    // TODO: Why is de-DE used?  Any particular reason?
+                    //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                    //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                    IFormatProvider culture = System.Globalization.CultureInfo.CurrentUICulture;
+                    if ( ed != null )
                     {
                         string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
                         if (!string.IsNullOrEmpty(s))
                         {
-                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
-                            lvi.SubItems.Add(dts);
+                            //string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                            DateTime dtTmp = new DateTime();
+                            if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                                lvi.SubItems.Add( dtTmp.ToString( culture ) );
                         }
                     }
-                    if (lvi.SubItems.Count == 0)
+                    // The first item is considered a SubItem.  We want to check to
+                    // see if a second item was added (from just above).
+                    if (lvi.SubItems.Count == 1)
                     {
                         string s = Functions.GetFileTimeString(file);
                         if (!string.IsNullOrEmpty(s))
                         {
-                            string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
-                            lvi.SubItems.Add(dts);
+                            /*string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
+                            lvi.SubItems.Add(dts);*/
+                            DateTime dtTmp = new DateTime();
+                            if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                                lvi.SubItems.Add( dtTmp.ToString( culture ) );
                         }
                     }
 
@@ -1298,13 +1311,20 @@ namespace ActivityPicturePlugin.UI
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
 
                     //TODO: Handle non-exif
+                    // What timezone ?
+                    // GetFileTime returns in LocalTime.  Kind is specified
                     FileTime = Functions.GetFileTime( file );
 
                     //{ //A valid EXIF metadata has been found                
                     if ( ( FileTime > FirstStart ) &
                         ( FileTime < LastEnd ) )
                     {//dateTime im picture is within the range of all activities
-
+                        
+                        // Local time??
+                        // If FileTime is not being displayed to user wouldn't
+                        // it be better to stick with UTC? 
+                        // No, LocalTime is best since we're assuming SimpleRun
+                        // returns in Local Time.  No way to tell for sure.
                         if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                         {
                             if ( FileTime > GetActivityEndTime( CurrentActivity ) )
@@ -1516,6 +1536,8 @@ namespace ActivityPicturePlugin.UI
                 progressBar2.Value = j;
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
+                //TODO: Does strDateTime care that format is "yyyy:MM:dd HH:mm:ss"?
+                // We're just sorting, and we're still using a 'text-sortable' date/time format.
                 fiex.strDateTime = Functions.GetFileTimeString(fi);
                 fiexs.Add( fiex );
 
@@ -2026,7 +2048,6 @@ namespace ActivityPicturePlugin.UI
                 // We want to make sure they hit the item and not the +- or checkbox
                 if ( ( hit.Node != null ) && ( hit.Node.Bounds.Right >= e.X ) && ( hit.Node.Bounds.Left <= e.X ) )
                 {
-                    System.Diagnostics.Debug.Print( hit.Node.Bounds.Left.ToString() + " " + e.X.ToString() );
                     CapturedTreeViewImagesNode = hit.Node;
                 }
             }
@@ -2775,8 +2796,8 @@ namespace ActivityPicturePlugin.UI
             {
                 FileInfo tx = x as FileInfo;
                 FileInfo ty = y as FileInfo;
-                string strx = Functions.GetFileTimeString(tx);
-                string stry = Functions.GetFileTimeString(ty);
+                string strx = Functions.GetFileTimeString(tx);  //"yyyy:MM:dd HH:mm:ss"
+                string stry = Functions.GetFileTimeString( ty );  //"yyyy:MM:dd HH:mm:ss"
                 return string.Compare( strx, stry );
             }
             catch ( Exception )
