@@ -43,6 +43,7 @@ namespace ActivityPicturePlugin.UI
             InitComponent();
             //InitializeListViewDrive();
             onImagesComplete = new EventHandler( OnImagesComplete );
+            this.ActivityImagesChanged += new ActivityImagesChangedEventHandler( ImportControl_ActivityImagesChanged );
             treeViewActivities.TreeViewNodeSorter = new NodeSorter();
             this.m_SelectedNodes = new List<TreeNode>();
             this.m_ActivityNodes = new List<TreeNode>();
@@ -68,7 +69,7 @@ namespace ActivityPicturePlugin.UI
             public ActivityImagesChangedEventArgs()
             {
             }
-            public ActivityImagesChangedEventArgs(ListView.ListViewItemCollection items)
+            public ActivityImagesChangedEventArgs( ListView.ListViewItemCollection items )
             {
                 _items = items;
             }
@@ -223,9 +224,6 @@ namespace ActivityPicturePlugin.UI
         {
             m_files.Clear();
 
-            //TODO: Is this call needed?
-            //UpdateUICulture( m_culture );
-
             if ( !m_standardpathalreadyshown )
             {
                 FillTreeViewImages();
@@ -272,7 +270,7 @@ namespace ActivityPicturePlugin.UI
             }
             foreach ( TreeNode n in node.Nodes )
             {
-                this.SetTreeEvents(false);
+                this.SetTreeEvents( false );
                 n.Checked = check;
                 this.SetTreeEvents(true);
                 if ( ( n.Tag is FileInfo ) | ( n.Tag is DirectoryInfo ) )
@@ -286,6 +284,7 @@ namespace ActivityPicturePlugin.UI
                         if ( this.m_SelectedNodes.Contains( n ) ) this.m_SelectedNodes.Remove( n );
                     }
                 }
+
                 if ( n.Nodes.Count != 0 ) SetCheck( n, check );
             }
         }
@@ -2485,7 +2484,9 @@ namespace ActivityPicturePlugin.UI
             this.UseWaitCursor = false;
 
             if ( numFilesImported > 0 )
+            {
                 this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
+            }
 
             //May not be shown....
             this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
@@ -2658,6 +2659,12 @@ namespace ActivityPicturePlugin.UI
             splitContainer3.Width = splitContainer1.Panel1.Width - splitContainer3.Left;
             splitContainer2.Width = splitContainer1.Panel2.Width;
         }
+
+        void ImportControl_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
+        {
+            //throw new NotImplementedException();
+        }
+
         #endregion
     }
 
