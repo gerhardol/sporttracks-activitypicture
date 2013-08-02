@@ -784,9 +784,10 @@ namespace MB.Controls
                         }
                     }
             }
-            catch ( Exception Err )
+            catch (Exception ex)
             {
-                Console.WriteLine( "DrawBackGround Error in " + Name + ":" + Err.Message );
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                Console.WriteLine("DrawBackGround Error in " + Name + ":" + ex.Message);
             }
             finally
             {
@@ -1063,9 +1064,10 @@ namespace MB.Controls
                 gp.AddLine( rect.Left, rect.Bottom - size.Height / 2, rect.Left, rect.Top + size.Height / 2 );
                 gp.AddArc( rect.Left, rect.Top, size.Width, size.Height, 180, 90 );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-                if ( gp != null )
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                if (gp != null)
                 {
                     gp.Dispose();
                     gp = null;

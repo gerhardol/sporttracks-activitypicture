@@ -533,9 +533,10 @@ namespace AviFile
 				bw.Close();
 				bwStream = null;
 			}
-			catch ( Exception )
+			catch (Exception ex)
 			{
-				if ( saveableBitmap != null ) saveableBitmap.Dispose();
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                if (saveableBitmap != null) saveableBitmap.Dispose();
 				saveableBitmap = null;
 				throw;
 			}

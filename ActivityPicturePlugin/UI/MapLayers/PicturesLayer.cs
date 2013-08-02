@@ -312,7 +312,12 @@ namespace ActivityPicturePlugin.UI.MapLayers
                 {
                     //Remove overlays are not working properly, the Map is not very usable
                     m_extraMapLayer.MapControl.AddOverlays(addedOverlays);
-                }catch(Exception){}
+                }
+                catch (Exception ex)
+                {
+                    //Exceptions ignored, statement added to remove warnings
+                    System.Diagnostics.Debug.Assert(true, ex.Message);
+                }
                 m_extraMapLayer.m_pointOverlays = newPointOverlays;
             }
         }

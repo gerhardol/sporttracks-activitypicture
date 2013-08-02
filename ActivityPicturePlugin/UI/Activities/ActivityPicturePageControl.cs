@@ -236,8 +236,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 this.Invalidate();
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -480,8 +481,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     if ( !bFound )
                         fi.Delete();
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                 }
             }
         }
@@ -556,8 +558,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -621,7 +624,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     //Read data and add new controls
                     this.PluginExtensionData = Helper.Functions.ReadExtensionData( _Activity );
                     //if ( this.PluginExtensionData.Images.Count != 0 )
-                    if ( ( this.PluginExtensionData.Images.Count != 0 ) || ( this.PluginExtensionData.Images.Count != this.pictureAlbumView.ImageList.Count ) )
+                    if ( ( this.PluginExtensionData.Images.Count != 0 ) ||
+                        this.pictureAlbumView.ImageList == null ||
+                        ( this.PluginExtensionData.Images.Count != this.pictureAlbumView.ImageList.Count ) )
                     {
                         this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images );
                         SortListView();
@@ -667,9 +672,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     this.Visible = false;
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-                if ( tsmiRemove != null )
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                if (tsmiRemove != null)
                     tsmiRemove.Dispose();
                 tsmiRemove = null;
                 //throw;
@@ -733,8 +739,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 this.dataGridViewImages.Invalidate();
 
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -976,8 +983,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                     }
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -1014,8 +1022,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 
                 }
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -1032,8 +1041,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                         Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
                     }
                 }
-                catch ( Exception )
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     //throw;
                 }
             }
@@ -1108,8 +1118,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
             }
 
 
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 // throw;
             }
         }
@@ -1155,9 +1166,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
                 //ReloadData();
                 //UpdateView();
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -1181,8 +1192,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
 #endif
                 SelRows = null;
             }
-            catch ( Exception )
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
 
@@ -1245,10 +1257,10 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         //                }
         //            }
         //        }
-        //    catch (Exception)
+        //        catch (Exception ex)
         //        {
-
-        //        //throw;
+        //            System.Diagnostics.Debug.Assert(false, ex.Message);
+        //            //throw;
         //        }
         //    }
 
@@ -1277,9 +1289,9 @@ Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
         //            this.pictureAlbumView.Invalidate();
         //            }
         //        }
-        //    catch (Exception)
+        //        catch (Exception ex)
         //        {
-
+        //            System.Diagnostics.Debug.Assert(false, ex.Message);
         //        throw;
         //        }
         //    }
