@@ -145,6 +145,10 @@ namespace ActivityPicturePlugin.UI.Activities
                             ResetPage();
                         }
                     }
+                    if (this.importControl1 != null)
+                    {
+                        this.importControl1.Activities = new List<IActivity> { _Activity };
+                    }
                 }
             }
             get

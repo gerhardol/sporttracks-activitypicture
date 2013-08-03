@@ -211,6 +211,33 @@ namespace ActivityPicturePlugin.UI
         #endregion
 
         #region Public properties
+        private IList<IActivity> m_Activities;
+        private IEnumerable<IActivity> GetActivities()
+        {
+                if (this.ShowAllActivities)
+                { //add all activities
+                    return ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
+                }
+                else
+                { //add only current activity
+                    return m_Activities;
+                }
+        }
+
+        public IList<IActivity> Activities
+        {
+            set
+            {
+                m_Activities = value;
+                //if (((ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)(this.Parent.Parent)).Activity != null)
+                //{
+                //    activities = new List<IActivity>{
+                //        ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity
+                //    };
+                //}
+            }
+        }
+
         public bool ShowAllActivities
         {
             get { return m_showallactivities; }
@@ -575,11 +602,10 @@ namespace ActivityPicturePlugin.UI
             this.m_ActivityNodes.Clear();
             try
             {
-                IEnumerable<IActivity> activities = GetActivities();
-                TreeNode yearNode, monthNode, dayNode;
-                dayNode = null;
-                foreach (IActivity act in activities)
+                TreeNode dayNode = null;
+                foreach (IActivity act in this.GetActivities())
                 {
+                    TreeNode yearNode, monthNode;
                     DateTime localTime = act.StartTime.ToLocalTime();
                     //Year
                     string year = localTime.Year.ToString();
@@ -704,25 +730,6 @@ namespace ActivityPicturePlugin.UI
             }
 
             return retNode;
-        }
-
-        private IEnumerable<IActivity> GetActivities()
-        {
-            IEnumerable<IActivity> activities = new List<IActivity>();
-            if ( this.ShowAllActivities )
-            { //add all activities
-                activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
-            }
-            else
-            { //add only current activity
-                if ( ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity != null )
-                {
-                    activities = new List<IActivity>{
-                        ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity
-                    };
-                }
-            }
-            return activities;
         }
 
         private void FindImagesInActivities()
