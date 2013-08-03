@@ -422,6 +422,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.treeViewActivities_DrawNode);
             this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewActivities_AfterSelect);
             this.treeViewActivities.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewActivities_NodeMouseClick);
+            this.treeViewActivities.NodeMouseDoubleClick += treeViewActivities_NodeMouseDoubleClick;
             this.treeViewActivities.EnabledChanged += new System.EventHandler(this.treeViewActivities_EnabledChanged);
             // 
             // contextMenuTreeViewActivities
