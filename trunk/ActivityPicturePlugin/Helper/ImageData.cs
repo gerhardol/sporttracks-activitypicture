@@ -42,17 +42,16 @@ namespace ActivityPicturePlugin.Helper
                 {
                     IDSer.Type = Functions.GetMediaType( IDSer.PhotoSource );
                 }
-                this.Type = IDSer.Type;
+                this.type = IDSer.Type;
                 this.photosource = IDSer.PhotoSource;
                 this.referenceID = IDSer.ReferenceID;
-                // this.ThumbnailStoreLocation = StoreLocation.WebFiles;
-                if ( this.type == DataTypes.Video ) this.SetVideoThumbnail();
-                else this.SetThumbnail();
+                this.SetThumbnail();
                 if (this.Thumbnail != null)
                 {
                     this.EW = new ExifWorks(this.ThumbnailPath);
                 }
-                else{
+                else
+                {
                     this.EW = new ExifWorks();
                 }
                 System.Drawing.Bitmap b = this.EW.GetBitmap();
@@ -68,9 +67,7 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
-
         }
 
         #region Private Members
@@ -81,36 +78,35 @@ namespace ActivityPicturePlugin.Helper
             Video
         }
 
-        //public enum StoreLocation
-        //{
-        //    WebFiles,
-        //    Temp
-        //}
-
-
         private DataTypes type;
         private bool selected;
         private string photosource;
         private string referenceID;
-        //private ActivityPicturePlugin.UI.Activities.IRouteWaypoint waypoint;
         private ExifWorks ew;
         private Image thumbnail;
         private Single ratio;
         private string m_thumbnailPath;
 
+#if ST_2_1
+        private static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
+#else
+        private static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + System.IO.Path.DirectorySeparatorChar + GUIDs.PluginMain.ToString() + System.IO.Path.DirectorySeparatorChar;
+        private static string ImageFilesFolderST2 = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
+#endif
         #endregion
 
         #region Public Members
-
         #endregion
 
         #region Public Properties
-#if ST_2_1
-        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
-#else
-        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + System.IO.Path.DirectorySeparatorChar + GUIDs.PluginMain.ToString() + System.IO.Path.DirectorySeparatorChar;
-        public static string ImageFilesFolderST2 = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
-#endif
+        public static void CreateImageFilesFolder()
+        {
+            //Create directory if it does not already exist!
+            if (!System.IO.Directory.Exists(ImageData.ImageFilesFolder))
+            {
+                System.IO.Directory.CreateDirectory(ImageData.ImageFilesFolder);
+            }
+        }
 
         //Compare static only, not Exif
         public bool Equals( ImageData pd1 )
@@ -178,12 +174,6 @@ namespace ActivityPicturePlugin.Helper
             set { ew = value; }
         }
 
-        //public ActivityPicturePlugin.UI.Activities.IRouteWaypoint Waypoint
-        //{
-        //    get { return waypoint; }
-        //    set { waypoint = value; }
-        //}
-
         public Image Thumbnail
         {
             get { return this.thumbnail; }
@@ -199,7 +189,6 @@ namespace ActivityPicturePlugin.Helper
             dt = dt.AddHours( hour );
             dt = dt.AddMinutes( min );
             dt = dt.AddSeconds( sec );
-            // yyyy:MM:dd HH:mm:ss is a text sortable date format
             EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
@@ -214,20 +203,6 @@ namespace ActivityPicturePlugin.Helper
                       + Environment.NewLine
                       + EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) );
                 else return "";
-            }
-            set
-            {
-                try
-                {
-                    //DateTime dt = Convert.ToDateTime(value);
-                    //EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString("yyyy:MM:dd HH:mm:ss"));
-                    //SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    throw;
-                }
             }
         }
 
@@ -507,51 +482,12 @@ namespace ActivityPicturePlugin.Helper
                     double Alt = Length.Convert( ew.GPSAltitude, Length.Units.Meter, units );
                     string AltStr = Length.ToString( Alt, units, strFormat );
 
-                    /*string AltStr = "";
-                    //string comAlt = com.SimpleRun.ShowOneFileOnlyTagGPSAltitude(this.PhotoSource);
-                    double Alt = ew.GPSAltitude;
-                    //TODO: simplify...
-                    //AltStr = ZoneFiveSoftware.Common.Data.Measurement.Length.ToString(Alt,
-                    //    Plugin.GetApplication().SystemPreferences.ElevationUnits,"u");
-                    switch ( Plugin.GetApplication().SystemPreferences.ElevationUnits )
-                    {
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Centimeter:
-                            AltStr = ( Alt * 100 ).ToString( "0" ) + " cm";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Foot:
-                            AltStr = ( Alt * 3.2808399 ).ToString( "0.00" ) + " ft";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Inch:
-                            AltStr = ( Alt * 39.370079 ).ToString( "0" ) + " in";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Kilometer:
-                            AltStr = ( Alt * 0.001 ).ToString( "0.000" ) + " km";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Meter:
-                            AltStr = ( Alt ).ToString( "0.00" ) + " m";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Mile:
-                            AltStr = ( Alt * 0.00062137119 ).ToString( "0.000" ) + " miles";
-                            break;
-                        case ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Yard:
-                            AltStr = ( Alt * 1.0936133 ).ToString( "0.00" ) + " yd";
-                            break;
-                        default:
-                            break;
-
-                    }*/
                     return AltStr;
-                    //if (Plugin.GetIApplication().SystemPreferences.ElevationUnits == ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Foot)
-                    //{
-                    //    return (ew.GPSAltitude * 3.2808399).ToString("0") + " ft";
-                    //}
-                    //else return ew.GPSAltitude.ToString() + " m";
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
-                    //throw;
                 }
             }
         }
@@ -570,7 +506,6 @@ namespace ActivityPicturePlugin.Helper
         #region Private Methods
         public void SetDateTimeOriginal( DateTime dt )
         {
-            // yyyy:MM:dd HH:mm:ss is a text sortable date format
             this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
@@ -625,20 +560,6 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region Public Methods
-        //internal String GetReferenceIDImagePath()
-        //    {
-        //    string ImageFilesFolder = "";
-        //    //if (this.ThumbnailStoreLocation == StoreLocation.WebFiles)
-        //    //{
-        //    ImageFilesFolder = ActivityPicturePlugin.Plugin.GetIApplication().SystemPreferences.WebFilesFolder + "\\Images\\";
-        //    //}
-        //    //else if (this.ThumbnailStoreLocation == StoreLocation.Temp)
-        //    //{
-        //    //    ImageFilesFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.InternetCache) + "\\";
-        //    //}
-        //    return ImageFilesFolder + this.ReferenceID + ".jpg";
-        //    }
-
         public void SetVideoThumbnail()
         {
             Bitmap bmp = null;
@@ -860,6 +781,18 @@ namespace ActivityPicturePlugin.Helper
 
         internal void SetThumbnail()
         {
+            if (this.Type == ImageData.DataTypes.Image)
+            {
+                this.SetImageThumbnail();
+            }
+            else if (this.Type == ImageData.DataTypes.Video)
+            {
+                SetVideoThumbnail();
+            }
+        }
+
+        internal void SetImageThumbnail()
+        {
             try
             {
                 Bitmap bmp;
@@ -941,16 +874,6 @@ namespace ActivityPicturePlugin.Helper
                 // throw;
             }
         }
-
-        //public void CreateWayPoint()
-        //{
-        //    ActivityPicturePlugin.UI.Activities.IRouteWaypoint rwp;
-        //    rwp = new ActivityPicturePlugin.UI.Activities.IRouteWaypoint();
-        //    rwp.Type = ActivityPicturePlugin.UI.Activities.IRouteWaypoint.MarkerType.FixedDateTime;
-        //    //rwp.FixedDateTime = EW.DateTimeOriginal;
-        //    //rwp.MarkerImage = this.Thumbnail;
-        //    // rwp.Photo = (Image)(new Bitmap(this.FilePath));
-        //}
 
         #endregion
 

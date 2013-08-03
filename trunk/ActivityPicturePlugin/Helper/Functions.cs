@@ -45,7 +45,7 @@ namespace ActivityPicturePlugin.Helper
             return sb.ToString();
         }
 
-        internal static readonly string NeutralDateTimeFormat = "yyyy:MM:dd HH:mm:ss";
+        internal static readonly string NeutralDateTimeFormat = "yyyy:MM:dd HH:mm:ss"; //textual sortable
         private static readonly string[] ExifExt = { ".jpg", ".jpeg", ".tif", ".tiff" };
         private static readonly string[] ImageExt = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
         private static readonly string[] VideoExt = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
@@ -950,7 +950,6 @@ namespace ActivityPicturePlugin.Helper
                             xmlSer.Serialize( mem, pd );
                             act.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
                             act.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
-                            //mem.Close();
                         }
                     }
 

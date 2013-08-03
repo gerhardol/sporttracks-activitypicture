@@ -77,10 +77,9 @@ namespace ActivityPicturePlugin.UI.Activities
 
             LoadSettings();
 
-            //Create directory if it does not already exist!
-            if (!Directory.Exists(ImageData.ImageFilesFolder)) Directory.CreateDirectory(ImageData.ImageFilesFolder);
+            ImageData.CreateImageFilesFolder();
 
-            //read settings from logfile
+            //read settings from logbook
             ActivityPicturePageControl.PluginSettingsData.ReadSettings();
         }
 
