@@ -60,7 +60,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         #region IActivityDetailPage Members
 
-#if ST2_1
+#if ST_2_1
 		public IActivity Activity {
             set
             {
@@ -68,7 +68,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 else { m_activities = new List<IActivity> { value }; }
                 if ((control != null))
                 {
-                    m_control.Activities = m_activities;
+                    control.Activities = m_activities;
                 }
             }
 		}
