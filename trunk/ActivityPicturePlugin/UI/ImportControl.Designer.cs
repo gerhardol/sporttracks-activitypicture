@@ -70,6 +70,7 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities = new System.Windows.Forms.TreeView();
             this.contextMenuTreeViewActivities = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuMigratePaths = new System.Windows.Forms.ToolStripMenuItem();
             this.listViewAct = new ActivityPicturePlugin.UI.ListViewEx();
             this.colImage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDateTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -428,7 +429,7 @@ namespace ActivityPicturePlugin.UI
             // contextMenuTreeViewActivities
             // 
             this.contextMenuTreeViewActivities.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuCopyToClipboard});
+            this.toolStripMenuCopyToClipboard, this.toolStripMenuMigratePaths});
             this.contextMenuTreeViewActivities.Name = "contextMenuTreeViewActivities";
             this.contextMenuTreeViewActivities.Size = new System.Drawing.Size(110, 26);
             // 
@@ -438,6 +439,13 @@ namespace ActivityPicturePlugin.UI
             this.toolStripMenuCopyToClipboard.Size = new System.Drawing.Size(109, 22);
             this.toolStripMenuCopyToClipboard.Text = "Copy";
             this.toolStripMenuCopyToClipboard.Click += new System.EventHandler(this.toolStripMenuCopyToClipboard_Click);
+            // 
+            // toolStripMenuMigratePaths
+            // 
+            this.toolStripMenuMigratePaths.Name = "toolStripMenuMigratePaths";
+            this.toolStripMenuMigratePaths.Size = new System.Drawing.Size(109, 22);
+            this.toolStripMenuMigratePaths.Text = "<Migrate Paths...";
+            this.toolStripMenuMigratePaths.Click += new System.EventHandler(this.toolStripMenuMigratePaths_Click);
             // 
             // listViewAct
             // 
@@ -594,6 +602,7 @@ namespace ActivityPicturePlugin.UI
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuRefresh;
         private System.Windows.Forms.ContextMenuStrip contextMenuTreeViewActivities;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuCopyToClipboard;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuMigratePaths;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuOpenFolder;
     }
 }
