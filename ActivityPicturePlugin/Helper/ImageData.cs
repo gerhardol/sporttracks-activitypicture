@@ -97,6 +97,7 @@ namespace ActivityPicturePlugin.Helper
         private Image thumbnail;
         private Single ratio;
         private string m_thumbnailPath;
+
         #endregion
 
         #region Public Members
@@ -104,13 +105,12 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region Public Properties
-        //private StoreLocation thumbnailstorelocation;
-
-        //public StoreLocation ThumbnailStoreLocation
-        //{
-        //    get { return thumbnailstorelocation; }
-        //    set { thumbnailstorelocation = value; }
-        //}
+#if ST_2_1
+        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
+#else
+        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + System.IO.Path.DirectorySeparatorChar + GUIDs.PluginMain.ToString() + System.IO.Path.DirectorySeparatorChar;
+        public static string ImageFilesFolderST2 = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
+#endif
 
         //Compare static only, not Exif
         public bool Equals( ImageData pd1 )
@@ -421,13 +421,13 @@ namespace ActivityPicturePlugin.Helper
 
         private static string thumbnailPath(string referenceID)
         {
-            string ThumbnailPath = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolder + referenceID + ".jpg";
+            string ThumbnailPath = ImageFilesFolder + referenceID + ".jpg";
 #if !ST_2_1
             //If thumbnails created in ST2 (or earlier versions of the plugin..), keep them
             //TODO: They should be migrated eventually instead
             if (!System.IO.File.Exists(ThumbnailPath))
             {
-                string ThumbnailPathST2 = ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl.ImageFilesFolderST2 + referenceID + ".jpg";
+                string ThumbnailPathST2 = ImageFilesFolderST2 + referenceID + ".jpg";
                 if (System.IO.File.Exists(ThumbnailPathST2))
                 {
                     return ThumbnailPathST2;
