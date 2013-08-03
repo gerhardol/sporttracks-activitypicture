@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnCollapseAll_Text" xml:space="preserve">
     <value>Minimera alla</value>
   </data>
@@ -254,5 +254,25 @@
   <data name="StoreGEFileLocations_Text" xml:space="preserve">
     <comment>added July13</comment>
     <value>Spara kmz/kml filplatser </value>
+  </data>
+  <data name="ResetSnapshot_Text" xml:space="preserve">
+    <comment>added July26</comment>
+    <value>Återställ snapshot</value>
+  </data>
+  <data name="Destination_Text" xml:space="preserve">
+    <comment>added Aug3</comment>
+    <value>Destination</value>
+  </data>
+  <data name="MigrateSourcePath_Text" xml:space="preserve">
+    <comment>added Aug3</comment>
+    <value>Migrera käll bibliotek</value>
+  </data>
+  <data name="SelectFolder_Text" xml:space="preserve">
+    <comment>added Aug3</comment>
+    <value>Välj folder</value>
+  </data>
+  <data name="Source_Text" xml:space="preserve">
+    <comment>added Aug3</comment>
+    <value>Ursprung</value>
   </data>
 </root>
