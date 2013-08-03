@@ -204,7 +204,6 @@ namespace ActivityPicturePlugin.UI
         private bool m_standardpathalreadyshown;
         private int m_viewActivity = 0; //View of ListviewAct
         private int m_viewFolder = 0; //View of ListviewDrive
-        //private System.Globalization.CultureInfo m_culture = System.Globalization.CultureInfo.CurrentUICulture;
 
         private TreeNode CapturedTreeViewActNode = null;
         private TreeNode CapturedTreeViewImagesNode = null;
@@ -382,13 +381,13 @@ namespace ActivityPicturePlugin.UI
 
                 for ( int i = 0; i < m_files.Count; i++ )
                 {
-                    if (!Functions.IsNormalFile(m_files[i]))
+                    if ( !Functions.IsNormalFile( m_files[i] ) ||
+                        Functions.GetMediaType( m_files[i].Extension ) == ImageData.DataTypes.Nothing )
                     {
                         m_files.RemoveAt( i );
                         i--;
                     }
                 }
-
 
                 listViewDrive.Items.Clear();
 
@@ -416,8 +415,6 @@ namespace ActivityPicturePlugin.UI
                 listViewDrive.SmallImageList = lvImgS;
 
                 progressBar2.Style = ProgressBarStyle.Continuous;
-                // Remove? this.ResetProgressBar();
-                //timerProgressBar.Enabled = false;
 
                 //Either speed up adding to listview or show progressbar
                 using ( Image bmp = (Bitmap)( Resources.Resources.image ).Clone() )
@@ -427,25 +424,12 @@ namespace ActivityPicturePlugin.UI
                         if ( progressBar2.Maximum != m_files.Count ) progressBar2.Maximum = m_files.Count;
                         progressBar2.Value = j;
                         ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
-                        if ( dt == ImageData.DataTypes.Nothing )
-                        {
-                            m_files.Remove( m_files[j] );
-                            j--;
-                        }
-                        else
-                        {
-                            lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
-                            lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
-                            //AddImageToListView( lvImgL, lvImgS, dt, j );	//read images and add thumbnails
-                            AddImageToListView( lvImgL, lvImgS, dt,j, m_files[j].FullName );	//read images and add thumbnails
-                            AddFileToListView( m_files[j], dt, m_files[j].FullName );			//read images and add thumbnails
-                        }
+                        lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
+                        lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
+                        AddImageToListView( lvImgL, lvImgS, dt,j, m_files[j].FullName );	//read images and add thumbnails
+                        AddFileToListView( m_files[j], dt, m_files[j].FullName );			//read images and add thumbnails
                         lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
                     }
-                    // Remove? this.HideProgressBar();
-                    //progressBar2.Value = progressBar2.Maximum;
-                    //timerProgressBar.Enabled = true;
-                    //bmp.Dispose();
                 }
             }
             catch ( Exception ex )
@@ -951,7 +935,6 @@ namespace ActivityPicturePlugin.UI
         {
             ListViewItem lvi = new ListViewItem();
             lvi.Text = file.Name;
-            //lvi.ImageIndex = m_files.IndexOf( file );
             lvi.ImageKey = strImgKey;
             lvi.Tag = file.FullName;
 
@@ -975,7 +958,6 @@ namespace ActivityPicturePlugin.UI
                         string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
                         if ( !string.IsNullOrEmpty( s ) )
                         {
-                            //string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             DateTime dtTmp = new DateTime();
                             // If we're hardcoding the format, we need to use an appropriate culture
                             if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
@@ -989,8 +971,6 @@ namespace ActivityPicturePlugin.UI
                         string s = Functions.GetFileTimeString( file );
                         if ( !string.IsNullOrEmpty( s ) )
                         {
-                            /*string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
-                            lvi.SubItems.Add(dts);*/
                             DateTime dtTmp = new DateTime();
                             if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
                                 lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
@@ -1110,7 +1090,6 @@ namespace ActivityPicturePlugin.UI
 
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
-                        //this.ResetProgressBar();
                         foreach ( ImageData id in il )
                         {
                             try
@@ -1164,10 +1143,6 @@ namespace ActivityPicturePlugin.UI
                             lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
 
                         }
-                        //this.HideProgressBar();
-
-                        //this.listViewAct.LargeImageList = lil;
-                        //this.listViewAct.SmallImageList = lis;
                     }
                     else
                     {
@@ -1317,7 +1292,6 @@ namespace ActivityPicturePlugin.UI
                     this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
 
                     //TODO: Handle non-exif
-                    // What timezone ?
                     // GetFileTime returns in LocalTime.  Kind is specified
                     FileTime = Functions.GetFileTime( file );
 
@@ -1326,10 +1300,7 @@ namespace ActivityPicturePlugin.UI
                         ( FileTime < LastEnd ) )
                     {//dateTime im picture is within the range of all activities
                         
-                        // Local time??
-                        // If FileTime is not being displayed to user wouldn't
-                        // it be better to stick with UTC? 
-                        // No, LocalTime is best since we're assuming SimpleRun
+                        // LocalTime is best since we're assuming SimpleRun
                         // returns in Local Time.  No way to tell for sure.
                         if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
                         {
@@ -1428,15 +1399,13 @@ namespace ActivityPicturePlugin.UI
             }
 
             this.ResetProgressBar();
-            //this.progressBar2.Maximum = 100;
             this.progressBar2.Style = ProgressBarStyle.Continuous;
-            this.progressBar2.Maximum = this.m_SelectedNodes.Count; // *100; ;
+            this.progressBar2.Maximum = this.m_SelectedNodes.Count;
             this.progressBar2.Value = 0;
 
             foreach ( TreeNode n in this.m_SelectedNodes )
             {                
                 GetImageFiles( n, first );
-                //this.progressBar2.Value++;
             }
             BeginInvoke( onImagesComplete, new object[] { this, EventArgs.Empty } );
             this.HideProgressBar();
@@ -1448,14 +1417,6 @@ namespace ActivityPicturePlugin.UI
             {
                 if ( node.Tag is DirectoryInfo )
                 {
-                    /*if (this.progressBar2.Value >= this.progressBar2.Maximum)
-                    {
-                        this.progressBar2.Value = 0;
-                    }
-                    else
-                    {
-                        this.progressBar2.Value++;
-                    }*/
                     if ( this.progressBar2.Value < this.progressBar2.Maximum )
                         this.progressBar2.Value++;
                     else
@@ -1909,11 +1870,6 @@ namespace ActivityPicturePlugin.UI
         #region Eventhandlers
         private void OnImagesComplete( object sender, EventArgs e )
         {
-            //this.progressBar2.Style = ProgressBarStyle.Marquee;
-            //SetLabelText("Sorting files");
-            ////this.progressBar2.Style = ProgressBarStyle.Blocks;
-            ////this.progressBar2.Maximum = 100;
-            ////this.progressBar2.Value = 100;
             this.lblProgress.Text = String.Format( Resources.Resources.SortingXImages, m_files.Count );
         }
 
@@ -1962,11 +1918,10 @@ namespace ActivityPicturePlugin.UI
 
         private void treeViewImages_EnabledChanged( object sender, EventArgs e )
         {
-            //if ( this.Enabled )
             if ( treeViewImages.Enabled )
-                treeViewImages.BackColor = Plugin.GetApplication().VisualTheme.Window;
+                treeViewImages.BackColor = m_visualTheme.Window;
             else
-                treeViewImages.BackColor = Plugin.GetApplication().VisualTheme.Control;	// this.BackColor;
+                treeViewImages.BackColor = m_visualTheme.Control;
         }
 
         private void treeViewImages_MouseClick( object sender, MouseEventArgs e )
@@ -2093,12 +2048,10 @@ namespace ActivityPicturePlugin.UI
 
         private void treeViewActivities_EnabledChanged( object sender, EventArgs e )
         {
-            //if ( this.Enabled )
             if ( treeViewActivities.Enabled )
-                treeViewActivities.BackColor = Plugin.GetApplication().VisualTheme.Window;
+                treeViewActivities.BackColor = m_visualTheme.Window;
             else
-                treeViewActivities.BackColor = Plugin.GetApplication().VisualTheme.Control;	// this.BackColor;
-            //treeViewActivities.BackColor = this.BackColor;
+                treeViewActivities.BackColor = m_visualTheme.Control;
         }
 
         private void treeViewActivities_NodeMouseClick( object sender, TreeNodeMouseClickEventArgs e )
@@ -2334,6 +2287,8 @@ namespace ActivityPicturePlugin.UI
 
         private void listViewDrive_DrawColumnHeader( object sender, DrawListViewColumnHeaderEventArgs e )
         {
+            // Would be nice to have a sort direction glyph.
+            // Might be too much work.
             e.DrawDefault = true;
         }
 
@@ -2485,6 +2440,8 @@ namespace ActivityPicturePlugin.UI
 
         private void listViewAct_DrawColumnHeader( object sender, DrawListViewColumnHeaderEventArgs e )
         {
+            // Would be nice to have a sort direction glyph.
+            // Might be too much work.
             e.DrawDefault = true;
         }
 
@@ -2529,7 +2486,6 @@ namespace ActivityPicturePlugin.UI
                 this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
             }
 
-            //May not be shown....
             this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
         }
 
@@ -2555,8 +2511,6 @@ namespace ActivityPicturePlugin.UI
         {
             timerProgressBar.Stop();
             HideProgressBar();
-            //if ( this.progressBar2.Value == this.progressBar2.Maximum )
-                //ResetProgressBar();
         }
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
@@ -2587,7 +2541,6 @@ namespace ActivityPicturePlugin.UI
         {
             if ( listViewDrive.SelectedItems.Count == 0 )
                 e.Cancel = true;
-
         }
 
         private void contextMenuListViewAct_Opening( object sender, CancelEventArgs e )
@@ -2724,9 +2677,9 @@ namespace ActivityPicturePlugin.UI
             splitContainer2.Width = splitContainer1.Panel2.Width;
         }
 
-        void ImportControl_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
+        private void ImportControl_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
         {
-            //throw new NotImplementedException();
+            // Noop
         }
 
         #endregion

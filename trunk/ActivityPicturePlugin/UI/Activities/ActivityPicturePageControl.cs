@@ -197,8 +197,6 @@ namespace ActivityPicturePlugin.UI.Activities
             dataGridViewImages.Columns["cReferenceID"].Visible = ActivityPicturePlugin.Source.Settings.CReferenceID;
 
             volumeSlider2.Volume = ActivityPicturePlugin.Source.Settings.VolumeValue;
-            //volumeSlider2.Volume = 10u;
-
         }
 
         public void ResetPage()
@@ -616,12 +614,10 @@ namespace ActivityPicturePlugin.UI.Activities
                 if ( _Activity != null )
                 {
                     this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
-                    //this.Visible = true;
                     this.Visible = _showPage;
 
                     //Read data and add new controls
                     this.PluginExtensionData = Helper.Functions.ReadExtensionData( _Activity );
-                    //if ( this.PluginExtensionData.Images.Count != 0 )
                     if ( ( this.PluginExtensionData.Images.Count != 0 ) ||
                         this.pictureAlbumView.ImageList == null ||
                         ( this.PluginExtensionData.Images.Count != this.pictureAlbumView.ImageList.Count ) )
