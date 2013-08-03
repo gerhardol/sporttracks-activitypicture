@@ -259,6 +259,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewDrive.OwnerDraw = true;
             this.listViewDrive.Size = new System.Drawing.Size(224, 217);
             this.listViewDrive.TabIndex = 7;
+            this.listViewDrive.TileSize = new System.Drawing.Size(328, 104);
             this.listViewDrive.UseCompatibleStateImageBehavior = false;
             this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
             this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
@@ -456,6 +457,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.OwnerDraw = true;
             this.listViewAct.Size = new System.Drawing.Size(473, 217);
             this.listViewAct.TabIndex = 8;
+            this.listViewAct.TileSize = new System.Drawing.Size(328, 104);
             this.listViewAct.UseCompatibleStateImageBehavior = false;
             this.listViewAct.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewAct_ColumnClick);
             this.listViewAct.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewAct_DrawColumnHeader);
