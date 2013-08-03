@@ -1186,16 +1186,14 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 SelectedImages.Clear();
                 DataGridViewSelectedRowCollection SelRows = ( (DataGridView)( sender ) ).SelectedRows;
-                IList<ImageData> selImages = new List<ImageData>();
                 for ( int i = 0; i < SelRows.Count; i++ )
                 {
                     ImageData im = this.pictureAlbumView.ImageList[SelRows[i].Index];
                     SelectedImages.Add(im);
-                    selImages.Add( im );
-                }
+               }
                 //TODO: Or use zoom button
 #if !ST_2_1
-                m_layer.SelectedPictures = selImages;
+                m_layer.SelectedPictures = SelectedImages;
 #endif
                 SelRows = null;
             }

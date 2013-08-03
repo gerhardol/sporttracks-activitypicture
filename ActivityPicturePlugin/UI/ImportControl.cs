@@ -140,6 +140,8 @@ namespace ActivityPicturePlugin.UI
 
                 this.toolStripMenuAdd.Text = CommonResources.Text.ActionAdd;
                 this.toolStripMenuCopyToClipboard.Text = CommonResources.Text.ActionCopy;
+                this.toolStripMenuMigratePaths.Text = "Migrate Paths..."; //TODO: Translate
+                this.toolStripMenuMigratePaths.Visible = false;
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
                 this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
@@ -873,67 +875,35 @@ namespace ActivityPicturePlugin.UI
         }
 
         //Drills from 'node' to find all child activities
-        //Returns tab separated list of fields
-        //Tab separated list of field values added to sFileData
-        //New list item added to sFileData for each image found
-        private string treeViewActivities_GetImageDataFromNodeChildren( TreeNode node, List<string> sFileData )
+        private IList<ImageData> treeViewActivities_GetImageData(TreeNode node)
         {
-            //Hardcoded fields and order at this time
-            string sFields = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + "\t" +
-                CommonResources.Text.LabelDate + "\t" +
-                CommonResources.Text.LabelGPSLocation + "\t" +
-                Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText + "\t" +
-                Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText + "\t" +
-                Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText + "\t" +
-                Resources.Resources.FilePath_Text + "\t" +
-                Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            IList<ImageData> res = new List<ImageData>();
 
-            if ( node.Nodes.Count > 0 )
+            if (node.Nodes.Count > 0)
             {
-                foreach ( TreeNode tn in node.Nodes )
-                    sFields = treeViewActivities_GetImageDataFromNodeChildren( tn, sFileData );
-            }
-            else
-            {
-                if ( node.Tag != null )
+                foreach (TreeNode tn in node.Nodes)
                 {
-                    if ( node.Tag is IActivity ) //Node is an Activity
+                    foreach (ImageData im in treeViewActivities_GetImageData(tn))
                     {
-                        IActivity act = (IActivity)( node.Tag );
-                        PluginData data = Helper.Functions.ReadExtensionData( act );
-
-                        List<ImageData> il = data.LoadImageData( data.Images );
-                        foreach ( ImageData id in il )
-                        {
-                            try
-                            {
-                                string sFile = id.PhotoSourceFileName + "\t" +
-                                    id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) + "\t" +
-                                    id.ExifGPS.Replace( Environment.NewLine, ", " ) + "\t" +
-                                    id.Title + "\t" +
-                                    id.Comments + "\t" +
-                                    id.ReferenceID + "\t" +
-                                    id.PhotoSource + "\t" +
-                                    id.ThumbnailPath;
-
-                                sFileData.Add( sFile );
-                            }
-                            catch ( Exception ex )
-                            {
-                                System.Diagnostics.Debug.Assert( false, ex.Message );
-                                //throw;
-                            }
-                        }
+                        res.Add(im);
                     }
                 }
-                else
-                {
-                    //noop
-                }
-
             }
+            if (node.Tag != null)
+            {
+                if (node.Tag is IActivity) //Node is an Activity
+                {
+                    IActivity act = (IActivity)(node.Tag);
+                    PluginData data = Helper.Functions.ReadExtensionData(act);
 
-            return sFields;
+                    List<ImageData> il = data.LoadImageData(data.Images);
+                    foreach (ImageData id in il)
+                    {
+                        res.Add(id);
+                    }
+                }
+            }
+            return res;
         }
         #endregion
 
@@ -1535,7 +1505,6 @@ namespace ActivityPicturePlugin.UI
                             //prune filter: Use file modified date
                                 file.LastWriteTimeUtc > first)
                         {
-                            //TODO: Filter when importing
                             m_files.Add( file ); 
                             SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
@@ -2655,14 +2624,45 @@ namespace ActivityPicturePlugin.UI
         private void toolStripMenuCopyToClipboard_Click( object sender, EventArgs e )
         {
             TreeNode selNode = this.treeViewActivities.SelectedNode;
+            //List separator (tab could be used too)
+            string sep = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+            if (selNode != null)
+            {
+                //Hardcoded fields and order at this time
+                string sClipboard =
+                    Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + sep +
+                    CommonResources.Text.LabelDate + sep +
+                    CommonResources.Text.LabelGPSLocation + sep +
+                    Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.Resources.FilePath_Text + sep +
+                    Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+
+                sClipboard += Environment.NewLine;
+                foreach (ImageData id in treeViewActivities_GetImageData(selNode))
+                {
+                    string sFile = id.PhotoSourceFileName + sep +
+                             id.DateTimeOriginal.Replace(Environment.NewLine, ", ") + sep +
+                             id.ExifGPS.Replace(Environment.NewLine, ", ") + sep +
+                             id.Title + sep +
+                             id.Comments + sep +
+                             id.ReferenceID + sep +
+                             id.PhotoSource + sep +
+                             id.ThumbnailPath;
+
+                    sClipboard += sFile + Environment.NewLine;
+                }
+                Clipboard.SetText( sClipboard );
+            }
+        }
+
+        private void toolStripMenuMigratePaths_Click(object sender, EventArgs e)
+        {
+            TreeNode selNode = this.treeViewActivities.SelectedNode;
             if ( selNode != null )
             {
-                List<string> sFileInfos = new List<string>();
-                string sClipboard = treeViewActivities_GetImageDataFromNodeChildren( selNode, sFileInfos );
-                sClipboard += "\r\n";
-                foreach ( string s in sFileInfos )
-                    sClipboard += s + "\r\n";
-                Clipboard.SetText( sClipboard );
+                treeViewActivities_GetImageData( selNode);
             }
         }
 
