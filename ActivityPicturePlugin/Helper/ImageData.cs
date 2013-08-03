@@ -22,7 +22,7 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Drawing;
 using System.Windows.Forms;
-
+using ZoneFiveSoftware.Common.Data.Measurement;
 using DexterLib;
 
 namespace ActivityPicturePlugin.Helper
@@ -200,7 +200,7 @@ namespace ActivityPicturePlugin.Helper
             dt = dt.AddMinutes( min );
             dt = dt.AddSeconds( sec );
             // yyyy:MM:dd HH:mm:ss is a text sortable date format
-            EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
+            EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
 
@@ -499,7 +499,15 @@ namespace ActivityPicturePlugin.Helper
             {
                 try
                 {
-                    string AltStr = "";
+                    // A valid image was not found... No valid Exif data exists
+                    if ( this.thumbnail == null ) return "0";   
+
+                    Length.Units units = Plugin.GetApplication().SystemPreferences.ElevationUnits;
+                    string strFormat = String.Format( "N{0}u", Length.DefaultDecimalPrecision( units ) );
+                    double Alt = Length.Convert( ew.GPSAltitude, Length.Units.Meter, units );
+                    string AltStr = Length.ToString( Alt, units, strFormat );
+
+                    /*string AltStr = "";
                     //string comAlt = com.SimpleRun.ShowOneFileOnlyTagGPSAltitude(this.PhotoSource);
                     double Alt = ew.GPSAltitude;
                     //TODO: simplify...
@@ -531,7 +539,7 @@ namespace ActivityPicturePlugin.Helper
                         default:
                             break;
 
-                    }
+                    }*/
                     return AltStr;
                     //if (Plugin.GetIApplication().SystemPreferences.ElevationUnits == ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Foot)
                     //{
@@ -563,7 +571,7 @@ namespace ActivityPicturePlugin.Helper
         public void SetDateTimeOriginal( DateTime dt )
         {
             // yyyy:MM:dd HH:mm:ss is a text sortable date format
-            this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( "yyyy:MM:dd HH:mm:ss" ) );
+            this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
             SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
         }
 
@@ -920,6 +928,9 @@ namespace ActivityPicturePlugin.Helper
                     {
                         bmp = null;
                         //TODO: implement a way to work when images are not found!
+
+                        // Works when no images are found.
+
                         //MessageBox.Show("both paths not found");
                     }
                 }

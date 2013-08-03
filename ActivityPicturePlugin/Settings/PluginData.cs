@@ -143,13 +143,17 @@ namespace ActivityPicturePlugin.Settings
                 string strDate = ID.DateTimeOriginal;
                 if ( String.IsNullOrEmpty( strDate ) )
                 {
-                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    strDate = Functions.GetFileTimeString( new System.IO.FileInfo( ID.PhotoSource ) );
-                    if ( !string.IsNullOrEmpty( strDate ) )
+                    System.IO.FileInfo file = new System.IO.FileInfo( ID.PhotoSource );
+                    if ( file.Exists )
                     {
-                        DateTime dtTmp = new DateTime();
-                        if ( DateTime.TryParseExact( strDate, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.None, out dtTmp ) )
-                            ID.SetDateTimeOriginal( dtTmp );
+                        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                        strDate = Functions.GetFileTimeString( file );
+                        if ( !string.IsNullOrEmpty( strDate ) )
+                        {
+                            DateTime dtTmp = new DateTime();
+                            if ( DateTime.TryParseExact( strDate, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.None, out dtTmp ) )
+                                ID.SetDateTimeOriginal( dtTmp );
+                        }
                     }
                 }
                 IDList.Add(ID);

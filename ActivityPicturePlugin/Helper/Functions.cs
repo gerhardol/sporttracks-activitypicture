@@ -45,6 +45,7 @@ namespace ActivityPicturePlugin.Helper
             return sb.ToString();
         }
 
+        internal static readonly string NeutralDateTimeFormat = "yyyy:MM:dd HH:mm:ss";
         private static readonly string[] ExifExt = { ".jpg", ".jpeg", ".tif", ".tiff" };
         private static readonly string[] ImageExt = { ".jpg", ".jpeg", ".png", ".tif", ".tiff", ".gif", ".bmp" };
         private static readonly string[] VideoExt = { ".avi", ".wmv", ".mpg", ".mpeg", ".mov", ".mp4", ".rm" };
@@ -74,7 +75,7 @@ namespace ActivityPicturePlugin.Helper
                 // The call above to GetFileTimeString may return in UTC or an unknown timezone
                 // If it's unknown it's probably best to assume it's in LocalTime
                 // Therefore... maybe it's better if GetFileTimeString returned in Local time
-                if ( DateTime.TryParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture, DateTimeStyles.None, out dt ) )
+                if ( DateTime.TryParseExact( fileTime, NeutralDateTimeFormat, culture, DateTimeStyles.None, out dt ) )
                 {
                     // Ok, now we're returning in LocalTime
                     dt = DateTime.SpecifyKind( dt, DateTimeKind.Local );
@@ -118,7 +119,7 @@ namespace ActivityPicturePlugin.Helper
                 // Changed to LocalTime since SimpleRun returns an unspecified timezone
                 // and it's probably best to assume it's in Local time.
                 // We should be consistent.
-                strx = file.CreationTime.ToString( "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture );
+                strx = file.CreationTime.ToString( NeutralDateTimeFormat, CultureInfo.InvariantCulture );
             }
             return strx;
         }

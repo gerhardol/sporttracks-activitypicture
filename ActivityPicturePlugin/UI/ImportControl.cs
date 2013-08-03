@@ -1001,7 +1001,7 @@ namespace ActivityPicturePlugin.UI
                             //string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             DateTime dtTmp = new DateTime();
                             // If we're hardcoding the format, we need to use an appropriate culture
-                            if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                            if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
                                 lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
                         }
                     }
@@ -1015,7 +1015,7 @@ namespace ActivityPicturePlugin.UI
                             /*string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             lvi.SubItems.Add(dts);*/
                             DateTime dtTmp = new DateTime();
-                            if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                            if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
                                 lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
                         }
                     }
@@ -1060,7 +1060,7 @@ namespace ActivityPicturePlugin.UI
                     {
                         DateTime dtTmp = new DateTime();
                         IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                        if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                        if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
                             lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
                     }
                 }
@@ -1138,22 +1138,11 @@ namespace ActivityPicturePlugin.UI
                         {
                             try
                             {
-                                //List view items
-                                ListViewItem lvi = new ListViewItem();
-                                lvi.Text = id.PhotoSourceFileName;
-                                lvi.Tag = id.ReferenceID;
-                                lvi.ImageKey = id.PhotoSource;
-                                lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
-                                lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
-                                lvi.SubItems.Add( id.Title );
-                                lvi.SubItems.Add( id.Comments );
-                                this.listViewAct.Items.Add( lvi );
-
                                 //images (large and small icons)
                                 Image img = null;
                                 try
                                 {
-                                    if (  new FileInfo( id.ThumbnailPath ).Exists )
+                                    if ( new FileInfo( id.ThumbnailPath ).Exists )
                                         img = Image.FromFile( id.ThumbnailPath );
                                     else
                                         img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
@@ -1169,8 +1158,20 @@ namespace ActivityPicturePlugin.UI
                                     System.Diagnostics.Debug.Print( ex.Message );
                                     img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
                                 }
-                                lil.Images.Add( lvi.ImageKey, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
-                                lis.Images.Add( lvi.ImageKey, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
+                                lil.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
+                                lis.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
+                                
+                                //List view items
+                                ListViewItem lvi = new ListViewItem();
+                                lvi.Text = id.PhotoSourceFileName;
+                                lvi.Tag = id.ReferenceID;
+                                lvi.ImageKey = id.PhotoSource;
+                                lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
+                                lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
+                                lvi.SubItems.Add( id.Title );
+                                lvi.SubItems.Add( id.Comments );
+                                this.listViewAct.Items.Add( lvi );
+
                                 Application.DoEvents();
                                 img.Dispose();
                                 img = null;
@@ -1565,8 +1566,6 @@ namespace ActivityPicturePlugin.UI
                 progressBar2.Value = j;
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
-                //TODO: Does strDateTime care that format is "yyyy:MM:dd HH:mm:ss"?
-                // We're just sorting, and we're still using a 'text-sortable' date/time format.
                 fiex.strDateTime = Functions.GetFileTimeString(fi);
                 fiexs.Add( fiex );
 
@@ -1647,9 +1646,9 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
-            if ( il != null )
+            if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
-                Image img = il.Images[e.ItemIndex];
+                Image img = il.Images[e.Item.ImageKey];
 
                 rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
                     (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
@@ -1713,9 +1712,9 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
-            if ( il != null )
+            if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
-                Image img = il.Images[e.ItemIndex];
+                Image img = il.Images[e.Item.ImageKey];
 
                 rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
                     (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
@@ -1765,9 +1764,9 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
-            if ( il != null )
+            if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
-                Image img = il.Images[e.ItemIndex];
+                Image img = il.Images[e.Item.ImageKey];
 
                 rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
                     (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
@@ -1816,9 +1815,9 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             ImageList il = e.Item.ImageList;
             RectangleF rectImage = new RectangleF();
-            if (il != null && il.Images.Count > e.ItemIndex)
+            if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
-                Image img = il.Images[e.ItemIndex];
+                Image img = il.Images[e.Item.ImageKey];
 
                 rectImage = new RectangleF( (float)( rectIcon.Width - img.Width ) / 2 + rectIcon.Left,
                     (float)( rectIcon.Height - img.Height ) / 2 + rectIcon.Top,
@@ -1867,7 +1866,7 @@ namespace ActivityPicturePlugin.UI
             //Draw the icon
             e.Item.IndentCount = 0;	// Set the indent
             ImageList il = e.Item.ImageList;
-            if ( il != null )
+            if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
                 System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.Item.ImageKey];
                 //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
@@ -2819,11 +2818,11 @@ namespace ActivityPicturePlugin.UI
         public int Compare( object x, object y )
         {
             try
-            {
+            {                
                 FileInfo tx = x as FileInfo;
                 FileInfo ty = y as FileInfo;
-                string strx = Functions.GetFileTimeString(tx);  //"yyyy:MM:dd HH:mm:ss"
-                string stry = Functions.GetFileTimeString( ty );  //"yyyy:MM:dd HH:mm:ss"
+                string strx = Functions.GetFileTimeString( tx );  //Functions.NeutralDateTimeFormat
+                string stry = Functions.GetFileTimeString( ty );  //Functions.NeutralDateTimeFormat
                 return string.Compare( strx, stry );
             }
             catch (Exception ex)
