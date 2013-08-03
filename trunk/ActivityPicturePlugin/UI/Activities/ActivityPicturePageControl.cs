@@ -78,7 +78,7 @@ namespace ActivityPicturePlugin.UI.Activities
             LoadSettings();
 
             //Create directory if it does not already exist!
-            if ( !Directory.Exists( ImageFilesFolder ) ) Directory.CreateDirectory( ImageFilesFolder );
+            if (!Directory.Exists(ImageData.ImageFilesFolder)) Directory.CreateDirectory(ImageData.ImageFilesFolder);
 
             //read settings from logfile
             ActivityPicturePageControl.PluginSettingsData.ReadSettings();
@@ -100,13 +100,6 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Public members
-#if ST_2_1
-        public static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
-#else
-        public static string ImageFilesFolder = ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + Path.DirectorySeparatorChar + GUIDs.PluginMain.ToString() + Path.DirectorySeparatorChar;
-        public static string ImageFilesFolderST2 = System.IO.Path.GetFullPath(ActivityPicturePlugin.Plugin.GetApplication().Configuration.CommonWebFilesFolder + "\\..\\..\\2.0\\Web Files\\Images\\");
-#endif
-
         public static PluginSettings PluginSettingsData = new PluginSettings();
 #if !ST_2_1
         //private IDetailPage m_DetailPage = null;
