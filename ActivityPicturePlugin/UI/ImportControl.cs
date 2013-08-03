@@ -931,7 +931,6 @@ namespace ActivityPicturePlugin.UI
         #endregion
 
         #region listViewDrive
-        //private void AddImageToListView( ImageList lvImgL, ImageList lvImgS, ImageData.DataTypes dt, int ixImage )
         private void AddImageToListView( ImageList lvImgL, ImageList lvImgS, ImageData.DataTypes dt, int ixImage, string strKey )
         {
             try
@@ -986,18 +985,18 @@ namespace ActivityPicturePlugin.UI
                     ExifDirectory ed = null;
                     GpsDirectory gps = null;
 
-                    if (Functions.IsExifFileExt(file))
+                    if ( Functions.IsExifFileExt( file ) )
                     {
-                        ed = SimpleRun.ShowOneFileExifDirectory(file.FullName);
-                        gps = SimpleRun.ShowOneFileGPSDirectory(file.FullName);
+                        ed = SimpleRun.ShowOneFileExifDirectory( file.FullName );
+                        gps = SimpleRun.ShowOneFileGPSDirectory( file.FullName );
                     }
 
                     // TODO: de-DE is used as en is default and cannot be set. Rewrite the use of culture
                     IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
                     if ( ed != null )
                     {
-                        string s = ed.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
-                        if (!string.IsNullOrEmpty(s))
+                        string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
+                        if ( !string.IsNullOrEmpty( s ) )
                         {
                             //string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             DateTime dtTmp = new DateTime();
@@ -1008,10 +1007,10 @@ namespace ActivityPicturePlugin.UI
                     }
                     // The first item is considered a SubItem.  We want to check to
                     // see if a second item was added (from just above).
-                    if (lvi.SubItems.Count == 1)
+                    if ( lvi.SubItems.Count == 1 )
                     {
-                        string s = Functions.GetFileTimeString(file);
-                        if (!string.IsNullOrEmpty(s))
+                        string s = Functions.GetFileTimeString( file );
+                        if ( !string.IsNullOrEmpty( s ) )
                         {
                             /*string dts = DateTime.ParseExact(s, "yyyy:MM:dd HH:mm:ss", culture).ToString();
                             lvi.SubItems.Add(dts);*/
@@ -1021,37 +1020,56 @@ namespace ActivityPicturePlugin.UI
                         }
                     }
 
-                    if (gps != null)
+                    if ( gps != null )
                     {
-                        string latref = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE_REF);
-                        string latitude = gps.GetDescription(GpsDirectory.TAG_GPS_LATITUDE);
-                        string longitude = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE);
-                        string longref = gps.GetDescription(GpsDirectory.TAG_GPS_LONGITUDE_REF);
+                        string latref = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE_REF );
+                        string latitude = gps.GetDescription( GpsDirectory.TAG_GPS_LATITUDE );
+                        string longitude = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE );
+                        string longref = gps.GetDescription( GpsDirectory.TAG_GPS_LONGITUDE_REF );
                         string gpsstr = latitude + " " + latref + ", " + longitude + " " + longref;
-                        if (latitude != null) lvi.SubItems.Add(gpsstr);
-                        else lvi.SubItems.Add("");
+                        if ( latitude != null ) lvi.SubItems.Add( gpsstr );
+                        else lvi.SubItems.Add( "" );
                     }
 
-                    if (ed != null)
+                    if ( ed != null )
                     {
-                        string s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_TITLE));
-                        if (!string.IsNullOrEmpty(s))
+                        string s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_TITLE ) );
+                        if ( !string.IsNullOrEmpty( s ) )
                         {
-                            lvi.SubItems.Add(s);
+                            lvi.SubItems.Add( s );
                         }
-                        s = (string)(ed.GetDescription(ExifDirectory.TAG_XP_COMMENTS));
-                        if (!string.IsNullOrEmpty(s))
+                        s = (string)( ed.GetDescription( ExifDirectory.TAG_XP_COMMENTS ) );
+                        if ( !string.IsNullOrEmpty( s ) )
                         {
-                            lvi.SubItems.Add(s);
+                            lvi.SubItems.Add( s );
                         }
                     }
                 }
-                catch (Exception ex)
+                catch ( Exception ex )
                 {
                     System.Diagnostics.Debug.Assert( false, ex.Message );
                 }
 
             }
+            else if ( dt == ImageData.DataTypes.Video )
+            {
+                try
+                {
+                    string s = Functions.GetFileTimeString( file );
+                    if ( !string.IsNullOrEmpty( s ) )
+                    {
+                        DateTime dtTmp = new DateTime();
+                        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                        if ( DateTime.TryParseExact( s, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                            lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    System.Diagnostics.Debug.Assert( false, ex.Message );
+                }
+            }
+
             this.listViewDrive.Items.Add( lvi );
         }
 
@@ -1125,23 +1143,7 @@ namespace ActivityPicturePlugin.UI
                                 lvi.Text = id.PhotoSourceFileName;
                                 lvi.Tag = id.ReferenceID;
                                 lvi.ImageKey = id.PhotoSource;
-                                //this.listViewAct.Items[j].ImageIndex = j;
-
-                                string strDate = id.DateTimeOriginal;
-                                if ( String.IsNullOrEmpty( strDate ) )
-                                {
-                                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                                    strDate = Functions.GetFileTimeString( new FileInfo(id.PhotoSource) );
-                                    if ( !string.IsNullOrEmpty( strDate ) )
-                                    {
-                                        DateTime dtTmp = new DateTime();
-                                        if ( DateTime.TryParseExact( strDate, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                            strDate = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
-                                    }
-                                }
-
-                                lvi.SubItems.Add( strDate.Replace( Environment.NewLine, ", " ) );
-
+                                lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
                                 lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
                                 lvi.SubItems.Add( id.Title );
                                 lvi.SubItems.Add( id.Comments );

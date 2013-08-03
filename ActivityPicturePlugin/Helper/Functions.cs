@@ -64,40 +64,18 @@ namespace ActivityPicturePlugin.Helper
 
         internal static DateTime GetFileTime(FileInfo file)
         {
-            /*if (IsExifFileExt(file))
-            {
-                string fileTime = SimpleRun.ShowOneFileOnlyTagOriginalDateTime(file.FullName);
-                if (!string.IsNullOrEmpty(fileTime))
-                {
-                    IFormatProvider culture = new System.Globalization.CultureInfo("de-DE", true);
-                    DateTime dt = new DateTime();
-                    // fileTime may not be a valid date time.
-                    if ( DateTime.TryParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture, System.Globalization.DateTimeStyles.None, out dt ) )
-                        return dt;
-                }
-            }
-            else
-            {
-            }*/
-
             string fileTime = GetFileTimeString( file );
             if ( !string.IsNullOrEmpty( fileTime ) )
             {
-                // Why was de-DE used?  Does it even matter?
-
-                //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
                 IFormatProvider culture = CultureInfo.InvariantCulture;    //.CurrentUICulture;
                 DateTime dt = new DateTime();
 
                 // fileTime may not be a valid date time.
                 // The call above to GetFileTimeString may return in UTC or an unknown timezone
                 // If it's unknown it's probably best to assume it's in LocalTime
-
                 // Therefore... maybe it's better if GetFileTimeString returned in Local time
                 if ( DateTime.TryParseExact( fileTime, "yyyy:MM:dd HH:mm:ss", culture, DateTimeStyles.None, out dt ) )
                 {
-                    //dt = DateTime.SpecifyKind( dt, DateTimeKind.Utc );
-
                     // Ok, now we're returning in LocalTime
                     dt = DateTime.SpecifyKind( dt, DateTimeKind.Local );
                     return dt;
