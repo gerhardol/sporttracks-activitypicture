@@ -141,7 +141,6 @@ namespace ActivityPicturePlugin.UI
                 this.toolStripMenuAdd.Text = CommonResources.Text.ActionAdd;
                 this.toolStripMenuCopyToClipboard.Text = CommonResources.Text.ActionCopy;
                 this.toolStripMenuMigratePaths.Text = "Migrate Paths..."; //TODO: Translate
-                this.toolStripMenuMigratePaths.Visible = false;
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
                 this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
@@ -180,20 +179,6 @@ namespace ActivityPicturePlugin.UI
 
         #endregion
 
-        //private void InitializeListViewDrive()
-        //    //copy columns of ListViewAct
-        //    {
-        //    if (this.listViewDrive.Columns.Count == 0)
-        //        {
-        //        ColumnHeader[] cols = new ColumnHeader[this.listViewAct.Columns.Count];
-        //        for (int i = 0; i < this.listViewAct.Columns.Count; i++)
-        //            {
-        //            cols[i] = (ColumnHeader)(this.listViewAct.Columns[i].Clone());
-        //            }
-        //        this.listViewDrive.Columns.AddRange(cols);
-        //        }
-        //    }
-
         #region private variables
         private const string gDummyFolder = "*****";
 
@@ -230,12 +215,6 @@ namespace ActivityPicturePlugin.UI
             set
             {
                 m_Activities = value;
-                //if (((ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)(this.Parent.Parent)).Activity != null)
-                //{
-                //    activities = new List<IActivity>{
-                //        ( (ActivityPicturePlugin.UI.Activities.ActivityPicturePageControl)( this.Parent.Parent ) ).Activity
-                //    };
-                //}
             }
         }
 
@@ -448,12 +427,7 @@ namespace ActivityPicturePlugin.UI
                 // disposing BOTH of the above imagelists.
                 listViewDrive.SmallImageList = null;
                 listViewDrive.LargeImageList = null;
-
-                // throw;
-
             }
-            
-
         }
 
         private void FillTreeViewImages()
@@ -485,7 +459,7 @@ namespace ActivityPicturePlugin.UI
                 }
                 if ( this.treeViewImages.Nodes.Count == 0 )
                 {
-                    //TODO: Add standardpath?
+                    //TODO: Expand standardpath?
                 }
             }
             catch ( Exception ex )
@@ -831,43 +805,34 @@ namespace ActivityPicturePlugin.UI
             ImageDataSerializable ids = null;
             using ( ImageData id = new ImageData() )
             {
-                id.PhotoSource = file;
-                id.ReferenceID = Guid.NewGuid().ToString();
-
-                ImageData.DataTypes dt = Functions.GetMediaType( file );
-
-                if ( dt == ImageData.DataTypes.Image )
-                {
-                    id.Type = ImageData.DataTypes.Image;
-                    id.SetThumbnail();
-                }
-                else if ( dt == ImageData.DataTypes.Video )
-                {
-                    id.Type = ImageData.DataTypes.Video;
-                    id.SetVideoThumbnail();
-                }
+                ImageData.DataTypes dt = Functions.GetMediaType(file);
 
                 if ( dt != ImageData.DataTypes.Nothing )
                 {
                     ids = new ImageDataSerializable();
-                    ids.PhotoSource = id.PhotoSource;
-                    ids.ReferenceID = id.ReferenceID;
+                    ids.PhotoSource = file;
+                    ids.ReferenceID = Guid.NewGuid().ToString();
                     ids.Type = id.Type;
                 }
             }
             return ids;
         }
 
-        //Drills from 'node' to find all child activities
-        private IList<ImageData> treeViewActivities_GetImageData(TreeNode node)
+        private class ActivityTreeViewInfo
         {
-            IList<ImageData> res = new List<ImageData>();
+            public ImageData image;
+            public IActivity Activity;
+        }
+        //Drills from 'node' to find all child activities
+        private IList<ActivityTreeViewInfo> treeViewActivities_GetImageData(TreeNode node)
+        {
+            IList<ActivityTreeViewInfo> res = new List<ActivityTreeViewInfo>();
 
             if (node.Nodes.Count > 0)
             {
                 foreach (TreeNode tn in node.Nodes)
                 {
-                    foreach (ImageData im in treeViewActivities_GetImageData(tn))
+                    foreach (ActivityTreeViewInfo im in treeViewActivities_GetImageData(tn))
                     {
                         res.Add(im);
                     }
@@ -883,7 +848,10 @@ namespace ActivityPicturePlugin.UI
                     List<ImageData> il = data.LoadImageData(data.Images);
                     foreach (ImageData id in il)
                     {
-                        res.Add(id);
+                        ActivityTreeViewInfo a = new ActivityTreeViewInfo();
+                        a.image = id;
+                        a.Activity = act;
+                        res.Add(a);
                     }
                 }
             }
@@ -1298,7 +1266,7 @@ namespace ActivityPicturePlugin.UI
                     //{ //A valid EXIF metadata has been found                
                     if ( ( FileTime > FirstStart ) &
                         ( FileTime < LastEnd ) )
-                    {//dateTime im picture is within the range of all activities
+                    {//dateTime in picture is within the range of all activities
                         
                         // LocalTime is best since we're assuming SimpleRun
                         // returns in Local Time.  No way to tell for sure.
@@ -2583,6 +2551,7 @@ namespace ActivityPicturePlugin.UI
             {
                 //Hardcoded fields and order at this time
                 string sClipboard =
+                    CommonResources.Text.LabelName + sep +
                     Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + sep +
                     CommonResources.Text.LabelDate + sep +
                     CommonResources.Text.LabelGPSLocation + sep +
@@ -2593,9 +2562,11 @@ namespace ActivityPicturePlugin.UI
                     Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
 
                 sClipboard += Environment.NewLine;
-                foreach (ImageData id in treeViewActivities_GetImageData(selNode))
+                foreach (ActivityTreeViewInfo a in treeViewActivities_GetImageData(selNode))
                 {
-                    string sFile = id.PhotoSourceFileName + sep +
+                    ImageData id = a.image;
+                    string sFile = a.Activity.Name + sep +
+                        id.PhotoSourceFileName + sep +
                              id.DateTimeOriginal.Replace(Environment.NewLine, ", ") + sep +
                              id.ExifGPS.Replace(Environment.NewLine, ", ") + sep +
                              id.Title + sep +
@@ -2613,13 +2584,101 @@ namespace ActivityPicturePlugin.UI
         private void toolStripMenuMigratePaths_Click(object sender, EventArgs e)
         {
             TreeNode selNode = this.treeViewActivities.SelectedNode;
-            if ( selNode != null )
+            if (selNode != null)
             {
-                treeViewActivities_GetImageData( selNode);
+                IList<ActivityTreeViewInfo> ims = treeViewActivities_GetImageData(selNode);
+                if (ims != null && ims.Count > 0)
+                {
+                    //Use "reasonable" default for replace path
+                    string current = ims[0].image.PhotoSource;
+                    int i = current.LastIndexOf(System.IO.Path.DirectorySeparatorChar);
+                    if (i > 0)
+                    {
+                        current = current.Substring(0, i);
+                        string dest = SourcePathPopup(ref current);
+                        if (!current.Equals(dest))
+                        {
+                            foreach (ActivityTreeViewInfo a in ims)
+                            {
+                                ImageData im = a.image;
+                                im.PhotoSource = im.PhotoSource.Replace(current, dest);
+                                PluginData data = Helper.Functions.ReadExtensionData(a.Activity);
+                                listViewAct.SuspendLayout();
+
+                                foreach (ImageDataSerializable ids in data.Images)
+                                {
+                                    if (ids.ReferenceID == im.ReferenceID)
+                                    {
+                                        ids.PhotoSource = im.PhotoSource;
+                                        //Thumbnail may need to be recreated
+                                        im.SetThumbnail();
+                                        break;
+                                    }
+                                }
+                                listViewAct.ResumeLayout();
+                                Functions.WriteExtensionData(a.Activity, data);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        private void toolStripMenuOpenFolder_Click( object sender, EventArgs e )
+        //A simple popup, could be separate control
+        private string SourcePathPopup(ref string source)
+        {
+            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
+            p.Size = new System.Drawing.Size(370, 145);
+            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+            ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
+            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+            p.Text = "Migrate source path"; //TODO: Translate
+            p.Controls.Add(pa);
+            pa.Dock = DockStyle.Fill;
+            pa.Controls.Add(SourcePath_TextBox);
+            pa.Controls.Add(DestPath_TextBox);
+            pa.Controls.Add(b);
+            pa.Controls.Add(c);
+            p.AcceptButton = b;
+            p.CancelButton = c;
+
+            SourcePath_TextBox.Width = p.Width - 37;
+            SourcePath_TextBox.Location = new System.Drawing.Point(10, 10);
+            DestPath_TextBox.Width = p.Width - 37;
+            DestPath_TextBox.Location = new System.Drawing.Point(10, SourcePath_TextBox.Location.Y + SourcePath_TextBox.Height + 5);
+
+            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
+            b.DialogResult = DialogResult.OK;
+            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
+            c.DialogResult = DialogResult.Cancel;
+            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+            pa.ThemeChanged(this.m_visualTheme);
+            //p.ThemeChanged(this.m_visualTheme);
+            SourcePath_TextBox.ThemeChanged(this.m_visualTheme);
+            DestPath_TextBox.ThemeChanged(this.m_visualTheme);
+            
+            string dest = source;
+            string tmpSource = source;
+            b.Click +=
+                delegate(object sender2, EventArgs args)
+                {
+                    tmpSource = SourcePath_TextBox.Text;
+                    dest = DestPath_TextBox.Text;
+                };
+
+            SourcePath_TextBox.Text = source;
+            DestPath_TextBox.Text = source;
+
+            //update is done in clicking OK/Enter
+            p.ShowDialog();
+            source = tmpSource;
+            return dest;
+        }
+
+        private void toolStripMenuOpenFolder_Click(object sender, EventArgs e)
         {
             try
             {
