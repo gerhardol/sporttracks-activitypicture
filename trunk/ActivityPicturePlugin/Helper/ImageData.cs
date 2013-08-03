@@ -475,7 +475,7 @@ namespace ActivityPicturePlugin.Helper
                 try
                 {
                     // A valid image was not found... No valid Exif data exists
-                    if ( this.thumbnail == null ) return "0";   
+                    if ( this.thumbnail == null ) return "";   
 
                     Length.Units units = Plugin.GetApplication().SystemPreferences.ElevationUnits;
                     string strFormat = String.Format( "N{0}u", Length.DefaultDecimalPrecision( units ) );

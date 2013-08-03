@@ -54,6 +54,12 @@
       <DependentUpon>ColorSlider.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper\ExifWorks.cs" />
+    <Compile Include="Helper\FolderSelect\FolderSelectDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Helper\FolderSelect\Reflector.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Helper\Functions.cs" />
     <Compile Include="Helper\SimpleRun.cs" />
     <Compile Include="Helper\VolumeSlider.cs">
