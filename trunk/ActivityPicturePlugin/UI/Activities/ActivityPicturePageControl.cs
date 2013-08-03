@@ -118,15 +118,23 @@ namespace ActivityPicturePlugin.UI.Activities
         #region Public properties
         bool m_Active = false;
         ZoneFiveSoftware.Common.Visuals.ITheme m_theme;
-        public IActivity Activity
+        public IList<IActivity> Activities
         {
             set
             {
+                this.importControl1.Activities = value;
                 //if activity has changed
-                if ( ( !object.ReferenceEquals( _Activity, value ) ) )
+                //if ( ( !object.ReferenceEquals( _Activity, value ) ) )
                 {
-                    //Update activity
-                    _Activity = value;
+                    //Update activity - only one activity right now
+                    if (value == null || value.Count == 0)
+                    {
+                        _Activity = null;
+                    }
+                    else
+                    {
+                        _Activity = value[0];
+                    }
                     if ( !m_Active ) ResetPage();
                     else
                     {
@@ -145,16 +153,12 @@ namespace ActivityPicturePlugin.UI.Activities
                             ResetPage();
                         }
                     }
-                    if (this.importControl1 != null)
-                    {
-                        this.importControl1.Activities = new List<IActivity> { _Activity };
-                    }
                 }
             }
-            get
-            {
-                return _Activity;
-            }
+            //get
+            //{
+            //    return _Activity;
+            //}
         }
 
         public void ShowProgressBar()
@@ -762,7 +766,10 @@ namespace ActivityPicturePlugin.UI.Activities
             //DataGridViewColumn col = GetSortColumn( ActivityPicturePageControl.PluginSettingsData.data.SortMode );
             PictureAlbum.ImageSortMode ism = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
             DataGridViewColumn col = GetSortColumn( ism );
-            this.pictureAlbumView.ImageList.Sort( CompareImageData );
+            if (this.pictureAlbumView.ImageList != null)
+            {
+                this.pictureAlbumView.ImageList.Sort(CompareImageData);
+            }
             UpdateDataGridView();
         }
 
@@ -1435,7 +1442,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     if ( !PluginExtensionData.GELinks.Contains( this.saveFileDialog.FileName ) )
                     {
                         PluginExtensionData.GELinks.Add( this.saveFileDialog.FileName );
-                        Helper.Functions.WriteExtensionData( Activity, this.PluginExtensionData );
+                        Helper.Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
                         this.btnGEList.Visible = true;
                         ReloadData();
                     }
@@ -1706,7 +1713,7 @@ namespace ActivityPicturePlugin.UI.Activities
             if ( tsmi.Tag != null )
             {
                 PluginExtensionData.GELinks.Remove( tsmi.Tag.ToString() );
-                Helper.Functions.WriteExtensionData( Activity, this.PluginExtensionData );
+                Helper.Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
                 ReloadData();
             }
         }
@@ -1776,7 +1783,7 @@ namespace ActivityPicturePlugin.UI.Activities
         private void RemoveImageFromActivity(ImageData im)
         {
             //Delete selected images
-            PluginData data = Helper.Functions.ReadExtensionData( Activity );
+            PluginData data = Helper.Functions.ReadExtensionData( _Activity );
 
             foreach ( ImageDataSerializable ids in data.Images )
             {
@@ -1788,7 +1795,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 }
             }
 
-            Functions.WriteExtensionData( Activity, data );
+            Functions.WriteExtensionData( _Activity, data );
 
             ReloadData();
             UpdateView();
