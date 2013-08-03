@@ -29,5 +29,7 @@ namespace ActivityPicturePlugin
                                              = new Guid("95628fe0-c88e-11df-bd3b-0800200c9a66");
         public static readonly Guid Settings = new Guid("d8cd66e0-c2a0-11df-851a-0800200c9a66");
         public static readonly Guid Activity = new Guid("d8cd66e1-c2a0-11df-851a-0800200c9a66");
+        //ST standard views - same for ST3, ST3.1
+        public static readonly Guid DailyActivityView = new Guid("1dc82ca0-88aa-45a5-a6c6-c25f56ad1fc3");
     }
 }

@@ -2141,7 +2141,18 @@ namespace ActivityPicturePlugin.UI
                 treeViewActivities.SelectedNode = treeViewActivities.GetNodeAt( e.Location );
         }
 
-        private void treeViewActivities_DrawNode( object sender, DrawTreeNodeEventArgs e )
+        private void treeViewActivities_NodeMouseDoubleClick(object sender, System.Windows.Forms.TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Tag is IActivity)
+            {
+                IActivity act = e.Node.Tag as IActivity;
+
+                string bookmark = "id=" + act;
+                Plugin.GetApplication().ShowView(GUIDs.DailyActivityView, bookmark);
+            }
+        }
+
+        private void treeViewActivities_DrawNode(object sender, DrawTreeNodeEventArgs e)
         {
             using ( SolidBrush selectedBrush = new SolidBrush( m_visualTheme.Selected ) )
             using ( SolidBrush highlightedBrush = new SolidBrush( m_visualTheme.Highlight ) )
