@@ -984,6 +984,14 @@ namespace ActivityPicturePlugin.Helper
                     }
                     xmlSer = null;
                     b = null;
+                    foreach (ImageDataSerializable ids in pd.Images)
+                    {
+                        if (ids.Type == ImageData.DataTypes.Nothing)
+                        {
+                            //Old bugs left type unset?
+                            ids.Type = GetMediaType(ids.PhotoSource);
+                        }
+                    }
                     return pd;
                 }
                 else
