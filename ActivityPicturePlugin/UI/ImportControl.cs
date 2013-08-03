@@ -259,7 +259,7 @@ namespace ActivityPicturePlugin.UI
             if ( !m_standardpathalreadyshown | this.m_showallactivities == false )
             {
                 FillTreeViewActivities();
-                if ( this.ShowAllActivities ) FindImagesInActivities();
+                FindImagesInActivities();
 
                 m_standardpathalreadyshown = true;
             }
@@ -603,52 +603,52 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 TreeNode dayNode = null;
-                foreach (IActivity act in this.GetActivities())
+                IEnumerable<IActivity> acts = this.GetActivities();
+                if (acts != null)
                 {
-                    TreeNode yearNode, monthNode;
-                    DateTime localTime = act.StartTime.ToLocalTime();
-                    //Year
-                    string year = localTime.Year.ToString();
-                    TreeNode[] yearNodes = treeViewActivities.Nodes.Find(year, false);
-                    if (yearNodes.Length == 0)
+                    foreach (IActivity act in acts)
                     {
-                        yearNode = new TreeNode(year);
-                        yearNode.Name = year;
-                        treeViewActivities.Nodes.Add(yearNode);
+                        TreeNode yearNode, monthNode;
+                        DateTime localTime = act.StartTime.ToLocalTime();
+                        //Year
+                        string year = localTime.Year.ToString();
+                        TreeNode[] yearNodes = treeViewActivities.Nodes.Find(year, false);
+                        if (yearNodes.Length == 0)
+                        {
+                            yearNode = new TreeNode(year);
+                            yearNode.Name = year;
+                            treeViewActivities.Nodes.Add(yearNode);
+                        }
+                        else yearNode = yearNodes[0];
+
+                        //Month
+                        string month = localTime.ToString("MM");
+                        TreeNode[] monthNodes = yearNode.Nodes.Find(month, false);
+                        if (monthNodes.Length == 0)
+                        {
+                            monthNode = new TreeNode(localTime.ToString("MMMM"));
+                            monthNode.Name = month;
+                            yearNode.Nodes.Add(monthNode);
+                        }
+                        else monthNode = monthNodes[0];
+
+                        //Day
+                        string day = localTime.ToString("dd");
+
+                        dayNode = new TreeNode(localTime.ToLongDateString() + " " +
+                            localTime.ToShortTimeString() + " "
+                            + Resources.Resources.ImportControl_in + " " + act.Location);
+
+                        dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
+                        dayNode.Tag = act;
+                        this.m_ActivityNodes.Add(dayNode);
+                        monthNode.Nodes.Add(dayNode);
                     }
-                    else yearNode = yearNodes[0];
-
-                    //Month
-                    string month = localTime.ToString("MM");
-                    TreeNode[] monthNodes = yearNode.Nodes.Find(month, false);
-                    if (monthNodes.Length == 0)
-                    {
-                        monthNode = new TreeNode(localTime.ToString("MMMM"));
-                        monthNode.Name = month;
-                        yearNode.Nodes.Add(monthNode);
-                    }
-                    else monthNode = monthNodes[0];
-
-                    //Day
-                    string day = localTime.ToString("dd");
-
-                    /*dayNode = new TreeNode( act.StartTime.ToLocalTime().ToString( "dd, dddd, " +
-                        System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) + " "
-                        + Resources.Resources.ImportControl_in + " " + act.Location );*/
-
-                    dayNode = new TreeNode(localTime.ToLongDateString() + " " +
-                        localTime.ToShortTimeString() + " "
-                        + Resources.Resources.ImportControl_in + " " + act.Location);
-
-                    dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
-                    dayNode.Tag = act;
-                    this.m_ActivityNodes.Add(dayNode);
-                    monthNode.Nodes.Add(dayNode);
+                    this.treeViewActivities.Sort();
+                    this.treeViewActivities.CollapseAll();
+                    //Gets the latest added activity in list (if several selected), normally latest in time
+                    if (bSelectCurrentActivity) treeViewActivities.SelectedNode = dayNode;
                 }
-                this.treeViewActivities.Sort();
-                this.treeViewActivities.CollapseAll();
-                //Gets the latest added activity in list (if several selected), normally latest in time
-                if (bSelectCurrentActivity) treeViewActivities.SelectedNode = dayNode;
             }
             catch (Exception ex)
             {

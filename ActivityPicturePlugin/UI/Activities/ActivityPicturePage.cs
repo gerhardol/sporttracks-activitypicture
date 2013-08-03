@@ -48,7 +48,11 @@ namespace ActivityPicturePlugin.UI.Activities
 
         private void OnViewSelectedItemsChanged(object sender, EventArgs e)
         {
-            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            m_activities = CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            if ((control != null))
+            {
+                control.Activities = m_activities;
+            }
             RefreshPage();
         }
         public System.Guid Id { get { return GUIDs.Activity; } }
@@ -56,17 +60,19 @@ namespace ActivityPicturePlugin.UI.Activities
 
         #region IActivityDetailPage Members
 
-        public IActivity Activity
-        {
+#if ST2_1
+		public IActivity Activity {
             set
             {
-                activity = value;
-                if ( control != null )
+                if (null == value) { m_activities = new List<IActivity>(); }
+                else { m_activities = new List<IActivity> { value }; }
+                if ((control != null))
                 {
-                    control.Activity = value;
+                    m_control.Activities = m_activities;
                 }
             }
-        }
+		}
+#endif
 
         public bool MenuEnabled
         {
@@ -105,9 +111,10 @@ namespace ActivityPicturePlugin.UI.Activities
 #else
                 control = new ActivityPicturePageControl();
 #endif
+#if ST_2_1
+                control.Activities = this.m_activities;
+#endif
                 control.CleanupThumbnails();
-
-                control.Activity = activity;
             }
             return control;
         }
@@ -193,7 +200,7 @@ namespace ActivityPicturePlugin.UI.Activities
 #if !ST_2_1
         private IDailyActivityView m_view = null;
 #endif
-        private IActivity activity = null;
+        private IList<IActivity> m_activities = new List<IActivity>();
         private ActivityPicturePageControl control = null;
         private IList<string> menuPath = null;
         private bool menuEnabled = true;
