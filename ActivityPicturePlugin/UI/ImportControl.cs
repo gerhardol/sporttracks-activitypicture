@@ -2039,6 +2039,13 @@ namespace ActivityPicturePlugin.UI
 
                 string bookmark = "id=" + act;
                 Plugin.GetApplication().ShowView(GUIDs.DailyActivityView, bookmark);
+
+#if ST_2_1
+                if ( act.HasStartTime )
+                    Plugin.GetApplication().Calendar.Selected = act.StartTime;
+                else
+                    Plugin.GetApplication().Calendar.Selected = ActivityInfoCache.Instance.GetInfo( act ).ActualTrackStart;
+#endif
             }
         }
 
@@ -2625,57 +2632,115 @@ namespace ActivityPicturePlugin.UI
         }
 
         //A simple popup, could be separate control
-        private string SourcePathPopup(ref string source)
+        private string SourcePathPopup( ref string source )
         {
-            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-            p.Size = new System.Drawing.Size(370, 145);
-            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
-            ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
-            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
-            p.Text = "Migrate source path"; //TODO: Translate
-            p.Controls.Add(pa);
-            pa.Dock = DockStyle.Fill;
-            pa.Controls.Add(SourcePath_TextBox);
-            pa.Controls.Add(DestPath_TextBox);
-            pa.Controls.Add(b);
-            pa.Controls.Add(c);
-            p.AcceptButton = b;
-            p.CancelButton = c;
-
-            SourcePath_TextBox.Width = p.Width - 37;
-            SourcePath_TextBox.Location = new System.Drawing.Point(10, 10);
-            DestPath_TextBox.Width = p.Width - 37;
-            DestPath_TextBox.Location = new System.Drawing.Point(10, SourcePath_TextBox.Location.Y + SourcePath_TextBox.Height + 5);
-
-            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
-            b.DialogResult = DialogResult.OK;
-            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
-            c.DialogResult = DialogResult.Cancel;
-            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
-            pa.ThemeChanged(this.m_visualTheme);
-            //p.ThemeChanged(this.m_visualTheme);
-            SourcePath_TextBox.ThemeChanged(this.m_visualTheme);
-            DestPath_TextBox.ThemeChanged(this.m_visualTheme);
-            
             string dest = source;
             string tmpSource = source;
-            b.Click +=
-                delegate(object sender2, EventArgs args)
-                {
-                    tmpSource = SourcePath_TextBox.Text;
-                    dest = DestPath_TextBox.Text;
-                };
 
-            SourcePath_TextBox.Text = source;
-            DestPath_TextBox.Text = source;
+            using ( System.Windows.Forms.Form p = new System.Windows.Forms.Form() )
+            using ( ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel() )
+            using ( ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox() )
+            using ( ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox() )
+            using ( System.Windows.Forms.Button b = new System.Windows.Forms.Button() )
+            using ( System.Windows.Forms.Button c = new System.Windows.Forms.Button() )
+            using ( System.Windows.Forms.Label lblSource = new System.Windows.Forms.Label() )
+            using ( System.Windows.Forms.Label lblDestination = new System.Windows.Forms.Label() )
+            {
+                p.SuspendLayout();
 
-            //update is done in clicking OK/Enter
-            p.ShowDialog();
-            source = tmpSource;
+                //System.Windows.Forms.Form p = new System.Windows.Forms.Form();;
+                p.Size = new System.Drawing.Size( 370, 180 );
+                //ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+                //ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+                //ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+                //System.Windows.Forms.Button b = new System.Windows.Forms.Button();
+                //System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+                p.Text = Resources.Resources.MigrateSourcePath_Text;
+                p.Controls.Add( pa );
+
+                p.MaximizeBox = false;
+                p.MinimizeBox = false;
+                p.ShowIcon = false;
+                p.ShowInTaskbar = false;
+                p.SizeGripStyle = SizeGripStyle.Hide;
+
+                pa.Dock = DockStyle.Fill;
+                pa.Controls.Add( lblSource );
+                pa.Controls.Add( SourcePath_TextBox );
+                pa.Controls.Add( lblDestination );
+                pa.Controls.Add( DestPath_TextBox );
+                pa.Controls.Add( b );
+                pa.Controls.Add( c );
+                p.AcceptButton = b;
+                p.CancelButton = c;
+
+                lblSource.Location = new System.Drawing.Point( 10, 10 );
+                lblSource.Text = Resources.Resources.Source_Text;
+                lblSource.AutoSize = true;
+                SourcePath_TextBox.Width = p.Width - 37;
+                SourcePath_TextBox.Location = new System.Drawing.Point( lblSource.Left, lblSource.Bottom + 0 );
+                SourcePath_TextBox.ButtonImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Folder16;
+                SourcePath_TextBox.ButtonClick += new EventHandler( PathTextBox_ButtonClick );
+
+
+                lblDestination.Location = new System.Drawing.Point( lblSource.Left, SourcePath_TextBox.Bottom + 5 );
+                lblDestination.Text = Resources.Resources.Destination_Text;
+                lblDestination.AutoSize = true;
+                DestPath_TextBox.Width = p.Width - 37;
+                DestPath_TextBox.Location = new System.Drawing.Point( SourcePath_TextBox.Left, lblDestination.Bottom + 0 );
+                DestPath_TextBox.ButtonImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Folder16;
+                DestPath_TextBox.ButtonClick += new EventHandler( PathTextBox_ButtonClick );
+
+                b.Location = new System.Drawing.Point( p.Size.Width - 25 - b.Size.Width, p.Height - 45 - b.Height );
+                b.DialogResult = DialogResult.OK;
+                c.Location = new System.Drawing.Point( b.Location.X - 15 - c.Size.Width, p.Height - 45 - c.Height );
+                c.DialogResult = DialogResult.Cancel;
+                b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+                c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+                pa.ThemeChanged( this.m_visualTheme );
+                //p.ThemeChanged(this.m_visualTheme);
+                SourcePath_TextBox.ThemeChanged( this.m_visualTheme );
+                DestPath_TextBox.ThemeChanged( this.m_visualTheme );
+
+                b.Click +=
+                    delegate( object sender2, EventArgs args )
+                    {
+                        tmpSource = SourcePath_TextBox.Text;
+                        dest = DestPath_TextBox.Text;
+                    };
+
+                SourcePath_TextBox.Text = source;
+                DestPath_TextBox.Text = source;
+
+                p.ResumeLayout();
+
+                //update is done in clicking OK/Enter
+                p.ShowDialog();
+                source = tmpSource;
+            }
+
             return dest;
+        }
+
+        void PathTextBox_ButtonClick( object sender, EventArgs e )
+        {
+            if ( sender is ZoneFiveSoftware.Common.Visuals.TextBox )
+            {
+                ZoneFiveSoftware.Common.Visuals.TextBox txtFolderSelect = sender as ZoneFiveSoftware.Common.Visuals.TextBox;
+                using ( FolderSelect.FolderSelectDialog fsd = new FolderSelect.FolderSelectDialog() )
+                {
+                    if ( !String.IsNullOrEmpty( txtFolderSelect.Text ) )
+                    {
+                        fsd.InitialDirectory = txtFolderSelect.Text;
+                    }
+                    else
+                        fsd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+
+                    fsd.Title = Resources.Resources.SelectFolder_Text;
+                    if ( fsd.ShowDialog() )
+                        txtFolderSelect.Text = fsd.FileName;
+                }
+            }
         }
 
         private void toolStripMenuOpenFolder_Click(object sender, EventArgs e)

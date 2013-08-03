@@ -362,4 +362,20 @@
     <value>Reset Snapshot</value>
     <comment>added July26</comment>
   </data>
+  <data name="Destination_Text" xml:space="preserve">
+    <value>Destination</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="MigrateSourcePath_Text" xml:space="preserve">
+    <value>Migrate Source Path</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="SelectFolder_Text" xml:space="preserve">
+    <value>Select Folder</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="Source_Text" xml:space="preserve">
+    <value>Source</value>
+    <comment>added Aug3</comment>
+  </data>
 </root>

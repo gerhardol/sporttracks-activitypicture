@@ -226,6 +226,15 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Destination.
+        /// </summary>
+        internal static string Destination_Text {
+            get {
+                return ResourceManager.GetString("Destination_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Camera Model.
         /// </summary>
         internal static string equipmentModelDataGridViewTextBoxColumn_HeaderText {
@@ -445,6 +454,15 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migrate Source Path.
+        /// </summary>
+        internal static string MigrateSourcePath_Text {
+            get {
+                return ResourceManager.GetString("MigrateSourcePath_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set Time Stamp.
         /// </summary>
         internal static string ModifyTimeStamp_Text {
@@ -531,6 +549,15 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select Folder.
+        /// </summary>
+        internal static string SelectFolder_Text {
+            get {
+                return ResourceManager.GetString("SelectFolder_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Quality.
         /// </summary>
         internal static string SettingsPageControl_lblQuality_Text {
@@ -563,6 +590,15 @@ namespace ActivityPicturePlugin.Resources {
         internal static string SortingXofYImages {
             get {
                 return ResourceManager.GetString("SortingXofYImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source.
+        /// </summary>
+        internal static string Source_Text {
+            get {
+                return ResourceManager.GetString("Source_Text", resourceCulture);
             }
         }
         
