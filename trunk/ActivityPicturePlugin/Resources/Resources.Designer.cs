@@ -454,6 +454,15 @@ namespace ActivityPicturePlugin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Migrate Paths....
+        /// </summary>
+        internal static string MigratePaths_Text {
+            get {
+                return ResourceManager.GetString("MigratePaths_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Migrate Source Path.
         /// </summary>
         internal static string MigrateSourcePath_Text {

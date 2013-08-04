@@ -400,6 +400,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.toolStripMenuExifGPS.Text = CommonResources.Text.LabelGPSLocation;
             this.toolStripMenuAltitude.Text = CommonResources.Text.LabelElevation;
             this.toolStripMenuComment.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
             //this.toolStripMenuThumbnail.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
             this.toolStripMenuDateTime.Text = CommonResources.Text.LabelDate;
             this.toolStripMenuCamera.Text = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
@@ -548,7 +549,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     this.groupBoxVideo.Enabled = false;
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = false;
-                    this.importControl1.LoadNodes();
+                    this.importControl1.LoadActivityNodes();
                     this.importControl1.Visible = true;
                 }
 

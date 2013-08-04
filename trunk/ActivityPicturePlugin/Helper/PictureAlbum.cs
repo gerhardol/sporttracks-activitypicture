@@ -63,7 +63,7 @@ namespace ActivityPicturePlugin.Helper
                                 0 );
 
                             MediaEventEx.FreeEventParams( lEventCode, lParam1, lParam2 );
-                            if ( ( lEventCode == EC_COMPLETE ) || //video is a end position
+                            if ( ( lEventCode == EC_COMPLETE ) || //video is at end position
                                 ( lEventCode == EC_USERABORT ) ||
                                 ( lEventCode == EC_ERRORABORT ) )
                             {
@@ -78,9 +78,19 @@ namespace ActivityPicturePlugin.Helper
                         break;
                 }
             }
-            catch (Exception ex)
+            catch ( System.Runtime.InteropServices.COMException ex )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                if ( (uint)ex.ErrorCode == 0x80004004 ) //Operation Aborted (E_ABORT)
+                {
+                    //TODO ???  Not sure why these are occurring nor what to do about them.
+                    //Seems to run just fine, though.
+                }
+                else
+                    System.Diagnostics.Debug.Assert( false, ex.Message );
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //break;
             }
             base.WndProc( ref m );

@@ -78,7 +78,7 @@ namespace ActivityPicturePlugin.Settings
         }
         public void ShowPage( string bookmark )
         {
-            importControl1.LoadNodes();
+            importControl1.LoadActivityNodes();
             this.Show();
             this.groupBoxImport_Resize( this, new EventArgs() );
         }

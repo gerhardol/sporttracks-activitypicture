@@ -31,6 +31,8 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals;
 using com.drew.metadata.exif;
 
+using System.Globalization;
+
 namespace ActivityPicturePlugin.UI
 {
     public partial class ImportControl : UserControl
@@ -81,11 +83,8 @@ namespace ActivityPicturePlugin.UI
                 get { return _items; }
             }
         }
-
         public void UpdateUICulture( System.Globalization.CultureInfo culture )
         {
-            //m_culture = culture;
-
             using ( Graphics g = this.CreateGraphics() )
             {
                 this.btnChangeFolderView.Text = Resources.Resources.ImportControl_changeView;
@@ -120,7 +119,7 @@ namespace ActivityPicturePlugin.UI
                     this.btnExpandAll.Visible = false;
                     this.btnCollapseAll.Visible = false;
                 }
-
+                
                 this.btnExpandAll.Width = (int)g.MeasureString( this.btnExpandAll.Text, this.btnExpandAll.Font ).Width + 10; ;
                 this.btnCollapseAll.Width = (int)g.MeasureString( this.btnCollapseAll.Text, this.btnCollapseAll.Font ).Width + 10; ;
                 this.btnCollapseAll.Left = btnExpandAll.Location.X + btnExpandAll.Width + 10;
@@ -140,7 +139,7 @@ namespace ActivityPicturePlugin.UI
 
                 this.toolStripMenuAdd.Text = CommonResources.Text.ActionAdd;
                 this.toolStripMenuCopyToClipboard.Text = CommonResources.Text.ActionCopy;
-                this.toolStripMenuMigratePaths.Text = "Migrate Paths..."; //TODO: Translate
+                this.toolStripMenuMigratePaths.Text = Resources.Resources.MigratePaths_Text;
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
                 this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
@@ -228,7 +227,7 @@ namespace ActivityPicturePlugin.UI
         #region private methods
 
         #region TreeViewImages
-        public void LoadNodes()
+        public void LoadActivityNodes()
         {
             m_files.Clear();
 
@@ -595,9 +594,20 @@ namespace ActivityPicturePlugin.UI
                         //Day
                         string day = localTime.ToString("dd");
 
-                        dayNode = new TreeNode(localTime.ToLongDateString() + " " +
+                        string strLongDate = "";
+                        CultureInfo specificCulture = Functions.NeutralToSpecificCulture( CultureInfo.CurrentUICulture.Name );
+                        if ( specificCulture != null )
+                            strLongDate = localTime.ToString( specificCulture.DateTimeFormat.LongDatePattern, specificCulture );
+                        else
+                            strLongDate=localTime.ToLongDateString();
+
+                        dayNode = new TreeNode( strLongDate + " " +
                             localTime.ToShortTimeString() + " "
-                            + Resources.Resources.ImportControl_in + " " + act.Location);
+                            + Resources.Resources.ImportControl_in + " " + act.Location );
+
+                        /*dayNode = new TreeNode( localTime.ToLongDateString() + " " +
+                            localTime.ToShortTimeString() + " "
+                            + Resources.Resources.ImportControl_in + " " + act.Location );*/
 
                         dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
                         dayNode.Tag = act;
@@ -2715,7 +2725,8 @@ namespace ActivityPicturePlugin.UI
                 p.ResumeLayout();
 
                 //update is done in clicking OK/Enter
-                p.ShowDialog();
+                p.StartPosition = FormStartPosition.CenterParent;
+                p.ShowDialog( this );
                 source = tmpSource;
             }
 

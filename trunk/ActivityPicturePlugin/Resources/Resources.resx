@@ -378,4 +378,8 @@
     <value>Source</value>
     <comment>added Aug3</comment>
   </data>
+  <data name="MigratePaths_Text" xml:space="preserve">
+    <value>Migrate Paths...</value>
+    <comment>added Aug4</comment>
+  </data>
 </root>
