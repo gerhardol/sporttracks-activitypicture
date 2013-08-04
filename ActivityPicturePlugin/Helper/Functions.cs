@@ -66,23 +66,10 @@ namespace ActivityPicturePlugin.Helper
         internal static CultureInfo NeutralToSpecificCulture( string sCultName )
         {
             CultureInfo culture = null;
-
-            CultureInfo[] cults = CultureInfo.GetCultures( CultureTypes.SpecificCultures );
-            if ( sCultName.Length == 2 )
-            {
-                foreach ( CultureInfo cult in cults )
-                {
-                    if ( cult.Name.StartsWith( sCultName ) )
-                    {
-                        culture = cult;
-                        break;
-                    }
-                }
-            }
-            else if ( sCultName.Length == 5 )
-            {
+            if ( CultureInfo.GetCultureInfo( sCultName ).IsNeutralCulture )
+                culture = CultureInfo.CreateSpecificCulture( sCultName );
+            else
                 culture = CultureInfo.GetCultureInfo( sCultName );
-            }
             return culture;
         }
 
