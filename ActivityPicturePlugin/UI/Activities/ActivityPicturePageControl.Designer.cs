@@ -565,7 +565,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.btnGEList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGEList.BackColor = System.Drawing.Color.Transparent;
             this.btnGEList.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnGEList.CenterImage = global::ActivityPicturePlugin.Resources.Resources.GE2;
+            this.btnGEList.CenterImage = global::ActivityPicturePlugin.Properties.Resources.GE2;
             this.btnGEList.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnGEList.HyperlinkStyle = false;
             this.btnGEList.ImageMargin = 2;

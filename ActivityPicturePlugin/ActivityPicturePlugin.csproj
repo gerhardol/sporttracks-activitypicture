@@ -68,11 +68,6 @@
     <Compile Include="Helper\VolumeSlider.Designer.cs">
       <DependentUpon>VolumeSlider.cs</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Helper\ImageData.cs" />
     <Compile Include="Helper\PictureAlbum.cs">
       <SubType>UserControl</SubType>
@@ -82,11 +77,6 @@
     </Compile>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Settings\ExtendSettingsPages.cs" />
     <Compile Include="Settings\PluginData.cs" />
@@ -143,34 +133,34 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.nl.resx">
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.nl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.es.resx">
+    <EmbeddedResource Include="Properties\Resources.es.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.de.resx">
+    <EmbeddedResource Include="Properties\Resources.de.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.fr.resx">
+    <EmbeddedResource Include="Properties\Resources.fr.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.it.resx">
+    <EmbeddedResource Include="Properties\Resources.it.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.sv.resx">
+    <EmbeddedResource Include="Properties\Resources.sv.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Helper\PictureAlbum.resx">
       <SubType>Designer</SubType>
@@ -197,6 +187,7 @@
       <DependentUpon>ImportControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <!-- Not needed in project (but resx), may be visible for convenience
   <ItemGroup>
     <None Include="Resources\Play.bmp" />
     <None Include="Resources\Pause.bmp" />
@@ -210,6 +201,6 @@
     <None Include="Resources\camera.bmp" />
     <Content Include="Resources\GE2.gif" />
   </ItemGroup>
-  <ItemGroup />
+  -->
   <Import Project="..\Common\Common-Files.csproj" />
 </Project>

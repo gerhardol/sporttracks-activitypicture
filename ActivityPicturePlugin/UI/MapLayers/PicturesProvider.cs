@@ -68,7 +68,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
 #elif MATRIXPLUGIN
                 return MatrixPlugin.Properties.Resources.TrailPointsControlLayer;
 #elif ACTIVITYPICTURESPLUGIN
-                return Resources.Resources.ActivityPicturePage_Title;
+                return Properties.Resources.ActivityPicturePage_Title;
 #else // TRAILSPLUGIN
                 return Properties.Resources.TrailPointsControlLayer;
 #endif

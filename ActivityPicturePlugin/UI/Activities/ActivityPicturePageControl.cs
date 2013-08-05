@@ -33,6 +33,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.Properties;
 using ActivityPicturePlugin.Settings;
 #if !ST_2_1
 using ActivityPicturePlugin.UI.MapLayers;
@@ -336,51 +337,51 @@ namespace ActivityPicturePlugin.UI.Activities
             RefreshPage();
 
             if ( this.Mode == ShowMode.Album )
-                this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+                this.actionBannerViews.Text = Resources.pictureAlbumToolStripMenuItem_Text;
             else if ( this.Mode == ShowMode.List )
                 this.actionBannerViews.Text = CommonResources.Text.LabelList;
             else if ( this.Mode == ShowMode.Import )
                 this.actionBannerViews.Text = CommonResources.Text.ActionImport;
             this.cAltitude.HeaderText = CommonResources.Text.LabelElevation;
-            this.cComment.HeaderText = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.cComment.HeaderText = Resources.commentDataGridViewTextBoxColumn_HeaderText;
             this.cDateTimeOriginal.HeaderText = CommonResources.Text.LabelDate;
-            this.cCamera.HeaderText = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+            this.cCamera.HeaderText = Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
             // Not sure how important it is to have this capitalized, nor am I
             // sure if this should be done for all resources.
             this.cExifGPS.HeaderText = Functions.CapitalizeAllWords( CommonResources.Text.LabelGPSLocation );
-            this.cPhotoSource.HeaderText = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
-            this.cReferenceID.HeaderText = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
-            this.cThumbnail.HeaderText = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
-            this.cPhotoTitle.HeaderText = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
-            this.pictureAlbumToolStripMenuItem.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+            this.cPhotoSource.HeaderText = Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+            this.cReferenceID.HeaderText = Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+            this.cThumbnail.HeaderText = Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.cPhotoTitle.HeaderText = Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            this.pictureAlbumToolStripMenuItem.Text = Resources.pictureAlbumToolStripMenuItem_Text;
             this.pictureListToolStripMenuItem.Text = CommonResources.Text.LabelList;
             this.importToolStripMenuItem.Text = CommonResources.Text.ActionImport;
-            this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.Resources.waypointDataGridViewTextBoxColumn_HeaderText;
-            this.groupBoxVideo.Text = Resources.Resources.groupBoxVideo_Text;
+            this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.waypointDataGridViewTextBoxColumn_HeaderText;
+            this.groupBoxVideo.Text = Resources.groupBoxVideo_Text;
             this.groupBoxImage.Text = CommonResources.Text.LabelPhoto;
-            this.groupBoxListOptions.Text = Resources.Resources.goupBoxListOptions_Text;
-            this.toolStripButtonPause.ToolTipText = Resources.Resources.toolStripButtonPause_ToolTipText;
-            this.toolStripButtonPlay.ToolTipText = Resources.Resources.toolStripButtonPlay_ToolTipText;
-            this.toolStripButtonStop.ToolTipText = Resources.Resources.toolStripButtonStop_ToolTipText;
-            this.toolStripButtonSnapshot.ToolTipText = Resources.Resources.toolStripButtonSnapshot_ToolTipText;
+            this.groupBoxListOptions.Text = Resources.goupBoxListOptions_Text;
+            this.toolStripButtonPause.ToolTipText = Resources.toolStripButtonPause_ToolTipText;
+            this.toolStripButtonPlay.ToolTipText = Resources.toolStripButtonPlay_ToolTipText;
+            this.toolStripButtonStop.ToolTipText = Resources.toolStripButtonStop_ToolTipText;
+            this.toolStripButtonSnapshot.ToolTipText = Resources.toolStripButtonSnapshot_ToolTipText;
 
-            this.toolTip1.SetToolTip( this.btnGeoTag, Resources.Resources.tooltip_OnlySelectedImages );
-            this.toolTip1.SetToolTip( this.btnKML, Resources.Resources.tooltip_OnlySelectedImages );
-            this.toolTip1.SetToolTip( this.btnTimeOffset, Resources.Resources.tooltip_OnlySelectedImages );
+            this.toolTip1.SetToolTip( this.btnGeoTag, Resources.tooltip_OnlySelectedImages );
+            this.toolTip1.SetToolTip( this.btnKML, Resources.tooltip_OnlySelectedImages );
+            this.toolTip1.SetToolTip( this.btnTimeOffset, Resources.tooltip_OnlySelectedImages );
 
-            this.cTypeImage.HeaderText = Resources.Resources.TypeImage_HeaderText;
+            this.cTypeImage.HeaderText = Resources.TypeImage_HeaderText;
 
             using ( Graphics g = this.CreateGraphics() )
             {
-                this.btnGeoTag.Text = Resources.Resources.btnGeoTag_Text;
+                this.btnGeoTag.Text = Resources.btnGeoTag_Text;
                 this.btnGeoTag.Width = (int)g.MeasureString( this.btnGeoTag.Text, this.btnGeoTag.Font ).Width + 10; ;
-                this.btnKML.Text = Resources.Resources.btnKML_Text;
+                this.btnKML.Text = Resources.btnKML_Text;
                 this.btnKML.Width = (int)g.MeasureString( this.btnKML.Text, this.btnKML.Font ).Width + 10;
-                this.btnTimeOffset.Text = Resources.Resources.btnTimeOffset_Text;
+                this.btnTimeOffset.Text = Resources.btnTimeOffset_Text;
                 this.btnTimeOffset.Width = (int)g.MeasureString( this.btnTimeOffset.Text, this.btnTimeOffset.Font ).Width + 10;
                 this.btnTimeOffset.Left = ( this.btnGeoTag.Right + 10 );
                 this.btnKML.Left = ( this.btnTimeOffset.Right + 10 );
-                this.labelImageSize.Text = Resources.Resources.labelImageSize_Text;
+                this.labelImageSize.Text = Resources.labelImageSize_Text;
                 this.labelImageSize.Width = (int)g.MeasureString( this.labelImageSize.Text, this.labelImageSize.Font ).Width + 10;
             }
 
@@ -390,25 +391,25 @@ namespace ActivityPicturePlugin.UI.Activities
             //this.groupBoxVideo.Width = this.Width - this.groupBoxVideo.Left - 10;
             this.groupBoxVideo.Width = this.panelViews.Width - this.groupBoxVideo.Left - 10;
 
-            this.toolStripMenuFitToWindow.Text = Resources.Resources.FitImagesToView_Text;
+            this.toolStripMenuFitToWindow.Text = Resources.FitImagesToView_Text;
 
-            //this.toolStripMenuCopy.Text = Resources.Resources.CopyToClipboard_Text;
+            //this.toolStripMenuCopy.Text = Resources.CopyToClipboard_Text;
             this.toolStripMenuCopy.Text = CommonResources.Text.ActionCopy;
-            this.toolStripMenuNone.Text = Resources.Resources.HideAllColumns_Text;
-            this.toolStripMenuAll.Text = Resources.Resources.ShowAllColumns_Text;
-            this.toolStripMenuTypeImage.Text = Resources.Resources.TypeImage_HeaderText;
+            this.toolStripMenuNone.Text = Resources.HideAllColumns_Text;
+            this.toolStripMenuAll.Text = Resources.ShowAllColumns_Text;
+            this.toolStripMenuTypeImage.Text = Resources.TypeImage_HeaderText;
             this.toolStripMenuExifGPS.Text = CommonResources.Text.LabelGPSLocation;
             this.toolStripMenuAltitude.Text = CommonResources.Text.LabelElevation;
-            this.toolStripMenuComment.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
-            this.toolStripMenuTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
-            //this.toolStripMenuThumbnail.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+            this.toolStripMenuComment.Text = Resources.commentDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuTitle.Text = Resources.titleDataGridViewTextBoxColumn_HeaderText;
+            //this.toolStripMenuThumbnail.Text = Resources.thumbnailDataGridViewImageColumn_HeaderText;
             this.toolStripMenuDateTime.Text = CommonResources.Text.LabelDate;
-            this.toolStripMenuCamera.Text = Resources.Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
-            this.toolStripMenuPhotoSource.Text = Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
-            this.toolStripMenuReferenceID.Text = Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuCamera.Text = Resources.equipmentModelDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuPhotoSource.Text = Resources.photoSourceDataGridViewTextBoxColumn_HeaderText;
+            this.toolStripMenuReferenceID.Text = Resources.referenceIDDataGridViewTextBoxColumn_HeaderText;
 
-            this.toolStripMenuResetSnapshot.Text = Resources.Resources.ResetSnapshot_Text;
-            this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
+            this.toolStripMenuResetSnapshot.Text = Resources.ResetSnapshot_Text;
+            this.toolStripMenuOpenFolder.Text = Resources.OpenContainingFolder_Text;
             this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
 
             this.importControl1.UpdateUICulture( culture );
@@ -496,7 +497,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 //Load controls depending on selected view
                 if ( this.Mode == ShowMode.Album )
                 {
-                    this.actionBannerViews.Text = Resources.Resources.pictureAlbumToolStripMenuItem_Text;
+                    this.actionBannerViews.Text = Resources.pictureAlbumToolStripMenuItem_Text;
                     this.groupBoxVideo.Enabled = true;	// ( this.pictureAlbumView.CurrentStatus != PictureAlbum.MediaStatus.None );
                     this.groupBoxImage.Visible = true;
                     this.groupBoxImage.Enabled = true;
@@ -1683,7 +1684,7 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 if ( !Helper.Functions.OpenExternal( e.ClickedItem.Tag.ToString() ) )
                 {
-                    if ( MessageBox.Show( Resources.Resources.FileNotFound_Text + ".\r\n" + Resources.Resources.RemoveFromList_Text, Resources.Resources.FileNotFound_Text,
+                    if ( MessageBox.Show( Resources.FileNotFound_Text + ".\r\n" + Resources.RemoveFromList_Text, Resources.FileNotFound_Text,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
                     {
                         //Delete item from list
@@ -1759,7 +1760,7 @@ namespace ActivityPicturePlugin.UI.Activities
             int ixSelected = this.pictureAlbumView.SelectedIndex;
             if ( ixSelected != -1 )
             {
-                if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                if ( MessageBox.Show( Resources.ConfirmDeleteLong_Text, Resources.ConfirmDeleteShort_Text,
                      MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
                 {
                     RemoveImageFromActivity(this.pictureAlbumView.ImageList[ixSelected]);
@@ -1809,7 +1810,7 @@ namespace ActivityPicturePlugin.UI.Activities
             switch ( e.KeyCode )
             {
                 case Keys.Delete:
-                    if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                    if ( MessageBox.Show( Resources.ConfirmDeleteLong_Text, Resources.ConfirmDeleteShort_Text,
                          MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
                     {
                         foreach ( DataGridViewRow row in dataGridViewImages.SelectedRows )

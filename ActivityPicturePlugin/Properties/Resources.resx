@@ -117,4 +117,269 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivityPicturePage_Title" xml:space="preserve">
+    <value>Activity Pictures</value>
+  </data>
+  <data name="btnCollapseAll_Text" xml:space="preserve">
+    <value>Collapse All</value>
+  </data>
+  <data name="btnExpandAll_Text" xml:space="preserve">
+    <value>Expand All</value>
+  </data>
+  <data name="btnGeoTag_Text" xml:space="preserve">
+    <value>Geotag</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="btnimage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/btnimage.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btnKML_Text" xml:space="preserve">
+    <value>Export to Google Earth</value>
+  </data>
+  <data name="btnTimeOffset_Text" xml:space="preserve">
+    <value>Time offset</value>
+  </data>
+  <data name="btnvideo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/btnvideo.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>Camera Model</value>
+  </data>
+  <data name="GE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/GE.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GoogleEarthExport_Title" xml:space="preserve">
+    <value>Photos to Google Earth</value>
+  </data>
+  <data name="goupBoxListOptions_Text" xml:space="preserve">
+    <value>Options (for selected photos)</value>
+  </data>
+  <data name="groupBoxVideo_Text" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="image" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/image.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ImportControl_addingFile" xml:space="preserve">
+    <value>Adding file</value>
+  </data>
+  <data name="ImportControl_changeView" xml:space="preserve">
+    <value>Change View</value>
+    <comment>changed</comment>
+  </data>
+  <data name="ImportControl_importing" xml:space="preserve">
+    <value>Importing Photo</value>
+  </data>
+  <data name="ImportControl_in" xml:space="preserve">
+    <value>in</value>
+  </data>
+  <data name="ImportControl_scanning" xml:space="preserve">
+    <value>Scanning of</value>
+  </data>
+  <data name="ImportControl_searchingActivity" xml:space="preserve">
+    <value>Searching matching activity for</value>
+  </data>
+  <data name="labelImageSize_Text" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Pause" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/Pause.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="photoSourceDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>Photo Source</value>
+  </data>
+  <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
+    <value>Album</value>
+  </data>
+  <data name="Play" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/Play.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>ReferenceID</value>
+  </data>
+  <data name="Stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/Stop.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="thumbnailDataGridViewImageColumn_HeaderText" xml:space="preserve">
+    <value>Thumbnail</value>
+  </data>
+  <data name="titleDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="toolStripButtonPause_ToolTipText" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="toolStripButtonPlay_ToolTipText" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="toolStripButtonStop_ToolTipText" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="TypeImage_HeaderText" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="video" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/video.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="waypointDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
+    <value>Waypoint</value>
+  </data>
+  <data name="ModifyTimeStamp_Text" xml:space="preserve">
+    <value>Set Time Stamp</value>
+  </data>
+  <data name="SettingsPageControl_lblQuality_Text" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="tooltip_OnlySelectedImages" xml:space="preserve">
+    <value>Only selected photos</value>
+  </data>
+  <data name="ImportControl_scanDone" xml:space="preserve">
+    <value>Scan done: A total of {0} new photos have been found</value>
+    <comment>changed</comment>
+  </data>
+  <data name="ActionImport_Text" xml:space="preserve">
+    <value>Auto Import</value>
+    <comment>added</comment>
+  </data>
+  <data name="ActivityPicturePlugin_Text" xml:space="preserve">
+    <value>Activity Picture Plugin</value>
+    <comment>added</comment>
+  </data>
+  <data name="HideAllColumns_Text" xml:space="preserve">
+    <value>Hide All Columns</value>
+    <comment>added</comment>
+  </data>
+  <data name="ShowAllColumns_Text" xml:space="preserve">
+    <value>Show All Columns</value>
+    <comment>added</comment>
+  </data>
+  <data name="FoundImagesInActivity_Text" xml:space="preserve">
+    <value>Found {0} images or videos in activity.</value>
+    <comment>added</comment>
+  </data>
+  <data name="FoundImagesInFolder_Text" xml:space="preserve">
+    <value>Found {0} images or videos in folder.</value>
+    <comment>added</comment>
+  </data>
+  <data name="CheckingForDuplicates_Text" xml:space="preserve">
+    <value>Checking for duplicate images and videos. {0} of {1} checked.</value>
+    <comment>added</comment>
+  </data>
+  <data name="SortingXImages" xml:space="preserve">
+    <value>Sorting {0} images</value>
+    <comment>added</comment>
+  </data>
+  <data name="SortingXofYImages" xml:space="preserve">
+    <value>Sorting {0} of {1} images</value>
+    <comment>added</comment>
+  </data>
+  <data name="Camera" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/camera.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="toolStripButtonSnapshot_ToolTipText" xml:space="preserve">
+    <value>Snapshot</value>
+    <comment>added</comment>
+  </data>
+  <data name="FitImagesToView_Text" xml:space="preserve">
+    <value>Fit Images To View</value>
+    <comment>added</comment>
+  </data>
+  <data name="AutoImportFromFolders_Text" xml:space="preserve">
+    <value>Auto import from checked folders</value>
+    <comment>added</comment>
+  </data>
+  <data name="ChangeFileListview_Text" xml:space="preserve">
+    <value>Change file listview</value>
+    <comment>added</comment>
+  </data>
+  <data name="ChangeImageListview_Text" xml:space="preserve">
+    <value>Change image listview</value>
+    <comment>added</comment>
+  </data>
+  <data name="CreatedWithXForSportTracks_Text" xml:space="preserve">
+    <value>Created with {0} for SportTracks</value>
+    <comment>added July9</comment>
+  </data>
+  <data name="FromXActivities_Text" xml:space="preserve">
+    <value>from {0} activities</value>
+    <comment>added July9</comment>
+  </data>
+  <data name="OpenInGoogleEarthWhenCreated_Text" xml:space="preserve">
+    <value>Open in Google Earth when created</value>
+    <comment>added July9</comment>
+  </data>
+  <data name="SportTracksImagesExportedWith_Text" xml:space="preserve">
+    <value>SportTracks images exported with</value>
+    <comment>added July9</comment>
+  </data>
+  <data name="GE2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/ge2.gif;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="labelDay_Text" xml:space="preserve">
+    <value>Day</value>
+    <comment>added July11</comment>
+  </data>
+  <data name="labelMinute_Text" xml:space="preserve">
+    <value>Minute</value>
+    <comment>added July11</comment>
+  </data>
+  <data name="labelSecond_Text" xml:space="preserve">
+    <value>Second</value>
+    <comment>added July11</comment>
+  </data>
+  <data name="FilePath_Text" xml:space="preserve">
+    <value>File Path</value>
+    <comment>added July12</comment>
+  </data>
+  <data name="ConfirmDeleteLong_Text" xml:space="preserve">
+    <value>Are you sure you want to remove the selected items?</value>
+    <comment>added July12</comment>
+  </data>
+  <data name="ConfirmDeleteShort_Text" xml:space="preserve">
+    <value>Confirm Delete</value>
+    <comment>added July12</comment>
+  </data>
+  <data name="OpenContainingFolder_Text" xml:space="preserve">
+    <value>Open Containing Folder</value>
+    <comment>added July12</comment>
+  </data>
+  <data name="FileNotFound_Text" xml:space="preserve">
+    <value>File not found</value>
+    <comment>added July13</comment>
+  </data>
+  <data name="RemoveFromList_Text" xml:space="preserve">
+    <value>Remove from list?</value>
+    <comment>added July13</comment>
+  </data>
+  <data name="StoreGEFileLocations_Text" xml:space="preserve">
+    <value>Store kmz/kml file locations</value>
+    <comment>added July13</comment>
+  </data>
+  <data name="ResetSnapshot_Text" xml:space="preserve">
+    <value>Reset Snapshot</value>
+    <comment>added July26</comment>
+  </data>
+  <data name="Destination_Text" xml:space="preserve">
+    <value>Destination</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="MigrateSourcePath_Text" xml:space="preserve">
+    <value>Migrate Source Path</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="SelectFolder_Text" xml:space="preserve">
+    <value>Select Folder</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="Source_Text" xml:space="preserve">
+    <value>Source</value>
+    <comment>added Aug3</comment>
+  </data>
+  <data name="MigratePaths_Text" xml:space="preserve">
+    <value>Migrate Paths...</value>
+    <comment>added Aug4</comment>
+  </data>
 </root>

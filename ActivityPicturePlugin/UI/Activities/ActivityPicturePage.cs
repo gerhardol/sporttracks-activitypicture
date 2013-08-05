@@ -28,6 +28,7 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
+using ActivityPicturePlugin.Properties;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
@@ -155,7 +156,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public string Title
         {
-            get { return Resources.Resources.ActivityPicturePage_Title; }
+            get { return Resources.ActivityPicturePage_Title; }
         }
 
         public void RefreshPage()

@@ -275,4 +275,8 @@
     <comment>added Aug3</comment>
     <value>Ursprung</value>
   </data>
+  <data name="MigratePaths_Text" xml:space="preserve">
+    <comment>added Aug4</comment>
+    <value>Migrera källa...</value>
+  </data>
 </root>

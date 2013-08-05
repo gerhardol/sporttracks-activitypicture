@@ -60,100 +60,101 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ActivityPicturePage_Title" xml:space="preserve">
-    <comment>changed</comment>
-    <value>Imagenes</value>
+    <value>Photos</value>
   </data>
   <data name="btnCollapseAll_Text" xml:space="preserve">
-    <value>Contraer Todo</value>
+    <value>Tout réduire</value>
   </data>
   <data name="btnExpandAll_Text" xml:space="preserve">
-    <value>Expandir Todo</value>
+    <value>Tout élargir</value>
   </data>
   <data name="btnGeoTag_Text" xml:space="preserve">
     <value>Geotag</value>
   </data>
   <data name="btnKML_Text" xml:space="preserve">
-    <value>Exportar a Google Earth</value>
+    <value>Exporter vers Google Earth</value>
   </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
-    <value>Compensar tiempo</value>
+    <value>Compensation de temps</value>
   </data>
   <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Comentario</value>
+    <value>Commentaire</value>
   </data>
   <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Modelo de Cámara</value>
+    <value>Modèle de caméra</value>
   </data>
   <data name="GoogleEarthExport_Title" xml:space="preserve">
-    <value>Imagenes a Google Earth</value>
+    <value>Images vers Google Earth</value>
   </data>
   <data name="goupBoxListOptions_Text" xml:space="preserve">
-    <value>Opciones (imagenes seleccionadas)</value>
+    <value>Options (pour les images sélectionnées)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">
-    <value>Video</value>
+    <value>Vidéo</value>
   </data>
   <data name="ImportControl_addingFile" xml:space="preserve">
-    <value>Agregar archivo</value>
+    <value>Ajout de fichier</value>
   </data>
   <data name="ImportControl_changeView" xml:space="preserve">
-    <value>Vista</value>
+    <comment>changed</comment>
+    <value>Vue</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
-    <value>Importando imagenes</value>
+    <value>Importer des images</value>
   </data>
   <data name="ImportControl_in" xml:space="preserve">
-    <value>en</value>
+    <value>dans</value>
   </data>
   <data name="ImportControl_scanning" xml:space="preserve">
-    <value>Búsqueda de</value>
+    <value>Recherche de</value>
   </data>
   <data name="ImportControl_searchingActivity" xml:space="preserve">
-    <value>Buscando concordancia de actividades para</value>
+    <value>Recherche d'activités correspondantes pour</value>
   </data>
   <data name="labelImageSize_Text" xml:space="preserve">
-    <value>Tamaño de imagen</value>
+    <value>Taille de l'image</value>
   </data>
   <data name="photoSourceDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Fuente de imagen</value>
+    <value>Source de l'image</value>
   </data>
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
-    <value>Álbum</value>
+    <value>Album</value>
   </data>
   <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>ReferenceID</value>
   </data>
   <data name="thumbnailDataGridViewImageColumn_HeaderText" xml:space="preserve">
-    <value>Miniatura</value>
+    <value>Miniature</value>
   </data>
   <data name="titleDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Titulo</value>
+    <value>Titre</value>
   </data>
   <data name="toolStripButtonPause_ToolTipText" xml:space="preserve">
-    <value>Pausa</value>
+    <value>Pause</value>
   </data>
   <data name="toolStripButtonPlay_ToolTipText" xml:space="preserve">
-    <value>Iniciar</value>
+    <value>Lecture</value>
   </data>
   <data name="toolStripButtonStop_ToolTipText" xml:space="preserve">
-    <value>Detener</value>
+    <value>Stop</value>
   </data>
   <data name="TypeImage_HeaderText" xml:space="preserve">
-    <value>Tipo</value>
+    <value>Type</value>
   </data>
   <data name="waypointDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Waypoint</value>
   </data>
   <data name="ModifyTimeStamp_Text" xml:space="preserve">
-    <value>Establecer fecha y hora</value>
+    <value>Fixation de temps</value>
   </data>
   <data name="SettingsPageControl_lblQuality_Text" xml:space="preserve">
-    <value>Calidad</value>
+    <value>Qualité</value>
   </data>
   <data name="tooltip_OnlySelectedImages" xml:space="preserve">
-    <value>Sólo imagenes seleccionadas</value>
+    <value>Seulement les images sélectionnées</value>
   </data>
   <data name="ImportControl_scanDone" xml:space="preserve">
-    <value>Búsqueda terminada: un total de {0} imágenes fueron encontradas</value>
+    <comment>changed</comment>
+    <value>Recherche terminée: un total de {0} images ont été trouvés</value>
   </data>
 </root>

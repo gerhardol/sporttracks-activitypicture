@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using ActivityPicturePlugin.Properties;
 
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 
@@ -54,7 +55,7 @@ namespace ActivityPicturePlugin
         {
             get
             {
-                return Resources.Resources.ActivityPicturePlugin_Text;
+                return Resources.ActivityPicturePlugin_Text;
                 //return "Activity Picture Plugin";
             }
         }

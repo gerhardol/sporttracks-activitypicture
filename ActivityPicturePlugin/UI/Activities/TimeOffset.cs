@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.Properties;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
@@ -36,16 +37,16 @@ namespace ActivityPicturePlugin.UI.Activities
             InitializeComponent();
 
             //localization
-            this.Text = Resources.Resources.btnTimeOffset_Text;
+            this.Text = Resources.btnTimeOffset_Text;
             this.btnOK.Text = CommonResources.Text.ActionOk;
             this.btnCancel.Text = CommonResources.Text.ActionCancel;
 
             this.lblYear.Text = CommonResources.Text.LabelYear;
             this.lblMonth.Text = CommonResources.Text.LabelMonth;
-            this.lblDay.Text = Resources.Resources.labelDay_Text;
+            this.lblDay.Text = Resources.labelDay_Text;
             this.lblHour.Text = Functions.UppercaseFirst( CommonResources.Text.LabelHour_lower );
-            this.lblMin.Text = Resources.Resources.labelMinute_Text;
-            this.lblSec.Text = Resources.Resources.labelSecond_Text;
+            this.lblMin.Text = Resources.labelMinute_Text;
+            this.lblSec.Text = Resources.labelSecond_Text;
         }
 
         public void ThemeChanged( ZoneFiveSoftware.Common.Visuals.ITheme visualTheme )
