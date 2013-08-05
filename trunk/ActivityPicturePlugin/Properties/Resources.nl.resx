@@ -60,71 +60,71 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ActivityPicturePage_Title" xml:space="preserve">
-    <comment>changed</comment>
-    <value>Bilder</value>
+    <value>Afbeeldingen</value>
   </data>
   <data name="btnCollapseAll_Text" xml:space="preserve">
-    <value>Alles Reduzieren</value>
+    <value>Alles verkleinen</value>
   </data>
   <data name="btnExpandAll_Text" xml:space="preserve">
-    <value>Alles Erweitern</value>
+    <value>Alles vergroten</value>
   </data>
   <data name="btnGeoTag_Text" xml:space="preserve">
-    <value>Geotaggen</value>
+    <value>Geotag</value>
   </data>
   <data name="btnKML_Text" xml:space="preserve">
-    <value>Exportieren nach Google Earth</value>
+    <value>Exporteren naar Google Earth</value>
   </data>
   <data name="btnTimeOffset_Text" xml:space="preserve">
-    <value>Zeitversatz</value>
+    <value>Tijdsverloop</value>
   </data>
   <data name="commentDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Kommentar</value>
+    <value>Commentaar</value>
   </data>
   <data name="equipmentModelDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Kameramodell</value>
+    <value>Cameramodel</value>
   </data>
   <data name="GoogleEarthExport_Title" xml:space="preserve">
-    <value>Bilder nach Google Earth</value>
+    <value>Afbeeldingen naar Google Earth</value>
   </data>
   <data name="goupBoxListOptions_Text" xml:space="preserve">
-    <value>Optionen (für ausgewählte Bilder)</value>
+    <value>Opties (voor geselecteerde afbeeldingen)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">
     <value>Video</value>
   </data>
   <data name="ImportControl_addingFile" xml:space="preserve">
-    <value>Hinzufügen von Datei</value>
+    <value>Bestand toevoegen</value>
   </data>
   <data name="ImportControl_changeView" xml:space="preserve">
-    <value>Ansicht</value>
+    <comment>changed</comment>
+    <value>Beeld</value>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
-    <value>Importieren von Bild</value>
+    <value>Afbeeldingen importeren</value>
   </data>
   <data name="ImportControl_in" xml:space="preserve">
     <value>in</value>
   </data>
   <data name="ImportControl_scanning" xml:space="preserve">
-    <value>Durchsuchen von</value>
+    <value>Zoeken in</value>
   </data>
   <data name="ImportControl_searchingActivity" xml:space="preserve">
-    <value>Nach passender Aktivität suchen für</value>
+    <value>Overeenkomstige activiteiten zoeken voor</value>
   </data>
   <data name="labelImageSize_Text" xml:space="preserve">
-    <value>Bildgröße</value>
+    <value>Afbeeldingsgrootte</value>
   </data>
   <data name="photoSourceDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Bildquelle</value>
+    <value>Afbeeldingsbron</value>
   </data>
   <data name="pictureAlbumToolStripMenuItem_Text" xml:space="preserve">
     <value>Album</value>
   </data>
   <data name="referenceIDDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>ReferenceID</value>
+    <value>Referentie ID</value>
   </data>
   <data name="thumbnailDataGridViewImageColumn_HeaderText" xml:space="preserve">
-    <value>Minibild</value>
+    <value>Miniatuur</value>
   </data>
   <data name="titleDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
     <value>Titel</value>
@@ -133,27 +133,28 @@
     <value>Pause</value>
   </data>
   <data name="toolStripButtonPlay_ToolTipText" xml:space="preserve">
-    <value>Abspielen</value>
+    <value>Afspelen</value>
   </data>
   <data name="toolStripButtonStop_ToolTipText" xml:space="preserve">
     <value>Stop</value>
   </data>
   <data name="TypeImage_HeaderText" xml:space="preserve">
-    <value>Typ</value>
+    <value>Type</value>
   </data>
   <data name="waypointDataGridViewTextBoxColumn_HeaderText" xml:space="preserve">
-    <value>Wegpunkt</value>
+    <value>Wegpunt</value>
   </data>
   <data name="ModifyTimeStamp_Text" xml:space="preserve">
-    <value>Zeit festlegen</value>
+    <value>Set Time Stamp</value>
   </data>
   <data name="SettingsPageControl_lblQuality_Text" xml:space="preserve">
-    <value>Qualität</value>
+    <value>Quality</value>
   </data>
   <data name="tooltip_OnlySelectedImages" xml:space="preserve">
-    <value>Nur ausgewählte Bilder</value>
+    <value>voor geselecteerde afbeeldingen</value>
   </data>
   <data name="ImportControl_scanDone" xml:space="preserve">
-    <value>Durchsuchen abgeschlossen: Insgesamt {0} Bilder wurden gefunde</value>
+    <comment>changed</comment>
+    <value>Zoeken beëindigd: totaal {0} afbeeldingen gevonden</value>
   </data>
 </root>

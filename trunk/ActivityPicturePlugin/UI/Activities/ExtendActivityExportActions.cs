@@ -28,6 +28,7 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.Properties;
 
 namespace ActivityPicturePlugin.UI.Activities
 {
@@ -90,7 +91,7 @@ namespace ActivityPicturePlugin.UI.Activities
 #else
         public ActivityPictureExportAction( IActivity act )
         {
-            this.title = Resources.Resources.GoogleEarthExport_Title;
+            this.title = Resources.GoogleEarthExport_Title;
             if ( act != null )
             {
                 if ( Helper.Functions.ReadExtensionData( act ).Images.Count != 0 )
@@ -108,8 +109,8 @@ namespace ActivityPicturePlugin.UI.Activities
                 this.enabled = true;
                 string sNumActivities = "";
                 if ( acts.Count > 1 )
-                    sNumActivities = " " + String.Format( Resources.Resources.FromXActivities_Text, acts.Count );
-                this.title = Resources.Resources.GoogleEarthExport_Title + sNumActivities;
+                    sNumActivities = " " + String.Format( Resources.FromXActivities_Text, acts.Count );
+                this.title = Resources.GoogleEarthExport_Title + sNumActivities;
                 activities = acts;
             }
         }
@@ -135,7 +136,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public System.Drawing.Image Image
         {
-            get { return Resources.Resources.GE2; }
+            get { return Resources.GE2; }
         }
 
         public IList<string> MenuPath

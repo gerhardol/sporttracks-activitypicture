@@ -21,6 +21,7 @@ using System.Text;
 using System.Drawing;
 using QuartzTypeLib;
 using ActivityPicturePlugin.UI.Activities;
+using ActivityPicturePlugin.Properties;
 using ActivityPicturePlugin.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
@@ -175,13 +176,13 @@ namespace ActivityPicturePlugin.Helper
                     strLongDate = act.StartTime.ToLocalTime().ToLongDateString();
 
                 string KMZname = strLongDate + " "
-                            + Resources.Resources.ImportControl_in + " " + act.Location;
+                            + Resources.ImportControl_in + " " + act.Location;
 
                 //string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
                 //string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
                             //+ Resources.Resources.ImportControl_in + " " + act.Location;
                 //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
-                //+ Resources.Resources.ImportControl_in + " " + act.Location;
+                //+ Resources.ImportControl_in + " " + act.Location;
                 string KMZstyle = "Photo";
 
                 //using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
@@ -206,7 +207,7 @@ namespace ActivityPicturePlugin.Helper
                     writer.WriteStartElement( "Document" );
 
                     //writer.WriteElementString( "name", "SportTracks Images exported with Activity Picture Plugin" );
-                    writer.WriteElementString( "name", Resources.Resources.SportTracksImagesExportedWith_Text + " " + Resources.Resources.ActivityPicturePlugin_Text );
+                    writer.WriteElementString( "name", Resources.SportTracksImagesExportedWith_Text + " " + Resources.ActivityPicturePlugin_Text );
                     writer.WriteElementString( "open", "1" );
 
                     if ( kmzFile.Extension == ".kml" )
@@ -308,7 +309,7 @@ namespace ActivityPicturePlugin.Helper
                             + "</FONT></P><P><FONT face=Verdana size=2>"
                             + id.ExifGPS.Replace( Environment.NewLine, ", " )
                             + "</FONT></P><P><FONT face=Verdana size=1>"
-                            + String.Format( Resources.Resources.CreatedWithXForSportTracks_Text, Resources.Resources.ActivityPicturePlugin_Text )
+                            + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                             + "</FONT></P>";
                             writer.WriteCData( KMZpicdescription );
                             writer.WriteEndElement();//description
@@ -439,7 +440,7 @@ namespace ActivityPicturePlugin.Helper
                     writer.WriteStartElement( "Document" );
 
                     //writer.WriteElementString( "name", "SportTracks Images exported with Activity Picture Plugin" );
-                    writer.WriteElementString( "name", Resources.Resources.SportTracksImagesExportedWith_Text + " " + Resources.Resources.ActivityPicturePlugin_Text );
+                    writer.WriteElementString( "name", Resources.SportTracksImagesExportedWith_Text + " " + Resources.ActivityPicturePlugin_Text );
                     writer.WriteElementString( "open", "1" );
 
                     if ( kmzFile.Extension == ".kml" )
@@ -478,7 +479,7 @@ namespace ActivityPicturePlugin.Helper
 
                         //Activity contains images
                         //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
-                        //+ Resources.Resources.ImportControl_in + " " + act.Location;
+                        //+ Resources.ImportControl_in + " " + act.Location;
 
                         string strLongDate = "";
                         CultureInfo specificCulture = Functions.NeutralToSpecificCulture( CultureInfo.CurrentUICulture.Name );
@@ -488,7 +489,7 @@ namespace ActivityPicturePlugin.Helper
                             strLongDate = act.StartTime.ToLocalTime().ToLongDateString();
 
                         string KMZname = strLongDate + " "
-                                    + Resources.Resources.ImportControl_in + " " + act.Location;
+                                    + Resources.ImportControl_in + " " + act.Location;
 
                         //string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
                                     //+ Resources.Resources.ImportControl_in + " " + act.Location;
@@ -579,7 +580,7 @@ namespace ActivityPicturePlugin.Helper
                                 + "</FONT></P><P><FONT face=Verdana size=2>"
                                 + id.ExifGPS.Replace( Environment.NewLine, ", " )
                                 + "</FONT></P><P><FONT face=Verdana size=1>"
-                                + String.Format( Resources.Resources.CreatedWithXForSportTracks_Text, Resources.Resources.ActivityPicturePlugin_Text )
+                                + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                                 + "</FONT></P>";
                                 writer.WriteCData( KMZpicdescription );
                                 writer.WriteEndElement();//description

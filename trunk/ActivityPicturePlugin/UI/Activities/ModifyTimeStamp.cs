@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.Properties;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace ActivityPicturePlugin.UI.Activities
@@ -35,7 +36,7 @@ namespace ActivityPicturePlugin.UI.Activities
             InitializeComponent();
 
             //localization
-            this.Text = Resources.Resources.ModifyTimeStamp_Text;
+            this.Text = Resources.ModifyTimeStamp_Text;
             this.btnOK.Text = CommonResources.Text.ActionOk;
             this.btnCancel.Text = CommonResources.Text.ActionCancel;
 

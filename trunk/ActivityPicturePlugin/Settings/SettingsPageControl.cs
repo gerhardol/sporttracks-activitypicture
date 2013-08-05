@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using ActivityPicturePlugin.Properties;
 using ActivityPicturePlugin.UI.Activities;
 using ZoneFiveSoftware.Common.Visuals;
 
@@ -72,7 +73,7 @@ namespace ActivityPicturePlugin.Settings
         {
             get
             {
-                return Resources.Resources.ActivityPicturePlugin_Text;
+                return Resources.ActivityPicturePlugin_Text;
                 //return "Activity Picture Plugin"; 
             }
         }
@@ -122,10 +123,10 @@ namespace ActivityPicturePlugin.Settings
         {
             //localization
             this.groupBoxImport.Text = CommonResources.Text.ActionImport;
-            this.lblImageQuality.Text = Resources.Resources.SettingsPageControl_lblQuality_Text;
-            this.lblImageSize.Text = Resources.Resources.labelImageSize_Text;
-            this.cbOpenGE.Text = Resources.Resources.OpenInGoogleEarthWhenCreated_Text;
-            this.cbStoreGEFileLocations.Text = Resources.Resources.StoreGEFileLocations_Text;
+            this.lblImageQuality.Text = Resources.SettingsPageControl_lblQuality_Text;
+            this.lblImageSize.Text = Resources.labelImageSize_Text;
+            this.cbOpenGE.Text = Resources.OpenInGoogleEarthWhenCreated_Text;
+            this.cbStoreGEFileLocations.Text = Resources.StoreGEFileLocations_Text;
             this.importControl1.UpdateUICulture( culture );
         }
 

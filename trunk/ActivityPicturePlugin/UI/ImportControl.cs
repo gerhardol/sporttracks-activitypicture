@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using ActivityPicturePlugin.Helper;
+using ActivityPicturePlugin.Properties;
 using ActivityPicturePlugin.Settings;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
@@ -87,22 +88,22 @@ namespace ActivityPicturePlugin.UI
         {
             using ( Graphics g = this.CreateGraphics() )
             {
-                this.btnChangeFolderView.Text = Resources.Resources.ImportControl_changeView;
+                this.btnChangeFolderView.Text = Resources.ImportControl_changeView;
                 this.btnChangeFolderView.Width = (int)g.MeasureString( this.btnChangeFolderView.Text, this.btnChangeFolderView.Font ).Width + 10; ;
-                this.toolTip1.SetToolTip( this.btnChangeFolderView, Resources.Resources.ChangeFileListview_Text );
-                this.toolTip1.SetToolTip( this.btnChangeActivityView, Resources.Resources.ChangeImageListview_Text );
-                this.btnScan.Text = Resources.Resources.ActionImport_Text;
-                this.toolTip1.SetToolTip( this.btnScan, Resources.Resources.AutoImportFromFolders_Text );
+                this.toolTip1.SetToolTip( this.btnChangeFolderView, Resources.ChangeFileListview_Text );
+                this.toolTip1.SetToolTip( this.btnChangeActivityView, Resources.ChangeImageListview_Text );
+                this.btnScan.Text = Resources.ActionImport_Text;
+                this.toolTip1.SetToolTip( this.btnScan, Resources.AutoImportFromFolders_Text );
                 this.btnScan.Width = (int)g.MeasureString( this.btnScan.Text, this.btnScan.Font ).Width + 10; ;
                 this.btnScan.Left = btnChangeFolderView.Location.X + btnChangeFolderView.Width + 10;
-                this.btnChangeActivityView.Text = Resources.Resources.ImportControl_changeView;
+                this.btnChangeActivityView.Text = Resources.ImportControl_changeView;
                 this.btnChangeActivityView.Width = (int)g.MeasureString( this.btnChangeActivityView.Text, this.btnChangeActivityView.Font ).Width + 10; ;
 
                 if ( m_showallactivities )
                 {
-                    this.btnExpandAll.Text = Resources.Resources.btnExpandAll_Text;
+                    this.btnExpandAll.Text = Resources.btnExpandAll_Text;
                     this.btnExpandAll.Left = btnChangeActivityView.Location.X + btnChangeActivityView.Width + 10;
-                    this.btnCollapseAll.Text = Resources.Resources.btnCollapseAll_Text;
+                    this.btnCollapseAll.Text = Resources.btnCollapseAll_Text;
                     this.btnExpandAll.Visible = true;
                     this.btnCollapseAll.Visible = true;
                 }
@@ -113,36 +114,36 @@ namespace ActivityPicturePlugin.UI
                     // display.  Either change their text or make them invisible
                     // Decided to do both.
                     this.btnExpandAll.Text = "+";
-                    this.toolTip1.SetToolTip( this.btnExpandAll, Resources.Resources.btnExpandAll_Text );
+                    this.toolTip1.SetToolTip( this.btnExpandAll, Resources.btnExpandAll_Text );
                     this.btnCollapseAll.Text = "-";
-                    this.toolTip1.SetToolTip( this.btnCollapseAll, Resources.Resources.btnCollapseAll_Text );
+                    this.toolTip1.SetToolTip( this.btnCollapseAll, Resources.btnCollapseAll_Text );
                     this.btnExpandAll.Visible = false;
                     this.btnCollapseAll.Visible = false;
                 }
-                
+
                 this.btnExpandAll.Width = (int)g.MeasureString( this.btnExpandAll.Text, this.btnExpandAll.Font ).Width + 10; ;
                 this.btnCollapseAll.Width = (int)g.MeasureString( this.btnCollapseAll.Text, this.btnCollapseAll.Font ).Width + 10; ;
                 this.btnCollapseAll.Left = btnExpandAll.Location.X + btnExpandAll.Width + 10;
 
                 this.splitContainer1.Panel1MinSize = btnScan.Width + btnScan.Left + 10;
-                this.colImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+                this.colImage.Text = Resources.thumbnailDataGridViewImageColumn_HeaderText;
                 this.colDateTime.Text = CommonResources.Text.LabelDate;
                 this.colGPS.Text = CommonResources.Text.LabelGPSLocation;
-                this.colTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
-                this.colDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+                this.colTitle.Text = Resources.titleDataGridViewTextBoxColumn_HeaderText;
+                this.colDescription.Text = Resources.commentDataGridViewTextBoxColumn_HeaderText;
 
-                this.colDImage.Text = Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+                this.colDImage.Text = Resources.thumbnailDataGridViewImageColumn_HeaderText;
                 this.colDDateTime.Text = CommonResources.Text.LabelDate;
                 this.colDGPS.Text = CommonResources.Text.LabelGPSLocation;
-                this.colDTitle.Text = Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText;
-                this.colDDescription.Text = Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText;
+                this.colDTitle.Text = Resources.titleDataGridViewTextBoxColumn_HeaderText;
+                this.colDDescription.Text = Resources.commentDataGridViewTextBoxColumn_HeaderText;
 
                 this.toolStripMenuAdd.Text = CommonResources.Text.ActionAdd;
                 this.toolStripMenuCopyToClipboard.Text = CommonResources.Text.ActionCopy;
-                this.toolStripMenuMigratePaths.Text = Resources.Resources.MigratePaths_Text;
+                this.toolStripMenuMigratePaths.Text = Resources.MigratePaths_Text;
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
-                this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
+                this.toolStripMenuOpenFolder.Text = Resources.OpenContainingFolder_Text;
 
                 if ( m_standardpathalreadyshown ) LoadActivityNodes( true );
             }
@@ -412,7 +413,7 @@ namespace ActivityPicturePlugin.UI
                 progressBar2.Style = ProgressBarStyle.Continuous;
 
                 //Either speed up adding to listview or show progressbar
-                using ( Image bmp = (Bitmap)( Resources.Resources.image ).Clone() )
+                using ( Image bmp = (Bitmap)( Resources.image ).Clone() )
                 {
                     System.Collections.ArrayList lvItems=new System.Collections.ArrayList();
 
@@ -450,7 +451,7 @@ namespace ActivityPicturePlugin.UI
                         lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
 
                         AddImageToListView( lvImgL, lvImgS, dt, j, listViewDrive.Items[j].ImageKey );	//read images and add thumbnails
-                        lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
+                        lblProgress.Text = String.Format( Resources.FoundImagesInFolder_Text, j + 1 );
 
                         Application.DoEvents();
                     }
@@ -672,7 +673,7 @@ namespace ActivityPicturePlugin.UI
 
                         dayNode = new TreeNode( strLongDate + " " +
                             strShortTime + " "
-                            + Resources.Resources.ImportControl_in + " " + act.Location );
+                            + Resources.ImportControl_in + " " + act.Location);
 
                         /*dayNode = new TreeNode( localTime.ToLongDateString() + " " +
                             localTime.ToShortTimeString() + " "
@@ -784,7 +785,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     foreach ( TreeNode day in month.Nodes )
                     {
-                        this.lblProgress.Text = Resources.Resources.ImportControl_scanning + " " + day.Text;
+                        this.lblProgress.Text = Resources.ImportControl_scanning + " " + day.Text;
                         this.progressBar2.PerformStep();
                         Application.DoEvents();
                         //Show Thumbs if called from activity
@@ -844,7 +845,7 @@ namespace ActivityPicturePlugin.UI
                 //Check if Image does already exist in the current activity
                 foreach ( ListViewItem lvi in lvisel )
                 {
-                    lblProgress.Text = String.Format( Resources.Resources.CheckingForDuplicates_Text, ++iCount, lvisel.Length );
+                    lblProgress.Text = String.Format( Resources.CheckingForDuplicates_Text, ++iCount, lvisel.Length );
                     progressBar2.Value = iCount;
 
                     string s = (string)( lvi.Tag );
@@ -963,7 +964,7 @@ namespace ActivityPicturePlugin.UI
                 }
                 else if ( dt == ImageData.DataTypes.Video )
                 {
-                    Image bmp = (Bitmap)( Resources.Resources.video ).Clone();
+                    Image bmp = (Bitmap)( Resources.video ).Clone();
                     lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp );
                     lvImgL.Images.SetKeyName( ixImage, strKey );
                     lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp );
@@ -1229,7 +1230,7 @@ namespace ActivityPicturePlugin.UI
                             }
                             j++;
                             progressBar2.Value = j;
-                            lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
+                            lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, j );
 
                         }
 
@@ -1381,7 +1382,7 @@ namespace ActivityPicturePlugin.UI
                             }
                             j++;
                             progressBar2.Value = j;
-                            lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
+                            lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, j );
 
                         }
                     }
@@ -1530,7 +1531,7 @@ namespace ActivityPicturePlugin.UI
 
                     i++;
                     this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
-                    this.lblProgress.Text = Resources.Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
+                    this.lblProgress.Text = Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
 
                     //TODO: Handle non-exif
                     // GetFileTime returns in LocalTime.  Kind is specified
@@ -1708,7 +1709,7 @@ namespace ActivityPicturePlugin.UI
                                 file.LastWriteTimeUtc > first)
                         {
                             m_files.Add( file ); 
-                            SetLabelText( Resources.Resources.ImportControl_addingFile + " " + file.Name );
+                            SetLabelText( Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
                         }
                     }
@@ -1740,7 +1741,7 @@ namespace ActivityPicturePlugin.UI
             // Get exif data for all files once and only one (slow operation)
             foreach ( FileInfo fi in m_files )
             {
-                lblProgress.Text = string.Format( Resources.Resources.SortingXofYImages, ++j, m_files.Count );
+                lblProgress.Text = string.Format( Resources.SortingXofYImages, ++j, m_files.Count );
                 progressBar2.Value = j;
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
@@ -2112,7 +2113,7 @@ namespace ActivityPicturePlugin.UI
         #region Eventhandlers
         private void OnImagesComplete( object sender, EventArgs e )
         {
-            this.lblProgress.Text = String.Format( Resources.Resources.SortingXImages, m_files.Count );
+            this.lblProgress.Text = String.Format( Resources.SortingXImages, m_files.Count );
         }
 
         #region treeViewImages
@@ -2573,7 +2574,7 @@ namespace ActivityPicturePlugin.UI
             {
                 case Keys.Delete:
                 case Keys.Back:
-                    if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                    if ( MessageBox.Show( Resources.ConfirmDeleteLong_Text, Resources.ConfirmDeleteShort_Text,
                         MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
                     {
                         //Delete selected images
@@ -2582,7 +2583,7 @@ namespace ActivityPicturePlugin.UI
                         sel.CopyTo( (Array)lvis, 0 );
                         RemoveSelectedImagesFromActivity( lvis );
                         this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
-                        lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+                        lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
                     }
                     break;
                 case Keys.A:
@@ -2735,7 +2736,7 @@ namespace ActivityPicturePlugin.UI
                 this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
             }
 
-            this.lblProgress.Text = String.Format( Resources.Resources.ImportControl_scanDone, numFilesImported );
+            this.lblProgress.Text = String.Format( Resources.ImportControl_scanDone, numFilesImported );
         }
 
         private void btnChangeFolderView_Click( object sender, EventArgs e )
@@ -2764,14 +2765,14 @@ namespace ActivityPicturePlugin.UI
 
         private void toolStripMenuRemove_Click( object sender, EventArgs e )
         {
-            if ( MessageBox.Show(Resources.Resources.ConfirmDeleteLong_Text , Resources.Resources.ConfirmDeleteShort_Text,
+            if ( MessageBox.Show(Resources.ConfirmDeleteLong_Text , Resources.ConfirmDeleteShort_Text,
                  MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
             {
                 ListView.SelectedListViewItemCollection sel = listViewAct.SelectedItems;
                 ListViewItem[] lvis = new ListViewItem[sel.Count];
                 sel.CopyTo( (Array)lvis, 0 );
                 RemoveSelectedImagesFromActivity( lvis );
-                lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+                lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
                 this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
             }
         }
@@ -2782,7 +2783,7 @@ namespace ActivityPicturePlugin.UI
             ListViewItem[] lvis = new ListViewItem[sel.Count];
             sel.CopyTo( (Array)lvis, 0 );
             AddSelectedImagesToActivity( lvis );
-            lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+            lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
             this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
         }
 
@@ -2833,14 +2834,14 @@ namespace ActivityPicturePlugin.UI
                 //Hardcoded fields and order at this time
                 string sClipboard =
                     CommonResources.Text.LabelName + sep +
-                    Resources.Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.photoSourceDataGridViewTextBoxColumn_HeaderText + sep +
                     CommonResources.Text.LabelDate + sep +
                     CommonResources.Text.LabelGPSLocation + sep +
-                    Resources.Resources.titleDataGridViewTextBoxColumn_HeaderText + sep +
-                    Resources.Resources.commentDataGridViewTextBoxColumn_HeaderText + sep +
-                    Resources.Resources.referenceIDDataGridViewTextBoxColumn_HeaderText + sep +
-                    Resources.Resources.FilePath_Text + sep +
-                    Resources.Resources.thumbnailDataGridViewImageColumn_HeaderText;
+                    Resources.titleDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.commentDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.referenceIDDataGridViewTextBoxColumn_HeaderText + sep +
+                    Resources.FilePath_Text + sep +
+                    Resources.thumbnailDataGridViewImageColumn_HeaderText;
 
                 sClipboard += Environment.NewLine;
                 foreach (ActivityTreeViewInfo a in treeViewActivities_GetImageData(selNode))
@@ -2923,7 +2924,7 @@ namespace ActivityPicturePlugin.UI
                 p.SuspendLayout();
 
                 p.Size = new System.Drawing.Size( 370, 180 );
-                p.Text = Resources.Resources.MigrateSourcePath_Text;
+                p.Text = Resources.MigrateSourcePath_Text;
                 p.Controls.Add( pa );
 
                 p.MaximizeBox = false;
@@ -2943,7 +2944,7 @@ namespace ActivityPicturePlugin.UI
                 p.CancelButton = c;
 
                 lblSource.Location = new System.Drawing.Point( 10, 10 );
-                lblSource.Text = Resources.Resources.Source_Text;
+                lblSource.Text = Resources.Source_Text;
                 lblSource.AutoSize = true;
                 SourcePath_TextBox.Width = p.Width - 37;
                 SourcePath_TextBox.Location = new System.Drawing.Point( lblSource.Left, lblSource.Bottom + 0 );
@@ -2952,7 +2953,7 @@ namespace ActivityPicturePlugin.UI
 
 
                 lblDestination.Location = new System.Drawing.Point( lblSource.Left, SourcePath_TextBox.Bottom + 5 );
-                lblDestination.Text = Resources.Resources.Destination_Text;
+                lblDestination.Text = Resources.Destination_Text;
                 lblDestination.AutoSize = true;
                 DestPath_TextBox.Width = p.Width - 37;
                 DestPath_TextBox.Location = new System.Drawing.Point( SourcePath_TextBox.Left, lblDestination.Bottom + 0 );
@@ -3005,7 +3006,7 @@ namespace ActivityPicturePlugin.UI
                     else
                         fsd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
 
-                    fsd.Title = Resources.Resources.SelectFolder_Text;
+                    fsd.Title = Resources.SelectFolder_Text;
                     if ( fsd.ShowDialog() )
                         txtFolderSelect.Text = fsd.FileName;
                 }

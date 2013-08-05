@@ -22,6 +22,7 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Drawing;
 using System.Windows.Forms;
+using ActivityPicturePlugin.Properties;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using DexterLib;
 
@@ -139,11 +140,11 @@ namespace ActivityPicturePlugin.Helper
             {
                 if ( this.Type == DataTypes.Image )
                 {
-                    return Resources.Resources.btnimage;
+                    return Resources.btnimage;
                 }
                 else if ( this.Type == DataTypes.Video )
                 {
-                    return Resources.Resources.btnvideo;
+                    return Resources.btnvideo;
                 }
                 return null;
 
@@ -606,7 +607,7 @@ namespace ActivityPicturePlugin.Helper
                     if ( System.IO.File.Exists( this.PhotoSource ) )
                     {
                         // Create new image in the default folder
-                        bmp = (Bitmap)( Resources.Resources.video ).Clone();
+                        bmp = (Bitmap)( Resources.video ).Clone();
                         Functions.SaveThumbnailImage( bmp, defpath, 10 );
                         //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                         //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
@@ -637,7 +638,7 @@ namespace ActivityPicturePlugin.Helper
             if ( System.IO.File.Exists( defpath ) )
             {
                 // Create new image in the default folder
-                using ( Bitmap bmp = (Bitmap)( Resources.Resources.video ).Clone() )
+                using ( Bitmap bmp = (Bitmap)( Resources.video ).Clone() )
                 {
                     Functions.SaveThumbnailImage( bmp, defpath, 10 );
                     this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
@@ -658,7 +659,7 @@ namespace ActivityPicturePlugin.Helper
                 if ( System.IO.File.Exists( this.PhotoSource ) )
                 {
                     // Create new image in the default folder
-                    if ( iFrame == -1 ) bmpOrig = (Bitmap)( Resources.Resources.video ).Clone();
+                    if ( iFrame == -1 ) bmpOrig = (Bitmap)( Resources.video ).Clone();
                     else
                     {
                         System.IO.FileInfo fi = new System.IO.FileInfo( this.PhotoSource );
@@ -738,7 +739,7 @@ namespace ActivityPicturePlugin.Helper
                 using ( Graphics g = Graphics.FromImage( bitmap ) )
                 using ( Font f = new Font( PictureAlbum.DefaultFont.FontFamily, 15 ) )
                 {
-                    g.DrawString( Resources.Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
+                    g.DrawString( Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
                 }
 
                 System.IO.File.Delete( sTempFile ); //cleanup the temporary file
@@ -772,7 +773,7 @@ namespace ActivityPicturePlugin.Helper
                     using ( Graphics g = Graphics.FromImage( bmp ) )
                     using ( Font f = new Font( PictureAlbum.DefaultFont.FontFamily, 15 ) )
                     {
-                        g.DrawString( Resources.Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
+                        g.DrawString( Resources.groupBoxVideo_Text, f, Brushes.White, new PointF( 0, 0 ) );
                     }
 
                 }
