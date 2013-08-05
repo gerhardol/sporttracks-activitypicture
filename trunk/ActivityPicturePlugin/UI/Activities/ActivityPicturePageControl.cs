@@ -1772,13 +1772,14 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             //Delete selected images
             PluginData data = Helper.Functions.ReadExtensionData( _Activity );
+            ImageData deleted = null;
 
             foreach ( ImageDataSerializable ids in data.Images )
             {
                 if ( ids.ReferenceID == im.ReferenceID )
                 {
-                    im.DeleteThumbnail();
                     data.Images.Remove( ids );
+                    deleted = im;
                     break;
                 }
             }
@@ -1788,6 +1789,11 @@ namespace ActivityPicturePlugin.UI.Activities
             ReloadData();
             UpdateView();
 
+            if (deleted != null)
+            {
+                //This must be done after view is reloaded (image locked)
+                deleted.DeleteThumbnail();
+            }
         }
 
         private void importControl1_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
