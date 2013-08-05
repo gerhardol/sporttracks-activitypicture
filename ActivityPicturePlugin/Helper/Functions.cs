@@ -167,9 +167,19 @@ namespace ActivityPicturePlugin.Helper
                 settings.Indent = true;
                 settings.IndentChars = ( "    " );
 
-                string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
-                string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+                string strLongDate = "";
+                CultureInfo specificCulture = Functions.NeutralToSpecificCulture( CultureInfo.CurrentUICulture.Name );
+                if ( specificCulture != null )
+                    strLongDate = act.StartTime.ToLocalTime().ToString( specificCulture.DateTimeFormat.LongDatePattern, specificCulture );
+                else
+                    strLongDate = act.StartTime.ToLocalTime().ToLongDateString();
+
+                string KMZname = strLongDate + " "
                             + Resources.Resources.ImportControl_in + " " + act.Location;
+
+                //string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+                //string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+                            //+ Resources.Resources.ImportControl_in + " " + act.Location;
                 //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
                 //+ Resources.Resources.ImportControl_in + " " + act.Location;
                 string KMZstyle = "Photo";
@@ -417,7 +427,7 @@ namespace ActivityPicturePlugin.Helper
                 string docFile = SavePath;
                 if ( kmzFile.Extension == ".kmz" ) docFile = kmzFile.Directory.ToString() + "\\doc.kml";
 
-                string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+                //string sysFormat = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
 
                 //start writing xml file
                 XmlWriterSettings settings = new XmlWriterSettings();
@@ -469,8 +479,19 @@ namespace ActivityPicturePlugin.Helper
                         //Activity contains images
                         //string KMZname = act.StartTime.ToLocalTime().ToString( "dd. MMMM,yyyy" ) + " "
                         //+ Resources.Resources.ImportControl_in + " " + act.Location;
-                        string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+
+                        string strLongDate = "";
+                        CultureInfo specificCulture = Functions.NeutralToSpecificCulture( CultureInfo.CurrentUICulture.Name );
+                        if ( specificCulture != null )
+                            strLongDate = act.StartTime.ToLocalTime().ToString( specificCulture.DateTimeFormat.LongDatePattern, specificCulture );
+                        else
+                            strLongDate = act.StartTime.ToLocalTime().ToLongDateString();
+
+                        string KMZname = strLongDate + " "
                                     + Resources.Resources.ImportControl_in + " " + act.Location;
+
+                        //string KMZname = act.StartTime.ToLocalTime().ToString( sysFormat ) + " "
+                                    //+ Resources.Resources.ImportControl_in + " " + act.Location;
 
                         String picDir = kmzFile.Directory.ToString() + "\\" + act.ReferenceId;
                         if ( kmzFile.Extension == ".kmz" )
@@ -824,7 +845,10 @@ namespace ActivityPicturePlugin.Helper
             bool ret = true;
             try
             {
-                System.Diagnostics.Process.Start( sFile );
+                if ( new FileInfo( sFile ).Exists )
+                    System.Diagnostics.Process.Start( sFile );
+                else
+                    ret = false;
             }
             catch (Exception ex)
             {

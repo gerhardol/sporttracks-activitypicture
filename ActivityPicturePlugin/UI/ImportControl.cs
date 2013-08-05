@@ -143,6 +143,8 @@ namespace ActivityPicturePlugin.UI
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
                 this.toolStripMenuOpenFolder.Text = Resources.Resources.OpenContainingFolder_Text;
+
+                if ( m_standardpathalreadyshown ) LoadActivityNodes( true );
             }
         }
 
@@ -227,17 +229,20 @@ namespace ActivityPicturePlugin.UI
         #region private methods
 
         #region TreeViewImages
-        public void LoadActivityNodes()
+        public void LoadActivityNodes( bool bReload = false )
         {
             m_files.Clear();
 
+            m_standardpathalreadyshown &= !bReload;
             if ( !m_standardpathalreadyshown )
             {
                 FillTreeViewImages();
             }
             if ( !m_standardpathalreadyshown | this.m_showallactivities == false )
             {
+                SetTreeActivitiesEvents( false );
                 FillTreeViewActivities();
+                SetTreeActivitiesEvents( true );
                 FindImagesInActivities();
 
                 m_standardpathalreadyshown = true;
@@ -261,6 +266,17 @@ namespace ActivityPicturePlugin.UI
                 //this.treeViewImages.AfterSelect -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterSelect);
                 //this.treeViewImages.EnabledChanged -= new System.EventHandler(this.treeViewImages_EnabledChanged);
                 //this.treeViewImages.MouseClick -= new System.Windows.Forms.MouseEventHandler(this.treeViewImages_MouseClick);
+            }
+        }
+        private void SetTreeActivitiesEvents( bool t )
+        {
+            if ( t )
+            {
+                this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.treeViewActivities_AfterSelect );
+            }
+            else
+            {
+                this.treeViewActivities.AfterSelect -= new System.Windows.Forms.TreeViewEventHandler( this.treeViewActivities_AfterSelect );
             }
         }
 
@@ -345,14 +361,16 @@ namespace ActivityPicturePlugin.UI
         {
             ImageList lvImgL = null;
             ImageList lvImgS = null;
+            ListViewItemSorter lvSorter = (ListViewItemSorter)this.listViewDrive.ListViewItemSorter;
+
             try
             {
                 m_files.Clear();
                 try
                 {
-                    m_files.InsertRange(0, driveDir.GetFiles());
+                    m_files.InsertRange( 0, driveDir.GetFiles() );
                 }
-                catch (UnauthorizedAccessException)
+                catch ( UnauthorizedAccessException )
                 {
                     return;
                 }
@@ -380,7 +398,6 @@ namespace ActivityPicturePlugin.UI
                 }
                 listViewDrive.LargeImageList = lvImgL;
 
-
                 lvImgS = new ImageList();
                 lvImgS.ImageSize = new Size( 50, 50 );
                 lvImgS.ColorDepth = ColorDepth.Depth32Bit;
@@ -397,17 +414,58 @@ namespace ActivityPicturePlugin.UI
                 //Either speed up adding to listview or show progressbar
                 using ( Image bmp = (Bitmap)( Resources.Resources.image ).Clone() )
                 {
+                    System.Collections.ArrayList lvItems=new System.Collections.ArrayList();
+
+                    // Create a list of ListItems
                     for ( int j = 0; j < m_files.Count; j++ ) //add images plus exif data
+                    {
+                        ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
+                        lvItems.Add( NewListViewImagesItem( m_files[j], dt, m_files[j].FullName ) );			//read images and add thumbnails
+                    }
+
+                    // Sort the list if a ListViewItemSorter has been set
+                    if ( lvSorter != null )
+                    {
+                        ListViewItemSorter lviSorter = new ListViewItemSorter();
+                        lviSorter.ColumnIndex = lvSorter.ColumnIndex;
+                        lviSorter.ColumnType = lvSorter.ColumnType;
+                        lviSorter.SortDirection = lvSorter.SortDirection;
+
+                        this.listViewDrive.ListViewItemSorter = null;
+                        lvItems.Sort( lviSorter );
+                    }
+
+                    // Bulk add the listview items to the listViewDrive
+                    listViewDrive.Items.AddRange( (ListViewItem[])lvItems.ToArray( typeof( ListViewItem ) ) );
+
+                    // Add the images
+                    for ( int j = 0; j < listViewDrive.Items.Count; j++ )
                     {
                         if ( progressBar2.Maximum != m_files.Count ) progressBar2.Maximum = m_files.Count;
                         progressBar2.Value = j;
-                        ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
+
+                        FileInfo fi = new FileInfo( listViewDrive.Items[j].ImageKey );
+                        ImageData.DataTypes dt = Functions.GetMediaType( fi.Extension );
                         lvImgL.Images.Add( Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp ) );
                         lvImgS.Images.Add( Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp ) );
-                        AddImageToListView( lvImgL, lvImgS, dt,j, m_files[j].FullName );	//read images and add thumbnails
-                        AddFileToListView( m_files[j], dt, m_files[j].FullName );			//read images and add thumbnails
+
+                        AddImageToListView( lvImgL, lvImgS, dt, j, listViewDrive.Items[j].ImageKey );	//read images and add thumbnails
                         lblProgress.Text = String.Format( Resources.Resources.FoundImagesInFolder_Text, j + 1 );
+
+                        Application.DoEvents();
                     }
+
+                    // The last image for the last listitem doesn't always get drawn so
+                    // we're invalidating the region of the last listitem.
+                    // The reason is probably because we're creating the imagelist after
+                    // adding the listitems to the control.  I think I prefer this 
+                    // behaviour, though.
+                    int nIndex = listViewDrive.Items.Count;
+                    if ( nIndex > 0 )
+                        listViewDrive.Invalidate( listViewDrive.Items[nIndex - 1].Bounds );
+
+                    this.listViewDrive.ListViewItemSorter = (System.Collections.IComparer)lvSorter;
+                    Application.DoEvents();
                 }
             }
             catch ( Exception ex )
@@ -426,6 +484,10 @@ namespace ActivityPicturePlugin.UI
                 // disposing BOTH of the above imagelists.
                 listViewDrive.SmallImageList = null;
                 listViewDrive.LargeImageList = null;
+            }
+            finally
+            {
+                listViewDrive.ListViewItemSorter = lvSorter;    //Restore the sorter
             }
         }
 
@@ -595,14 +657,21 @@ namespace ActivityPicturePlugin.UI
                         string day = localTime.ToString("dd");
 
                         string strLongDate = "";
+                        string strShortTime = "";
                         CultureInfo specificCulture = Functions.NeutralToSpecificCulture( CultureInfo.CurrentUICulture.Name );
                         if ( specificCulture != null )
+                        {
                             strLongDate = localTime.ToString( specificCulture.DateTimeFormat.LongDatePattern, specificCulture );
+                            strShortTime = localTime.ToString( specificCulture.DateTimeFormat.ShortTimePattern, specificCulture );
+                        }
                         else
-                            strLongDate=localTime.ToLongDateString();
+                        {
+                            strLongDate = localTime.ToLongDateString();
+                            strShortTime = localTime.ToShortTimeString();
+                        }
 
                         dayNode = new TreeNode( strLongDate + " " +
-                            localTime.ToShortTimeString() + " "
+                            strShortTime + " "
                             + Resources.Resources.ImportControl_in + " " + act.Location );
 
                         /*dayNode = new TreeNode( localTime.ToLongDateString() + " " +
@@ -884,7 +953,8 @@ namespace ActivityPicturePlugin.UI
                     //Image img = Image.FromStream(stream);
                     //if (img != null) lvImg.Images.Add(img);
 
-                    Image img = Image.FromFile( m_files[ixImage].FullName );
+                    //Image img = Image.FromFile( m_files[ixImage].FullName );
+                    Image img = Image.FromFile( strKey );
                     lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, img );
                     lvImgL.Images.SetKeyName( ixImage, strKey );
                     lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, img );
@@ -900,7 +970,6 @@ namespace ActivityPicturePlugin.UI
                     lvImgS.Images.SetKeyName( ixImage, strKey );
                     bmp.Dispose();
                 }
-                Application.DoEvents();
             }
             catch ( Exception ex )
             {
@@ -909,7 +978,7 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void AddFileToListView( FileInfo file, ImageData.DataTypes dt, string strImgKey )
+        private ListViewItem NewListViewImagesItem( FileInfo file, ImageData.DataTypes dt, string strImgKey )
         {
             ListViewItem lvi = new ListViewItem();
             lvi.Text = file.Name;
@@ -939,7 +1008,16 @@ namespace ActivityPicturePlugin.UI
                             DateTime dtTmp = new DateTime();
                             // If we're hardcoding the format, we need to use an appropriate culture
                             if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                            {
+                                string strDateTime = "";
+                                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                                if ( specificCulture != null )
+                                    strDateTime = dtTmp.ToString( specificCulture );
+                                else
+                                    strDateTime = dtTmp.ToString();
+                                lvi.SubItems.Add( strDateTime );
+                                //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                            }
                         }
                     }
                     // The first item is considered a SubItem.  We want to check to
@@ -951,7 +1029,17 @@ namespace ActivityPicturePlugin.UI
                         {
                             DateTime dtTmp = new DateTime();
                             if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                                lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                            {
+                                string strDateTime = "";
+                                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                                if ( specificCulture != null )
+                                    strDateTime = dtTmp.ToString( specificCulture );
+                                else
+                                    strDateTime = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
+
+                                lvi.SubItems.Add( strDateTime );
+                                //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                            }
                         }
                     }
 
@@ -1005,7 +1093,8 @@ namespace ActivityPicturePlugin.UI
                 }
             }
 
-            this.listViewDrive.Items.Add( lvi );
+            //this.listViewDrive.Items.Add( lvi );
+            return lvi;
         }
 
 
@@ -1016,11 +1105,185 @@ namespace ActivityPicturePlugin.UI
         {
             ImageList lil = null;
             ImageList lis = null;
+            ListViewItemSorter lvSorter = (ListViewItemSorter)this.listViewAct.ListViewItemSorter;
 
             try
             {
                 this.listViewAct.Items.Clear();
-                if (tn == null)
+                if ( tn == null )
+                {
+                    //No selection, nothing to do
+                    return;
+                }
+                IActivity act = (IActivity)( tn.Tag );
+                PluginData data = Helper.Functions.ReadExtensionData( act );
+
+                if ( data.Images.Count > 0 )
+                {
+                    //change color
+                    if ( tn.BackColor != Color.Yellow )
+                    {
+                        tn.BackColor = Color.LightBlue;
+                        if ( tn.Parent != null )
+                        {
+                            if ( tn.Parent.BackColor != Color.Yellow ) tn.Parent.BackColor = Color.LightBlue;
+                            if ( tn.Parent.Parent != null & tn.Parent.Parent.BackColor != Color.Yellow ) tn.Parent.Parent.BackColor = Color.LightBlue;
+                        }
+                    }
+
+                    //Load imagedata
+                    if ( AddThumbs )
+                    {
+                        lil = new ImageList();
+                        lis = new ImageList();
+                        lil.ImageSize = new Size( 100, 100 );
+                        lis.ImageSize = new Size( 50, 50 );
+                        lil.ColorDepth = ColorDepth.Depth32Bit;
+                        lis.ColorDepth = ColorDepth.Depth32Bit;
+                        int j = 0;
+
+                        // Dispose of the old imagelists if they exist
+                        if ( this.listViewAct.LargeImageList != null )
+                            this.listViewAct.LargeImageList.Dispose();
+                        this.listViewAct.LargeImageList = null;
+
+                        if ( this.listViewAct.SmallImageList != null )
+                            this.listViewAct.SmallImageList.Dispose();
+                        this.listViewAct.SmallImageList = null;
+
+                        // assign the new imagelists
+                        this.listViewAct.LargeImageList = lil;
+                        this.listViewAct.SmallImageList = lis; System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
+
+                        List<ImageData> il = data.LoadImageData( data.Images );
+
+                        progressBar2.Style = ProgressBarStyle.Continuous;
+                        progressBar2.Maximum = il.Count;
+                        foreach ( ImageData id in il )
+                        {
+                            // Create a list of ListItems
+                            //List view items
+                            ListViewItem lvi = new ListViewItem();
+                            lvi.Text = id.PhotoSourceFileName;
+                            lvi.Tag = id.ReferenceID;
+                            lvi.Name = id.ThumbnailPath;
+                            lvi.ImageKey = id.PhotoSource;
+                            lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
+                            lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
+                            lvi.SubItems.Add( id.Title );
+                            lvi.SubItems.Add( id.Comments );
+                            lvItems.Add( lvi );
+                        }
+
+                        if ( lvSorter != null )
+                        {
+                            ListViewItemSorter lviSorter = new ListViewItemSorter();
+                            lviSorter.ColumnIndex = lvSorter.ColumnIndex;
+                            lviSorter.ColumnType = lvSorter.ColumnType;
+                            lviSorter.SortDirection = lvSorter.SortDirection;
+
+                            this.listViewAct.ListViewItemSorter = null;
+                            lvItems.Sort( lviSorter );
+                        }
+
+                        // Bulk add the listview items to the listViewDrive
+                        listViewAct.Items.AddRange( (ListViewItem[])lvItems.ToArray( typeof( ListViewItem ) ) );
+                        Application.DoEvents();
+
+                        // Add the images
+                        for ( int i = 0; i < listViewAct.Items.Count; i++ )
+                        {
+                            try
+                            {
+                                //images (large and small icons)
+                                Image img = null;
+                                try
+                                {
+                                    if ( new FileInfo( listViewAct.Items[i].Name ).Exists )
+                                        img = Image.FromFile( listViewAct.Items[i].Name );
+                                    else
+                                        img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
+                                }
+                                catch ( Exception ex )
+                                {
+                                    System.Diagnostics.Debug.Assert( false, ex.Message );
+
+                                    //Something was wrong with the thumbnail.
+                                    //Add a 'delete' thumbnail as a placeholder so the item can
+                                    //officially be deleted by the user.
+                                    System.Diagnostics.Debug.Print( ex.Message );
+                                    img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
+                                }
+                                lil.Images.Add( listViewAct.Items[i].ImageKey, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
+                                lis.Images.Add( listViewAct.Items[i].ImageKey, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
+
+                                Application.DoEvents();
+                                img.Dispose();
+                                img = null;
+                            }
+                            catch ( Exception ex )
+                            {
+                                System.Diagnostics.Debug.Assert( false, ex.Message );
+                                System.Diagnostics.Debug.Print( ex.Message );
+                                //throw;
+                            }
+                            j++;
+                            progressBar2.Value = j;
+                            lblProgress.Text = String.Format( Resources.Resources.FoundImagesInActivity_Text, j );
+
+                        }
+
+                        // The last image for the last listitem doesn't always get drawn so
+                        // we're invalidating the region of the last listitem.
+                        // The reason is probably because we're creating the imagelist after
+                        // adding the listitems to the control.  I think I prefer this 
+                        // behaviour, though.
+                        int nIndex = listViewAct.Items.Count;
+                        if ( nIndex > 0 )
+                            listViewAct.Invalidate( listViewAct.Items[nIndex - 1].Bounds );
+
+                    }
+                    else
+                    {
+                        this.listViewAct.Items.Clear();
+                    }
+                }
+                else
+                {
+                    this.listViewAct.Items.Clear();
+                }
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+
+                if ( lil != null )
+                    lil.Dispose();
+                lil = null;
+
+                if ( lis != null )
+                    lis.Dispose();
+                lis = null;
+
+                listViewAct.LargeImageList = null;
+                listViewAct.SmallImageList = null;
+                //throw;
+            }
+            finally
+            {
+                listViewAct.ListViewItemSorter = lvSorter;    //Restore the sorter
+            }
+        }
+
+        /*private void AddImagesToListViewAct( TreeNode tn, bool AddThumbs )
+        {
+            ImageList lil = null;
+            ImageList lis = null;
+
+            try
+            {
+                this.listViewAct.Items.Clear();
+                if ( tn == null )
                 {
                     //No selection, nothing to do
                     return;
@@ -1094,7 +1357,7 @@ namespace ActivityPicturePlugin.UI
                                 }
                                 lil.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
                                 lis.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
-                                
+
                                 //List view items
                                 ListViewItem lvi = new ListViewItem();
                                 lvi.Text = id.PhotoSourceFileName;
@@ -1148,7 +1411,7 @@ namespace ActivityPicturePlugin.UI
                 listViewAct.SmallImageList = null;
                 //throw;
             }
-        }
+        }*/
 
         private static bool ImageAlreadyExistsInActivity( string fileName, PluginData dataRef )
         {
@@ -1501,6 +1764,7 @@ namespace ActivityPicturePlugin.UI
 
         private ListViewItemSorter GetListViewSorter( int columnIndex, ListView lv )
         {
+            //ListViewItemSorter sorter = (ListViewItemSorter)lv.ListViewItemSorter;
             ListViewItemSorter sorter = (ListViewItemSorter)lv.ListViewItemSorter;
             if ( sorter == null )
                 sorter = new ListViewItemSorter();
@@ -2376,7 +2640,7 @@ namespace ActivityPicturePlugin.UI
         {
             ListViewItemSorter sorter = GetListViewSorter( e.Column, listViewAct );
 
-            listViewAct.ListViewItemSorter = sorter;
+            listViewAct.ListViewItemSorter = (System.Collections.IComparer)sorter;
             listViewAct.Sort();
         }
 
@@ -2658,13 +2922,7 @@ namespace ActivityPicturePlugin.UI
             {
                 p.SuspendLayout();
 
-                //System.Windows.Forms.Form p = new System.Windows.Forms.Form();;
                 p.Size = new System.Drawing.Size( 370, 180 );
-                //ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
-                //ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-                //ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-                //System.Windows.Forms.Button b = new System.Windows.Forms.Button();
-                //System.Windows.Forms.Button c = new System.Windows.Forms.Button();
                 p.Text = Resources.Resources.MigrateSourcePath_Text;
                 p.Controls.Add( pa );
 
@@ -2821,7 +3079,6 @@ namespace ActivityPicturePlugin.UI
     }
 
     #region IComparer Implementations
-
     public class ListViewItemSorter : System.Collections.IComparer
     {
         public enum ColumnDataType
@@ -2834,7 +3091,7 @@ namespace ActivityPicturePlugin.UI
         private int columnIndex = 0;
         public int ColumnIndex
         {
-            get { return ColumnIndex; }
+            get { return columnIndex; }
             set { columnIndex = value; }
         }
         private ColumnDataType columnType;
@@ -2866,18 +3123,20 @@ namespace ActivityPicturePlugin.UI
 
             try
             {
+                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+
                 switch ( columnType )
                 {
                     case ColumnDataType.DateTime:
                         DateTime datex = DateTime.MinValue;
                         DateTime datey = DateTime.MinValue;
-                        if ( strx != "" ) datex = DateTime.Parse( strx );
-                        if ( stry != "" ) datey = DateTime.Parse( stry );
+                        if ( strx != "" ) datex = DateTime.Parse( strx, specificCulture );
+                        if ( stry != "" ) datey = DateTime.Parse( stry, specificCulture );
                         iResult = DateTime.Compare( datex, datey );
                         break;
                     case ColumnDataType.Decimal:
-                        if ( strx != "" ) dblx = Double.Parse( strx );
-                        if ( stry != "" ) dbly = Double.Parse( stry );
+                        if ( strx != "" ) dblx = Double.Parse( strx, specificCulture );
+                        if ( stry != "" ) dbly = Double.Parse( stry, specificCulture );
                         if ( dblx < dbly ) iResult = -1;
                         else if ( dblx > dbly ) iResult = 1;
                         else iResult = 0;
