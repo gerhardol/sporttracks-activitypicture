@@ -1803,6 +1803,21 @@ namespace ActivityPicturePlugin.UI.Activities
             /*importControl1.Height = panelViews.Height - ( importControl1.Top + 6 );
             importControl1.Width = panelViews.Width - ( importControl1.Left * 2 );*/
         }
+
+        private void dataGridViewImages_KeyDown( object sender, KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.Delete:
+                    if ( MessageBox.Show( Resources.Resources.ConfirmDeleteLong_Text, Resources.Resources.ConfirmDeleteShort_Text,
+                         MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation ) == DialogResult.Yes )
+                    {
+                        foreach ( DataGridViewRow row in dataGridViewImages.SelectedRows )
+                            dataGridViewImages.Rows.Remove( row );
+                    }
+                    break;
+            }
+        }
         #endregion
 
     }

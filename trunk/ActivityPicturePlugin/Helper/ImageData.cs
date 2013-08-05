@@ -198,10 +198,31 @@ namespace ActivityPicturePlugin.Helper
             get
             {
                 DateTime dt = new DateTime( 1950, 1, 1 );
-                if ( dt < EW.DateTimeOriginal ) return (
+                /*if ( dt < EW.DateTimeOriginal ) return (
                       EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern )
                       + Environment.NewLine
-                      + EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) );
+                      + EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) );*/
+                if ( dt < EW.DateTimeOriginal )
+                {
+                    string strShortDate = "";
+                    string strShortTime = "";
+                    System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                    if ( specificCulture != null )
+                    {
+                        strShortDate = ew.DateTimeOriginal.ToString( specificCulture.DateTimeFormat.ShortDatePattern, specificCulture );
+                        strShortTime = ew.DateTimeOriginal.ToString( specificCulture.DateTimeFormat.ShortTimePattern, specificCulture );
+                    }
+                    else
+                    {
+                        strShortDate = EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern );
+                        strShortTime = EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern );
+                    }
+                    return (
+                        strShortDate
+                        + Environment.NewLine
+                        + strShortTime );
+
+                }
                 else return "";
             }
         }

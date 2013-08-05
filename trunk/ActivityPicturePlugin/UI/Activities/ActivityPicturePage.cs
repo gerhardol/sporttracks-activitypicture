@@ -111,9 +111,7 @@ namespace ActivityPicturePlugin.UI.Activities
 #else
                 control = new ActivityPicturePageControl();
 #endif
-#if ST_2_1
                 control.Activities = this.m_activities;
-#endif
                 control.CleanupThumbnails();
             }
             return control;
