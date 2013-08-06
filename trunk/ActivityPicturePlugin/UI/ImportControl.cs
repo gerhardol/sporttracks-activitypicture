@@ -62,28 +62,6 @@ namespace ActivityPicturePlugin.UI
             this.HideProgressBar();
         }
 
-        // Used for file sorting
-        public class FileInfoEx
-        {
-            public FileInfo fi;
-            public string strDateTime;
-        }
-        public class ActivityImagesChangedEventArgs : EventArgs
-        {
-            public ActivityImagesChangedEventArgs()
-            {
-            }
-            public ActivityImagesChangedEventArgs( ListView.ListViewItemCollection items )
-            {
-                _items = items;
-            }
-
-            private ListView.ListViewItemCollection _items = null;
-            public ListView.ListViewItemCollection Items
-            {
-                get { return _items; }
-            }
-        }
         public void UpdateUICulture( System.Globalization.CultureInfo culture )
         {
             using ( Graphics g = this.CreateGraphics() )
@@ -169,6 +147,78 @@ namespace ActivityPicturePlugin.UI
                 treeViewActivities.BackColor = visualTheme.Control;
                 listViewDrive.BackColor = visualTheme.Control;
                 listViewAct.BackColor = visualTheme.Control;
+            }
+        }
+        #endregion
+
+        #region Helper Classes
+        // Used for file sorting
+        public class FileInfoEx
+        {
+            public FileInfo fi;
+            public string strDateTime;
+        }
+        public class ActivityImagesChangedEventArgs : EventArgs
+        {
+            public ActivityImagesChangedEventArgs()
+            {
+            }
+            public ActivityImagesChangedEventArgs( ListView.ListViewItemCollection items )
+            {
+                _items = items;
+            }
+
+            private ListView.ListViewItemCollection _items = null;
+            public ListView.ListViewItemCollection Items
+            {
+                get { return _items; }
+            }
+        }
+        private class ImportControlState : IEquatable<ImportControlState>
+        {
+            private IList<IActivity> _activities = null;
+            public IList<IActivity> Activities
+            {
+                get { return _activities; }
+                set { _activities = value; }
+            }
+            private bool _visible = false;
+            public bool Visible
+            {
+                get { return _visible; }
+                set { _visible = value; }
+            }
+
+            public ImportControlState( IList<IActivity> activities, bool bVisible )
+            {
+                Activities = activities;
+                Visible = bVisible;
+            }
+
+            public bool Equals( ImportControlState obj )
+            {
+                if ( ( this._activities == null ) || ( obj._activities == null ) ) return false;
+                if ( this._activities.Count != obj._activities.Count ) return false;
+                for ( int i = 0; i < this._activities.Count; i++ )
+                {
+                    if ( this._activities[i].ToString() != obj._activities[i].ToString() ) return false;
+                }
+                if ( this.Visible != obj.Visible ) return false;
+                return true;
+            }
+        }
+        public class ImportControlException : Exception
+        {
+            public static readonly string Error_ActivityChanged = "Activity Changed";
+
+            private string _message = "";
+            public override string Message
+            {
+                get { return _message; }
+            }
+            public ImportControlException( string Message )
+            {
+                _message = Message;
             }
         }
         #endregion
@@ -415,7 +465,7 @@ namespace ActivityPicturePlugin.UI
                 //Either speed up adding to listview or show progressbar
                 using ( Image bmp = (Bitmap)( Resources.image ).Clone() )
                 {
-                    System.Collections.ArrayList lvItems=new System.Collections.ArrayList();
+                    System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
 
                     // Create a list of ListItems
                     for ( int j = 0; j < m_files.Count; j++ ) //add images plus exif data
@@ -439,6 +489,7 @@ namespace ActivityPicturePlugin.UI
                     // Bulk add the listview items to the listViewDrive
                     listViewDrive.Items.AddRange( (ListViewItem[])lvItems.ToArray( typeof( ListViewItem ) ) );
 
+                    ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                     // Add the images
                     for ( int j = 0; j < listViewDrive.Items.Count; j++ )
                     {
@@ -454,6 +505,8 @@ namespace ActivityPicturePlugin.UI
                         lblProgress.Text = String.Format( Resources.FoundImagesInFolder_Text, j + 1 );
 
                         Application.DoEvents();
+                        if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
                     }
 
                     // The last image for the last listitem doesn't always get drawn so
@@ -468,6 +521,23 @@ namespace ActivityPicturePlugin.UI
                     this.listViewDrive.ListViewItemSorter = (System.Collections.IComparer)lvSorter;
                     Application.DoEvents();
                 }
+            }
+            catch ( ImportControlException )
+            {
+                if ( lvImgS != null )
+                    lvImgS.Dispose();
+                lvImgS = null;
+
+                if ( lvImgL != null )
+                    lvImgL.Dispose();
+                lvImgL = null;
+
+                // Apparently we need to set these to null after 
+                // disposing BOTH of the above imagelists.
+                listViewDrive.SmallImageList = null;
+                listViewDrive.LargeImageList = null;
+
+                throw;
             }
             catch ( Exception ex )
             {
@@ -787,14 +857,16 @@ namespace ActivityPicturePlugin.UI
                     {
                         this.lblProgress.Text = Resources.ImportControl_scanning + " " + day.Text;
                         this.progressBar2.PerformStep();
+                        ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                         Application.DoEvents();
+                        if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
                         //Show Thumbs if called from activity
                         if ( day.Tag is IActivity ) AddImagesToListViewAct( day, !this.m_showallactivities );
                     }
                 }
             }
         }
-
         private void RemoveSelectedImagesFromActivity( ListViewItem[] lvisel )
         {
             //Delete selected images
@@ -842,6 +914,9 @@ namespace ActivityPicturePlugin.UI
                 int iCount = 0;
                 progressBar2.Style = ProgressBarStyle.Continuous;
                 progressBar2.Maximum = lvisel.Length;
+
+                ImportControlState state = new ImportControlState( m_Activities, this.Visible );
+
                 //Check if Image does already exist in the current activity
                 foreach ( ListViewItem lvi in lvisel )
                 {
@@ -866,16 +941,21 @@ namespace ActivityPicturePlugin.UI
                         }
 
                     }
-
                     Application.DoEvents();
+                    if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                        throw new ImportControlException( ImportControlException.Error_ActivityChanged );
                 }
 
                 //to refresh the ListView
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
             }
-            catch (Exception ex)
+            catch ( ImportControlException )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                throw;
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 throw;
             }
         }
@@ -1187,9 +1267,13 @@ namespace ActivityPicturePlugin.UI
                             lvItems.Sort( lviSorter );
                         }
 
+                        ImportControlState state = new ImportControlState( m_Activities, this.Visible );
+
                         // Bulk add the listview items to the listViewDrive
                         listViewAct.Items.AddRange( (ListViewItem[])lvItems.ToArray( typeof( ListViewItem ) ) );
                         Application.DoEvents();
+                        if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
                         // Add the images
                         for ( int i = 0; i < listViewAct.Items.Count; i++ )
@@ -1219,8 +1303,15 @@ namespace ActivityPicturePlugin.UI
                                 lis.Images.Add( listViewAct.Items[i].ImageKey, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
 
                                 Application.DoEvents();
+                                if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+
                                 img.Dispose();
                                 img = null;
+                            }
+                            catch ( ImportControlException )
+                            {
+                                throw;
                             }
                             catch ( Exception ex )
                             {
@@ -1253,6 +1344,21 @@ namespace ActivityPicturePlugin.UI
                 {
                     this.listViewAct.Items.Clear();
                 }
+            }
+            catch ( ImportControlException )
+            {
+                if ( lil != null )
+                    lil.Dispose();
+                lil = null;
+
+                if ( lis != null )
+                    lis.Dispose();
+                lis = null;
+
+                listViewAct.LargeImageList = null;
+                listViewAct.SmallImageList = null;
+
+                throw;
             }
             catch ( Exception ex )
             {
@@ -1525,9 +1631,12 @@ namespace ActivityPicturePlugin.UI
                 this.ResetProgressBar();
                 int i = 0;
                 DateTime FileTime = new DateTime();
+                ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                 foreach ( FileInfo file in m_files )
                 {
                     Application.DoEvents();
+                    if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                        throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
                     i++;
                     this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
@@ -1541,7 +1650,7 @@ namespace ActivityPicturePlugin.UI
                     if ( ( FileTime > FirstStart ) &
                         ( FileTime < LastEnd ) )
                     {//dateTime in picture is within the range of all activities
-                        
+
                         // LocalTime is best since we're assuming SimpleRun
                         // returns in Local Time.  No way to tell for sure.
                         if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
@@ -1588,6 +1697,10 @@ namespace ActivityPicturePlugin.UI
                         }
                     }
                 }
+            }
+            catch ( ImportControlException )
+            {
+                throw;
             }
             catch ( Exception ex )
             {
@@ -1666,7 +1779,7 @@ namespace ActivityPicturePlugin.UI
                         //Should not get here
                         System.Diagnostics.Debug.Assert( this.progressBar2.Value < this.progressBar2.Maximum );
                     }
-                    
+
                     DirectoryInfo dir = (DirectoryInfo)( node.Tag );
 
                     //Check if directory has been expanded before
@@ -1696,33 +1809,41 @@ namespace ActivityPicturePlugin.UI
                     {
                         dirfiles = dir.GetFiles();
                     }
-                    catch (UnauthorizedAccessException)
+                    catch ( UnauthorizedAccessException )
                     {
                         return;
                     }
+
+                    ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                     foreach ( FileInfo file in dirfiles )
                     {
-                        if (Functions.IsNormalFile(file) &&
-                            Functions.GetMediaType(file.Extension) != ImageData.DataTypes.Nothing &&
-                            (!m_files.Contains(file)) &&
+                        if ( Functions.IsNormalFile( file ) &&
+                            Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing &&
+                            ( !m_files.Contains( file ) ) &&
                             //prune filter: Use file modified date
-                                file.LastWriteTimeUtc > first)
+                                file.LastWriteTimeUtc > first )
                         {
-                            m_files.Add( file ); 
+                            m_files.Add( file );
                             SetLabelText( Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
+                            if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                                throw new ImportControlException( ImportControlException.Error_ActivityChanged );
                         }
                     }
                 }
+            }
+            catch ( ImportControlException )
+            {
+                throw;
             }
             catch ( UnauthorizedAccessException ex )
             {
                 //Nothing to do
                 Console.WriteLine( ex.Message );
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 throw;
             }
         }
@@ -1738,6 +1859,8 @@ namespace ActivityPicturePlugin.UI
             this.progressBar2.Maximum = m_files.Count;
             this.ResetProgressBar();
 
+            ImportControlState state = new ImportControlState( m_Activities, this.Visible );
+
             // Get exif data for all files once and only one (slow operation)
             foreach ( FileInfo fi in m_files )
             {
@@ -1749,6 +1872,8 @@ namespace ActivityPicturePlugin.UI
                 fiexs.Add( fiex );
 
                 Application.DoEvents();
+                if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
             }
 
             this.HideProgressBar();
@@ -2557,7 +2682,10 @@ namespace ActivityPicturePlugin.UI
                 if ( e.Data.GetDataPresent( "System.Windows.Forms.ListViewItem[]", false ) )
                 {
                     ListViewItem[] l = (ListViewItem[])( e.Data.GetData( "System.Windows.Forms.ListViewItem[]" ) );
+                    this.UseWaitCursor = true;
                     AddSelectedImagesToActivity( l );
+                    this.UseWaitCursor = false;
+                    Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
                     this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
                 }
             }
@@ -2597,7 +2725,10 @@ namespace ActivityPicturePlugin.UI
                     {
                         ListViewItem[] lvisel = new ListViewItem[this.listViewDrive.SelectedItems.Count];
                         this.listViewDrive.SelectedItems.CopyTo( lvisel, 0 );
+                        this.UseWaitCursor = true;
                         AddSelectedImagesToActivity( lvisel );
+                        this.UseWaitCursor = false;
+                        Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
                     }
                     break;
             }
@@ -2716,27 +2847,46 @@ namespace ActivityPicturePlugin.UI
 
         private void btnScan_Click( object sender, EventArgs e )
         {
-            this.UseWaitCursor = true;
-
-            EnableControl( false );
-            this.progressBar2.Style = ProgressBarStyle.Marquee;
-            Application.DoEvents();
-            m_files.Clear();
-            ThreadGetImages(); //collects images of all selected paths
-            SortFiles();
-            int numFilesImported = FindAndImportImages();
-
-            AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
-            EnableControl( true );
-
-            this.UseWaitCursor = false;
-
-            if ( numFilesImported > 0 )
+            try
             {
-                this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
-            }
+                ImportControlState state = new ImportControlState( m_Activities, this.Visible );
+                this.UseWaitCursor = true;
 
-            this.lblProgress.Text = String.Format( Resources.ImportControl_scanDone, numFilesImported );
+                EnableControl( false );
+                this.progressBar2.Style = ProgressBarStyle.Marquee;
+                Application.DoEvents();
+                if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
+                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+
+                m_files.Clear();
+                ThreadGetImages(); //collects images of all selected paths
+                SortFiles();
+                int numFilesImported = FindAndImportImages();
+
+                AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
+                EnableControl( true );
+
+                this.UseWaitCursor = false;
+                Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
+
+                if ( numFilesImported > 0 )
+                {
+                    this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
+                }
+
+                this.lblProgress.Text = String.Format( Properties.Resources.ImportControl_scanDone, numFilesImported );
+            }
+            catch ( ImportControlException ex )
+            {
+                HideProgressBar();
+                System.Diagnostics.Debug.Print( ex.Message );
+            }
+            finally
+            {
+                EnableControl( true );
+                this.UseWaitCursor = false;
+                Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
+            }
         }
 
         private void btnChangeFolderView_Click( object sender, EventArgs e )
@@ -2782,8 +2932,11 @@ namespace ActivityPicturePlugin.UI
             ListView.SelectedListViewItemCollection sel = listViewDrive.SelectedItems;
             ListViewItem[] lvis = new ListViewItem[sel.Count];
             sel.CopyTo( (Array)lvis, 0 );
+            this.UseWaitCursor = true;
             AddSelectedImagesToActivity( lvis );
-            lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
+            this.UseWaitCursor = false;
+            Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
+            lblProgress.Text = String.Format( Properties.Resources.FoundImagesInActivity_Text, this.listViewAct.Items.Count );
             this.ActivityImagesChanged( this, new ActivityImagesChangedEventArgs( listViewAct.Items ) );
         }
 

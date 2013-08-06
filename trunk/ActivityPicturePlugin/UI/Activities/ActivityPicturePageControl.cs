@@ -128,7 +128,10 @@ namespace ActivityPicturePlugin.UI.Activities
                     {
                         _Activity = value[0];
                     }
-                    if ( !m_Active ) ResetPage();
+                    if ( !m_Active )
+                    {
+                        ResetPage();
+                    }
                     else
                     {
                         this.pictureAlbumView.ActivityChanging();
@@ -255,6 +258,10 @@ namespace ActivityPicturePlugin.UI.Activities
             this.Visible = true;
             m_Active = true;
 
+            // Page may have been Reset (ResetPage) before it was shown.
+            // Set _Activity again, this time with m_Active = true.
+            if ( _Activity != null ) Activities = new List<IActivity> { _Activity };
+
 #if !ST_2_1
             m_layer.ShowPage("");
 #endif
@@ -333,8 +340,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void UICultureChanged( System.Globalization.CultureInfo culture )
         {
-            //change number formats
-            RefreshPage();
+            //if (m_Active) RefreshPage();
 
             if ( this.Mode == ShowMode.Album )
                 this.actionBannerViews.Text = Resources.pictureAlbumToolStripMenuItem_Text;
@@ -551,15 +557,46 @@ namespace ActivityPicturePlugin.UI.Activities
                     this.groupBoxVideo.Visible = false;
                     this.groupBoxListOptions.Visible = false;
                     this.importControl1.LoadActivityNodes();
+
+                    // LoadActivityNodes() is a long task which calls DoEvents.
+                    // We need to check to see if anything has occurred to
+                    // prevent us from continuing.
+                    if ( this.Mode != ShowMode.Import )
+                        throw new ActivityPicturePageControlException( ActivityPicturePageControlException.Error_ShowModeChanged );
                     this.importControl1.Visible = true;
                 }
 
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
             }
-            catch (Exception ex)
+            catch ( ActivityPicturePageControlException ex )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                // Nothing to do?  Rethrow?
+                System.Diagnostics.Debug.Print( ex.Message );
+            }
+            catch ( ImportControl.ImportControlException ex )
+            {
+                // Nothing to do?  Rethrow?
+                System.Diagnostics.Debug.Print( ex.Message );
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 //throw;
+            }
+        }
+
+        public class ActivityPicturePageControlException : Exception
+        {            
+            public static readonly string Error_ShowModeChanged = "ShowMode Changed";
+
+            private string _message = "";
+            public override string Message
+            {
+                get { return _message; }
+            }
+            public ActivityPicturePageControlException( string Message )
+            {
+                _message = Message;
             }
         }
 
@@ -1393,9 +1430,10 @@ namespace ActivityPicturePlugin.UI.Activities
             List<ImageData> iList = GetSelectedImageData();
             foreach ( ImageData id in iList )
             {
-                if ( id.Type == ImageData.DataTypes.Image )
+                if ( ( id.Type == ImageData.DataTypes.Image ) || ( id.Type == ImageData.DataTypes.Video ) )
                 {
-                    if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, this._Activity );
+                    if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
+                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, this._Activity );
                     if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
                 }
             }
@@ -1404,6 +1442,7 @@ namespace ActivityPicturePlugin.UI.Activities
             UpdateView();
 
             this.UseWaitCursor = false;
+            Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
             dataGridViewImages.Enabled = true;
             btnGeoTag.Enabled = true;
             btnKML.Enabled = true;
