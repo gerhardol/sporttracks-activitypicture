@@ -57,6 +57,32 @@ namespace ActivityPicturePlugin.UI
             ImportControl_Resize( this, new EventArgs() );
             m_viewActivity = ActivityPicturePlugin.Source.Settings.ActivityView; //View of ListviewAct
             m_viewFolder = ActivityPicturePlugin.Source.Settings.FolderView;	 //View of ListviewDrive
+
+            if ( !m_showallactivities )
+            {
+                splitContainer1.SplitterDistance = Source.Settings.ImportSplitter1Offset > splitContainer1.Width ? splitContainer1.Width : Source.Settings.ImportSplitter1Offset;
+                splitContainer2.SplitterDistance = Source.Settings.ImportSplitter2Offset > splitContainer2.Height ? splitContainer2.Height : Source.Settings.ImportSplitter2Offset;
+                splitContainer3.SplitterDistance = Source.Settings.ImportSplitter3Offset > splitContainer3.Height ? splitContainer3.Height : Source.Settings.ImportSplitter3Offset;
+            }
+            else
+            {
+                splitContainer1.SplitterDistance = Source.Settings.SettingsSplitter1Offset > splitContainer1.Width ? splitContainer1.Width : Source.Settings.ImportSplitter1Offset;
+                splitContainer2.SplitterDistance = Source.Settings.SettingsSplitter2Offset > splitContainer2.Height ? splitContainer2.Height : Source.Settings.ImportSplitter2Offset;
+                splitContainer3.SplitterDistance = Source.Settings.SettingsSplitter3Offset > splitContainer3.Height ? splitContainer3.Height : Source.Settings.ImportSplitter3Offset;
+            }
+
+            colDImage.Width = Source.Settings.ListDriveColThumbnailWidth;
+            colDDateTime.Width = Source.Settings.ListDriveColDateTimeWidth;
+            colDGPS.Width = Source.Settings.ListDriveColGPSWidth;
+            colDTitle.Width = Source.Settings.ListDriveColTitleWidth;
+            colDDescription.Width = Source.Settings.ListDriveColCommentWidth;
+
+            colImage.Width = Source.Settings.ListActColThumbnailWidth;
+            colDateTime.Width = Source.Settings.ListActColDateTimeWidth;
+            colGPS.Width = Source.Settings.ListActColGPSWidth;
+            colTitle.Width = Source.Settings.ListActColTitleWidth;
+            colDescription.Width = Source.Settings.ListActColCommentWidth;
+
             this.listViewDrive.View = (View)( m_viewFolder );
             this.listViewAct.View = (View)( m_viewActivity );
             this.HideProgressBar();
@@ -212,19 +238,19 @@ namespace ActivityPicturePlugin.UI
                 return true;
             }
         }
+        [Serializable()]
         public class ImportControlException : Exception
         {
-            public static readonly string Error_ActivityChanged = "Activity Changed";
+            public static readonly string Error_ActivityChanged = Properties.Resources.ActivityChanged_Text;
 
-            private string _message = "";
-            public override string Message
-            {
-                get { return _message; }
-            }
-            public ImportControlException( string Message )
-            {
-                _message = Message;
-            }
+            public ImportControlException() : base() { }
+            public ImportControlException( string message ) : base( message ) { }
+            public ImportControlException( string message, Exception inner ) : base( message, inner ) { }
+
+            // A constructor is needed for serialization when an
+            // exception propagates from a remoting server to the client.
+            protected ImportControlException( System.Runtime.Serialization.SerializationInfo info,
+                System.Runtime.Serialization.StreamingContext context ) { }
         }
         #endregion
 
@@ -308,7 +334,11 @@ namespace ActivityPicturePlugin.UI
             }
             catch ( ImportControlException ex)
             {
-                System.Diagnostics.Debug.Print( ex.Message );
+                MessageBox.Show( ex.Message, 
+                    Properties.Resources.OperationAborted_Text, 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Exclamation );
+                //System.Diagnostics.Debug.Print( ex.Message );
             }
         }
 
@@ -2899,7 +2929,12 @@ namespace ActivityPicturePlugin.UI
             catch ( ImportControlException ex )
             {
                 HideProgressBar();
-                System.Diagnostics.Debug.Print( ex.Message );
+                MessageBox.Show( ex.Message,
+                    Properties.Resources.OperationAborted_Text, 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Exclamation );
+
+                //System.Diagnostics.Debug.Print( ex.Message );
             }
             finally
             {
@@ -3242,6 +3277,28 @@ namespace ActivityPicturePlugin.UI
         {
             splitContainer3.Width = splitContainer1.Panel1.Width - splitContainer3.Left;
             splitContainer2.Width = splitContainer1.Panel2.Width;
+
+            if ( !m_showallactivities )
+                Source.Settings.ImportSplitter1Offset = splitContainer1.SplitterDistance;
+            else
+                Source.Settings.SettingsSplitter1Offset = splitContainer1.SplitterDistance;
+
+        }
+
+        private void splitContainer2_SplitterMoved( object sender, SplitterEventArgs e )
+        {
+            if ( !m_showallactivities )
+                Source.Settings.ImportSplitter2Offset = splitContainer2.SplitterDistance;
+            else
+                Source.Settings.SettingsSplitter2Offset = splitContainer2.SplitterDistance;
+        }
+
+        private void splitContainer3_SplitterMoved( object sender, SplitterEventArgs e )
+        {
+            if ( !m_showallactivities )
+                Source.Settings.ImportSplitter3Offset = splitContainer3.SplitterDistance;
+            else
+                Source.Settings.SettingsSplitter3Offset = splitContainer3.SplitterDistance;
         }
 
         private void ImportControl_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )
@@ -3249,7 +3306,54 @@ namespace ActivityPicturePlugin.UI
             // Noop
         }
 
+        private void listViewDrive_ColumnWidthChanged( object sender, ColumnWidthChangedEventArgs e )
+        {
+            int nWidth = listViewDrive.Columns[e.ColumnIndex].Width;
+            switch ( e.ColumnIndex )
+            {
+                case 0: //colDImage
+                    Source.Settings.ListDriveColThumbnailWidth = nWidth;
+                    break;
+                case 1: //colDDateTime
+                    Source.Settings.ListDriveColDateTimeWidth = nWidth;
+                    break;
+                case 2: //colDGPS
+                    Source.Settings.ListDriveColGPSWidth = nWidth;
+                    break;
+                case 3: //colDTitle
+                    Source.Settings.ListDriveColTitleWidth = nWidth;
+                    break;
+                case 4: //colDDescription
+                    Source.Settings.ListDriveColCommentWidth = nWidth;
+                    break;
+            }
+        }
+
+        private void listViewAct_ColumnWidthChanged( object sender, ColumnWidthChangedEventArgs e )
+        {
+            int nWidth = listViewAct.Columns[e.ColumnIndex].Width;
+            switch ( e.ColumnIndex )
+            {
+                case 0: //colDImage
+                    Source.Settings.ListActColThumbnailWidth = nWidth;
+                    break;
+                case 1: //colDDateTime
+                    Source.Settings.ListActColDateTimeWidth = nWidth;
+                    break;
+                case 2: //colDGPS
+                    Source.Settings.ListActColGPSWidth = nWidth;
+                    break;
+                case 3: //colDTitle
+                    Source.Settings.ListActColTitleWidth = nWidth;
+                    break;
+                case 4: //colDDescription
+                    Source.Settings.ListActColCommentWidth = nWidth;
+                    break;
+            }
+        }
+
         #endregion
+
     }
 
     #region IComparer Implementations

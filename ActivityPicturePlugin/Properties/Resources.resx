@@ -382,4 +382,16 @@
     <value>Migrate Paths...</value>
     <comment>added Aug4</comment>
   </data>
+  <data name="ActivityChanged_Text" xml:space="preserve">
+    <value>Activity changed</value>
+    <comment>added Aug5</comment>
+  </data>
+  <data name="OperationAborted_Text" xml:space="preserve">
+    <value>Operation Aborted</value>
+    <comment>added Aug5</comment>
+  </data>
+  <data name="ViewChanged_Text" xml:space="preserve">
+    <value>View changed</value>
+    <comment>added Aug5</comment>
+  </data>
 </root>
