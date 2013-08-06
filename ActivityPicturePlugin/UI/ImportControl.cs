@@ -197,11 +197,16 @@ namespace ActivityPicturePlugin.UI
 
             public bool Equals( ImportControlState obj )
             {
-                if ( ( this._activities == null ) || ( obj._activities == null ) ) return false;
-                if ( this._activities.Count != obj._activities.Count ) return false;
-                for ( int i = 0; i < this._activities.Count; i++ )
+                // If both are null we might be in Settings.  Not an error condition.
+                // If one is null and the other is not, though, that is an error condition.
+                if ( ( this._activities == null ) ^ ( obj._activities == null ) ) return false;
+                if ( this._activities != null )
                 {
-                    if ( this._activities[i].ToString() != obj._activities[i].ToString() ) return false;
+                    if ( this._activities.Count != obj._activities.Count ) return false;
+                    for ( int i = 0; i < this._activities.Count; i++ )
+                    {
+                        if ( this._activities[i].ToString() != obj._activities[i].ToString() ) return false;
+                    }
                 }
                 if ( this.Visible != obj.Visible ) return false;
                 return true;
@@ -282,21 +287,28 @@ namespace ActivityPicturePlugin.UI
         #region TreeViewImages
         public void LoadActivityNodes( bool bReload = false )
         {
-            m_files.Clear();
-
-            m_standardpathalreadyshown &= !bReload;
-            if ( !m_standardpathalreadyshown )
+            try
             {
-                FillTreeViewImages();
+                m_files.Clear();
+
+                m_standardpathalreadyshown &= !bReload;
+                if ( !m_standardpathalreadyshown )
+                {
+                    FillTreeViewImages();
+                }
+                if ( !m_standardpathalreadyshown | this.m_showallactivities == false )
+                {
+                    SetTreeActivitiesEvents( false );
+                    FillTreeViewActivities();
+                    SetTreeActivitiesEvents( true );
+                    FindImagesInActivities();
+
+                    m_standardpathalreadyshown = true;
+                }
             }
-            if ( !m_standardpathalreadyshown | this.m_showallactivities == false )
+            catch ( ImportControlException ex)
             {
-                SetTreeActivitiesEvents( false );
-                FillTreeViewActivities();
-                SetTreeActivitiesEvents( true );
-                FindImagesInActivities();
-
-                m_standardpathalreadyshown = true;
+                System.Diagnostics.Debug.Print( ex.Message );
             }
         }
 
@@ -594,6 +606,10 @@ namespace ActivityPicturePlugin.UI
                     //TODO: Expand standardpath?
                 }
             }
+            catch ( ImportControlException )
+            {
+                throw;
+            }
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
@@ -632,7 +648,7 @@ namespace ActivityPicturePlugin.UI
                     DirectoryInfo[] dirSubs = dir.GetDirectories();
                     foreach ( DirectoryInfo dirsub in dirSubs )
                     {
-                        if (!Functions.IsNormalFile(dirsub))
+                        if ( !Functions.IsNormalFile( dirsub ) )
                         {
                             continue;	// Do not display hidden or system folders
                         }
@@ -646,7 +662,7 @@ namespace ActivityPicturePlugin.UI
                             {
                                 i = dirsub.GetDirectories().Length;
                             }
-                            catch (UnauthorizedAccessException)
+                            catch ( UnauthorizedAccessException )
                             {
                                 //Nothing to do
                                 // Folder is inaccessible for whatever reason
@@ -668,13 +684,17 @@ namespace ActivityPicturePlugin.UI
                 }
 
                 DirectoryInfo driveDir = new DirectoryInfo( parentNode.FullPath );
-                ShowFolderPics(driveDir);
+                ShowFolderPics( driveDir );
 
                 if ( driveDir.GetDirectories().Length != 0 ) parentNode.Nodes.Add( gDummyFolder );
-                this.SetTreeEvents(false);
+                this.SetTreeEvents( false );
                 parentNode.EnsureVisible();
                 parentNode.TreeView.SelectedNode = parentNode;
-                this.SetTreeEvents(true);
+                this.SetTreeEvents( true );
+            }
+            catch ( ImportControlException )
+            {
+                throw;
             }
             catch ( Exception ex )
             {
