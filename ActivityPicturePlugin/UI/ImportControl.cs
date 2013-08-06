@@ -924,10 +924,10 @@ namespace ActivityPicturePlugin.UI
             PluginData data = Helper.Functions.ReadExtensionData( act );
             listViewAct.SuspendLayout();
 
-            //foreach ( ListViewItem lvi in this.listViewAct.SelectedItems )
             foreach ( ListViewItem lvi in lvisel )
             {
-                string id = (string)( lvi.Tag );
+                ImageData im = (ImageData)(lvi.Tag);
+                string id = im.ReferenceID;
                 foreach ( ImageDataSerializable ids in data.Images )
                 {
                     if ( ids.ReferenceID == id )
@@ -973,11 +973,11 @@ namespace ActivityPicturePlugin.UI
                     lblProgress.Text = String.Format( Resources.CheckingForDuplicates_Text, ++iCount, lvisel.Length );
                     progressBar2.Value = iCount;
 
-                    string s = (string)( lvi.Tag );
-                    FileInfo fi = new FileInfo( s );
+                    string fileName = (string)(lvi.Tag);
+                    FileInfo fi = new FileInfo( fileName );
                     if ( !ImageAlreadyExistsInActivity( fi.Name, dataTmp ) )
                     {
-                        ImageDataSerializable ids = GetImageDataSerializableFromFile( s );
+                        ImageDataSerializable ids = GetImageDataSerializableFromFile( fileName );
                         if ( ids != null ) data.Images.Add( ids );
                         Functions.WriteExtensionData( act, data );
 
@@ -1114,7 +1114,7 @@ namespace ActivityPicturePlugin.UI
             ListViewItem lvi = new ListViewItem();
             lvi.Text = file.Name;
             lvi.ImageKey = strImgKey;
-            lvi.Tag = file.FullName;
+            lvi.Tag = file.FullName; //For listViewDrive
 
             if ( dt == ImageData.DataTypes.Image )
             {
@@ -1224,7 +1224,6 @@ namespace ActivityPicturePlugin.UI
                 }
             }
 
-            //this.listViewDrive.Items.Add( lvi );
             return lvi;
         }
 
@@ -1296,7 +1295,7 @@ namespace ActivityPicturePlugin.UI
                             //List view items
                             ListViewItem lvi = new ListViewItem();
                             lvi.Text = id.PhotoSourceFileName;
-                            lvi.Tag = id.ReferenceID;
+                            lvi.Tag = id; //listViewAct
                             lvi.Name = id.ThumbnailPath;
                             lvi.ImageKey = id.PhotoSource;
                             lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
@@ -2788,7 +2787,8 @@ namespace ActivityPicturePlugin.UI
         {
             try
             {
-                string id = (string)( listViewAct.FocusedItem.Tag );
+                ImageData im = (ImageData)(listViewAct.FocusedItem.Tag);
+                string id = im.ReferenceID;
                 string photosource = "";
                 IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
                 PluginData data = Helper.Functions.ReadExtensionData( act );
@@ -3231,7 +3231,8 @@ namespace ActivityPicturePlugin.UI
                 List<string> sFolders = new List<string>();
                 foreach ( ListViewItem lvi in listViewAct.SelectedItems )
                 {
-                    string id = (string)( lvi.Tag );
+                    ImageData im = (ImageData)(lvi.Tag);
+                    string id = im.ReferenceID;
                     foreach ( ImageDataSerializable ids in data.Images )
                     {
                         if ( ids.ReferenceID == id )
