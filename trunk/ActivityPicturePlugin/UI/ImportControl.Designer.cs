@@ -141,6 +141,7 @@ namespace ActivityPicturePlugin.UI
             // 
             // splitContainer3
             // 
+            this.splitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
             this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer3.Name = "splitContainer3";
@@ -159,6 +160,7 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer3.SplitterDistance = 202;
             this.splitContainer3.SplitterWidth = 2;
             this.splitContainer3.TabIndex = 13;
+            this.splitContainer3.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer3_SplitterMoved);
             this.splitContainer3.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer3_MouseDoubleClick);
             // 
             // btnChangeFolderView
@@ -263,6 +265,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewDrive.TileSize = new System.Drawing.Size(328, 104);
             this.listViewDrive.UseCompatibleStateImageBehavior = false;
             this.listViewDrive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewDrive_ColumnClick);
+            this.listViewDrive.ColumnWidthChanged += new System.Windows.Forms.ColumnWidthChangedEventHandler(this.listViewDrive_ColumnWidthChanged);
             this.listViewDrive.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewDrive_DrawColumnHeader);
             this.listViewDrive.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewDrive_DrawItem);
             this.listViewDrive.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewDrive_ItemDrag);
@@ -316,6 +319,7 @@ namespace ActivityPicturePlugin.UI
             // 
             // splitContainer2
             // 
+            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer2.Name = "splitContainer2";
@@ -335,6 +339,7 @@ namespace ActivityPicturePlugin.UI
             this.splitContainer2.SplitterDistance = 202;
             this.splitContainer2.SplitterWidth = 2;
             this.splitContainer2.TabIndex = 12;
+            this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
             this.splitContainer2.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer2_MouseDoubleClick);
             // 
             // btnChangeActivityView
@@ -423,13 +428,13 @@ namespace ActivityPicturePlugin.UI
             this.treeViewActivities.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.treeViewActivities_DrawNode);
             this.treeViewActivities.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewActivities_AfterSelect);
             this.treeViewActivities.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewActivities_NodeMouseClick);
-            this.treeViewActivities.NodeMouseDoubleClick += treeViewActivities_NodeMouseDoubleClick;
             this.treeViewActivities.EnabledChanged += new System.EventHandler(this.treeViewActivities_EnabledChanged);
             // 
             // contextMenuTreeViewActivities
             // 
             this.contextMenuTreeViewActivities.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuCopyToClipboard, this.toolStripMenuMigratePaths});
+            this.toolStripMenuCopyToClipboard,
+            this.toolStripMenuMigratePaths});
             this.contextMenuTreeViewActivities.Name = "contextMenuTreeViewActivities";
             this.contextMenuTreeViewActivities.Size = new System.Drawing.Size(110, 26);
             // 
@@ -469,6 +474,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.TileSize = new System.Drawing.Size(328, 104);
             this.listViewAct.UseCompatibleStateImageBehavior = false;
             this.listViewAct.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewAct_ColumnClick);
+            this.listViewAct.ColumnWidthChanged += new System.Windows.Forms.ColumnWidthChangedEventHandler(this.listViewAct_ColumnWidthChanged);
             this.listViewAct.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewAct_DrawColumnHeader);
             this.listViewAct.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.listViewAct_DrawItem);
             this.listViewAct.DragDrop += new System.Windows.Forms.DragEventHandler(this.listViewAct_DragDrop);

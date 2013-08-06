@@ -570,7 +570,7 @@ namespace ActivityPicturePlugin.UI.Activities
             }
             catch ( ActivityPicturePageControlException ex )
             {
-                // Nothing to do?  Rethrow?
+                // Alert user?
                 System.Diagnostics.Debug.Print( ex.Message );
             }
             catch ( ImportControl.ImportControlException ex )
@@ -585,19 +585,19 @@ namespace ActivityPicturePlugin.UI.Activities
             }
         }
 
+        [Serializable()]
         public class ActivityPicturePageControlException : Exception
-        {            
-            public static readonly string Error_ShowModeChanged = "ShowMode Changed";
+        {
+            public static readonly string Error_ShowModeChanged = Properties.Resources.ViewChanged_Text;
 
-            private string _message = "";
-            public override string Message
-            {
-                get { return _message; }
-            }
-            public ActivityPicturePageControlException( string Message )
-            {
-                _message = Message;
-            }
+            public ActivityPicturePageControlException() : base() { }
+            public ActivityPicturePageControlException( string message ) : base( message ) { }
+            public ActivityPicturePageControlException( string message, Exception inner ) : base( message, inner ) { }
+
+            // A constructor is needed for serialization when an
+            // exception propagates from a remoting server to the client.
+            protected ActivityPicturePageControlException( System.Runtime.Serialization.SerializationInfo info,
+                System.Runtime.Serialization.StreamingContext context ) { }
         }
 
         public void UpdateToolBar()

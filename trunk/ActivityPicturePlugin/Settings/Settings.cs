@@ -211,6 +211,104 @@ namespace ActivityPicturePlugin.Source
             set { geStoreFileLocations = value; }
         }
 
+        // ImportControl Settings
+        private static int importSplitter1Offset = 224;
+        public static int ImportSplitter1Offset
+        {
+            get { return importSplitter1Offset; }
+            set { importSplitter1Offset = value; }
+        }
+        private static int importSplitter2Offset = 202;
+        public static int ImportSplitter2Offset
+        {
+            get { return importSplitter2Offset; }
+            set { importSplitter2Offset = value; }
+        }
+        private static int importSplitter3Offset = 202;
+        public static int ImportSplitter3Offset
+        {
+            get { return importSplitter3Offset; }
+            set { importSplitter3Offset = value; }
+        }
+        private static int settingsSplitter1Offset = 224;
+        public static int SettingsSplitter1Offset
+        {
+            get { return settingsSplitter1Offset; }
+            set { settingsSplitter1Offset = value; }
+        }
+        private static int settingsSplitter2Offset = 202;
+        public static int SettingsSplitter2Offset
+        {
+            get { return settingsSplitter2Offset; }
+            set { settingsSplitter2Offset = value; }
+        }
+        private static int settingsSplitter3Offset = 202;
+        public static int SettingsSplitter3Offset
+        {
+            get { return settingsSplitter3Offset; }
+            set { settingsSplitter3Offset = value; }
+        }
+        private static int listDriveColThumbnailWidth = 150;
+        public static int ListDriveColThumbnailWidth
+        {
+            get { return listDriveColThumbnailWidth; }
+            set { listDriveColThumbnailWidth = value; }
+        }
+        private static int listDriveColDateTimeWidth = 100;
+        public static int ListDriveColDateTimeWidth
+        {
+            get { return listDriveColDateTimeWidth; }
+            set { listDriveColDateTimeWidth = value; }
+        }
+        private static int listDriveColGPSWidth = 120;
+        public static int ListDriveColGPSWidth
+        {
+            get { return listDriveColGPSWidth; }
+            set { listDriveColGPSWidth = value; }
+        }
+        private static int listDriveColTitleWidth = 100;
+        public static int ListDriveColTitleWidth
+        {
+            get { return listDriveColTitleWidth; }
+            set { listDriveColTitleWidth = value; }
+        }
+        private static int listDriveColCommentWidth = 100;
+        public static int ListDriveColCommentWidth
+        {
+            get { return listDriveColCommentWidth; }
+            set { listDriveColCommentWidth = value; }
+        }
+        private static int listActColThumbnailWidth = 150;
+        public static int ListActColThumbnailWidth
+        {
+            get { return listActColThumbnailWidth; }
+            set { listActColThumbnailWidth = value; }
+        }
+        private static int listActColDateTimeWidth = 100;
+        public static int ListActColDateTimeWidth
+        {
+            get { return listActColDateTimeWidth; }
+            set { listActColDateTimeWidth = value; }
+        }
+        private static int listActColGPSWidth = 120;
+        public static int ListActColGPSWidth
+        {
+            get { return listActColGPSWidth; }
+            set { listActColGPSWidth = value; }
+        }
+        private static int listActColTitleWidth = 100;
+        public static int ListActColTitleWidth
+        {
+            get { return listActColTitleWidth; }
+            set { listActColTitleWidth = value; }
+        }
+        private static int listActColCommentWidth = 100;
+        public static int ListActColCommentWidth
+        {
+            get { return listActColCommentWidth; }
+            set { listActColCommentWidth = value; }
+        }
+
         public static void defaults()
         {
             folderView = 0;
@@ -235,6 +333,25 @@ namespace ActivityPicturePlugin.Source
             sortMode = (int)Helper.PictureAlbum.ImageSortMode.byDateTimeAscending;
             geAutoOpen = false;
             geStoreFileLocations = true;
+
+            //ImportControl Settings
+            importSplitter1Offset = 224;
+            importSplitter2Offset = 202;
+            importSplitter3Offset = 202;
+            settingsSplitter1Offset = 224;
+            settingsSplitter2Offset = 202;
+            settingsSplitter3Offset = 202;
+            listDriveColThumbnailWidth = 150;
+            listDriveColDateTimeWidth = 100;
+            listDriveColGPSWidth = 120;
+            listDriveColTitleWidth = 100;
+            listDriveColCommentWidth = 100;
+            listActColThumbnailWidth = 150;
+            listActColDateTimeWidth = 100;
+            listActColGPSWidth = 120;
+            listActColTitleWidth = 100;
+            listActColCommentWidth = 100;
+
         }
 
         public static void ReadOptions( XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode )
@@ -290,6 +407,40 @@ namespace ActivityPicturePlugin.Source
             attr = pluginNode.GetAttribute( xmlTags.geStoreFileLocations );
             if ( attr.Length > 0 ) { geStoreFileLocations = XmlConvert.ToBoolean( attr ); }
 
+            //ImportControl Settings
+            attr = pluginNode.GetAttribute( xmlTags.importSplitter1Offset );
+            if ( attr.Length > 0 ) { importSplitter1Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.importSplitter2Offset);
+            if ( attr.Length > 0 ) { importSplitter2Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.importSplitter3Offset);
+            if ( attr.Length > 0 ) { importSplitter3Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.settingsSplitter1Offset );
+            if ( attr.Length > 0 ) { settingsSplitter1Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.settingsSplitter2Offset );
+            if ( attr.Length > 0 ) { settingsSplitter2Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.settingsSplitter3Offset );
+            if ( attr.Length > 0 ) { settingsSplitter3Offset = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listDriveColThumbnailWidth );
+            if ( attr.Length > 0 ) { listDriveColThumbnailWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listDriveColDateTimeWidth);
+            if ( attr.Length > 0 ) { listDriveColDateTimeWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listDriveColGPSWidth );
+            if ( attr.Length > 0 ) { listDriveColGPSWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listDriveColTitleWidth);
+            if ( attr.Length > 0 ) { listDriveColTitleWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listDriveColCommentWidth );
+            if ( attr.Length > 0 ) { listDriveColCommentWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listActColThumbnailWidth );
+            if ( attr.Length > 0 ) { listActColThumbnailWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listActColDateTimeWidth );
+            if ( attr.Length > 0 ) { listActColDateTimeWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listActColGPSWidth );
+            if ( attr.Length > 0 ) { listActColGPSWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listActColTitleWidth );
+            if ( attr.Length > 0 ) { listActColTitleWidth = XmlConvert.ToInt32( attr ); }
+            attr = pluginNode.GetAttribute( xmlTags.listActColCommentWidth );
+            if ( attr.Length > 0 ) { listActColCommentWidth = XmlConvert.ToInt32( attr ); }
+
 
         }
 
@@ -319,7 +470,26 @@ namespace ActivityPicturePlugin.Source
             pluginNode.SetAttribute( xmlTags.geQuality, XmlConvert.ToString( geQuality ) );
             pluginNode.SetAttribute( xmlTags.sortMode, XmlConvert.ToString( sortMode ) );
             pluginNode.SetAttribute( xmlTags.geAutoOpen, XmlConvert.ToString( geAutoOpen ) );
-            pluginNode.SetAttribute( xmlTags.geStoreFileLocations, XmlConvert.ToString( geStoreFileLocations ) );            
+            pluginNode.SetAttribute( xmlTags.geStoreFileLocations, XmlConvert.ToString( geStoreFileLocations ) );
+
+            //ImportControl Settings
+            pluginNode.SetAttribute( xmlTags.importSplitter1Offset, XmlConvert.ToString( importSplitter1Offset ) );
+            pluginNode.SetAttribute( xmlTags.importSplitter2Offset, XmlConvert.ToString( importSplitter2Offset ) );
+            pluginNode.SetAttribute( xmlTags.importSplitter3Offset, XmlConvert.ToString( importSplitter3Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter1Offset, XmlConvert.ToString( importSplitter1Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter2Offset, XmlConvert.ToString( importSplitter2Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter3Offset, XmlConvert.ToString( importSplitter3Offset ) );
+            pluginNode.SetAttribute( xmlTags.listDriveColThumbnailWidth, XmlConvert.ToString( listDriveColThumbnailWidth ) );
+            pluginNode.SetAttribute( xmlTags.listDriveColDateTimeWidth, XmlConvert.ToString( listDriveColDateTimeWidth ) );
+            pluginNode.SetAttribute( xmlTags.listDriveColGPSWidth, XmlConvert.ToString( listDriveColGPSWidth ) );
+            pluginNode.SetAttribute( xmlTags.listDriveColTitleWidth, XmlConvert.ToString( listDriveColTitleWidth ) );
+            pluginNode.SetAttribute( xmlTags.listDriveColCommentWidth, XmlConvert.ToString( listDriveColCommentWidth ) );
+            pluginNode.SetAttribute( xmlTags.listActColThumbnailWidth, XmlConvert.ToString( listActColThumbnailWidth ) );
+            pluginNode.SetAttribute( xmlTags.listActColDateTimeWidth, XmlConvert.ToString( listActColDateTimeWidth ) );
+            pluginNode.SetAttribute( xmlTags.listActColGPSWidth, XmlConvert.ToString( listActColGPSWidth ) );
+            pluginNode.SetAttribute( xmlTags.listActColTitleWidth, XmlConvert.ToString( listActColTitleWidth ) );
+            pluginNode.SetAttribute( xmlTags.listActColCommentWidth, XmlConvert.ToString( listActColCommentWidth ) );            
+
         }
 
         private static int settingsVersion = 0; //default when not existing
@@ -349,7 +519,26 @@ namespace ActivityPicturePlugin.Source
             public const string geQuality = "geQuality";
             public const string sortMode = "sortMode";
             public const string geAutoOpen = "geAutoOpen";
-            public const string geStoreFileLocations = "geStoreFileLocations";            
+            public const string geStoreFileLocations = "geStoreFileLocations";
+
+            public const string importSplitter1Offset = "importSplitter1Offset";
+            public const string importSplitter2Offset = "importSplitter2Offset";
+            public const string importSplitter3Offset = "importSplitter3Offset";
+            public const string settingsSplitter1Offset = "settingsSplitter1Offset";
+            public const string settingsSplitter2Offset = "settingsSplitter2Offset";
+            public const string settingsSplitter3Offset = "settingsSplitter3Offset";
+            public const string listDriveColThumbnailWidth = "listDriveColThumbnailWidth";
+            public const string listDriveColDateTimeWidth = "listDriveColDateTimeWidth";
+            public const string listDriveColGPSWidth = "listDriveColGPSWidth";
+            public const string listDriveColTitleWidth = "listDriveColTitleWidth";
+            public const string listDriveColCommentWidth = "listDriveColCommentWidth";
+
+            public const string listActColThumbnailWidth = "listActColThumbnailWidth";
+            public const string listActColDateTimeWidth = "listActColDateTimeWidth";
+            public const string listActColGPSWidth = "listActColGPSWidth";
+            public const string listActColTitleWidth = "listActColTitleWidth";
+            public const string listActColCommentWidth = "listActColCommentWidth";
+
         }
     }
 }
