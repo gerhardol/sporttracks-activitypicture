@@ -35,6 +35,59 @@ namespace ActivityPicturePlugin.UI.MapLayers
 {
     class PicturesLayer : RouteControlLayerBase, IRouteControlLayer
     {
+        class ImageDataLocation : IGPSPoint
+        {
+            public ImageData image;
+            public ImageDataLocation(ImageData im)
+            {
+                this.image = im;
+            }
+            public float DistanceMetersToPoint(IGPSPoint point)
+            {
+                return this.image.GpsPoint.DistanceMetersToPoint(point);
+            }
+
+            public float ElevationMeters
+            {
+                get { return this.image.GpsPoint.ElevationMeters; }
+            }
+
+            public float LatitudeDegrees
+            {
+                get { return this.image.GpsPoint.LatitudeDegrees; }
+            }
+
+            public float LongitudeDegrees
+            {
+                get { return this.image.GpsPoint.LongitudeDegrees; }
+            }
+
+            public string ToString(string format)
+            {
+                return this.image.GpsPoint.ToString();
+            }
+        }
+        class PointMapMarker : MapMarker
+        {
+            public PointMapMarker(ImageDataLocation location, MapIcon icon, bool clickable)
+                : base(location, icon, clickable)
+            {
+                this.location = location;
+            }
+            private ImageDataLocation location;
+            public ImageDataLocation image
+            {
+                get
+                {
+                    return this.Location as ImageDataLocation;
+                }
+                set
+                {
+                    this.Location = value;
+                }
+            }
+        }
+
         private DateTime m_creationTime = DateTime.Now;
         public PicturesLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1)
@@ -278,12 +331,13 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
             foreach (ImageData location in visibleLocations)
             {
+                ImageDataLocation iml = new ImageDataLocation(location);
                 if ((!m_scalingChanged) && m_pointOverlays.ContainsKey(location.GpsPoint))
                 {
                     //No need to refresh this point
-                    newPointOverlays.Add(location.GpsPoint, m_pointOverlays[location.GpsPoint]);
-                    //((MapMarker)pointOverlays[location.GpsPoint]).DoubleClick -= new MouseEventHandler(pointOverlay_DoubleClick);
-                    m_pointOverlays.Remove(location.GpsPoint);
+                    newPointOverlays.Add(iml, m_pointOverlays[iml]);
+                    ((PointMapMarker)m_pointOverlays[iml]).DoubleClick -= new MouseEventHandler(pointOverlay_DoubleClick);
+                    m_pointOverlays.Remove(iml);
                 }
                 else
                 {
@@ -294,8 +348,8 @@ namespace ActivityPicturePlugin.UI.MapLayers
                         string fileURL = "file://" + path;
                         m_icon = new MapIcon(fileURL, iconSize);
 
-                        MapMarker pointOverlay = new MapMarker(location.GpsPoint, m_icon, false);
-                        //pointOverlay.DoubleClick +=new MouseEventHandler(pointOverlay_DoubleClick);
+                        PointMapMarker pointOverlay = new PointMapMarker(iml, m_icon, true);
+                        pointOverlay.DoubleClick +=new MouseEventHandler(pointOverlay_DoubleClick);
                         newPointOverlays.Add(location.GpsPoint, pointOverlay);
                         addedOverlays.Add(pointOverlay);
                         m_scalingChanged = false;
@@ -322,22 +376,14 @@ namespace ActivityPicturePlugin.UI.MapLayers
             }
         }
 
-        //Does not seem to be called
-        //void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //MapMarkers must be converted to ImageData (or ImageData implement MapMarker)
-        //void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
-        //{
-        //    if (sender is MapMarker)
-        //    {
-        //        MapMarker im = sender as MapMarker;
-        //        Helper.Functions.OpenExternal(im);
-        //    }
-        //    //throw new NotImplementedException();
-        //}
+        void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
+        {
+            if (sender is PointMapMarker)
+            {
+                PointMapMarker im = sender as PointMapMarker;
+                Helper.Functions.OpenExternal(((ImageDataLocation)im.Location).image);
+            }
+        }
 
         private void ClearOverlays()
         {
