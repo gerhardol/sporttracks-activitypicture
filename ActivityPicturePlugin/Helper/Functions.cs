@@ -846,14 +846,14 @@ namespace ActivityPicturePlugin.Helper
             bool ret = true;
             try
             {
-                if ( new FileInfo( sFile ).Exists )
+                if ( ( new FileInfo( sFile ).Exists ) || ( new DirectoryInfo( sFile ).Exists ) )
                     System.Diagnostics.Process.Start( sFile );
                 else
                     ret = false;
             }
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                System.Diagnostics.Debug.Assert( false, ex.Message );
                 ret = false;
             }
             return ret;
