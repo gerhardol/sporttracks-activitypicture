@@ -923,6 +923,7 @@ namespace ActivityPicturePlugin.UI
             IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
             PluginData data = Helper.Functions.ReadExtensionData( act );
             listViewAct.SuspendLayout();
+            IList<ImageData> rem = new List<ImageData>();
 
             foreach ( ListViewItem lvi in lvisel )
             {
@@ -932,7 +933,6 @@ namespace ActivityPicturePlugin.UI
                 {
                     if ( ids.ReferenceID == id )
                     {
-                        (new ImageData(ids)).DeleteThumbnail();
                         data.Images.Remove( ids );
                         break;
                     }
@@ -948,6 +948,11 @@ namespace ActivityPicturePlugin.UI
             if ( data.Images.Count == 0 ) this.treeViewActivities.SelectedNode.BackColor = treeViewActivities.BackColor;    // Color.White;
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent );
             CheckColorTreeNode( this.treeViewActivities.SelectedNode.Parent.Parent );
+
+            foreach (ImageData im in rem)
+            {
+                im.DeleteThumbnail();
+            }
         }
 
         private void AddSelectedImagesToActivity( ListViewItem[] lvisel )
