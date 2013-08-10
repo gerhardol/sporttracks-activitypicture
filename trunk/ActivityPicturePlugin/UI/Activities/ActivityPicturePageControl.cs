@@ -62,7 +62,8 @@ namespace ActivityPicturePlugin.UI.Activities
             //{
             //    expandButton.Visible = true;
             //}
-            m_layer = PicturesLayer.Instance((IView)view);
+            this.m_layer = PicturesLayer.Instance((IView)view);
+            this.pictureAlbumView.m_layer = this.m_layer;
         }
 #endif
 
@@ -135,7 +136,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     else
                     {
                         this.pictureAlbumView.ActivityChanging();
-                        Functions.ClearImageList( this.pictureAlbumView );
+                        this.pictureAlbumView.ClearImageList();
                         this.dataGridViewImages.Visible = false;
                         //ResetPage();
                         if ( _Activity != null )
@@ -208,7 +209,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.timerVideo.Stop();
             this.pictureAlbumView.StopVideo();
             this.pictureAlbumView.ActivityChanging();
-            Functions.ClearImageList( this.pictureAlbumView );
+            this.pictureAlbumView.ClearImageList();
             this.contextMenuStripView.Enabled = false;
             this.groupBoxImage.Visible = false;
             this.groupBoxVideo.Visible = false;
@@ -225,7 +226,7 @@ namespace ActivityPicturePlugin.UI.Activities
             try
             {
                 this.dataGridViewImages.CellValueChanged -= new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
-                Functions.ClearImageList( this.pictureAlbumView );
+                this.pictureAlbumView.ClearImageList();
                 this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
                 ReloadData();
                 UpdateView();
@@ -1149,7 +1150,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if ( this.Mode == ShowMode.Import )
             {
-                Functions.ClearImageList( this.pictureAlbumView );
+                this.pictureAlbumView.ClearImageList();
                 ReloadData();
             }
             this.Mode = ShowMode.List;
@@ -1166,7 +1167,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if ( this.Mode == ShowMode.Import )
             {
-                Functions.ClearImageList( this.pictureAlbumView );
+                this.pictureAlbumView.ClearImageList();
                 ReloadData();
             }
             this.Mode = ShowMode.Album;
@@ -1350,7 +1351,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 double dblTimePerFrame = pictureAlbumView.GetCurrentVideoTimePerFrame();
                 id.ReplaceVideoThumbnail( iFrame, sizeFrame, dblTimePerFrame );
 
-                Functions.ClearImageList( this.pictureAlbumView );
+                this.pictureAlbumView.ClearImageList();
 
                 toolStripButtonSnapshot.Enabled = true; //Re-enable button
                 ReloadData();
@@ -1416,7 +1417,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
                 }
             }
-            Functions.ClearImageList( this.pictureAlbumView );
+            this.pictureAlbumView.ClearImageList();
             ReloadData();
             UpdateView();
 
@@ -1748,7 +1749,7 @@ namespace ActivityPicturePlugin.UI.Activities
             if ( id.Type == ImageData.DataTypes.Video )
             {
                 id.ResetVideoThumbnail();
-                Functions.ClearImageList( this.pictureAlbumView );
+                this.pictureAlbumView.ClearImageList();
                 ReloadData();
                 UpdateView();
             }

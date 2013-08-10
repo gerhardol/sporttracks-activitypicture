@@ -20,6 +20,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using QuartzTypeLib;
+#if !ST_2_1
+using ActivityPicturePlugin.UI.MapLayers;
+#endif
 
 using System.IO;
 
@@ -163,10 +166,40 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region public members
+#if !ST_2_1
+        //private IDetailPage m_DetailPage = null;
+        //private IDailyActivityView m_view = null;
+        //TODO: fix...
+        internal PicturesLayer m_layer = null;
+#endif
         public List<ImageData> ImageList
         {
             get { return imagelist; }
             set { imagelist = value; }
+        }
+
+        internal void ClearImageList()
+        {
+            try
+            {
+                if (this.ImageList != null)
+                {
+                    foreach (ImageData ID in this.ImageList)
+                    {
+                        if (ID.EW != null)
+                        {
+                            ID.EW.Dispose();
+                        }
+                        ID.Dispose();
+                    }
+
+                    this.ImageList.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+            }
         }
 
         private int selectedIndex = -1;
@@ -1312,6 +1345,10 @@ namespace ActivityPicturePlugin.Helper
                         //this.ImageList[j].Selected = false;
                         selectedIndex = e.SelectedIndex;
                         this.ImageList[e.SelectedIndex].Selected = true;
+#if !ST_2_1
+                //m_layer.SelectedPictures = new List<ImageData>{ this.ImageList[e.SelectedIndex]};
+#endif
+
                     }
                 }
                 else

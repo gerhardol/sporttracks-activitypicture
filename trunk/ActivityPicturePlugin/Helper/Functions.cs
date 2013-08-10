@@ -1267,31 +1267,6 @@ namespace ActivityPicturePlugin.Helper
 
         //}
 
-        internal static void ClearImageList( PictureAlbum pa )
-        {
-            try
-            {
-                if ( pa.ImageList != null )
-                {
-                    foreach ( ImageData ID in pa.ImageList )
-                    {
-                        if ( ID.EW != null )
-                        {
-                            ID.EW.Dispose();
-                        }
-                        ID.Dispose();
-                    }
-
-                    pa.ImageList.Clear();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
-            }
-        }
-
         internal static int CompareByDate( ImageData x, ImageData y )
         {
             int retval = 0;
