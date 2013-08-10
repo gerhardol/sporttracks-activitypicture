@@ -1178,17 +1178,19 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
+                double res = 0;
                 try
                 {
-                    double d = this.GetPropertyRational( (int)( TagNames.GpsAltitude ) ).ToDouble();
-                    return d;
+                    if (this._Image != null)
+                    {
+                        res = this.GetPropertyRational((int)(TagNames.GpsAltitude)).ToDouble();
+                    }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.Assert(false, ex.Message);
-                    return 0;
-                    //throw;
                 }
+                return res;
             }
             set
             {
