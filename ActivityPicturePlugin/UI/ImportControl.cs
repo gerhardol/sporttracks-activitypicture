@@ -27,6 +27,9 @@ using System.Threading;
 using ActivityPicturePlugin.Helper;
 using ActivityPicturePlugin.Properties;
 using ActivityPicturePlugin.Settings;
+#if !ST_2_1
+using ActivityPicturePlugin.UI.MapLayers;
+#endif
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals;
@@ -276,6 +279,10 @@ namespace ActivityPicturePlugin.UI
         private TreeNode CapturedTreeViewActNode = null;
         private TreeNode CapturedTreeViewImagesNode = null;
         private ZoneFiveSoftware.Common.Visuals.ITheme m_visualTheme = null;
+#if !ST_2_1
+        //TODO: fix datastructure...
+        internal PicturesLayer m_layer = null;
+#endif
 
         #endregion
 
@@ -1012,6 +1019,7 @@ namespace ActivityPicturePlugin.UI
             public ImageData image;
             public IActivity Activity;
         }
+
         //Drills from 'node' to find all child activities
         private IList<ActivityTreeViewInfo> treeViewActivities_GetImageData(TreeNode node)
         {
@@ -1263,9 +1271,10 @@ namespace ActivityPicturePlugin.UI
 
                         // assign the new imagelists
                         this.listViewAct.LargeImageList = lil;
-                        this.listViewAct.SmallImageList = lis; System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
+                        this.listViewAct.SmallImageList = lis; 
+                        System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
 
-                        List<ImageData> il = data.LoadImageData( data.Images );
+                        IList<ImageData> il = data.LoadImageData( data.Images );
 
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
@@ -1352,6 +1361,15 @@ namespace ActivityPicturePlugin.UI
                             progressBar2.Value = j;
                             lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, j );
 
+#if !ST_2_1
+                            if (this.m_layer != null)
+                            {
+                                this.m_layer.HidePage(); //defer updates
+                                //this.m_layer.PictureSize = this.sliderImageSize.Value;
+                                this.m_layer.Pictures = il;
+                                this.m_layer.ShowPage("");//Refresh
+                            }
+#endif
                         }
 
                         // The last image for the last listitem doesn't always get drawn so
@@ -1410,144 +1428,6 @@ namespace ActivityPicturePlugin.UI
                 listViewAct.ListViewItemSorter = lvSorter;    //Restore the sorter
             }
         }
-
-        /*private void AddImagesToListViewAct( TreeNode tn, bool AddThumbs )
-        {
-            ImageList lil = null;
-            ImageList lis = null;
-
-            try
-            {
-                this.listViewAct.Items.Clear();
-                if ( tn == null )
-                {
-                    //No selection, nothing to do
-                    return;
-                }
-                IActivity act = (IActivity)( tn.Tag );
-                PluginData data = Helper.Functions.ReadExtensionData( act );
-
-                if ( data.Images.Count > 0 )
-                {
-                    //change color
-                    if ( tn.BackColor != Color.Yellow )
-                    {
-                        tn.BackColor = Color.LightBlue;
-                        if ( tn.Parent != null )
-                        {
-                            if ( tn.Parent.BackColor != Color.Yellow ) tn.Parent.BackColor = Color.LightBlue;
-                            if ( tn.Parent.Parent != null & tn.Parent.Parent.BackColor != Color.Yellow ) tn.Parent.Parent.BackColor = Color.LightBlue;
-                        }
-                    }
-
-                    //Load imagedata
-                    if ( AddThumbs )
-                    {
-                        List<ImageData> il = data.LoadImageData( data.Images );
-                        lil = new ImageList();
-                        lis = new ImageList();
-                        lil.ImageSize = new Size( 100, 100 );
-                        lis.ImageSize = new Size( 50, 50 );
-                        lil.ColorDepth = ColorDepth.Depth32Bit;
-                        lis.ColorDepth = ColorDepth.Depth32Bit;
-                        int j = 0;
-
-                        // Dispose of the old imagelists if they exist
-                        if ( this.listViewAct.LargeImageList != null )
-                            this.listViewAct.LargeImageList.Dispose();
-                        this.listViewAct.LargeImageList = null;
-
-                        if ( this.listViewAct.SmallImageList != null )
-                            this.listViewAct.SmallImageList.Dispose();
-                        this.listViewAct.SmallImageList = null;
-
-                        // assign the new imagelists
-                        this.listViewAct.LargeImageList = lil;
-                        this.listViewAct.SmallImageList = lis;
-
-                        progressBar2.Style = ProgressBarStyle.Continuous;
-                        progressBar2.Maximum = il.Count;
-                        foreach ( ImageData id in il )
-                        {
-                            try
-                            {
-                                //images (large and small icons)
-                                Image img = null;
-                                try
-                                {
-                                    if ( new FileInfo( id.ThumbnailPath ).Exists )
-                                        img = Image.FromFile( id.ThumbnailPath );
-                                    else
-                                        img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
-
-                                }
-                                catch ( Exception ex )
-                                {
-                                    System.Diagnostics.Debug.Assert( false, ex.Message );
-
-                                    //Something was wrong with the thumbnail.
-                                    //Add a 'delete' thumbnail as a placeholder so the item can
-                                    //officially be deleted by the user.
-                                    System.Diagnostics.Debug.Print( ex.Message );
-                                    img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
-                                }
-                                lil.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lil.ImageSize.Width, img ) );
-                                lis.Images.Add( id.PhotoSource, Functions.getThumbnailWithBorder( lis.ImageSize.Width, img ) );
-
-                                //List view items
-                                ListViewItem lvi = new ListViewItem();
-                                lvi.Text = id.PhotoSourceFileName;
-                                lvi.Tag = id.ReferenceID;
-                                lvi.ImageKey = id.PhotoSource;
-                                lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
-                                lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
-                                lvi.SubItems.Add( id.Title );
-                                lvi.SubItems.Add( id.Comments );
-                                this.listViewAct.Items.Add( lvi );
-
-                                Application.DoEvents();
-                                img.Dispose();
-                                img = null;
-                            }
-                            catch ( Exception ex )
-                            {
-                                System.Diagnostics.Debug.Assert( false, ex.Message );
-                                System.Diagnostics.Debug.Print( ex.Message );
-                                //throw;
-                            }
-                            j++;
-                            progressBar2.Value = j;
-                            lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, j );
-
-                        }
-                    }
-                    else
-                    {
-                        this.listViewAct.Items.Clear();
-                    }
-                }
-                else
-                {
-                    this.listViewAct.Items.Clear();
-                }
-            }
-            catch ( Exception ex )
-            {
-                System.Diagnostics.Debug.Assert( false, ex.Message );
-
-                if ( lil != null )
-                    lil.Dispose();
-                lil = null;
-
-                if ( lis != null )
-                    lis.Dispose();
-                lis = null;
-
-                listViewAct.LargeImageList = null;
-                listViewAct.SmallImageList = null;
-                //throw;
-            }
-        }*/
 
         private static bool ImageAlreadyExistsInActivity( string fileName, PluginData dataRef )
         {
@@ -2764,7 +2644,21 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void listViewAct_ColumnClick( object sender, ColumnClickEventArgs e )
+        void listViewAct_ItemSelectionChanged(object sender, System.Windows.Forms.ListViewItemSelectionChangedEventArgs e)
+        {
+            if (listViewAct.SelectedItems != null && listViewAct.SelectedItems.Count > 0 && this.m_layer != null)
+            {
+                IList<ImageData> images = new List<ImageData>();
+                foreach (ListViewItem lvi in listViewAct.SelectedItems)
+                {
+                    ImageData im = (ImageData)(lvi.Tag);
+                    images.Add(im);
+                }
+                this.m_layer.SelectedPictures = images;
+            }
+        }
+
+        private void listViewAct_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             ListViewItemSorter sorter = GetListViewSorter( e.Column, listViewAct );
 

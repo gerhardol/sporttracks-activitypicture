@@ -481,6 +481,7 @@ namespace ActivityPicturePlugin.UI
             this.listViewAct.DragEnter += new System.Windows.Forms.DragEventHandler(this.listViewAct_DragEnter);
             this.listViewAct.DoubleClick += new System.EventHandler(this.listViewAct_DoubleClick);
             this.listViewAct.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listViewAct_KeyDown);
+            this.listViewAct.ItemSelectionChanged += listViewAct_ItemSelectionChanged;
             // 
             // colImage
             // 

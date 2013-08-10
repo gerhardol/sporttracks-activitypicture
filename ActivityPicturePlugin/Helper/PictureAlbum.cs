@@ -165,13 +165,12 @@ namespace ActivityPicturePlugin.Helper
 
         #endregion
 
-        #region public members
 #if !ST_2_1
-        //private IDetailPage m_DetailPage = null;
-        //private IDailyActivityView m_view = null;
-        //TODO: fix...
+        //TODO: fix datastructure...
         internal PicturesLayer m_layer = null;
 #endif
+        
+        #region public members
         public List<ImageData> ImageList
         {
             get { return imagelist; }
@@ -1346,7 +1345,7 @@ namespace ActivityPicturePlugin.Helper
                         selectedIndex = e.SelectedIndex;
                         this.ImageList[e.SelectedIndex].Selected = true;
 #if !ST_2_1
-                //m_layer.SelectedPictures = new List<ImageData>{ this.ImageList[e.SelectedIndex]};
+                        m_layer.SelectedPictures = new List<ImageData>{ this.ImageList[e.SelectedIndex]};
 #endif
 
                     }
