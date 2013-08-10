@@ -460,7 +460,7 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             string s = sNewThumbs as string;
             string[] sFiles = s.Split( '\t' );
-            List<string> thumbNails = GetThumbnailPathsAllActivities();
+            List<string> thumbNails = Functions.GetThumbnailPathsAllActivities();
 
             foreach ( string sFile in sFiles )
             {
@@ -713,27 +713,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 tsmiRemove = null;
                 //throw;
             }
-        }
-
-        private List<string> GetThumbnailPathsAllActivities()
-        {
-            List<string> s = new List<string>();
-
-            IEnumerable<IActivity> activities = new List<IActivity>();
-            activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
-
-            foreach ( IActivity activity in activities )
-            {
-                PluginData data = Helper.Functions.ReadExtensionData( activity );
-                if ( data.Images.Count > 0 )
-                {
-                    for (int j = 0; j < data.Images.Count; j++)
-                    {
-                        s.Add((new ImageData(data.Images[j])).ThumbnailPath);
-                    }
-                }
-            }
-            return s;
         }
 
         private static Color GridAltRowColor( Color defaultRowColor )
@@ -1810,29 +1789,21 @@ namespace ActivityPicturePlugin.UI.Activities
         private void RemoveImageFromActivity(ImageData im)
         {
             //Delete selected images
-            PluginData data = Helper.Functions.ReadExtensionData( _Activity );
-            ImageData deleted = null;
+            PluginData data = Helper.Functions.ReadExtensionData(_Activity);
 
-            foreach ( ImageDataSerializable ids in data.Images )
+            ImageDataSerializable ids = im.GetSerialzable(data.Images);
+            if (ids != null)
             {
-                if ( ids.ReferenceID == im.ReferenceID )
-                {
-                    data.Images.Remove( ids );
-                    deleted = im;
-                    break;
-                }
+                data.Images.Remove(ids);
             }
 
-            Functions.WriteExtensionData( _Activity, data );
+            Functions.WriteExtensionData(_Activity, data);
 
             ReloadData();
             UpdateView();
 
-            if (deleted != null)
-            {
-                //This must be done after view is reloaded (image locked)
-                deleted.DeleteThumbnail();
-            }
+            //This must be done after view is reloaded (image locked)
+            im.DeleteThumbnail();
         }
 
         private void importControl1_ActivityImagesChanged( object sender, ImportControl.ActivityImagesChangedEventArgs e )

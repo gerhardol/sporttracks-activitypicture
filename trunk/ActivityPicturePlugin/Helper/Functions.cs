@@ -892,48 +892,37 @@ namespace ActivityPicturePlugin.Helper
             return ret;
         }
 
-        public static void OpenImage(ImageData im)
+        public static void OpenExternal(string path, ImageData.DataTypes dt)
         {
-            //try to open Photosource first
-            try
+            if (dt == ImageData.DataTypes.Image)
             {
-                try
-                {
-                    string sPath = im.GetBestImage();
-                    if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                }
-
+                Functions.OpenExternal(path);
             }
-            catch (Exception ex)
+            else if (dt == ImageData.DataTypes.Video)
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                throw;
+                Functions.OpenVideoInExternalWindow(path);
             }
         }
 
-        private static void OpenImageWithWindowsViewer( string ImageLocation )
-        {
-            try
-            {
-                //show picture with windows
-                string sys = System.Environment.GetFolderPath( Environment.SpecialFolder.System );
-                System.Diagnostics.ProcessStartInfo f = new System.Diagnostics.ProcessStartInfo
-                ( sys + "\\rundll32.exe",
-                sys + "\\shimgvw.dll,ImageView_Fullscreen " +
-                ImageLocation );
-                System.Diagnostics.Process.Start( f );
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-            }
-        }
+        //private static void OpenImageWithWindowsViewer( string ImageLocation )
+        //{
+        //    try
+        //    {
+        //        //show picture with windows
+        //        string sys = System.Environment.GetFolderPath( Environment.SpecialFolder.System );
+        //        System.Diagnostics.ProcessStartInfo f = new System.Diagnostics.ProcessStartInfo
+        //        ( sys + "\\rundll32.exe",
+        //        sys + "\\shimgvw.dll,ImageView_Fullscreen " +
+        //        ImageLocation );
+        //        System.Diagnostics.Process.Start( f );
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.Assert(false, ex.Message);
+        //    }
+        //}
 
-        public static void OpenVideoInExternalWindow( string p )
+        private static void OpenVideoInExternalWindow( string p )
         {
             try
             {
@@ -1013,25 +1002,22 @@ namespace ActivityPicturePlugin.Helper
                     {
                         mem.Write( b, 0, b.Length );
                         mem.Position = 0;
-                        //this.PluginExtensionData = (PluginData)xmlSer.Deserialize(mem);
                         pd = (PluginData)xmlSer.Deserialize( mem );
-                        //mem.Dispose();
                     }
                     xmlSer = null;
                     b = null;
                     foreach (ImageDataSerializable ids in pd.Images)
                     {
+                        //Old plugin bugs(?) left type unset?
                         if (ids.Type == ImageData.DataTypes.Nothing)
                         {
-                            //Old bugs left type unset?
-                            ids.Type = GetMediaType(ids.PhotoSource);
+                            ids.Type = Functions.GetMediaType(ids.PhotoSource);
                         }
                     }
                     return pd;
                 }
                 else
                 {
-                    //this.PluginExtensionData = new PluginData();
                     return new PluginData();
                 }
             }
@@ -1039,8 +1025,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
                 return new PluginData();
-                //throw;
-            }
+           }
 
         }
 
@@ -1203,7 +1188,25 @@ namespace ActivityPicturePlugin.Helper
             return true;
         }
 
-        internal static ImageData.DataTypes GetMediaType( string p )
+        internal static List<string> GetThumbnailPathsAllActivities()
+        {
+            List<string> s = new List<string>();
+
+            IEnumerable<IActivity> activities = new List<IActivity>();
+            activities = ActivityPicturePlugin.Plugin.GetApplication().Logbook.Activities;
+
+            foreach (IActivity activity in activities)
+            {
+                PluginData data = Helper.Functions.ReadExtensionData(activity);
+                foreach(ImageDataSerializable ids in data.Images)
+                {
+                    s.Add(ImageData.thumbnailPath(ids.ReferenceID));
+                }
+            }
+            return s;
+        }
+
+        internal static ImageData.DataTypes GetMediaType(string p)
         {
             if ( !string.IsNullOrEmpty( p ) )
             {
@@ -1223,46 +1226,46 @@ namespace ActivityPicturePlugin.Helper
             return ImageData.DataTypes.Nothing;
         }
 
-        internal static ImageData AddImage( String ImageLocation, Boolean CreateThumbnail )
-        {
-            ImageData ID = null;
-            try
-            {
-                ID = new ImageData();
-                ID.PhotoSource = ImageLocation;
-                ID.ReferenceID = Guid.NewGuid().ToString();
-                //Bitmap bmp = new Bitmap(ImageLocation);
-                //ID.Ratio = (Single)(bmp.Width) / (Single)(bmp.Height);
-                //bmp.Dispose();
+        //internal static ImageData AddImage( String ImageLocation, Boolean CreateThumbnail )
+        //{
+        //    ImageData ID = null;
+        //    try
+        //    {
+        //        ID = new ImageData();
+        //        ID.PhotoSource = ImageLocation;
+        //        ID.ReferenceID = Guid.NewGuid().ToString();
+        //        //Bitmap bmp = new Bitmap(ImageLocation);
+        //        //ID.Ratio = (Single)(bmp.Width) / (Single)(bmp.Height);
+        //        //bmp.Dispose();
 
 
-                ID.Type = ImageData.DataTypes.Image;
-                if ( CreateThumbnail )
-                {
-                    ID.SetThumbnail();
-                    ID.EW = new ExifWorks( ID.ThumbnailPath );
-                }
-                else
-                {
-                    ID.EW = new ExifWorks( ID.PhotoSource );
-                }
+        //        ID.Type = ImageData.DataTypes.Image;
+        //        if ( CreateThumbnail )
+        //        {
+        //            ID.SetThumbnail();
+        //            ID.EW = new ExifWorks( ID.ThumbnailPath );
+        //        }
+        //        else
+        //        {
+        //            ID.EW = new ExifWorks( ID.PhotoSource );
+        //        }
 
-                ID.Ratio = (Single)( ID.EW.GetBitmap().Width ) / (Single)( ID.EW.GetBitmap().Height );
+        //        ID.Ratio = (Single)( ID.EW.GetBitmap().Width ) / (Single)( ID.EW.GetBitmap().Height );
 
-                return ID;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                if ( ID != null )
-                {
-                    ID.Dispose();
-                    ID = null;
-                }
-                return null;
-            }
+        //        return ID;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Debug.Assert(false, ex.Message);
+        //        if ( ID != null )
+        //        {
+        //            ID.Dispose();
+        //            ID = null;
+        //        }
+        //        return null;
+        //    }
 
-        }
+        //}
 
         internal static void ClearImageList( PictureAlbum pa )
         {
