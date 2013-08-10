@@ -117,18 +117,10 @@
     <Content Include="App.ico" />
     <Compile Include="com\drew\imaging\tiff\TiffMetadataReader.cs" />
     <Compile Include="com\drew\imaging\tiff\TiffProcessingException.cs" />
-    <Content Include="exif.xslt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="sampleFile.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="MetadataExtractor.dtd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="MetadataExtractorNew.dtd">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="exif.xslt" />
+    <Content Include="sampleFile.xml" />
+    <None Include="MetadataExtractor.dtd" />
+    <None Include="MetadataExtractorNew.dtd" />
     <None Include="Properties\app.manifest" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
