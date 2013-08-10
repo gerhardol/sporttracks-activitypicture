@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Mapping;
@@ -32,13 +33,14 @@ namespace ActivityPicturePlugin.UI.MapLayers
 {
     public class RouteControlLayerBase
     {
-        public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder)
+        public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder, bool mouseEvents)
         {
             this.provider = provider;
             this.control = control;
             this.zOrder = zOrder;
             this.mapControl = control.MapControl;
-            AddMapControlEventHandlers();
+            this.mouseEvents = mouseEvents;
+            //AddMapControlEventHandlers();
             control.Resize += new EventHandler(OnRouteControlResize);
             control.VisibleChanged += new EventHandler(OnRouteControlVisibleChanged);
             control.MapControlChanged += new EventHandler(OnRouteControlMapControlChanged);
@@ -46,7 +48,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
             control.SelectedItemsChanged += new EventHandler(OnRouteControlSelectedItemsChanged);
             control.Disposed += delegate(object sender, EventArgs e)
             {
-                RemoveMapControlEventHandlers();
+                //RemoveMapControlEventHandlers();
                 control.Resize -= new EventHandler(OnRouteControlResize);
                 control.VisibleChanged -= new EventHandler(OnRouteControlVisibleChanged);
                 control.MapControlChanged -= new EventHandler(OnRouteControlMapControlChanged);
@@ -63,6 +65,11 @@ namespace ActivityPicturePlugin.UI.MapLayers
         public int ZOrder
         {
             get { return zOrder; }
+        }
+
+        public bool MouseEvents
+        {
+            get { return mouseEvents; }
         }
 
         protected IRouteControl RouteControl
@@ -85,6 +92,64 @@ namespace ActivityPicturePlugin.UI.MapLayers
             RemoveMapControlEventHandlers();
             this.mapControl = control.MapControl;
             AddMapControlEventHandlers();
+        }
+
+        public void SetLocation(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                double zoom = this.MapControl.Zoom;
+                double newZoom = zoom;
+                if (!this.MapControl.MapBounds.Contains(area))
+                {
+                    newZoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
+                }
+                if (newZoom != zoom ||
+                    Math.Abs(area.Center.LatitudeDegrees - this.MapControl.MapBounds.Center.LatitudeDegrees) / area.LatitudeDegrees > 0.03F ||
+                    Math.Abs(area.Center.LongitudeDegrees - this.MapControl.MapBounds.Center.LongitudeDegrees) / area.LongitudeDegrees > 0.03F)
+                {
+                    this.MapControl.SetLocation(area.Center, newZoom);
+                }
+            }
+        }
+
+        public void EnsureVisible(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                double zoom = this.MapControl.Zoom;
+                if (!this.MapControl.MapBounds.Contains(area))
+                {
+                    area = this.MapControl.MapBounds.Union(area);
+                    zoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
+                    this.MapControl.SetLocation(area.Center, zoom);
+                }
+            }
+        }
+
+        public IGPSLocation GetCenterMap()
+        {
+            IGPSLocation centerLocation = this.MapControl.MapBounds.Center;
+            return centerLocation;
+        }
+
+        public void DoZoom(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                double zoom = this.MapControl.Zoom;
+                //An area slightly larger than requested, to avoid zoom to often
+                float latOffset = area.LatitudeDegrees*0.05F;
+                float lonOffset = area.LongitudeDegrees*0.05F;
+                IGPSBounds area2 = new GPSBounds(new GPSLocation(area.NorthLatitudeDegrees + latOffset, area.WestLongitudeDegrees - lonOffset),
+                    new GPSLocation(area.SouthLatitudeDegrees - latOffset, area.EastLongitudeDegrees + lonOffset));
+                double newZoom = this.MapControl.ComputeZoomToFit(area2);
+                //Avoid constantly calling SetLocation, slows down
+                if (!this.MapControl.MapBounds.Contains(area) || Math.Abs(zoom-newZoom) > 2)
+                {
+                    this.MapControl.SetLocation(area.Center, newZoom);
+                }
+            }
         }
 
         protected IGPSBounds MapControlBounds
@@ -111,6 +176,14 @@ namespace ActivityPicturePlugin.UI.MapLayers
         }
 
         protected virtual void OnMapControlCenterMoveEnd(object sender, EventArgs e)
+        {
+        }
+
+        protected virtual void OnMapControlMouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        protected virtual void OnMapControlMouseLeave(object sender, EventArgs e)
         {
         }
 
@@ -153,18 +226,29 @@ namespace ActivityPicturePlugin.UI.MapLayers
         {
             mapControl.ZoomChanged += new EventHandler(OnMapControlZoomChanged);
             mapControl.CenterMoveEnd += new EventHandler(OnMapControlCenterMoveEnd);
+            if (mouseEvents)
+            {
+                mapControl.MouseMove += new MouseEventHandler(OnMapControlMouseMove);
+                mapControl.MouseLeave += new EventHandler(OnMapControlMouseLeave);
+            }
         }
 
         protected virtual void RemoveMapControlEventHandlers()
         {
             mapControl.ZoomChanged -= new EventHandler(OnMapControlZoomChanged);
             mapControl.CenterMoveEnd -= new EventHandler(OnMapControlCenterMoveEnd);
+            if (mouseEvents)
+            {
+                mapControl.MouseMove -= new MouseEventHandler(OnMapControlMouseMove);
+                mapControl.MouseLeave -= new EventHandler(OnMapControlMouseLeave);
+            }
         }
 
         private IRouteControlLayerProvider provider;
         private IRouteControl control;
         private int zOrder = 0;
         private IMapControl mapControl;
+        bool mouseEvents;
     }
 }
 #endif

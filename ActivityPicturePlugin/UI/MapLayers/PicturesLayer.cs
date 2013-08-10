@@ -49,7 +49,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
         private DateTime m_creationTime = DateTime.Now;
         public PicturesLayer(IRouteControlLayerProvider provider, IRouteControl control)
-            : base(provider, control, 1)
+            : base(provider, control, 1, false)
         {
             Guid currentView = Plugin.GetApplication().ActiveView.Id;
             if (m_layers.ContainsKey(currentView))
@@ -153,7 +153,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                         east += lng;
                         west -= lng;
                         IGPSBounds area = new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
-                        DoZoom(area);
+                        this.SetLocation(area);
 
                         for (int i = 0; i < this.m_Pictures.Count; i++)
                         {
@@ -183,7 +183,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                             imp.Click += pointOverlay_Click;
                             imp.DoubleClick += pointOverlay_DoubleClick;
                         }
-                        RefreshOverlays(true);
+                        this.RefreshOverlays(true);
                     }
                 }
                     //m_SelectedPictures = value;
@@ -256,20 +256,31 @@ namespace ActivityPicturePlugin.UI.MapLayers
             }
         }
 
-        public void DoZoom(IGPSBounds area)
+        public new void SetLocation(IGPSBounds area)
         {
             if (m_showPage)
             {
-                if (area != null)
+                base.SetLocation(area);
+                if (m_extraMapLayer != null)
                 {
-                    this.MapControl.SetLocation(area.Center,
-                    this.MapControl.ComputeZoomToFit(area));
-                    if (m_extraMapLayer != null)
-                    {
-                        m_extraMapLayer.MapControl.SetLocation(area.Center,
-                        m_extraMapLayer.MapControl.ComputeZoomToFit(area));
-                    }
+                    m_extraMapLayer.SetLocation(area);
                 }
+            }
+        }
+
+        //Zoom to "relevant" contents (normally done when activities are updated)
+        //public void DoZoom()
+        //{
+        //    this.DoZoom(this.RelevantArea());
+        //}
+
+        public new void DoZoom(IGPSBounds area)
+        {
+            //Note no m_showPage here, can be done when creating tracks
+            base.DoZoom(area);
+            if (m_extraMapLayer != null)
+            {
+                m_extraMapLayer.DoZoom(area);
             }
         }
 
