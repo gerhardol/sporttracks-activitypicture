@@ -279,4 +279,16 @@
     <comment>added Aug4</comment>
     <value>Migrera källa...</value>
   </data>
+  <data name="ActivityChanged_Text" xml:space="preserve">
+    <comment>added Aug5</comment>
+    <value>Aktivitet ändrad</value>
+  </data>
+  <data name="OperationAborted_Text" xml:space="preserve">
+    <comment>added Aug5</comment>
+    <value>Operation avbruten</value>
+  </data>
+  <data name="ViewChanged_Text" xml:space="preserve">
+    <comment>added Aug5</comment>
+    <value>Vy ändrad</value>
+  </data>
 </root>
