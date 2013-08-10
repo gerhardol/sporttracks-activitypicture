@@ -323,11 +323,6 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        public IGPSLocation GpsLocation
-        {
-            get { return new GPSLocation( (float)ew.GPSLatitude, (float)ew.GPSLongitude ); }
-        }
-
         public IGPSPoint GpsPoint
         {
             get { return new GPSPoint( (float)ew.GPSLatitude, (float)ew.GPSLongitude, (float)ew.GPSAltitude ); }

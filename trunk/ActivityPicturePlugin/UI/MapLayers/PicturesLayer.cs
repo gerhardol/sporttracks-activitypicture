@@ -128,13 +128,13 @@ namespace ActivityPicturePlugin.UI.MapLayers
                     bool isValid = false;
                     foreach (ImageData g in value)
                     {
-                        if (g.GpsLocation.LatitudeDegrees != 0 &&
-                            g.GpsLocation.LongitudeDegrees != 0)
+                        if (g.GpsPoint.LatitudeDegrees != 0 &&
+                            g.GpsPoint.LongitudeDegrees != 0)
                         {
-                            north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
-                            south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
-                            east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
-                            west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
+                            north = Math.Max(north, g.GpsPoint.LatitudeDegrees);
+                            south = Math.Min(south, g.GpsPoint.LatitudeDegrees);
+                            east = Math.Max(east, g.GpsPoint.LongitudeDegrees);
+                            west = Math.Min(west, g.GpsPoint.LongitudeDegrees);
                             isValid = true;
                         }
                     }
@@ -400,7 +400,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
             foreach (ImageMapMarker point in m_Pictures)
             {
                 //Use the image gpspoint, the MapMarker point should be modified to stack
-                if (windowBounds.Contains(point.image.GpsLocation))
+                if (windowBounds.Contains(point.image.GpsPoint))
                 {
                     visibleLocations.Add(point);
                 }
