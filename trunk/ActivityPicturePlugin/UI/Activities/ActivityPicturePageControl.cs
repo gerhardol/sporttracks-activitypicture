@@ -663,7 +663,7 @@ namespace ActivityPicturePlugin.UI.Activities
                         this.pictureAlbumView.ImageList == null ||
                         ( this.PluginExtensionData.Images.Count != this.pictureAlbumView.ImageList.Count ) )
                     {
-                        this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images );
+                        this.pictureAlbumView.ImageList = this.PluginExtensionData.LoadImageData( this.PluginExtensionData.Images, _Activity );
                         SortListView();
                     }
                     sliderImageSize.Value = this.PluginExtensionData.ImageZoom;
@@ -1413,9 +1413,10 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 if ( ( id.Type == ImageData.DataTypes.Image ) || ( id.Type == ImageData.DataTypes.Video ) )
                 {
+                    //This writes the exif data if exists, otherwise estimates from activity
                     if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
-                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, this._Activity );
-                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
+                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, id.GpsPoint );
+                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, id.GpsPoint );
                 }
             }
             this.pictureAlbumView.ClearImageList();
