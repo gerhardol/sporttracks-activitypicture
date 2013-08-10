@@ -77,7 +77,7 @@ namespace ActivityPicturePlugin.Helper
         private string photosource;
         private string referenceID;
         private ExifWorks ew;
-        private Image thumbnail;
+        private Image thumbnailImage;
         private Single ratio;
         private string m_thumbnailPath;
 
@@ -170,8 +170,8 @@ namespace ActivityPicturePlugin.Helper
 
         public Image Thumbnail
         {
-            get { return this.thumbnail; }
-            set { this.thumbnail = value; }
+            get { return this.thumbnailImage; }
+            set { this.thumbnailImage = value; }
         }
 
         public void OffsetDateTimeOriginal( int year, int month, int day, int hour, int min, int sec )
@@ -411,11 +411,11 @@ namespace ActivityPicturePlugin.Helper
 
         internal static string thumbnailPath(string referenceID)
         {
-            string ThumbnailPath = ImageFilesFolder + referenceID + ".jpg";
+            string path = ImageFilesFolder + referenceID + ".jpg";
 #if !ST_2_1
             //If thumbnails created in ST2 (or earlier versions of the plugin..), keep them
             //TODO: They should be migrated eventually instead
-            if (!System.IO.File.Exists(ThumbnailPath))
+            if (!System.IO.File.Exists(path))
             {
                 string ThumbnailPathST2 = ImageFilesFolderST2 + referenceID + ".jpg";
                 if (System.IO.File.Exists(ThumbnailPathST2))
@@ -424,7 +424,7 @@ namespace ActivityPicturePlugin.Helper
                 }
             }
 #endif
-            return ThumbnailPath;
+            return path;
         }
 
         public string ThumbnailPath
@@ -490,7 +490,7 @@ namespace ActivityPicturePlugin.Helper
                 try
                 {
                     // A valid image was not found... No valid Exif data exists
-                    if ( this.thumbnail == null ) return "";   
+                    if ( this.thumbnailImage == null ) return "";   
 
                     Length.Units units = Plugin.GetApplication().SystemPreferences.ElevationUnits;
                     string strFormat = String.Format( "N{0}u", Length.DefaultDecimalPrecision( units ) );
@@ -802,7 +802,7 @@ namespace ActivityPicturePlugin.Helper
             }
             else if (this.Type == ImageData.DataTypes.Video)
             {
-                SetVideoThumbnail();
+                this.SetVideoThumbnail();
             }
         }
 
@@ -811,8 +811,7 @@ namespace ActivityPicturePlugin.Helper
             try
             {
                 Bitmap bmp;
-                string defpath = "";
-                defpath = this.ThumbnailPath;
+                string defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
