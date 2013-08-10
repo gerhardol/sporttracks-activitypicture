@@ -937,6 +937,7 @@ namespace ActivityPicturePlugin.UI
                         break;
                     }
                 }
+                rem.Add(im);
                 if ( lvi.ListView.SmallImageList.Images.Count > lvi.Index )
                     lvi.ListView.SmallImageList.Images.RemoveAt( lvi.Index );
                 if ( lvi.ListView.LargeImageList.Images.Count > lvi.Index )
