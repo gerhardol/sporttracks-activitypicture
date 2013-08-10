@@ -35,57 +35,16 @@ namespace ActivityPicturePlugin.UI.MapLayers
 {
     class PicturesLayer : RouteControlLayerBase, IRouteControlLayer
     {
-        class ImageDataLocation : IGPSPoint
+        class ImageMapMarker : MapMarker
         {
+            public ImageMapMarker(ImageData image, float size, int zindex)
+                : base(new GPSPoint(image.GpsPoint.LatitudeDegrees, image.GpsPoint.LongitudeDegrees, image.GpsPoint.ElevationMeters), 
+                new MapIcon("file://" + image.ThumbnailPath, new Size((int)size, (int)(size/image.Ratio))),
+                true, zindex)
+            {
+                this.image = image;
+            }
             public ImageData image;
-            public ImageDataLocation(ImageData im)
-            {
-                this.image = im;
-            }
-            public float DistanceMetersToPoint(IGPSPoint point)
-            {
-                return this.image.GpsPoint.DistanceMetersToPoint(point);
-            }
-
-            public float ElevationMeters
-            {
-                get { return this.image.GpsPoint.ElevationMeters; }
-            }
-
-            public float LatitudeDegrees
-            {
-                get { return this.image.GpsPoint.LatitudeDegrees; }
-            }
-
-            public float LongitudeDegrees
-            {
-                get { return this.image.GpsPoint.LongitudeDegrees; }
-            }
-
-            public string ToString(string format)
-            {
-                return this.image.GpsPoint.ToString();
-            }
-        }
-        class PointMapMarker : MapMarker
-        {
-            public PointMapMarker(ImageDataLocation location, MapIcon icon, bool clickable)
-                : base(location, icon, clickable)
-            {
-                this.location = location;
-            }
-            private ImageDataLocation location;
-            public ImageDataLocation image
-            {
-                get
-                {
-                    return this.Location as ImageDataLocation;
-                }
-                set
-                {
-                    this.Location = value;
-                }
-            }
         }
 
         private DateTime m_creationTime = DateTime.Now;
@@ -126,16 +85,29 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
         public IList<ImageData> Pictures
         {
-            get
-            {
-                return m_Pictures;
-            }
+            //get
+            //{
+            //    return m_Pictures;
+            //}
             set
             {
-                bool changed = false;
-                if (!value.Equals(m_Pictures)) { changed = true; }
-                m_Pictures = value;
-                if (changed) { RefreshOverlays(true); }
+                foreach (ImageMapMarker imm in this.m_Pictures)
+                {
+                    imm.Click -= pointOverlay_Click;
+                    imm.DoubleClick -= pointOverlay_DoubleClick;
+                }
+                this.m_Pictures = new List<ImageMapMarker>();
+                foreach (ImageData im in value)
+                {
+                    if (im.ThumbnailPath != null)
+                    {
+                        ImageMapMarker imm2 = new ImageMapMarker(im, this.m_pictureSize, 0);
+                        this.m_Pictures.Add(imm2);
+                        imm2.Click += pointOverlay_Click;
+                        imm2.DoubleClick += pointOverlay_DoubleClick;
+                    }
+                }
+                RefreshOverlays(true);
             }
         }
         public IList<ImageData> SelectedPictures
@@ -182,9 +154,105 @@ namespace ActivityPicturePlugin.UI.MapLayers
                         west -= lng;
                         IGPSBounds area = new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
                         DoZoom(area);
+
+                        for (int i = 0; i < this.m_Pictures.Count; i++)
+                        {
+                            ImageMapMarker imp = this.m_Pictures[i];
+                            int zindex = imp.ZIndex;
+                            bool found = false;
+                            foreach (ImageData g in value)
+                            {
+                                if (g == imp.image)
+                                {
+                                    found = true;
+                                }
+                            }
+                            if (found)
+                            {
+                                zindex = 1;
+                            }
+                            else if (zindex > 0)
+                            {
+                                //Do not change "demoted" pictures
+                                zindex = 0;
+                            }
+                            imp.Click -= pointOverlay_Click;
+                            imp.DoubleClick -= pointOverlay_DoubleClick;
+                            imp = new ImageMapMarker(imp.image, this.m_pictureSize, zindex);
+                            this.m_Pictures[i] = imp;
+                            imp.Click += pointOverlay_Click;
+                            imp.DoubleClick += pointOverlay_DoubleClick;
+                        }
+                        RefreshOverlays(true);
                     }
                 }
-                    m_SelectedPictures = value;
+                    //m_SelectedPictures = value;
+            }
+        }
+
+        void pointOverlay_Click(object sender, MouseEventArgs e)
+        {
+            if (sender is ImageMapMarker)
+            {
+                IList<ImageMapMarker> pictures = new List<ImageMapMarker>();
+                IList<ImageMapMarker> visible = new List<ImageMapMarker>();
+                ImageMapMarker im = sender as ImageMapMarker;
+                lastClickedImage = im;
+                bool visible0z = false;
+
+                foreach (ImageMapMarker imm in this.m_Pictures)
+                {
+                    if (this.MapControl.MapBounds.Contains(imm.Location))
+                    {
+                        visible.Add(imm);
+                        if (imm.ZIndex == 0 && im != imm)
+                        {
+                            visible0z = true;
+                        }
+                    }
+                }
+
+                foreach (ImageMapMarker imm in this.m_Pictures)
+                {
+                    int zindex = imm.ZIndex;
+                    if (imm == im)
+                    {
+                        //send to back
+                        zindex = 1 - visible.Count;
+                    }
+                    else if (visible.Contains(imm))
+                    {
+                        if (zindex < -1 ||
+                            //Let all 0 prio be visible before promoting
+                            zindex == -1 && !visible0z)
+                        {
+                            zindex++;
+                        }
+                    }
+
+                    imm.Click -= pointOverlay_Click;
+                    imm.DoubleClick -= pointOverlay_DoubleClick;
+                    ImageMapMarker imm2 = new ImageMapMarker(imm.image, this.m_pictureSize, zindex);
+                    pictures.Add(imm2);
+                    imm2.Click += pointOverlay_Click;
+                    imm2.DoubleClick += pointOverlay_DoubleClick;
+                }
+                this.m_Pictures = pictures;
+                this.RefreshOverlays();
+            }
+        }
+
+        void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
+        {
+            if (sender is ImageMapMarker)
+            {
+                //ImageMapMarker im = sender as ImageMapMarker;
+                if (lastClickedImage != null)
+                {
+                    Helper.Functions.OpenExternal(lastClickedImage.image);
+                    //TODO: rollback active image
+                }
+                lastClickedImage = null;
             }
         }
 
@@ -209,12 +277,12 @@ namespace ActivityPicturePlugin.UI.MapLayers
         {
             set
             {
-                if (m_pictureSize != value)
+                if ((int)m_pictureSize != (int)value)
                 {
                     m_scalingChanged = true;
                 }
                 //Keep scaling here for now
-                m_pictureSize = 3*value;
+                m_pictureSize = 3 * value;
             }
         }
         public void Refresh()
@@ -304,6 +372,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
         {
             RefreshOverlays(false);
         }
+
         private void RefreshOverlays(bool clear)
         {
             if (clear || MapControlChanged)
@@ -316,44 +385,49 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
             IGPSBounds windowBounds = MapControlBounds;
 
-            IList<ImageData> visibleLocations = new List<ImageData>();
-            foreach (ImageData point in m_Pictures)
+            IList<ImageMapMarker> visibleLocations = new List<ImageMapMarker>();
+            foreach (ImageMapMarker point in m_Pictures)
             {
-                if (windowBounds.Contains(point.GpsLocation))
+                //Use the image gpspoint, the MapMarker point should be modified to stack
+                if (windowBounds.Contains(point.image.GpsLocation))
                 {
                     visibleLocations.Add(point);
                 }
             }
             if (0 == visibleLocations.Count) return;
 
+            if (this.m_scalingChanged)
+            {
+                this.m_scalingChanged = false;
+                IList<ImageMapMarker> pictures = new List<ImageMapMarker>();
+                foreach (ImageMapMarker imm in this.m_Pictures)
+                {
+                    imm.Click -= pointOverlay_Click;
+                    imm.DoubleClick -= pointOverlay_DoubleClick;
+                    ImageMapMarker imm2 = new ImageMapMarker(imm.image, this.m_pictureSize, imm.ZIndex);
+                    pictures.Add(imm2);
+                    imm2.Click += pointOverlay_Click;
+                    imm2.DoubleClick += pointOverlay_DoubleClick;
+                }
+                this.m_Pictures = pictures;
+            }
+
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             IList<IMapOverlay> addedOverlays = new List<IMapOverlay>();
 
-            foreach (ImageData location in visibleLocations)
+            foreach (ImageMapMarker imm in visibleLocations)
             {
-                ImageDataLocation iml = new ImageDataLocation(location);
-                if ((!m_scalingChanged) && m_pointOverlays.ContainsKey(location.GpsPoint))
+                //Use image location (MapMarker should be adjusted)
+                if (m_pointOverlays.ContainsKey(imm.image.GpsPoint))
                 {
                     //No need to refresh this point
-                    newPointOverlays.Add(iml, m_pointOverlays[iml]);
-                    ((PointMapMarker)m_pointOverlays[iml]).DoubleClick -= new MouseEventHandler(pointOverlay_DoubleClick);
-                    m_pointOverlays.Remove(iml);
+                    newPointOverlays.Add(imm.Location, m_pointOverlays[imm.Location]);
                 }
                 else
                 {
-                    string path = location.ThumbnailPath;// Functions.GetBestImage(location.PhotoSource, location.ReferenceID);
-                    if (null != path)
-                    {
-                        Size iconSize = new Size((int)m_pictureSize, (int)(m_pictureSize/location.Ratio));
-                        string fileURL = "file://" + path;
-                        m_icon = new MapIcon(fileURL, iconSize);
-
-                        PointMapMarker pointOverlay = new PointMapMarker(iml, m_icon, true);
-                        pointOverlay.DoubleClick +=new MouseEventHandler(pointOverlay_DoubleClick);
-                        newPointOverlays.Add(location.GpsPoint, pointOverlay);
-                        addedOverlays.Add(pointOverlay);
-                        m_scalingChanged = false;
-                    }
+                    //Add with MapMarker location
+                    newPointOverlays.Add(imm.Location, imm);
+                    addedOverlays.Add(imm);
                 }
             }
 
@@ -376,18 +450,8 @@ namespace ActivityPicturePlugin.UI.MapLayers
             }
         }
 
-        void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
-        {
-            if (sender is PointMapMarker)
-            {
-                PointMapMarker im = sender as PointMapMarker;
-                Helper.Functions.OpenExternal(((ImageDataLocation)im.Location).image);
-            }
-        }
-
         private void ClearOverlays()
         {
-            //((MapMarker)pointOverlays[location.GpsPoint]).DoubleClick -= new MouseEventHandler(pointOverlay_DoubleClick);
             MapControl.RemoveOverlays(m_pointOverlays.Values);
             m_pointOverlays.Clear();
             if (m_extraMapLayer != null)
@@ -397,18 +461,19 @@ namespace ActivityPicturePlugin.UI.MapLayers
         }
 
         private bool m_scalingChanged = false;
-        MapIcon m_icon = null;
+        //MapIcon m_icon = null;
         private bool m_routeSettingsChanged = false;
         private IDictionary<IGPSPoint, IMapOverlay> m_pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
 
         //private RouteItemsDataChangeListener listener;
 
-        private IList<ImageData> m_Pictures = new List<ImageData>();
-        private IList<ImageData> m_SelectedPictures = new List<ImageData>();
+        private IList<ImageMapMarker> m_Pictures = new List<ImageMapMarker>();
+        //private IList<ImageData> m_SelectedPictures = new List<PointMapMarker>();
         private float m_pictureSize;
         private static bool m_showPage;
         private static IDictionary<Guid, PicturesLayer> m_layers = new Dictionary<Guid, PicturesLayer>();
         private PicturesLayer m_extraMapLayer = null;
+        private ImageMapMarker lastClickedImage = null; //instead of timer to supress click
     }
 }
 #endif
