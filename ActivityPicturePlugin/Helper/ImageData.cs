@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Text;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.GPS;
+using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Drawing;
 using System.Windows.Forms;
 using ActivityPicturePlugin.Properties;
@@ -31,10 +32,11 @@ namespace ActivityPicturePlugin.Helper
 
     public class ImageData : IDisposable
     {
-        public ImageData( ImageDataSerializable IDSer )
+        public ImageData(ImageDataSerializable IDSer, IActivity activity)
         {
             try
             {
+                this.activity = activity;
                 System.Diagnostics.Debug.Assert(IDSer.Type != DataTypes.Nothing, "No type set for " + IDSer.PhotoSource );
                 this.type = IDSer.Type;
                 this.photosource = IDSer.PhotoSource;
@@ -72,6 +74,7 @@ namespace ActivityPicturePlugin.Helper
             Video
         }
 
+        private IActivity activity;
         private DataTypes type;
         private bool selected;
         private string photosource;
@@ -325,7 +328,21 @@ namespace ActivityPicturePlugin.Helper
 
         public IGPSPoint GpsPoint
         {
-            get { return new GPSPoint( (float)ew.GPSLatitude, (float)ew.GPSLongitude, (float)ew.GPSAltitude ); }
+            get 
+            { 
+                float lat = (float)ew.GPSLatitude;
+                float lon = (float)ew.GPSLongitude;
+                float alt = (float)ew.GPSAltitude;
+                if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
+                {
+                    IGPSPoint g = this.activity.GPSRoute.GetInterpolatedValue(EW.DateTimeOriginal.ToUniversalTime()).Value;
+                    if (g != null)
+                    {
+                        return g;
+                    }
+                }
+                return new GPSPoint( lat, lon, alt ); }
+
         }
 
         public string ExifGPS

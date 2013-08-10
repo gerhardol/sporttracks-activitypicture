@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using ActivityPicturePlugin.Helper;
+using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace ActivityPicturePlugin.Settings
 {
@@ -133,13 +134,13 @@ namespace ActivityPicturePlugin.Settings
         /// <history> 
         /// [doml] 04.09.2007 Created 
         /// </history> 
-        public List<ImageData> LoadImageData(List<ImageDataSerializable> IDSer)
+        public List<ImageData> LoadImageData(List<ImageDataSerializable> IDSer, IActivity activity)
         {
             List<ImageData> IDList = new System.Collections.Generic.List<ImageData>();
             ImageData ID;
             for (int i = 0; i < this.NumberOfImages; i++)
             {
-                ID = new ImageData(IDSer[i]);
+                ID = new ImageData(IDSer[i], activity);
                 string strDate = ID.DateTimeOriginal;
                 if ( String.IsNullOrEmpty( strDate ) )
                 {

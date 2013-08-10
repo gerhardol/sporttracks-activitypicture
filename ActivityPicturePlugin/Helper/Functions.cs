@@ -472,7 +472,7 @@ namespace ActivityPicturePlugin.Helper
                         PluginData pd = ReadExtensionData( act );
                         if ( pd.Images.Count != 0 )
                         {
-                            images = pd.LoadImageData( pd.Images );
+                            images = pd.LoadImageData( pd.Images, act );
                             ImageFound = true;
                         }
                         else continue; //if no images, continue to next activity
@@ -1075,15 +1075,15 @@ namespace ActivityPicturePlugin.Helper
 
         }
 
-        internal static void GeoTagWithActivity( string filepath, ZoneFiveSoftware.Common.Data.Fitness.IActivity act )
+        internal static void GeoTagWithActivity( string filepath, ZoneFiveSoftware.Common.Data.GPS.IGPSPoint gps )
         {
             try
             {
                 using ( ExifWorks EW = new ExifWorks( filepath ) )
                 {
-                    EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LatitudeDegrees;
-                    EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LongitudeDegrees;
-                    EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.ElevationMeters;
+                    EW.GPSLatitude = gps.LatitudeDegrees;
+                    EW.GPSLongitude = gps.LongitudeDegrees;
+                    EW.GPSAltitude = gps.ElevationMeters;
                     // Save Image with new Exif data
 
                     EW.GetBitmap().Save( filepath );

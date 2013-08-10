@@ -1042,7 +1042,7 @@ namespace ActivityPicturePlugin.UI
                     IActivity act = (IActivity)(node.Tag);
                     PluginData data = Helper.Functions.ReadExtensionData(act);
 
-                    List<ImageData> il = data.LoadImageData(data.Images);
+                    List<ImageData> il = data.LoadImageData(data.Images, act);
                     foreach (ImageData id in il)
                     {
                         ActivityTreeViewInfo a = new ActivityTreeViewInfo();
@@ -1274,7 +1274,7 @@ namespace ActivityPicturePlugin.UI
                         this.listViewAct.SmallImageList = lis; 
                         System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
 
-                        IList<ImageData> il = data.LoadImageData( data.Images );
+                        IList<ImageData> il = data.LoadImageData( data.Images, act );
 
                         progressBar2.Style = ProgressBarStyle.Continuous;
                         progressBar2.Maximum = il.Count;
