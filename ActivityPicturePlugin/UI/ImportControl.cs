@@ -446,7 +446,6 @@ namespace ActivityPicturePlugin.UI
             catch (Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
         }
 
@@ -509,11 +508,11 @@ namespace ActivityPicturePlugin.UI
                 {
                     System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
 
-                    // Create a list of ListItems
-                    for ( int j = 0; j < m_files.Count; j++ ) //add images plus exif data
+                    // Create a list of ListItems 
+                    foreach (FileInfo fi in this.m_files)
                     {
-                        ImageData.DataTypes dt = Functions.GetMediaType( m_files[j].Extension );
-                        lvItems.Add( NewListViewImagesItem( m_files[j], dt, m_files[j].FullName ) );			//read images and add thumbnails
+                        ListViewItem lvi = NewListViewImagesItem(fi);
+                        lvItems.Add(lvi);
                     }
 
                     // Sort the list if a ListViewItemSorter has been set
@@ -643,7 +642,6 @@ namespace ActivityPicturePlugin.UI
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                // throw;
             }
 
         }
@@ -917,6 +915,7 @@ namespace ActivityPicturePlugin.UI
                 }
             }
         }
+
         private void RemoveSelectedImagesFromActivity( ListViewItem[] lvisel )
         {
             //Delete selected images
@@ -925,23 +924,19 @@ namespace ActivityPicturePlugin.UI
             listViewAct.SuspendLayout();
             IList<ImageData> rem = new List<ImageData>();
 
-            foreach ( ListViewItem lvi in lvisel )
+            foreach (ListViewItem lvi in lvisel)
             {
                 ImageData im = (ImageData)(lvi.Tag);
-                string id = im.ReferenceID;
-                foreach ( ImageDataSerializable ids in data.Images )
+                ImageDataSerializable ids = im.GetSerialzable(data.Images);
+                if (ids != null)
                 {
-                    if ( ids.ReferenceID == id )
-                    {
-                        data.Images.Remove( ids );
-                        break;
-                    }
+                    data.Images.Remove(ids);
                 }
                 rem.Add(im);
-                if ( lvi.ListView.SmallImageList.Images.Count > lvi.Index )
-                    lvi.ListView.SmallImageList.Images.RemoveAt( lvi.Index );
-                if ( lvi.ListView.LargeImageList.Images.Count > lvi.Index )
-                    lvi.ListView.LargeImageList.Images.RemoveAt( lvi.Index );
+                if (lvi.ListView.SmallImageList.Images.Count > lvi.Index)
+                    lvi.ListView.SmallImageList.Images.RemoveAt(lvi.Index);
+                if (lvi.ListView.LargeImageList.Images.Count > lvi.Index)
+                    lvi.ListView.LargeImageList.Images.RemoveAt(lvi.Index);
                 lvi.Remove();
             }
             listViewAct.ResumeLayout();
@@ -979,11 +974,10 @@ namespace ActivityPicturePlugin.UI
                     lblProgress.Text = String.Format( Resources.CheckingForDuplicates_Text, ++iCount, lvisel.Length );
                     progressBar2.Value = iCount;
 
-                    string fileName = (string)(lvi.Tag);
-                    FileInfo fi = new FileInfo( fileName );
+                    FileInfo fi = (FileInfo)(lvi.Tag);
                     if ( !ImageAlreadyExistsInActivity( fi.Name, dataTmp ) )
                     {
-                        ImageDataSerializable ids = GetImageDataSerializableFromFile( fileName );
+                        ImageDataSerializable ids = ImageDataSerializable.FromFile( fi );
                         if ( ids != null ) data.Images.Add( ids );
                         Functions.WriteExtensionData( act, data );
 
@@ -991,10 +985,7 @@ namespace ActivityPicturePlugin.UI
                         // The next time Sporttracks runs and the plugin in launched
                         // these images will be deleted if the logbook wasn't saved
                         // removing orphaned thumbnails.
-                        using ( ImageData ID = new ImageData( ids ) )
-                        {
-                            ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
-                        }
+                        ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ImageData.thumbnailPath(ids.ReferenceID) + "\t";
 
                     }
                     Application.DoEvents();
@@ -1014,24 +1005,6 @@ namespace ActivityPicturePlugin.UI
                 System.Diagnostics.Debug.Assert( false, ex.Message );
                 throw;
             }
-        }
-
-        private static ImageDataSerializable GetImageDataSerializableFromFile( string file )
-        {
-            ImageDataSerializable ids = null;
-            using ( ImageData id = new ImageData() )
-            {
-                ImageData.DataTypes dt = Functions.GetMediaType(file);
-
-                if ( dt != ImageData.DataTypes.Nothing )
-                {
-                    ids = new ImageDataSerializable();
-                    ids.PhotoSource = file;
-                    ids.ReferenceID = Guid.NewGuid().ToString();
-                    ids.Type = id.Type;
-                }
-            }
-            return ids;
         }
 
         private class ActivityTreeViewInfo
@@ -1115,12 +1088,13 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private ListViewItem NewListViewImagesItem( FileInfo file, ImageData.DataTypes dt, string strImgKey )
+        private ListViewItem NewListViewImagesItem( FileInfo file )
         {
             ListViewItem lvi = new ListViewItem();
+            ImageData.DataTypes dt = Functions.GetMediaType(file.Extension);
             lvi.Text = file.Name;
-            lvi.ImageKey = strImgKey;
-            lvi.Tag = file.FullName; //For listViewDrive
+            lvi.ImageKey = file.FullName;
+            lvi.Tag = file; //For listViewDrive
 
             if ( dt == ImageData.DataTypes.Image )
             {
@@ -1736,16 +1710,13 @@ namespace ActivityPicturePlugin.UI
                                     this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = GetImageDataSerializableFromFile( file.FullName );
+                                    ImageDataSerializable ids = ImageDataSerializable.FromFile( file );
                                     if ( ids != null ) data.Images.Add( ids );
                                     Functions.WriteExtensionData( CurrentActivity, data );
                                     numFilesImported++;
 
-                                    using ( ImageData ID = new ImageData( ids ) )
-                                    {
-                                        ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ID.ThumbnailPath + "\t";
-                                    }
-
+                                    ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ImageData.thumbnailPath(ids.ReferenceID) + "\t";
+                                    
                                     continue; //proceed to next file
                                 }
                             }
@@ -1760,7 +1731,6 @@ namespace ActivityPicturePlugin.UI
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
             finally
             {
@@ -1797,12 +1767,8 @@ namespace ActivityPicturePlugin.UI
                     first = first2;
                 }
             }
-            if (first == DateTime.MaxValue && this.m_ActivityNodes.Count>0)
-            {
-                //This should not occur...
-                first = DateTime.MinValue;
-            }
-            else if (first > DateTime.MinValue)
+            //DateTime.Minvalue should not occur, but no assert
+            if (first > DateTime.MinValue)
             {
                 //Some slack for time zone etc
                 first -= TimeSpan.FromDays(1);
@@ -1873,10 +1839,10 @@ namespace ActivityPicturePlugin.UI
                     foreach ( FileInfo file in dirfiles )
                     {
                         if ( Functions.IsNormalFile( file ) &&
-                            Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing &&
+                            (Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing) &&
                             ( !m_files.Contains( file ) ) &&
                             //prune filter: Use file modified date
-                                file.LastWriteTimeUtc > first )
+                                (file.LastWriteTimeUtc > first) )
                         {
                             m_files.Add( file );
                             SetLabelText( Resources.ImportControl_addingFile + " " + file.Name );
@@ -2641,25 +2607,14 @@ namespace ActivityPicturePlugin.UI
         {
             try
             {
-                string file = (string)( listViewDrive.FocusedItem.Tag );
-                ImageData.DataTypes dt = Functions.GetMediaType( file );
-                if ( dt == ImageData.DataTypes.Image )
-                {
-                    ImageDataSerializable ids = new ImageDataSerializable();
-                    ids.PhotoSource = file;
-                    ids.ReferenceID = "";
-                    ids.Type = dt;
-                    Functions.OpenImage(new ImageData(ids));
-                }
-                else if ( dt == ImageData.DataTypes.Video )
-                {
-                    Functions.OpenVideoInExternalWindow( file );
-                }
+                FileInfo file = (FileInfo)(listViewDrive.FocusedItem.Tag);
+                ImageData.DataTypes dt = Functions.GetMediaType(file.FullName);
+                Functions.OpenExternal(file.FullName, dt);
                 return;
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
-                System.Diagnostics.Debug.Assert( false, ex.Message );
+                System.Diagnostics.Debug.Assert(false, ex.Message);
                 //throw;
             }
         }
@@ -2794,34 +2749,19 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 ImageData im = (ImageData)(listViewAct.FocusedItem.Tag);
-                string id = im.ReferenceID;
-                string photosource = "";
                 IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
                 PluginData data = Helper.Functions.ReadExtensionData( act );
 
-                foreach ( ImageDataSerializable ids in data.Images )
+                ImageDataSerializable ids = im.GetSerialzable(data.Images);
+                if (ids != null)
                 {
-                    if ( ids.ReferenceID == id )
-                    {
-                        photosource = ids.PhotoSource;
-                        if ( ids.Type == ImageData.DataTypes.Image )
-                        {
-                            Functions.OpenImage(new ImageData(ids));
-                        }
-                        else if ( ids.Type == ImageData.DataTypes.Video )
-                        {
-                            Functions.OpenVideoInExternalWindow( photosource );
-                        }
-                        return;
-                    }
+                    Functions.OpenExternal(ids.PhotoSource, ids.Type);
                 }
             }
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
-
         }
 
         private void listViewAct_ColumnClick( object sender, ColumnClickEventArgs e )
@@ -3101,16 +3041,13 @@ namespace ActivityPicturePlugin.UI
                                 PluginData data = Helper.Functions.ReadExtensionData(a.Activity);
                                 listViewAct.SuspendLayout();
 
-                                foreach (ImageDataSerializable ids in data.Images)
+                                ImageDataSerializable ids = im.GetSerialzable(data.Images);
+                                if (ids != null)
                                 {
-                                    if (ids.ReferenceID == im.ReferenceID)
-                                    {
-                                        ids.PhotoSource = im.PhotoSource;
-                                        //Thumbnail may need to be recreated
-                                        im.SetThumbnail();
-                                        break;
-                                    }
+                                    ids.PhotoSource = im.PhotoSource;
                                 }
+                                //Thumbnail may need to be recreated
+                                im.SetThumbnail();
                                 listViewAct.ResumeLayout();
                                 Functions.WriteExtensionData(a.Activity, data);
                             }
@@ -3235,19 +3172,16 @@ namespace ActivityPicturePlugin.UI
                 PluginData data = Helper.Functions.ReadExtensionData( act );
 
                 List<string> sFolders = new List<string>();
-                foreach ( ListViewItem lvi in listViewAct.SelectedItems )
+                foreach (ListViewItem lvi in listViewAct.SelectedItems)
                 {
                     ImageData im = (ImageData)(lvi.Tag);
-                    string id = im.ReferenceID;
-                    foreach ( ImageDataSerializable ids in data.Images )
+                    ImageDataSerializable ids = im.GetSerialzable(data.Images);
+                    if (ids != null)
                     {
-                        if ( ids.ReferenceID == id )
-                        {
-                            System.IO.FileInfo fi = new FileInfo( ids.PhotoSource );
+                        System.IO.FileInfo fi = new FileInfo(ids.PhotoSource);
 
-                            if ( !sFolders.Contains( fi.DirectoryName ) )
-                                sFolders.Add( fi.DirectoryName );
-                        }
+                        if (!sFolders.Contains(fi.DirectoryName))
+                            sFolders.Add(fi.DirectoryName);
                     }
                 }
 

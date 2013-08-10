@@ -31,18 +31,11 @@ namespace ActivityPicturePlugin.Helper
 
     public class ImageData : IDisposable
     {
-        public ImageData()
-        {
-        }
-
         public ImageData( ImageDataSerializable IDSer )
         {
             try
             {
-                if ( IDSer.Type == DataTypes.Nothing )
-                {
-                    IDSer.Type = Functions.GetMediaType( IDSer.PhotoSource );
-                }
+                System.Diagnostics.Debug.Assert(IDSer.Type != DataTypes.Nothing, "No type set for " + IDSer.PhotoSource );
                 this.type = IDSer.Type;
                 this.photosource = IDSer.PhotoSource;
                 this.referenceID = IDSer.ReferenceID;
@@ -416,7 +409,7 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        private static string thumbnailPath(string referenceID)
+        internal static string thumbnailPath(string referenceID)
         {
             string ThumbnailPath = ImageFilesFolder + referenceID + ".jpg";
 #if !ST_2_1
@@ -893,8 +886,22 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                // throw;
             }
+        }
+
+        internal ImageDataSerializable GetSerialzable(IList<ImageDataSerializable> images)
+        {
+            ImageDataSerializable res = null;
+            foreach (ImageDataSerializable ids in images)
+            {
+                if (this.ReferenceID == ids.ReferenceID)
+                {
+                    res = ids;
+                    break;
+                }
+            }
+            System.Diagnostics.Debug.Assert(res != null, "xxx not found" + this.PhotoSource);
+            return res;
         }
 
         #endregion
@@ -922,6 +929,21 @@ namespace ActivityPicturePlugin.Helper
     [Serializable()]
     public class ImageDataSerializable
     {
+        public static ImageDataSerializable FromFile(System.IO.FileInfo file)
+        {
+            ImageDataSerializable ids = null;
+            ImageData.DataTypes dt = Functions.GetMediaType(file.FullName);
+
+            if (dt != ImageData.DataTypes.Nothing)
+            {
+                ids = new ImageDataSerializable();
+                ids.photosource = file.FullName;
+                ids.referenceID = Guid.NewGuid().ToString();
+                ids.type = dt;
+            }
+            return ids;
+        }
+
         private ImageData.DataTypes type;
         private string photosource;
         private string referenceID;
