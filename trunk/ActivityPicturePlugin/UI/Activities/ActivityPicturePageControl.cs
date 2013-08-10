@@ -64,6 +64,7 @@ namespace ActivityPicturePlugin.UI.Activities
             //}
             this.m_layer = PicturesLayer.Instance((IView)view);
             this.pictureAlbumView.m_layer = this.m_layer;
+            this.importControl1.m_layer = this.m_layer;
         }
 #endif
 
@@ -695,10 +696,10 @@ namespace ActivityPicturePlugin.UI.Activities
 
                     this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler( this.dataGridViewImages_CellValueChanged );
 #if !ST_2_1
-                    m_layer.HidePage(); //defer updates
+                    this.m_layer.HidePage(); //defer updates
                     this.m_layer.PictureSize = this.sliderImageSize.Value;
-                    m_layer.Pictures = this.pictureAlbumView.ImageList;
-                    m_layer.ShowPage("");//Refresh
+                    this.m_layer.Pictures = this.pictureAlbumView.ImageList;
+                    this.m_layer.ShowPage("");//Refresh
 #endif
                 }
                 else
