@@ -150,7 +150,9 @@ namespace ActivityPicturePlugin.UI
                 this.toolStripMenuMigratePaths.Text = Resources.MigratePaths_Text;
                 this.toolStripMenuRemove.Text = CommonResources.Text.ActionRemove;
                 this.toolStripMenuRefresh.Text = CommonResources.Text.ActionRefresh;
+                this.toolStripMenuOpenImage.Text = CommonResources.Text.ActionOpen;
                 this.toolStripMenuOpenFolder.Text = Resources.OpenContainingFolder_Text;
+                this.toolStripMenuOpenThumbnail.Text = CommonResources.Text.ActionOpen + " " + Resources.thumbnailDataGridViewImageColumn_HeaderText;
 
                 if ( m_standardpathalreadyshown ) LoadActivityNodes( true );
             }
@@ -1361,15 +1363,6 @@ namespace ActivityPicturePlugin.UI
                             progressBar2.Value = j;
                             lblProgress.Text = String.Format( Resources.FoundImagesInActivity_Text, j );
 
-#if !ST_2_1
-                            if (this.m_layer != null)
-                            {
-                                this.m_layer.HidePage(); //defer updates
-                                //this.m_layer.PictureSize = this.sliderImageSize.Value;
-                                this.m_layer.Pictures = il;
-                                this.m_layer.ShowPage("");//Refresh
-                            }
-#endif
                         }
 
                         // The last image for the last listitem doesn't always get drawn so
@@ -1381,6 +1374,15 @@ namespace ActivityPicturePlugin.UI
                         if ( nIndex > 0 )
                             listViewAct.Invalidate( listViewAct.Items[nIndex - 1].Bounds );
 
+#if !ST_2_1
+                        if (this.m_layer != null)
+                        {
+                            this.m_layer.HidePage(); //defer updates
+                            //this.m_layer.PictureSize = this.sliderImageSize.Value;
+                            this.m_layer.Pictures = il;
+                            this.m_layer.ShowPage("");//Refresh
+                        }
+#endif
                     }
                     else
                     {
@@ -2629,14 +2631,7 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 ImageData im = (ImageData)(listViewAct.FocusedItem.Tag);
-                IActivity act = (IActivity)( this.treeViewActivities.SelectedNode.Tag );
-                PluginData data = Helper.Functions.ReadExtensionData( act );
-
-                ImageDataSerializable ids = im.GetSerialzable(data.Images);
-                if (ids != null)
-                {
-                    Functions.OpenExternal(ids.PhotoSource, ids.Type);
-                }
+                Functions.OpenExternal(im.PhotoSource, im.Type);
             }
             catch ( Exception ex )
             {
@@ -3060,6 +3055,11 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
+        private void toolStripMenuOpenImage_Click(object sender, EventArgs e)
+        {
+            this.listViewAct_DoubleClick( sender, e );
+        }
+
         private void toolStripMenuOpenFolder_Click(object sender, EventArgs e)
         {
             try
@@ -3071,14 +3071,10 @@ namespace ActivityPicturePlugin.UI
                 foreach (ListViewItem lvi in listViewAct.SelectedItems)
                 {
                     ImageData im = (ImageData)(lvi.Tag);
-                    ImageDataSerializable ids = im.GetSerialzable(data.Images);
-                    if (ids != null)
-                    {
-                        System.IO.FileInfo fi = new FileInfo(ids.PhotoSource);
+                    System.IO.FileInfo fi = new FileInfo(im.PhotoSource);
 
-                        if (!sFolders.Contains(fi.DirectoryName))
-                            sFolders.Add(fi.DirectoryName);
-                    }
+                    if (!sFolders.Contains(fi.DirectoryName))
+                        sFolders.Add(fi.DirectoryName);
                 }
 
                 foreach ( string sFolder in sFolders )
@@ -3088,6 +3084,19 @@ namespace ActivityPicturePlugin.UI
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
+            }
+        }
+
+        private void toolStripMenuOpenThumbnail_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ImageData im = (ImageData)(listViewAct.FocusedItem.Tag);
+                Functions.OpenExternal(im.ThumbnailPath, im.Type);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
         }
 
