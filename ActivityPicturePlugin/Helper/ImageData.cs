@@ -343,14 +343,22 @@ namespace ActivityPicturePlugin.Helper
                 float alt = (float)ew.GPSAltitude;
                 if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
                 {
-                    DateTime time = EW.DateTimeOriginal;
-                    if (time == DateTime.MinValue)
+                    DateTime time = this.EW.DateTimeOriginal;
+                    DateTime actStart = this.activity.GPSRoute.StartTime;
+                    DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds(this.activity.GPSRoute.TotalElapsedSeconds);
+                    if (time < actStart || time > actEnd)
                     {
                         System.IO.FileInfo fi = new System.IO.FileInfo(this.photosource);
-                        time = fi.CreationTime;
+                        time = fi.CreationTimeUtc;
+                        if (time < actStart || time > actEnd)
+                        {
+                            //Try modification, could be better
+                            time = fi.LastWriteTimeUtc;
+                        }
                     }
                     else
                     {
+                        //MinDate cannot be adjusted
                         time = time.ToUniversalTime();
                     }
                     ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue(time);
@@ -359,8 +367,8 @@ namespace ActivityPicturePlugin.Helper
                         return g.Value;
                     }
                 }
-                return new GPSPoint( lat, lon, alt ); }
-
+                return new GPSPoint( lat, lon, alt ); 
+            }
         }
 
         //Two separate functions for now
