@@ -361,7 +361,7 @@ namespace ActivityPicturePlugin.Helper
                         if ( ( this.ImageList[i].ThumbnailPath != null ) )
                         {
                             if ( NoThumbNails ) img = new Bitmap( this.ImageList[i].PhotoSource );
-                            else img = this.ImageList[i].EW.GetBitmap();
+                            else img = this.ImageList[i].ExifBitmap();
 
                             if ( img == null )
                             {
@@ -517,7 +517,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 tooltip = this.ImageList[i].PhotoSource;
                 DateTime dt = DateTime.MinValue;
-                if ( dt < this.ImageList[i].EW.DateTimeOriginal ) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
+                if (dt < this.ImageList[i].ExifDateTimeOriginal()) tooltip += Environment.NewLine + this.ImageList[i].DateTimeOriginal;
                 if (this.ImageList[i].HasExifGps()) tooltip += Environment.NewLine + this.ImageList[i].ExifGPS.Replace(Environment.NewLine, ", ");
                 if ( !String.IsNullOrEmpty( this.ImageList[i].Title ) ) tooltip += Environment.NewLine + this.ImageList[i].Title;
             }

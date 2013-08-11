@@ -30,7 +30,7 @@ using DexterLib;
 namespace ActivityPicturePlugin.Helper
 {
 
-    public class ImageData : IDisposable
+    public class ImageData : IDisposable, IComparable
     {
         public ImageData(ImageDataSerializable IDSer, IActivity activity)
         {
@@ -44,11 +44,11 @@ namespace ActivityPicturePlugin.Helper
                 this.SetThumbnail();
                 if (this.Thumbnail != null)
                 {
-                    this.EW = new ExifWorks(this.ThumbnailPath);
+                    this.ew = new ExifWorks(this.ThumbnailPath);
                 }
                 else
                 {
-                    this.EW = new ExifWorks();
+                    this.ew = new ExifWorks();
                 }
                 System.Drawing.Bitmap b = this.EW.GetBitmap();
                 if (b == null)
@@ -165,10 +165,10 @@ namespace ActivityPicturePlugin.Helper
             set { referenceID = value; }
         }
 
-        public ExifWorks EW
+        private ExifWorks EW
         {
             get { return ew; }
-            set { ew = value; }
+            //set { ew = value; }
         }
 
         public Image Thumbnail
@@ -177,7 +177,15 @@ namespace ActivityPicturePlugin.Helper
             set { this.thumbnailImage = value; }
         }
 
-        public void OffsetDateTimeOriginal( int year, int month, int day, int hour, int min, int sec )
+        public DateTime ExifDateTimeOriginal()
+        {
+            return this.EW.DateTimeOriginal;
+        }
+        public Bitmap ExifBitmap()
+        {
+            return this.EW.GetBitmap();
+        }
+        public void OffsetDateTimeOriginal(int year, int month, int day, int hour, int min, int sec)
         {
             DateTime dt = EW.DateTimeOriginal;
             dt = dt.AddYears( year );
@@ -587,7 +595,7 @@ namespace ActivityPicturePlugin.Helper
                 //Save Exif data to the webfiles image
                 this.EW.GetBitmap().Save( this.ThumbnailPath );
                 this.EW.Dispose();
-                this.EW = new ExifWorks( this.ThumbnailPath );
+                this.ew = new ExifWorks( this.ThumbnailPath );
             }
             catch (Exception ex)
             {
@@ -950,6 +958,83 @@ namespace ActivityPicturePlugin.Helper
             }
         }
         #endregion
+
+        int IComparable.CompareTo(object y)
+        {
+            int retval = 0;
+
+            try
+            {
+                // If x is not null...
+                if (y == null) return 1;// ...and y is null, x is greater.
+                if (!(y is ImageData)) return 1;
+                ImageData y2 = y as ImageData;
+
+                // ...and y is not null, compare the dates
+                switch ((PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode)
+                //switch ( ActivityPicturePageControl.PluginSettingsData.data.SortMode )
+                {
+                    case PictureAlbum.ImageSortMode.byAltitudeAscending:
+                        retval = this.EW.GPSAltitude.CompareTo(y2.EW.GPSAltitude);
+                        break;
+                    case PictureAlbum.ImageSortMode.byAltitudeDescending:
+                        retval = y2.EW.GPSAltitude.CompareTo(this.EW.GPSAltitude);
+                        break;
+                    case PictureAlbum.ImageSortMode.byCameraModelAscending:
+                        retval = this.EquipmentModel.CompareTo(y2.EquipmentModel);
+                        break;
+                    case PictureAlbum.ImageSortMode.byCameraModelDescending:
+                        retval = y2.EquipmentModel.CompareTo(this.EquipmentModel);
+                        break;
+                    case PictureAlbum.ImageSortMode.byCommentAscending:
+                        retval = this.Comments.CompareTo(y2.Comments);
+                        break;
+                    case PictureAlbum.ImageSortMode.byCommentDescending:
+                        retval = y2.Comments.CompareTo(this.Comments);
+                        break;
+                    case PictureAlbum.ImageSortMode.byDateTimeAscending:
+                        retval = this.EW.DateTimeOriginal.CompareTo(y2.EW.DateTimeOriginal);
+                        break;
+                    case PictureAlbum.ImageSortMode.byDateTimeDescending:
+                        retval = y2.EW.DateTimeOriginal.CompareTo(this.EW.DateTimeOriginal);
+                        break;
+                    case PictureAlbum.ImageSortMode.byExifGPSAscending:
+                        retval = this.ExifGPS.CompareTo(y2.ExifGPS);
+                        break;
+                    case PictureAlbum.ImageSortMode.byExifGPSDescending:
+                        retval = y2.ExifGPS.CompareTo(this.ExifGPS);
+                        break;
+                    case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
+                        retval = this.PhotoSource.CompareTo(y2.PhotoSource);
+                        break;
+                    case PictureAlbum.ImageSortMode.byPhotoSourceDescending:
+                        retval = y2.PhotoSource.CompareTo(this.PhotoSource);
+                        break;
+                    case PictureAlbum.ImageSortMode.byTitleAscending:
+                        retval = this.Title.CompareTo(y2.Title);
+                        break;
+                    case PictureAlbum.ImageSortMode.byTitleDescending:
+                        retval = y2.Title.CompareTo(this.Title);
+                        break;
+                    case PictureAlbum.ImageSortMode.byTypeAscending:
+                        retval = this.Type.CompareTo(y2.Type);
+                        break;
+                    case PictureAlbum.ImageSortMode.byTypeDescending:
+                        retval = y2.Type.CompareTo(this.Type);
+                        break;
+                    case PictureAlbum.ImageSortMode.none:
+                        break;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.Assert(false, ex.Message);
+                //throw;
+            }
+
+            return retval;
+        }
     }
 
     //serializable extract of the ImageData class. Only this information of each image will be saved with SetExtensionData

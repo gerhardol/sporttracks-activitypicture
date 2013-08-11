@@ -43,7 +43,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
 
             imgD = id;
-            DateTime dt = id.EW.DateTimeOriginal;
+            DateTime dt = id.ExifDateTimeOriginal();
             this.dateTimePicker1.Format = DateTimePickerFormat.Custom;
 
             string datePattern = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern + ", " + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern;
@@ -51,7 +51,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.dateTimePicker1.CustomFormat = datePattern;
             try
             {
-                this.dateTimePicker1.Value = id.EW.DateTimeOriginal;
+                this.dateTimePicker1.Value = id.ExifDateTimeOriginal();
             }
             catch (Exception ex)
             {
