@@ -2646,6 +2646,7 @@ namespace ActivityPicturePlugin.UI
 
         void listViewAct_ItemSelectionChanged(object sender, System.Windows.Forms.ListViewItemSelectionChangedEventArgs e)
         {
+#if !ST_2_1
             if (listViewAct.SelectedItems != null && listViewAct.SelectedItems.Count > 0 && this.m_layer != null)
             {
                 IList<ImageData> images = new List<ImageData>();
@@ -2656,6 +2657,7 @@ namespace ActivityPicturePlugin.UI
                 }
                 this.m_layer.SelectedPictures = images;
             }
+#endif
         }
 
         private void listViewAct_ColumnClick(object sender, ColumnClickEventArgs e)
