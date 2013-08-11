@@ -60,6 +60,8 @@ namespace ActivityPicturePlugin.UI.MapLayers
             {
                 m_layers[currentView] = this;
             }
+            this.clickWaitTimer.Tick += new System.EventHandler(clickWaitTimer_Tick);
+            this.clickWaitTimer.Interval = System.Windows.Forms.SystemInformation.DoubleClickTime;
         }
 
         //Note: There is an assumption of the relation between view and route control/layer
@@ -186,7 +188,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                         this.RefreshOverlays(true);
                     }
                 }
-                    //m_SelectedPictures = value;
+                //m_SelectedPictures = value;
             }
         }
 
@@ -194,10 +196,19 @@ namespace ActivityPicturePlugin.UI.MapLayers
         {
             if (sender is ImageMapMarker)
             {
-                IList<ImageMapMarker> pictures = new List<ImageMapMarker>();
-                IList<ImageMapMarker> visible = new List<ImageMapMarker>();
+                clickWaitTimer.Start();
                 ImageMapMarker im = sender as ImageMapMarker;
                 lastClickedImage = im;
+            }
+        }
+
+        private void clickWaitTimer_Tick(object sender, EventArgs e)
+        {
+            clickWaitTimer.Stop();
+            if (lastClickedImage != null)
+            {
+                IList<ImageMapMarker> pictures = new List<ImageMapMarker>();
+                IList<ImageMapMarker> visible = new List<ImageMapMarker>();
                 bool visible0z = false;
 
                 foreach (ImageMapMarker imm in this.m_Pictures)
@@ -205,7 +216,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                     if (this.MapControl.MapBounds.Contains(imm.Location))
                     {
                         visible.Add(imm);
-                        if (imm.ZIndex == 0 && im != imm)
+                        if (imm.ZIndex == 0 && lastClickedImage != imm)
                         {
                             visible0z = true;
                         }
@@ -215,7 +226,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
                 foreach (ImageMapMarker imm in this.m_Pictures)
                 {
                     int zindex = imm.ZIndex;
-                    if (imm == im)
+                    if (imm == lastClickedImage)
                     {
                         //send to back
                         zindex = 1 - visible.Count;
@@ -244,6 +255,8 @@ namespace ActivityPicturePlugin.UI.MapLayers
 
         void pointOverlay_DoubleClick(object sender, MouseEventArgs e)
         {
+            // Stop the timer from ticking.
+            clickWaitTimer.Stop();
             if (sender is ImageMapMarker)
             {
                 //ImageMapMarker im = sender as ImageMapMarker;
@@ -484,6 +497,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
         private static bool m_showPage;
         private static IDictionary<Guid, PicturesLayer> m_layers = new Dictionary<Guid, PicturesLayer>();
         private PicturesLayer m_extraMapLayer = null;
+        private Timer clickWaitTimer = new Timer();
         private ImageMapMarker lastClickedImage = null; //instead of timer to supress click
     }
 }
