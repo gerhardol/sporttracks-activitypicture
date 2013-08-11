@@ -427,12 +427,13 @@ namespace ActivityPicturePlugin.UI.Activities
         public void CleanupThumbnails()
         {
             string s = ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated;
-            if ( s != "" )
+            //Set to null immediately, to avoid that cleanup is started from ReportView too
+            ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated = "";
+            if (s != "")
             {
                 Thread thread = new Thread( new ParameterizedThreadStart( RunCleanup ) );
                 thread.Start( s );
             }
-            ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated = "";
         }
 
         private void DefaultView()
