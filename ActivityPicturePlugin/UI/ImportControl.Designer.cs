@@ -78,7 +78,9 @@ namespace ActivityPicturePlugin.UI
             this.colTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuListViewAct = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuOpenImage = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuOpenThumbnail = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuRemove = new System.Windows.Forms.ToolStripMenuItem();
             this.timerProgressBar = new System.Windows.Forms.Timer(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -516,18 +518,35 @@ namespace ActivityPicturePlugin.UI
             // contextMenuListViewAct
             // 
             this.contextMenuListViewAct.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuOpenImage,
             this.toolStripMenuOpenFolder,
+            this.toolStripMenuOpenThumbnail,
             this.toolStripMenuRemove});
             this.contextMenuListViewAct.Name = "contextMenuListViewAct";
             this.contextMenuListViewAct.Size = new System.Drawing.Size(227, 48);
             this.contextMenuListViewAct.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuListViewAct_Opening);
             // 
+            // toolStripMenuOpenImage
+            // 
+            this.toolStripMenuOpenImage.Name = "toolStripMenuOpenImage";
+            this.toolStripMenuOpenImage.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuOpenImage.Text = "<Open Image";
+            this.toolStripMenuOpenImage.Font = new System.Drawing.Font(this.toolStripMenuOpenImage.Font, this.toolStripMenuOpenImage.Font.Style | System.Drawing.FontStyle.Bold);
+            this.toolStripMenuOpenImage.Click += new System.EventHandler(this.toolStripMenuOpenImage_Click);
+            // 
             // toolStripMenuOpenFolder
             // 
             this.toolStripMenuOpenFolder.Name = "toolStripMenuOpenFolder";
             this.toolStripMenuOpenFolder.Size = new System.Drawing.Size(226, 22);
-            this.toolStripMenuOpenFolder.Text = "Open Containing Folder";
+            this.toolStripMenuOpenFolder.Text = "<Open Containing Folder";
             this.toolStripMenuOpenFolder.Click += new System.EventHandler(this.toolStripMenuOpenFolder_Click);
+            // 
+            // toolStripMenuOpenThumbnail
+            // 
+            this.toolStripMenuOpenThumbnail.Name = "toolStripMenuOpenFolder";
+            this.toolStripMenuOpenThumbnail.Size = new System.Drawing.Size(226, 22);
+            this.toolStripMenuOpenThumbnail.Text = "<Open Thumbnail";
+            this.toolStripMenuOpenThumbnail.Click += new System.EventHandler(this.toolStripMenuOpenThumbnail_Click);
             // 
             // toolStripMenuRemove
             // 
@@ -610,6 +629,8 @@ namespace ActivityPicturePlugin.UI
         private System.Windows.Forms.ContextMenuStrip contextMenuTreeViewActivities;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuCopyToClipboard;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuMigratePaths;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuOpenImage;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuOpenFolder;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuOpenThumbnail;
     }
 }
