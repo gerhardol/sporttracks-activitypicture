@@ -343,10 +343,20 @@ namespace ActivityPicturePlugin.Helper
                 float alt = (float)ew.GPSAltitude;
                 if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
                 {
-                    IGPSPoint g = this.activity.GPSRoute.GetInterpolatedValue(EW.DateTimeOriginal.ToUniversalTime()).Value;
+                    DateTime time = EW.DateTimeOriginal;
+                    if (time == DateTime.MinValue)
+                    {
+                        System.IO.FileInfo fi = new System.IO.FileInfo(this.photosource);
+                        time = fi.CreationTime;
+                    }
+                    else
+                    {
+                        time = time.ToUniversalTime();
+                    }
+                    ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue(time);
                     if (g != null)
                     {
-                        return g;
+                        return g.Value;
                     }
                 }
                 return new GPSPoint( lat, lon, alt ); }
