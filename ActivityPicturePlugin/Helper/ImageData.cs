@@ -345,13 +345,25 @@ namespace ActivityPicturePlugin.Helper
 
         }
 
+        //Two separate functions for now
+        public bool HasGps()
+        {
+            IGPSPoint g = this.GpsPoint;
+            return !((g.LatitudeDegrees == 0) && (g.LongitudeDegrees == 0));
+        }
+
+        public bool HasExifGps()
+        {
+            return !((ew.GPSLatitude == 0) && (ew.GPSLongitude == 0));
+        }
+
         public string ExifGPS
         {
             get
             {
                 try
                 {
-                    if ( ( ew.GPSLatitude == 0 ) & ( ew.GPSLongitude == 0 ) ) return "";
+                    if ( ( ew.GPSLatitude == 0 ) && ( ew.GPSLongitude == 0 ) ) return "";
                     else
                     {
                         string GPSString = "";
@@ -927,7 +939,11 @@ namespace ActivityPicturePlugin.Helper
         }
         protected virtual void Dispose( bool disposing )
         {
-            if ( ( disposing ) && ( this.Thumbnail != null ) )
+            if (this.EW != null)
+            {
+                this.EW.Dispose();
+            }
+            if ((disposing) && (this.Thumbnail != null))
             {
                 this.Thumbnail.Dispose();
                 this.Thumbnail = null;

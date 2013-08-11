@@ -234,7 +234,7 @@ namespace ActivityPicturePlugin.Helper
                     {
                         foreach ( ImageData id in images )
                         {
-                            if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
+                            if (id.HasExifGps())
                             {
                                 //stylemaps
                                 KMZstyle = id.ReferenceID;
@@ -251,7 +251,7 @@ namespace ActivityPicturePlugin.Helper
 
                     foreach ( ImageData id in images )
                     {
-                        if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
+                        if (id.HasExifGps())
                         {
                             string KMZfilesource; //source of image (which will be embedded in case of kmz)
                             string KMZLink;
@@ -505,7 +505,7 @@ namespace ActivityPicturePlugin.Helper
                         {
                             foreach ( ImageData id in images )
                             {
-                                if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
+                                if (id.HasExifGps())
                                 {
                                     //stylemaps
                                     KMZstyle = id.ReferenceID;
@@ -522,7 +522,7 @@ namespace ActivityPicturePlugin.Helper
 
                         foreach ( ImageData id in images )
                         {
-                            if ( id.EW.GPSLatitude != 0 & id.EW.GPSLongitude != 0 )
+                            if (id.HasExifGps())
                             {
                                 string KMZfilesource; //source of image (which will be embedded in case of kmz)
                                 string KMZLink;
