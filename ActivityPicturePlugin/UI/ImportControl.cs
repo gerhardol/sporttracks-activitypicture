@@ -51,7 +51,7 @@ namespace ActivityPicturePlugin.UI
             onImagesComplete = new EventHandler( OnImagesComplete );
             this.ActivityImagesChanged += new ActivityImagesChangedEventHandler( ImportControl_ActivityImagesChanged );
             treeViewActivities.TreeViewNodeSorter = new NodeSorter();
-            this.m_SelectedNodes = new List<TreeNode>();
+            this.m_CheckedDirNodes = new List<TreeNode>();
             this.m_ActivityNodes = new List<TreeNode>();
         }
 
@@ -272,7 +272,7 @@ namespace ActivityPicturePlugin.UI
 
         private List<FileInfo> m_files = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
         private List<TreeNode> m_ActivityNodes = new List<TreeNode>();//List of all activities (used for comparing and organizing)
-        private List<TreeNode> m_SelectedNodes = new List<TreeNode>();//Nodes that are selected in the Drive TreeView
+        private List<TreeNode> m_CheckedDirNodes = new List<TreeNode>();//Nodes that are selected in the Drive TreeView
         private bool m_showallactivities;
         private bool m_standardpathalreadyshown;
         private int m_viewActivity = 0; //View of ListviewAct
@@ -392,11 +392,11 @@ namespace ActivityPicturePlugin.UI
             // as it checks 100,000 folders, though.
             if ( node.Checked )
             {
-                if ( !this.m_SelectedNodes.Contains( node ) ) this.m_SelectedNodes.Add( node );
+                if ( !this.m_CheckedDirNodes.Contains( node ) ) this.m_CheckedDirNodes.Add( node );
             }
             else
             {
-                if ( this.m_SelectedNodes.Contains( node ) ) this.m_SelectedNodes.Remove( node );
+                if ( this.m_CheckedDirNodes.Contains( node ) ) this.m_CheckedDirNodes.Remove( node );
             }
             foreach ( TreeNode n in node.Nodes )
             {
@@ -407,11 +407,11 @@ namespace ActivityPicturePlugin.UI
                 {
                     if ( n.Checked )
                     {
-                        if ( !this.m_SelectedNodes.Contains( n ) ) this.m_SelectedNodes.Add( n );
+                        if ( !this.m_CheckedDirNodes.Contains( n ) ) this.m_CheckedDirNodes.Add( n );
                     }
                     else
                     {
-                        if ( this.m_SelectedNodes.Contains( n ) ) this.m_SelectedNodes.Remove( n );
+                        if ( this.m_CheckedDirNodes.Contains( n ) ) this.m_CheckedDirNodes.Remove( n );
                     }
                 }
                 if ( n.Nodes.Count != 0 ) SetCheck( n, check );
@@ -443,7 +443,7 @@ namespace ActivityPicturePlugin.UI
                     try
                     {
                         if (dirsub.GetDirectories().Length != 0) subNode.Nodes.Add(gDummyFolder);
-                        subNode.Tag = dirsub;
+                        subNode.Tag = dirsub; //treeViewImages
                         parentNode.Nodes.Add(subNode);
                         subNode.Checked = parentNode.Checked;
                     }
@@ -543,7 +543,8 @@ namespace ActivityPicturePlugin.UI
                     // Add the images
                     for ( int j = 0; j < listViewDrive.Items.Count; j++ )
                     {
-                        if ( progressBar2.Maximum != m_files.Count ) progressBar2.Maximum = m_files.Count;
+                        if (progressBar2.Maximum != m_files.Count) progressBar2.Maximum = m_files.Count;
+                        if (progressBar2.Maximum >= listViewDrive.Items.Count) progressBar2.Maximum = listViewDrive.Items.Count;
                         progressBar2.Value = j;
 
                         FileInfo fi = new FileInfo( listViewDrive.Items[j].ImageKey );
@@ -617,7 +618,7 @@ namespace ActivityPicturePlugin.UI
             try
             {
                 this.treeViewImages.Nodes.Clear();
-                this.m_SelectedNodes.Clear();
+                this.m_CheckedDirNodes.Clear();
 
                 string[] drives = Environment.GetLogicalDrives();
                 DirectoryInfo startdir = new DirectoryInfo( Environment.GetFolderPath( Environment.SpecialFolder.MyPictures ) );
@@ -626,7 +627,7 @@ namespace ActivityPicturePlugin.UI
                 {
                     DirectoryInfo dir = new DirectoryInfo( rootDir );
                     TreeNode ndRoot = new TreeNode( rootDir );
-                    ndRoot.Tag = dir;
+                    ndRoot.Tag = dir; //treeViewImages
 
                     //Fill standard path
                     this.treeViewImages.Nodes.Add( ndRoot );
@@ -678,7 +679,7 @@ namespace ActivityPicturePlugin.UI
                 foreach ( DirectoryInfo subdir in dirs )
                 {
                     TreeNode subNodeP = new TreeNode( subdir.Name );
-                    subNodeP.Tag = subdir;
+                    subNodeP.Tag = subdir;  //treeViewImages
                     parentNode.Nodes.Add( subNodeP );
 
                     DirectoryInfo dir = new DirectoryInfo( parentNode.FullPath );
@@ -713,7 +714,7 @@ namespace ActivityPicturePlugin.UI
                                 i = 0;
                             }
                             if ( i != 0 ) subNode.Nodes.Add( gDummyFolder );
-                            subNode.Tag = dirsub;
+                            subNode.Tag = dirsub; //treeViewImages
                             parentNode.Nodes.Add( subNode );
                         }
                     }
@@ -807,7 +808,7 @@ namespace ActivityPicturePlugin.UI
                             + Resources.Resources.ImportControl_in + " " + act.Location );*/
 
                         dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
-                        dayNode.Tag = act;
+                        dayNode.Tag = act; //treeViewAct
                         this.m_ActivityNodes.Add(dayNode);
                         monthNode.Nodes.Add(dayNode);
                     }
@@ -1658,10 +1659,10 @@ namespace ActivityPicturePlugin.UI
 
             this.ResetProgressBar();
             this.progressBar2.Style = ProgressBarStyle.Continuous;
-            this.progressBar2.Maximum = this.m_SelectedNodes.Count;
+            this.progressBar2.Maximum = this.m_CheckedDirNodes.Count;
             this.progressBar2.Value = 0;
 
-            foreach ( TreeNode n in this.m_SelectedNodes )
+            foreach ( TreeNode n in this.m_CheckedDirNodes )
             {                
                 GetImageFiles( n, first );
             }
@@ -1702,7 +1703,7 @@ namespace ActivityPicturePlugin.UI
                             {
                                 TreeNode subNode = new TreeNode( dirsub.Name );
                                 subNode.Nodes.Add( gDummyFolder );
-                                subNode.Tag = dirsub;
+                                subNode.Tag = dirsub; //treeViewImages
                                 GetImageFiles( subNode, first );
                             }
                         }
@@ -2167,13 +2168,19 @@ namespace ActivityPicturePlugin.UI
         private void treeViewImages_AfterCheck( object sender, TreeViewEventArgs e )
         {
             SetCheck( e.Node, e.Node.Checked );
+            if (e.Node.Checked && ! e.Node.IsSelected)
+            {
+                this.treeViewImages.AfterCheck -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+                this.treeViewImages.SelectedNode = e.Node;
+                this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+            }
         }
         private void treeViewImages_AfterSelect( object sender, TreeViewEventArgs e )
         {
             TreeNode currentNode = e.Node;
             if (currentNode.Tag is DirectoryInfo)
             {
-                DirectoryInfo driveDir = new DirectoryInfo(currentNode.FullPath);
+                DirectoryInfo driveDir = currentNode.Tag as DirectoryInfo;
 
                 ShowFolderPics(driveDir);
                 if (currentNode.Nodes.Count > 0)
