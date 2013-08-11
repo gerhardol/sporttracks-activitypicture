@@ -68,15 +68,19 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             try
             {
-                foreach ( ImageData id in il )
+                foreach (ImageData id in il)
                 {
-                    id.OffsetDateTimeOriginal( (int)( this.nudYear.Value ), (int)(this.nudMonth.Value), (int)( this.nudDay.Value ), (int)( this.nudHour.Value ), (int)( this.nudMinute.Value ), (int)( this.nudSecond.Value ) );
+                    DateTime dt = id.DateTimeOriginal();
+                    dt = dt.AddYears((int)(this.nudYear.Value));
+                    dt = dt.AddMonths((int)(this.nudMonth.Value));
+                    dt += new TimeSpan((int)(this.nudDay.Value), (int)(this.nudHour.Value), (int)(this.nudMinute.Value), (int)(this.nudSecond.Value));
+
+                    id.SetDateTimeOriginal(dt);
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
     }

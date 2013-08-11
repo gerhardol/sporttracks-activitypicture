@@ -98,7 +98,7 @@ namespace ActivityPicturePlugin.Helper
         }
 
         //TODO: Merge these methods. However, the use slightly differs too...
-        // Returns in format "yyyy:MM:dd HH:mm:ss"
+        // Returns in format "yyyy:MM:dd HH:mm:ss", local time
         internal static string GetFileTimeString(FileInfo file)
         {
             string strx = null;
@@ -120,19 +120,39 @@ namespace ActivityPicturePlugin.Helper
             }
             if (string.IsNullOrEmpty(strx))
             {
-                // converts to utc
-                // format MM/dd/yyyy HH:mm:ss
-                //strx = file.CreationTimeUtc.ToString();
-
-                // ok, now this returns in the same format as SimpleRun
-                //strx = file.CreationTimeUtc.ToString( "yyyy:MM:dd HH:mm:ss", CultureInfo.InvariantCulture );
-
-                // Changed to LocalTime since SimpleRun returns an unspecified timezone
+                // LocalTime since SimpleRun returns an unspecified timezone
                 // and it's probably best to assume it's in Local time.
                 // We should be consistent.
                 strx = file.CreationTime.ToString( NeutralDateTimeFormat, CultureInfo.InvariantCulture );
             }
             return strx;
+        }
+
+        public static string DateTimeString(DateTime time)
+        {
+            DateTime dt = new DateTime(1950, 1, 1);
+            if (dt < time)
+            {
+                string strShortDate = "";
+                string strShortTime = "";
+                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture(System.Globalization.CultureInfo.CurrentUICulture.Name);
+                if (specificCulture != null)
+                {
+                    strShortDate = time.ToString(specificCulture.DateTimeFormat.ShortDatePattern, specificCulture);
+                    strShortTime = time.ToString(specificCulture.DateTimeFormat.ShortTimePattern, specificCulture);
+                }
+                else
+                {
+                    strShortDate = time.ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern);
+                    strShortTime = time.ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern);
+                }
+                return (
+                    strShortDate
+                    + Environment.NewLine
+                    + strShortTime);
+
+            }
+            else return "";
         }
 
         internal static bool IsNormalFile(FileSystemInfo file)
@@ -305,9 +325,9 @@ namespace ActivityPicturePlugin.Helper
                             + "' width="
                             + width
                             + "></A></P><P><FONT face=Verdana size=2>"
-                            + id.DateTimeOriginal
+                            + Functions.DateTimeString(id.DateTimeOriginal())
                             + "</FONT></P><P><FONT face=Verdana size=2>"
-                            + id.ExifGPS.Replace( Environment.NewLine, ", " )
+                            + id.GpsString().Replace( Environment.NewLine, ", " )
                             + "</FONT></P><P><FONT face=Verdana size=1>"
                             + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                             + "</FONT></P>";
@@ -576,9 +596,9 @@ namespace ActivityPicturePlugin.Helper
                                 + "' width="
                                 + width
                                 + "></A></P><P><FONT face=Verdana size=2>"
-                                + id.DateTimeOriginal
+                                + Functions.DateTimeString(id.DateTimeOriginal())
                                 + "</FONT></P><P><FONT face=Verdana size=2>"
-                                + id.ExifGPS.Replace( Environment.NewLine, ", " )
+                                + id.GpsString().Replace( Environment.NewLine, ", " )
                                 + "</FONT></P><P><FONT face=Verdana size=1>"
                                 + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                                 + "</FONT></P>";
@@ -1070,7 +1090,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
         }
@@ -1097,7 +1116,8 @@ namespace ActivityPicturePlugin.Helper
 
         }
 
-        internal static Image getThumbnailWithBorder( int width, Image img )
+        //TODO: Avoid read the embedded thumbnail here?
+        internal static Image getThumbnailWithBorder(int width, Image img)
         {
             Image thumb = null;
             Image tmp = null;
@@ -1160,8 +1180,6 @@ namespace ActivityPicturePlugin.Helper
                     tmp.Dispose();
                     tmp = null;
                 }
-
-                return thumb;
             }
             catch (Exception ex)
             {
@@ -1180,7 +1198,7 @@ namespace ActivityPicturePlugin.Helper
 
                 return null;
             }
-
+            return thumb;
         }
 
         internal static bool ThumbnailCallback()
@@ -1285,7 +1303,7 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         // ...and y is not null, compare the dates
-                        retval = x.ExifDateTimeOriginal().CompareTo(y.ExifDateTimeOriginal());
+                        retval = x.DateTimeOriginal().CompareTo(y.DateTimeOriginal());
                     }
                 }
             }
