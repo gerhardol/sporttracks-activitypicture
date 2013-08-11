@@ -47,7 +47,7 @@ namespace ActivityPicturePlugin.UI.MapLayers
             public ImageData image;
         }
 
-        private DateTime m_creationTime = DateTime.Now;
+        //private DateTime m_creationTime = DateTime.Now;
         public PicturesLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1, false)
         {

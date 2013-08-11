@@ -29,7 +29,7 @@ using DexterLib;
 
 namespace ActivityPicturePlugin.Helper
 {
-
+    
     public class ImageData : IDisposable, IComparable
     {
         public ImageData(ImageDataSerializable IDSer, IActivity activity)
@@ -177,59 +177,19 @@ namespace ActivityPicturePlugin.Helper
             set { this.thumbnailImage = value; }
         }
 
-        public DateTime ExifDateTimeOriginal()
+        public DateTime DateTimeOriginal()
         {
             return this.EW.DateTimeOriginal;
         }
+        public void SetDateTimeOriginal(DateTime dt)
+        {
+            this.EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString(Functions.NeutralDateTimeFormat));
+            SavePhotoSourceProperty(ExifWorks.TagNames.ExifDTOrig);
+        }
+
         public Bitmap ExifBitmap()
         {
             return this.EW.GetBitmap();
-        }
-        public void OffsetDateTimeOriginal(int year, int month, int day, int hour, int min, int sec)
-        {
-            DateTime dt = EW.DateTimeOriginal;
-            dt = dt.AddYears( year );
-            dt = dt.AddMonths( month );
-            dt = dt.AddDays( day );
-            dt = dt.AddHours( hour );
-            dt = dt.AddMinutes( min );
-            dt = dt.AddSeconds( sec );
-            EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
-            SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
-        }
-
-        public string DateTimeOriginal
-        {
-            get
-            {
-                DateTime dt = new DateTime( 1950, 1, 1 );
-                /*if ( dt < EW.DateTimeOriginal ) return (
-                      EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern )
-                      + Environment.NewLine
-                      + EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern ) );*/
-                if ( dt < EW.DateTimeOriginal )
-                {
-                    string strShortDate = "";
-                    string strShortTime = "";
-                    System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
-                    if ( specificCulture != null )
-                    {
-                        strShortDate = ew.DateTimeOriginal.ToString( specificCulture.DateTimeFormat.ShortDatePattern, specificCulture );
-                        strShortTime = ew.DateTimeOriginal.ToString( specificCulture.DateTimeFormat.ShortTimePattern, specificCulture );
-                    }
-                    else
-                    {
-                        strShortDate = EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern );
-                        strShortTime = EW.DateTimeOriginal.ToString( System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern );
-                    }
-                    return (
-                        strShortDate
-                        + Environment.NewLine
-                        + strShortTime );
-
-                }
-                else return "";
-            }
         }
 
         public string Title
@@ -334,6 +294,11 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
+        public string GpsString()
+        {
+            return new GPS.GpsLoc(ew.GPSLatitude, ew.GPSLongitude).ToString();
+        }
+
         public IGPSPoint GpsPoint
         {
             get 
@@ -381,70 +346,6 @@ namespace ActivityPicturePlugin.Helper
         public bool HasExifGps()
         {
             return !((ew.GPSLatitude == 0) && (ew.GPSLongitude == 0));
-        }
-
-        public string ExifGPS
-        {
-            get
-            {
-                try
-                {
-                    if ( ( ew.GPSLatitude == 0 ) && ( ew.GPSLongitude == 0 ) ) return "";
-                    else
-                    {
-                        string GPSString = "";
-                        double degLat, minLat, secLat, degLon, minLon, secLon;
-                        switch ( Plugin.GetApplication().SystemPreferences.GPSLocationUnits )
-                        {
-                            case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
-
-                                degLat = Math.Abs( Math.Truncate( ew.GPSLatitude ) );
-                                minLat = Math.Truncate( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 );
-                                secLat = ( ( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 ) - minLat ) * 60;
-
-                                degLon = Math.Abs( Math.Truncate( ew.GPSLongitude ) );
-                                minLon = Math.Truncate( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 );
-                                secLon = ( ( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 ) - minLon ) * 60;
-
-                                GPSString = degLat.ToString() + "° " + minLat.ToString() + "' " + secLat.ToString( "00" )
-                                    + (char)34 + " " + ew.GPSLatitudeReference + Environment.NewLine +
-                                    degLon.ToString() + "° " + minLon.ToString() + "' " + secLon.ToString( "00" )
-                                + (char)34 + " " + ew.GPSLongitudeReference;
-                                break;
-                            case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal3:
-                                GPSString = ew.GPSLatitude.ToString( "0.000" ) + Environment.NewLine +
-                                   ew.GPSLongitude.ToString( "0.000" );
-                                break;
-                            case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal4:
-                                GPSString = ew.GPSLatitude.ToString( "0.0000" ) + Environment.NewLine +
-                                   ew.GPSLongitude.ToString( "0.0000" );
-                                break;
-                            case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Minutes:
-                                degLat = Math.Truncate( Math.Abs( ew.GPSLatitude ) );
-                                minLat = Math.Truncate( ( Math.Abs( ew.GPSLatitude ) - degLat ) * 60 );
-                                degLon = Math.Abs( Math.Truncate( ew.GPSLongitude ) );
-                                minLon = Math.Truncate( ( Math.Abs( ew.GPSLongitude ) - degLon ) * 60 );
-                                GPSString = degLat.ToString() + "° " + minLat.ToString() + "' " + ew.GPSLatitudeReference
-                                    + Environment.NewLine + degLon.ToString() + "° " +
-                                    minLon.ToString() + "' " + ew.GPSLongitudeReference;
-                                break;
-                            default:
-                                GPSString = ew.GPSLatitude.ToString( "0.0000" ) + Environment.NewLine +
-                                    ew.GPSLongitude.ToString( "0.0000" );
-                                break;
-                        }
-
-                        return GPSString;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    //throw;
-                    return "";
-                }
-
-            }
         }
 
         public string KMLGPS
@@ -569,17 +470,11 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region Private Methods
-        public void SetDateTimeOriginal( DateTime dt )
-        {
-            this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), dt.ToString( Functions.NeutralDateTimeFormat ) );
-            SavePhotoSourceProperty( ExifWorks.TagNames.ExifDTOrig );
-        }
-
         private void SavePhotoSourceProperty( ExifWorks.TagNames prop )
         {
             try
             {
-                if ( ( System.IO.File.Exists( this.photosource ) ) & ( this.Type == DataTypes.Image ) )
+                if ( ( System.IO.File.Exists( this.photosource ) ) && (Functions.IsExifFileExt(new System.IO.FileInfo(this.photosource)  ) ))
                 // Save Exif data to the original source
                 {
                     using ( ExifWorks EWPhotoSource = new ExifWorks( this.photosource ) )
@@ -607,7 +502,6 @@ namespace ActivityPicturePlugin.Helper
                         }
                         EWPhotoSource.GetBitmap().Save( this.photosource );
                     }
-                    //EWPhotoSource.Dispose();
                 }
 
                 //Save Exif data to the webfiles image
@@ -716,7 +610,7 @@ namespace ActivityPicturePlugin.Helper
                             bmpOrig = GetAviBmp( this.PhotoSource, iFrame );
                         if ( bmpOrig == null )
                             bmpOrig = GetDexterAviBmp( this.PhotoSource, iFrame, size, dblTimePerFrame );
-
+                        
                     }
 
                     if ( bmpOrig != null )
@@ -860,20 +754,16 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                Bitmap bmp;
                 string defpath = this.ThumbnailPath;
 
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
                 {
-                    using ( bmp = new Bitmap( defpath ) )
+                    using (Bitmap bmp = new Bitmap( defpath ) )
                     {
                         //The thumbnail is being created
-                        //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                        //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
                         this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                     }
-                    //bmp.Dispose();
                 }
                 //File has not yet been created
                 else
@@ -897,7 +787,7 @@ namespace ActivityPicturePlugin.Helper
                                 size.Height = UpperPixelLimit;
                                 size.Width = (int)( UpperPixelLimit * ratio );
                             }
-                            using ( bmp = new Bitmap( bmpOrig, size ) )
+                            using (Bitmap bmp = new Bitmap( bmpOrig, size ) )
                             {
 
                                 //copying the metadata of the original file into the new image
@@ -912,10 +802,6 @@ namespace ActivityPicturePlugin.Helper
                                 }
 
                                 Functions.SaveThumbnailImage( bmp, defpath, 10 );
-
-                                ////is replaced due to smaller file size with jpg + the ability to store more metadata
-                                //bmp.Save(defpath,System.Drawing.Imaging.ImageFormat.Png);
-
                                 this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                             }
                         }
@@ -923,7 +809,6 @@ namespace ActivityPicturePlugin.Helper
                     // Thumbnail cannot be created, both target locations are invalid
                     else
                     {
-                        bmp = null;
                         //TODO: implement a way to work when images are not found!
 
                         // Works when no images are found.
@@ -1017,10 +902,10 @@ namespace ActivityPicturePlugin.Helper
                         retval = y2.EW.DateTimeOriginal.CompareTo(this.EW.DateTimeOriginal);
                         break;
                     case PictureAlbum.ImageSortMode.byExifGPSAscending:
-                        retval = this.ExifGPS.CompareTo(y2.ExifGPS);
+                        retval = this.GpsString().CompareTo(y2.GpsString());
                         break;
                     case PictureAlbum.ImageSortMode.byExifGPSDescending:
-                        retval = y2.ExifGPS.CompareTo(this.ExifGPS);
+                        retval = y2.GpsString().CompareTo(this.GpsString());
                         break;
                     case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
                         retval = this.PhotoSource.CompareTo(y2.PhotoSource);

@@ -1287,8 +1287,8 @@ namespace ActivityPicturePlugin.UI
                             lvi.Tag = id; //listViewAct
                             lvi.Name = id.ThumbnailPath;
                             lvi.ImageKey = id.PhotoSource;
-                            lvi.SubItems.Add( id.DateTimeOriginal.Replace( Environment.NewLine, ", " ) );
-                            lvi.SubItems.Add( id.ExifGPS.Replace( Environment.NewLine, ", " ) );
+                            lvi.SubItems.Add( Functions.DateTimeString(id.DateTimeOriginal()).Replace( Environment.NewLine, ", " ) );
+                            lvi.SubItems.Add( id.GpsString().Replace( Environment.NewLine, ", " ) );
                             lvi.SubItems.Add( id.Title );
                             lvi.SubItems.Add( id.Comments );
                             lvItems.Add( lvi );
@@ -2900,8 +2900,8 @@ namespace ActivityPicturePlugin.UI
                     ImageData id = a.image;
                     string sFile = a.Activity.Name + sep +
                         id.PhotoSourceFileName + sep +
-                             id.DateTimeOriginal.Replace(Environment.NewLine, ", ") + sep +
-                             id.ExifGPS.Replace(Environment.NewLine, ", ") + sep +
+                             Functions.DateTimeString(id.DateTimeOriginal()).Replace(Environment.NewLine, ", ") + sep +
+                             id.GpsString().Replace(Environment.NewLine, ", ") + sep +
                              id.Title + sep +
                              id.Comments + sep +
                              id.ReferenceID + sep +
