@@ -1075,7 +1075,7 @@ namespace ActivityPicturePlugin.Helper
 
         }
 
-        internal static void GeoTagWithActivity( string filepath, ZoneFiveSoftware.Common.Data.GPS.IGPSPoint gps )
+        internal static void GeoTagFromGps( string filepath, ZoneFiveSoftware.Common.Data.GPS.IGPSPoint gps )
         {
             try
             {
@@ -1285,7 +1285,7 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         // ...and y is not null, compare the dates
-                        retval = x.EW.DateTimeOriginal.CompareTo( y.EW.DateTimeOriginal );
+                        retval = x.ExifDateTimeOriginal().CompareTo(y.ExifDateTimeOriginal());
                     }
                 }
             }

@@ -776,7 +776,7 @@ namespace ActivityPicturePlugin.UI.Activities
             DataGridViewColumn col = GetSortColumn( ism );
             if (this.pictureAlbumView.ImageList != null)
             {
-                this.pictureAlbumView.ImageList.Sort(CompareImageData);
+                this.pictureAlbumView.ImageList.Sort();
             }
             UpdateDataGridView();
         }
@@ -927,91 +927,6 @@ namespace ActivityPicturePlugin.UI.Activities
             return il;
         }
 
-        internal int CompareImageData( ImageData x, ImageData y )
-        {
-            int retval = 0;
-
-            try
-            {
-                if ( x == null )
-                {
-                    if ( y == null ) return 0; // If x is null and y is null, they're equal. 
-                    else return -1; // If x is null and y is not null, y is greater. 
-                }
-                else
-                {
-                    // If x is not null...
-                    if ( y == null ) return 1;// ...and y is null, x is greater.
-                    else
-                    {
-                        // ...and y is not null, compare the dates
-                        switch ( (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode )
-                        //switch ( ActivityPicturePageControl.PluginSettingsData.data.SortMode )
-                        {
-                            case PictureAlbum.ImageSortMode.byAltitudeAscending:
-                                retval = x.EW.GPSAltitude.CompareTo( y.EW.GPSAltitude );
-                                break;
-                            case PictureAlbum.ImageSortMode.byAltitudeDescending:
-                                retval = y.EW.GPSAltitude.CompareTo( x.EW.GPSAltitude );
-                                break;
-                            case PictureAlbum.ImageSortMode.byCameraModelAscending:
-                                retval = x.EquipmentModel.CompareTo( y.EquipmentModel );
-                                break;
-                            case PictureAlbum.ImageSortMode.byCameraModelDescending:
-                                retval = y.EquipmentModel.CompareTo( x.EquipmentModel );
-                                break;
-                            case PictureAlbum.ImageSortMode.byCommentAscending:
-                                retval = x.Comments.CompareTo( y.Comments );
-                                break;
-                            case PictureAlbum.ImageSortMode.byCommentDescending:
-                                retval = y.Comments.CompareTo( x.Comments );
-                                break;
-                            case PictureAlbum.ImageSortMode.byDateTimeAscending:
-                                retval = x.EW.DateTimeOriginal.CompareTo( y.EW.DateTimeOriginal );
-                                break;
-                            case PictureAlbum.ImageSortMode.byDateTimeDescending:
-                                retval = y.EW.DateTimeOriginal.CompareTo( x.EW.DateTimeOriginal );
-                                break;
-                            case PictureAlbum.ImageSortMode.byExifGPSAscending:
-                                retval = x.ExifGPS.CompareTo( y.ExifGPS );
-                                break;
-                            case PictureAlbum.ImageSortMode.byExifGPSDescending:
-                                retval = y.ExifGPS.CompareTo( x.ExifGPS );
-                                break;
-                            case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
-                                retval = x.PhotoSource.CompareTo( y.PhotoSource );
-                                break;
-                            case PictureAlbum.ImageSortMode.byPhotoSourceDescending:
-                                retval = y.PhotoSource.CompareTo( x.PhotoSource );
-                                break;
-                            case PictureAlbum.ImageSortMode.byTitleAscending:
-                                retval = x.Title.CompareTo( y.Title );
-                                break;
-                            case PictureAlbum.ImageSortMode.byTitleDescending:
-                                retval = y.Title.CompareTo( x.Title );
-                                break;
-                            case PictureAlbum.ImageSortMode.byTypeAscending:
-                                retval = x.Type.CompareTo( y.Type );
-                                break;
-                            case PictureAlbum.ImageSortMode.byTypeDescending:
-                                retval = y.Type.CompareTo( x.Type );
-                                break;
-                            case PictureAlbum.ImageSortMode.none:
-                                break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
-            }
-
-            return retval;
-
-        }
-
         #endregion
 
         #region Event handler methods
@@ -1105,7 +1020,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
                     if ( ActivityPicturePlugin.Source.Settings.SortMode != (int)PictureAlbum.ImageSortMode.none )
                     {
-                        this.pictureAlbumView.ImageList.Sort( CompareImageData );
+                        this.pictureAlbumView.ImageList.Sort();
                         UpdateDataGridView();
                         //ActivityPicturePageControl.PluginSettingsData.WriteSettings();
                     }
@@ -1415,8 +1330,8 @@ namespace ActivityPicturePlugin.UI.Activities
                 {
                     //This writes the exif data if exists, otherwise estimates from activity
                     if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
-                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagWithActivity( id.PhotoSource, id.GpsPoint );
-                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, id.GpsPoint );
+                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
+                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
                 }
             }
             this.pictureAlbumView.ClearImageList();
