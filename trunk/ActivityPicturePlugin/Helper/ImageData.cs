@@ -400,9 +400,10 @@ namespace ActivityPicturePlugin.Helper
                     System.IO.File.Delete(this.ThumbnailPath);
                 }
             }
-            catch (Exception ex)
+            catch (Exception /*ex*/)
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                //TODO: Fails in list view and import. At least map must be updated
+                //System.Diagnostics.Debug.Assert(false, ex.Message);
             }
         }
 
