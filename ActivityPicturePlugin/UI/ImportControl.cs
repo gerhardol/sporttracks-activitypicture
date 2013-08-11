@@ -270,7 +270,6 @@ namespace ActivityPicturePlugin.UI
         #region private variables
         private const string gDummyFolder = "*****";
 
-        private List<FileInfo> m_files = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
         private List<TreeNode> m_ActivityNodes = new List<TreeNode>();//List of all activities (used for comparing and organizing)
         private List<TreeNode> m_CheckedDirNodes = new List<TreeNode>();//Nodes that are selected in the Drive TreeView
         private bool m_showallactivities;
@@ -324,8 +323,6 @@ namespace ActivityPicturePlugin.UI
         {
             try
             {
-                m_files.Clear();
-
                 m_standardpathalreadyshown &= !bReload;
                 if ( !m_standardpathalreadyshown )
                 {
@@ -466,22 +463,22 @@ namespace ActivityPicturePlugin.UI
 
             try
             {
-                m_files.Clear();
+                List<FileInfo> folderFiles = new List<FileInfo>();
                 try
                 {
-                    m_files.InsertRange( 0, driveDir.GetFiles() );
+                    folderFiles.InsertRange(0, driveDir.GetFiles());
                 }
                 catch ( UnauthorizedAccessException )
                 {
                     return;
                 }
 
-                for ( int i = 0; i < m_files.Count; i++ )
+                for (int i = 0; i < folderFiles.Count; i++)
                 {
-                    if ( !Functions.IsNormalFile( m_files[i] ) ||
-                        Functions.GetMediaType( m_files[i].Extension ) == ImageData.DataTypes.Nothing )
+                    if (!Functions.IsNormalFile(folderFiles[i]) ||
+                        Functions.GetMediaType(folderFiles[i].Extension) == ImageData.DataTypes.Nothing)
                     {
-                        m_files.RemoveAt( i );
+                        folderFiles.RemoveAt(i);
                         i--;
                     }
                 }
@@ -518,7 +515,7 @@ namespace ActivityPicturePlugin.UI
                     System.Collections.ArrayList lvItems = new System.Collections.ArrayList();
 
                     // Create a list of ListItems 
-                    foreach (FileInfo fi in this.m_files)
+                    foreach (FileInfo fi in folderFiles)
                     {
                         ListViewItem lvi = NewListViewImagesItem(fi);
                         lvItems.Add(lvi);
@@ -543,8 +540,8 @@ namespace ActivityPicturePlugin.UI
                     // Add the images
                     for ( int j = 0; j < listViewDrive.Items.Count; j++ )
                     {
-                        if (progressBar2.Maximum != m_files.Count) progressBar2.Maximum = m_files.Count;
-                        if (progressBar2.Maximum >= listViewDrive.Items.Count) progressBar2.Maximum = listViewDrive.Items.Count;
+                        if (progressBar2.Maximum != folderFiles.Count) progressBar2.Maximum = folderFiles.Count; //The expected number
+                        if (progressBar2.Maximum <= listViewDrive.Items.Count) progressBar2.Maximum = listViewDrive.Items.Count; //If items existed for some reason
                         progressBar2.Value = j;
 
                         FileInfo fi = new FileInfo( listViewDrive.Items[j].ImageKey );
@@ -1509,7 +1506,7 @@ namespace ActivityPicturePlugin.UI
 
         }
 
-        private int FindAndImportImages()
+        private int FindAndImportImages(List<FileInfo> importFiles)
         {
             int numFilesImported = 0;
             try
@@ -1544,14 +1541,14 @@ namespace ActivityPicturePlugin.UI
                 int i = 0;
                 DateTime FileTime = new DateTime();
                 ImportControlState state = new ImportControlState( m_Activities, this.Visible );
-                foreach ( FileInfo file in m_files )
+                foreach ( FileInfo file in importFiles )
                 {
                     Application.DoEvents();
                     if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
                         throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
                     i++;
-                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( m_files.Count ) );
+                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( importFiles.Count ) );
                     this.lblProgress.Text = Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
 
                     //TODO: Handle non-exif
@@ -1629,7 +1626,7 @@ namespace ActivityPicturePlugin.UI
             return info.EndTime.ToLocalTime();
         }
 
-        private void ThreadGetImages()
+        private void ThreadGetImages(List<FileInfo> importFiles)
         {
             DateTime first = DateTime.MaxValue;
             foreach (TreeNode tn in this.m_ActivityNodes)
@@ -1664,13 +1661,14 @@ namespace ActivityPicturePlugin.UI
 
             foreach ( TreeNode n in this.m_CheckedDirNodes )
             {                
-                GetImageFiles( n, first );
+                GetImageFiles( n, first, importFiles );
             }
-            BeginInvoke( onImagesComplete, new object[] { this, EventArgs.Empty } );
+            //BeginInvoke(onImagesComplete, new object[] { this, importFiles.Count });
+            this.lblProgress.Text = String.Format(Resources.SortingXImages, importFiles.Count);
             this.HideProgressBar();
         }
 
-        private void GetImageFiles( TreeNode node, DateTime first ) //finds all images of the selected directory
+        private void GetImageFiles(TreeNode node, DateTime first, List<FileInfo> importFiles) //finds all images of the selected directory
         {
             try
             {
@@ -1704,7 +1702,7 @@ namespace ActivityPicturePlugin.UI
                                 TreeNode subNode = new TreeNode( dirsub.Name );
                                 subNode.Nodes.Add( gDummyFolder );
                                 subNode.Tag = dirsub; //treeViewImages
-                                GetImageFiles( subNode, first );
+                                GetImageFiles( subNode, first, importFiles );
                             }
                         }
                     }
@@ -1723,11 +1721,11 @@ namespace ActivityPicturePlugin.UI
                     {
                         if ( Functions.IsNormalFile( file ) &&
                             (Functions.GetMediaType( file.Extension ) != ImageData.DataTypes.Nothing) &&
-                            ( !m_files.Contains( file ) ) &&
+                            ( !importFiles.Contains( file ) ) &&
                             //prune filter: Use file modified date
                                 (file.LastWriteTimeUtc > first) )
                         {
-                            m_files.Add( file );
+                            importFiles.Add( file );
                             SetLabelText( Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
                             if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
@@ -1752,7 +1750,7 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void SortFiles()
+        private void SortFiles(List<FileInfo> importFiles)
         {
             //start sorting
             Application.DoEvents();
@@ -1760,15 +1758,15 @@ namespace ActivityPicturePlugin.UI
             List<FileInfoEx> fiexs = new List<FileInfoEx>();
             int j = 0;
             this.progressBar2.Style = ProgressBarStyle.Continuous;
-            this.progressBar2.Maximum = m_files.Count;
+            this.progressBar2.Maximum = importFiles.Count;
             this.ResetProgressBar();
 
             ImportControlState state = new ImportControlState( m_Activities, this.Visible );
 
-            // Get exif data for all files once and only one (slow operation)
-            foreach ( FileInfo fi in m_files )
+            // Get exif data for all files once and only one for sort (slow operation)
+            foreach ( FileInfo fi in importFiles )
             {
-                lblProgress.Text = string.Format( Resources.SortingXofYImages, ++j, m_files.Count );
+                lblProgress.Text = string.Format( Resources.SortingXofYImages, ++j, importFiles.Count );
                 progressBar2.Value = j;
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
@@ -1785,9 +1783,9 @@ namespace ActivityPicturePlugin.UI
             // Sort them
             fiexs.Sort( fs.Compare );
 
-            // Reassign the files to the original m_files member.
-            for ( int i = 0; i < m_files.Count; i++ )
-                m_files[i] = fiexs[i].fi;
+            // Reassign the files to the original importFiles member.
+            for ( int i = 0; i < importFiles.Count; i++ )
+                importFiles[i] = fiexs[i].fi;
 
             fiexs.Clear();
         }
@@ -2142,7 +2140,7 @@ namespace ActivityPicturePlugin.UI
         #region Eventhandlers
         private void OnImagesComplete( object sender, EventArgs e )
         {
-            this.lblProgress.Text = String.Format( Resources.SortingXImages, m_files.Count );
+            //this.lblProgress.Text = String.Format( Resources.SortingXImages, importFiles.Count );
         }
 
         #region treeViewImages
@@ -2170,9 +2168,10 @@ namespace ActivityPicturePlugin.UI
             SetCheck( e.Node, e.Node.Checked );
             if (e.Node.Checked && ! e.Node.IsSelected)
             {
-                this.treeViewImages.AfterCheck -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
-                this.treeViewImages.SelectedNode = e.Node;
-                this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+                //revert this change, not setting subnodes correctly
+                //this.treeViewImages.AfterCheck -= new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
+                //this.treeViewImages.SelectedNode = e.Node;
+                //this.treeViewImages.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewImages_AfterCheck);
             }
         }
         private void treeViewImages_AfterSelect( object sender, TreeViewEventArgs e )
@@ -2752,10 +2751,10 @@ namespace ActivityPicturePlugin.UI
                 if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
                     throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
-                m_files.Clear();
-                ThreadGetImages(); //collects images of all selected paths
-                SortFiles();
-                int numFilesImported = FindAndImportImages();
+                List<FileInfo> importFiles = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
+                ThreadGetImages(importFiles); //collects images of all selected paths
+                SortFiles(importFiles);
+                int numFilesImported = FindAndImportImages(importFiles);
 
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
                 EnableControl( true );
@@ -3309,27 +3308,27 @@ namespace ActivityPicturePlugin.UI
         }
     }
 
-    public class FileSorter : System.Collections.IComparer
-    {
-        public int Compare( object x, object y )
-        {
-            try
-            {                
-                FileInfo tx = x as FileInfo;
-                FileInfo ty = y as FileInfo;
-                string strx = Functions.GetFileTimeString( tx );  //Functions.NeutralDateTimeFormat
-                string stry = Functions.GetFileTimeString( ty );  //Functions.NeutralDateTimeFormat
-                return string.Compare( strx, stry );
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-                return 0;
-                //throw;
-            }
+    //public class FileSorter : System.Collections.IComparer
+    //{
+    //    public int Compare( object x, object y )
+    //    {
+    //        try
+    //        {                
+    //            FileInfo tx = x as FileInfo;
+    //            FileInfo ty = y as FileInfo;
+    //            string strx = Functions.GetFileTimeString( tx );  //Functions.NeutralDateTimeFormat
+    //            string stry = Functions.GetFileTimeString( ty );  //Functions.NeutralDateTimeFormat
+    //            return string.Compare( strx, stry );
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            System.Diagnostics.Debug.Assert(false, ex.Message);
+    //            return 0;
+    //            //throw;
+    //        }
 
-        }
-    }
+    //    }
+    //}
 
     public class FileExSorter : System.Collections.IComparer
     {
