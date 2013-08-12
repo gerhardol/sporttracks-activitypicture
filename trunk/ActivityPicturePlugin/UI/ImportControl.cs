@@ -69,9 +69,9 @@ namespace ActivityPicturePlugin.UI
             }
             else
             {
-                splitContainer1.SplitterDistance = Source.Settings.SettingsSplitter1Offset > splitContainer1.Width ? splitContainer1.Width : Source.Settings.ImportSplitter1Offset;
-                splitContainer2.SplitterDistance = Source.Settings.SettingsSplitter2Offset > splitContainer2.Height ? splitContainer2.Height : Source.Settings.ImportSplitter2Offset;
-                splitContainer3.SplitterDistance = Source.Settings.SettingsSplitter3Offset > splitContainer3.Height ? splitContainer3.Height : Source.Settings.ImportSplitter3Offset;
+                splitContainer1.SplitterDistance = Source.Settings.SettingsSplitter1Offset > splitContainer1.Width ? splitContainer1.Width : Source.Settings.SettingsSplitter1Offset;
+                splitContainer2.SplitterDistance = Source.Settings.SettingsSplitter2Offset > splitContainer2.Height ? splitContainer2.Height : Source.Settings.SettingsSplitter2Offset;
+                splitContainer3.SplitterDistance = Source.Settings.SettingsSplitter3Offset > splitContainer3.Height ? splitContainer3.Height : Source.Settings.SettingsSplitter3Offset;
             }
 
             colDImage.Width = Source.Settings.ListDriveColThumbnailWidth;
