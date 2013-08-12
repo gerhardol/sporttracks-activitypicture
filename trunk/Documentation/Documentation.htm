@@ -1,0 +1,380 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title></title>
+	    <style type="text/css">
+            .style1
+            {
+                width: 432px;
+                height: 142px;
+            }
+            .style2
+            {
+                width: 528px;
+                height: 110px;
+            }
+            .style3
+            {
+                width: 524px;
+                height: 232px;
+            }
+            .style4
+            {
+                width: 543px;
+                height: 351px;
+            }
+            .style5
+            {
+                width: 526px;
+                height: 352px;
+            }
+            .style6
+            {
+                width: 527px;
+                height: 523px;
+            }
+            .style8
+            {
+                width: 739px;
+                height: 647px;
+            }
+            .style9
+            {
+                width: 436px;
+                height: 590px;
+            }
+            .style10
+            {
+                width: 288px;
+                height: 361px;
+            }
+            .style11
+            {
+                width: 290px;
+                height: 258px;
+            }
+            .style16
+            {
+                width: 744px;
+                height: 746px;
+            }
+            .style17
+            {
+                width: 527px;
+                height: 646px;
+            }
+            .style18
+            {
+                width: 640px;
+                height: 388px;
+            }
+            .style19
+            {
+                width: 370px;
+                height: 180px;
+            }
+            .style20
+            {
+                width: 350px;
+                height: 148px;
+            }
+            .style21
+            {
+                width: 640px;
+                height: 392px;
+            }
+            .style22
+            {}
+            .style23
+            {
+                width: 746px;
+                height: 633px;
+            }
+            .style24
+            {
+                font-size: large;
+            }
+            .style25
+            {
+                font-size: medium;
+            }
+            .style26
+            {
+                width: 528px;
+                height: 108px;
+            }
+        </style>
+	</head>
+	<body>
+	
+	    <p class="style24">
+            <strong>Description of the plugin</strong></p>
+        <p class="style22">
+            The plugin is made for accessing pictures and videos that have been taken during 
+            an activity in an easy way.&nbsp; The plugin contains the following 
+            capabilities:</p>
+        <p class="style22">
+            Automatic import of pictures into an activity based on the EXIF data.<br />
+            Automatic Geotagging based on the GPS track of an activity.<br />
+            Three different views are implemented (Album view, List view, and Import view)<br />
+            Showing thumbnails on the SportTracks maps.&nbsp; (Only on ST3 version; Thanks 
+            to Gerhard)</p>
+        <p class="style22">
+            <img alt="" class="style23" 
+                src="Images/Album%20Maps.jpg" /></p>
+        <p class="style25">
+            <strong>Album view</strong></p>
+        <p class="style25">
+            <img alt="" class="style6" 
+                src="Images/Album.jpg" /></p>
+        <p>
+            In the <strong>album view</strong>, only the images and videos are displayed.&nbsp; 
+            It has the following functions:<br />
+            When double-clicking on an image, it will be opened using your default 
+            application for the medium<br />
+            When clicking on a video, it will be displayed.&nbsp; Navigation within the 
+            video is possible using the &#39;Video&#39; toolstrip.<br />
+            When hovering over an image, a tooltip will show the date and time, as well as 
+            the GPS location and the picture title.<br />
+            The size of the images can be changed using the Photo Size slider bar.</p>
+        <p>
+            <img alt="" class="style2" 
+                src="Images/Album%20-%20Fit%20Context.jpg" /></p>
+        <p>
+            The Picture toolstrip allows you to scale the size of the images displayed for 
+            the activity.&nbsp; You will be prompted to Save upon closing SportTracks.</p>
+        <p>
+            Right-clicking on the slider control will bring up a context menu allowing you 
+            to choose whether the maximum size of the images should be locked to the size of 
+            the view.</p>
+        <p>
+            <img alt="" class="style3" 
+                src="Images/Album%20-%20Groups.jpg" /></p>
+        <p>
+            The &#39;Video&#39; toolstrip allows for video playback, pausing, snapshot taking, 
+            panning, and volume controlling.&nbsp;
+        </p>
+        <p>
+            Play, pause, stop, panning and volume controls:<br />
+            Perform basic video playback functionality.&nbsp; The volume setting is saved 
+            upon closing SportTracks.&nbsp; No prompt to save.<br />
+            Note on video playback: An appropriate codec must be installed on your system to 
+            view videos.&nbsp; If an appropriate codec could not be found, an attempt is 
+            made to open the video in your default application for the media type.&nbsp; If 
+            you are unsure which codecs are required, try downloading a codec pack, ie. 
+            K-Lite Codec Pack.<br />
+            <br />
+            Snapshot:<br />
+            The snapshot button will attempt to take an image capture of the current frame 
+            and use this image as the thumbnail.&nbsp; &#39;Video&#39; is stamped in the upper left 
+            corner of the thumbnail to distinguish it from the other images.&nbsp; The 
+            snapshot functionality is still somewhat experimental.</p>
+        <p>
+            <img alt="" class="style5" 
+                src="Images/Album%20-%20Video%20Context.jpg" /></p>
+        <p>
+            Right-clicking on a video will bring up a context menu allowing you to:<br />
+            Open Containing Folder - Opens the folder where video is located.<br />
+            Reset Snapshot - Resets the snapshot to the default &#39;Video&#39; image.<br />
+            Remove - Deletes the clip from the activity.&nbsp; You will be prompted to Save 
+            upon closing SportTracks.</p>
+        <p>
+            <img alt="" class="style4" 
+                src="Images/Album%20-%20Photo%20Context.jpg" /></p>
+        <p>
+            Right-clicking on a picture will bring up a contet menu allowing you to:<br />
+            Open Containing Folder - Opens the folder where the picture is located.<br />
+            Remove - Deletes the picture from the activity.&nbsp; You will be prompted to 
+            Save upon closing SportTracks.</p>
+        <p class="style25">
+            <strong>Import view</strong></p>
+        <p>
+            <img alt="" class="style16" 
+                src="Images/Import.jpg" /></p>
+        <p>
+            The upper left corner contains a treeview which shows the drives and folders 
+            found on the system.<br />
+            The lower left corner contains a listview which shows the pictures and videos 
+            found in the selected folder.<br />
+            The upper right corner contains a treeview showing the currently selected activity.<br />
+            The lower right corner contains a listview showing the pictures and videos 
+            currently assigned to the activity.</p>
+        <p>
+            The import view has three ways of adding images and videos to your activity.</p>
+        <p>
+            <img alt="" class="style8" 
+                src="Images/Import%20-%20AutoImport.jpg" /></p>
+        <p>
+            The first method is the the &#39;Auto Import&#39;.&nbsp; Clicking the &#39;Auto Import&#39; 
+            button will automatically scan the <strong>checked</strong> folders for images 
+            and videos that were taken during the selected activity.</p>
+        <p>
+            Note: Checking or unchecking a folder will automatically check or uncheck all 
+            child folders.</p>
+        <p>
+            The second method for adding images to an activity is by manually doing it.</p>
+        <p>
+            <img alt="" class="style10" 
+                src="Images/Import%20-%20ListDrive%20Context.jpg" /></p>
+        <p>
+            <strong>Manually import Images:</strong></p>
+        <p>
+            To manually import images:</p>
+        <p>
+            Select an activity from the upper right pane.<br />
+            Select the folder containing the images and videos you wish to import.<br />
+            Select the images and videos in the lower left pane.<br />
+            Right click on the files you wish to add, and click &#39;Add&#39;.</p>
+        <p>
+            The third method is by dragging and dropping from the lower left pane to the 
+            lower right pane.</p>
+        <p>
+            <img alt="" class="style9" 
+                src="Images/Import%20-%20List%20Activities%20Context.jpg" /></p>
+        <p>
+            Removing images from an activity can be done by selecting the images in the 
+            lower right pane either by clicking the delete key, or by right-clicking and 
+            selecting &#39;Remove&#39; from the context menu.</p>
+        <p>
+            Right clicking on an item in the lower right view brings up a context menu with 
+            the following options:<br />
+            Open - Opens the original file in the default application for the media.<br />
+            Open Containing Folder - Opens the folder where the image or video is located.<br />
+            Open Thumbnail - Opens the thumbnail image of the image or video.<br />
+            Remove - Removes the image from the activity.</p>
+        <p>
+            <img alt="" class="style11" 
+                src="Images/Import%20-%20TreeDrive%20Context.jpg" /></p>
+        <p>
+            Right clicking on a folder or a drive in the folder view will bring up a context 
+            menu allowing you to:<br />
+            Refresh - Refreshes the list of child folders.</p>
+        <p>
+            <img alt="" class="style1" 
+                src="Images/Album%20-%20ActivityTree%20Context.jpg" /></p>
+        <p>
+            Right clicking on a node in the activity tree will bring up a context menu 
+            allowing you to:<br />
+            Copy - Copies details of the images and videos assigned to the activity to the 
+            clipboard.&nbsp; The following information is copied: Name, Photo Source, Date, 
+            GPS location, Title, Comment, ReferenceID, File Path, and Thumbnail.<br />
+            Migrate Paths... - Allows you to update the location of the source images in 
+            case their location has changed since they were added to SportTracks.</p>
+        <p>
+            <img alt="" class="style19" 
+                src="Images/Migrate%20Source%20Path.jpg" /></p>
+        <p>
+            To change the location the Activity Picture Plugin searches for the original 
+            images, set &#39;Source&#39; to the original location, &#39;Destination&#39; to the current 
+            location, and click OK.</p>
+        <p>
+            The import control supports five listview views.&nbsp; The views can be changed 
+            by clicking the, &#39;Change View&#39; buttons.&nbsp; The views supported are, Detail, 
+            Large Icon, Small Icon, Tile, and List.</p>
+        <p class="style25">
+            <strong>Settings Page</strong></p>
+        <p>
+            The settings page has much of the same functionality as found in the Activity 
+            Detail Page with a few differences.</p>
+        <p>
+            <img alt="" class="style21" 
+                src="Images/Settings.jpg" /></p>
+        <p>
+            Differences from Activity Detail Page:<br />
+            The upper right pane now contains a tree of all the activities found in the 
+            logbook.&nbsp; Nodes highlighted in blue indicate that a child activity has a 
+            picture or movie assigned.</p>
+        <p>
+            Auto Import will attempt to import images and videos from the <strong>checked</strong> 
+            folders into ALL activities.&nbsp; After an import is completed activity nodes 
+            (and their parent nodes) with new images are highlighted in yellow.</p>
+        <p>
+            Notes: Please see &#39;Import View&#39; for more details on how to import images and 
+            videos into activities.</p>
+        <p>
+            The top of the Settings Page also has a number of additional settings:<br />
+            Google Earth Size: Slider allows for the changing of the image sizes exported to 
+            Google Earth through the &quot;Export to Google Earth&quot; button found in the List view.<br />
+            Google Earth Quality: Slider allows for the changing of the quality of the 
+            images exported to Google Earth through the &quot;Export to Google Earth&quot; button 
+            found in the List view.<br />
+            Open in Google Earth when Created: Automatically launches Google Earth after 
+            creating the kmz/kml files.<br />
+            Store kmz/kml file locations: Stores the location of the created kmz/kml folder 
+            and assigns them to the activity.</p>
+        <p>
+            Notes:&nbsp; Please see &#39;List View&#39; for more details on creating kmz/kml files.</p>
+        <p class="style25">
+            <strong>List View</strong></p>
+        <p class="style25">
+            &lt;Place holder for List View image&gt;</p>
+        <p>
+            In the List View, thumbnails &amp; metadata of the image are displayed.&nbsp; It has 
+            the following features:</p>
+        <p>
+            Display of Eif data: Title, Date/Tme, Camera Model, GPS Location, Altitude, ...<br />
+            Some of the data is editable and will be saved with the image file: Title, 
+            Comment.<br />
+            When double-clicking on a thumbnail, it will be opened using the default 
+            application for the media.<br />
+            There are three buttons in the toolstrip: Geotag, Time offset, and Export to 
+            Google Earth.</p>
+        <p class="style25">
+            <img alt="" class="style26" 
+                src="Images/List%20-%20Toolstrip.jpg" /></p>
+        <p>
+            The List View toolstrip has the following options:<br />
+            Geotag - Will geotag all selected images and videos based on the Timestamp and 
+            the track of the SportTracks activity.<br />
+            Time offset - Offsets the Date/Time of the selected images and videos by the specified 
+            amount.&nbsp; This is useful if the dates and times of several images are off by 
+            the same amount.<br />
+            Export to Google Earth - There are two options for the export.<br />
+&nbsp; Export as kmz: Will include all selected images in a compressed file which can be 
+            distributed and opened on any computer.<br />
+&nbsp; Export as kml: Will include only links to the local images, therefore, file size is 
+            much smaller.&nbsp; The &#39;kml&#39; file is only useful for the local PC. (CHECK THIS 
+            FUNCTIONALITY)<br />
+            View kmz/kml:&nbsp;
+            Clicking the little globe icon brings up a context menu showing a list of 
+            kmz/kml files that were created for the activity.&nbsp;
+            Note: This option only exists if the, &#39;Store kmz/kml file locations&#39; option 
+            found in the Settings Page is checked.</p>
+        <p>
+            <img alt="" class="style18" 
+                src="Images/List%20-%20Google%20Context.jpg" /></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <img alt="" class="style17" 
+                src="Images/List%20-%20Context.jpg" /></p>
+        <p>
+            Right-clicking the grid brings up a context menu with the following options:</p>
+        <p>
+            Copy: Copies the details of the selected rows to the clipboard.&nbsp; Only 
+            details from the checked columns are copied to the clipboard.<br />
+            Hide All Columns: Hides all columns except, &#39;Thumbnail&#39;.<br />
+            &lt;Column&gt;: A list of columns available to be displayed.&nbsp; Only checked 
+            columns are shown.</p>
+        <p>
+            Editing the Title and Comment fields is possible by either double-slow-clicking 
+            on a particular cell, or by pressing F2</p>
+        <p>
+            <img alt="" class="style20" 
+                src="Images/SetTimeStamp.jpg" /></p>
+        <p>
+            Double-clicking the date cell for an image brings up the Set Time Stamp dialog.&nbsp; 
+            This dialog allows you to set the date and time for the image or video.</p>
+        <p class="style25">
+            <strong>Localization</strong></p>
+        <p>
+            Currently the languages English, German, French, Spanish, Swedish, and Dutch are 
+            supported.&nbsp; Further languages will be added on request.</p>
+        <p class="style25">
+            <strong>Data storage</strong></p>
+        <p>
+            When a picture is added, a unique referenceID will be created and an thumbnail 
+            image of reduced size (&lt;150kb) will be saved. </p>
+	
+	</body>
+</html>
