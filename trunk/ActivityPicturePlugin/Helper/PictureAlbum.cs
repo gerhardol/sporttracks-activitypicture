@@ -517,8 +517,8 @@ namespace ActivityPicturePlugin.Helper
             {
                 tooltip = this.ImageList[i].PhotoSource;
                 DateTime dt = DateTime.MinValue;
-                if (dt < this.ImageList[i].DateTimeOriginal()) tooltip += Environment.NewLine + Functions.DateTimeString(this.ImageList[i].DateTimeOriginal());
-                if (this.ImageList[i].HasExifGps()) tooltip += Environment.NewLine + this.ImageList[i].GpsString().Replace(Environment.NewLine, ", ");
+                if (dt < this.ImageList[i].DateTimeOriginal) tooltip += Environment.NewLine + Functions.DateTimeString(this.ImageList[i].DateTimeOriginal);
+                if (this.ImageList[i].HasGps()) tooltip += Environment.NewLine + GPS.GpsString(this.ImageList[i].GpsPoint).Replace(Environment.NewLine, ", ");
                 if ( !String.IsNullOrEmpty( this.ImageList[i].Title ) ) tooltip += Environment.NewLine + this.ImageList[i].Title;
             }
             return tooltip;

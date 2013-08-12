@@ -70,7 +70,7 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 foreach (ImageData id in il)
                 {
-                    DateTime dt = id.DateTimeOriginal();
+                    DateTime dt = id.DateTimeOriginal;
                     dt = dt.AddYears((int)(this.nudYear.Value));
                     dt = dt.AddMonths((int)(this.nudMonth.Value));
                     dt += new TimeSpan((int)(this.nudDay.Value), (int)(this.nudHour.Value), (int)(this.nudMinute.Value), (int)(this.nudSecond.Value));

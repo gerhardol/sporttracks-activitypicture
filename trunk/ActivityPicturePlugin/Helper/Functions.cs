@@ -254,7 +254,7 @@ namespace ActivityPicturePlugin.Helper
                     {
                         foreach ( ImageData id in images )
                         {
-                            if (id.HasExifGps())
+                            if (id.HasGps())
                             {
                                 //stylemaps
                                 KMZstyle = id.ReferenceID;
@@ -271,7 +271,7 @@ namespace ActivityPicturePlugin.Helper
 
                     foreach ( ImageData id in images )
                     {
-                        if (id.HasExifGps())
+                        if (id.HasGps())
                         {
                             string KMZfilesource; //source of image (which will be embedded in case of kmz)
                             string KMZLink;
@@ -325,9 +325,9 @@ namespace ActivityPicturePlugin.Helper
                             + "' width="
                             + width
                             + "></A></P><P><FONT face=Verdana size=2>"
-                            + Functions.DateTimeString(id.DateTimeOriginal())
+                            + Functions.DateTimeString(id.DateTimeOriginal)
                             + "</FONT></P><P><FONT face=Verdana size=2>"
-                            + id.GpsString().Replace( Environment.NewLine, ", " )
+                            + GPS.GpsString(id.GpsPoint).Replace( Environment.NewLine, ", " )
                             + "</FONT></P><P><FONT face=Verdana size=1>"
                             + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                             + "</FONT></P>";
@@ -525,7 +525,7 @@ namespace ActivityPicturePlugin.Helper
                         {
                             foreach ( ImageData id in images )
                             {
-                                if (id.HasExifGps())
+                                if (id.HasGps())
                                 {
                                     //stylemaps
                                     KMZstyle = id.ReferenceID;
@@ -542,7 +542,7 @@ namespace ActivityPicturePlugin.Helper
 
                         foreach ( ImageData id in images )
                         {
-                            if (id.HasExifGps())
+                            if (id.HasGps())
                             {
                                 string KMZfilesource; //source of image (which will be embedded in case of kmz)
                                 string KMZLink;
@@ -596,9 +596,9 @@ namespace ActivityPicturePlugin.Helper
                                 + "' width="
                                 + width
                                 + "></A></P><P><FONT face=Verdana size=2>"
-                                + Functions.DateTimeString(id.DateTimeOriginal())
+                                + Functions.DateTimeString(id.DateTimeOriginal)
                                 + "</FONT></P><P><FONT face=Verdana size=2>"
-                                + id.GpsString().Replace( Environment.NewLine, ", " )
+                                + GPS.GpsString(id.GpsPoint).Replace( Environment.NewLine, ", " )
                                 + "</FONT></P><P><FONT face=Verdana size=1>"
                                 + String.Format( Resources.CreatedWithXForSportTracks_Text, Resources.ActivityPicturePlugin_Text )
                                 + "</FONT></P>";
@@ -1303,7 +1303,7 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         // ...and y is not null, compare the dates
-                        retval = x.DateTimeOriginal().CompareTo(y.DateTimeOriginal());
+                        retval = x.DateTimeOriginal.CompareTo(y.DateTimeOriginal);
                     }
                 }
             }

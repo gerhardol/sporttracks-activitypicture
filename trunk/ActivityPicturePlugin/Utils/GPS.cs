@@ -25,14 +25,14 @@ namespace ActivityPicturePlugin
 {
     public class GPS
     {
-        public static IGPSPoint LocationToPoint( IGPSLocation location )
+        public static IGPSPoint LocationToPoint(IGPSLocation location)
         {
-            return new GPSPoint( location.LatitudeDegrees, location.LongitudeDegrees, 0 );
+            return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, 0);
         }
 
-        public static IGPSLocation PointToLocation( IGPSPoint point )
+        public static IGPSLocation PointToLocation(IGPSPoint point)
         {
-            return new GPSLocation( point.LatitudeDegrees, point.LongitudeDegrees );
+            return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
         }
 
 #if !ST_2_1
@@ -57,16 +57,66 @@ namespace ActivityPicturePlugin
             return area;
         }
 #endif
+        public static string GpsString(IGPSLocation loc)
+        {
+            if (loc.LatitudeDegrees != 0 || loc.LongitudeDegrees != 0)
+            {
+                return GPSLocation.ToString(loc, GPS.GpsFormat());
+            }
+            return "";
+        }
+
+        public static string GpsFormat()
+        {
+            string GPSString = "";
+            switch (Plugin.GetApplication().SystemPreferences.GPSLocationUnits)
+            {
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
+                    GPSString = "m0";
+                    break;
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal3:
+                    GPSString = "+3";
+                    break;
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal4:
+                    GPSString = "+4";
+                    break;
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Minutes:
+                    GPSString = "m0"; //TODO: incomplete, must fix format string
+                    break;
+                default:
+                    GPSString = ""; //Same as "+4" 
+                    break;
+            }
+
+            return GPSString;
+        }
+        public static int Compare(IGPSPoint x, IGPSPoint y)
+        {
+            if (x.Equals(y))
+            {
+                return 0;
+            }
+            if (x.LatitudeDegrees > y.LatitudeDegrees ||
+                x.LatitudeDegrees == y.LatitudeDegrees &&
+                (x.LongitudeDegrees > y.LongitudeDegrees ||
+                x.LongitudeDegrees == y.LongitudeDegrees &&
+                x.ElevationMeters > y.ElevationMeters))
+            {
+                return 1;
+            }
+            return -1;
+        }
+ 
+        //old implementation, to be 
         //double precision, to not (seemingly) loose exif precision in presentations
-        //TODO: Replace with ST support classes
-        public class GpsLoc :IComparable
+        public class GpsLoc : IComparable
         {
             public GpsLoc(double lat, double lon)
             {
                 this.lat = lat;
                 this.lon = lon;
             }
-            public double lat; 
+            public double lat;
             public double lon;
 
 
