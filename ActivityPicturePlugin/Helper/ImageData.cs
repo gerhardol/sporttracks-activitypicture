@@ -50,15 +50,6 @@ namespace ActivityPicturePlugin.Helper
                 {
                     this.ew = new ExifWorks();
                 }
-                System.Drawing.Bitmap b = this.EW.GetBitmap();
-                if (b == null)
-                {
-                    this.Ratio = 1;
-                }
-                else
-                {
-                    this.Ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
-                }
             }
             catch (Exception ex)
             {
@@ -81,8 +72,9 @@ namespace ActivityPicturePlugin.Helper
         private string referenceID;
         private ExifWorks ew;
         private Image thumbnailImage;
-        private Single ratio;
+        private Single? ratio=null;
         private string m_thumbnailPath;
+        private IGPSPoint gpsPoint;
 
 #if ST_2_1
         private static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
@@ -177,9 +169,12 @@ namespace ActivityPicturePlugin.Helper
             set { this.thumbnailImage = value; }
         }
 
-        public DateTime DateTimeOriginal()
+        public DateTime DateTimeOriginal
         {
-            return this.EW.DateTimeOriginal;
+            get
+            {
+                return this.EW.DateTimeOriginal;
+            }
         }
         public void SetDateTimeOriginal(DateTime dt)
         {
@@ -200,7 +195,6 @@ namespace ActivityPicturePlugin.Helper
                 {
                     if ( this.EW.FileExplorerTitle != null )
                     {
-                        //return System.Text.RegularExpressions.Regex.Replace(this.EW.FileExplorerTitle, @"[\W]", "");
                         return CleanInput( this.EW.FileExplorerTitle );
                     }
                     else return "";
@@ -266,11 +260,27 @@ namespace ActivityPicturePlugin.Helper
 
         public Single Ratio
         {
-            get { return ratio; }
+            get
+            {
+                if (ratio == null)
+                {
+                    System.Drawing.Bitmap b = this.EW.GetBitmap();
+                    if (b == null)
+                    {
+                        this.ratio = 1;
+                    }
+                    else
+                    {
+                        this.ratio = (Single)(this.EW.GetBitmap().Width) / (Single)(this.EW.GetBitmap().Height);
+                    }
+
+                } 
+                return (Single)ratio;
+            }
             set { ratio = value; }
         }
 
-        String CleanInput( string strIn )
+        static String CleanInput( string strIn )
         {
             // Replace invalid characters with empty strings.
             return System.Text.RegularExpressions.Regex.Replace( strIn, @"[^ -ÿ]", "" );
@@ -294,58 +304,66 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        public string GpsString()
+        //Used in Image List
+        public string ExifGps
         {
-            return new GPS.GpsLoc(ew.GPSLatitude, ew.GPSLongitude).ToString();
-        }
-
-        public IGPSPoint GpsPoint
-        {
-            get 
-            { 
-                float lat = (float)ew.GPSLatitude;
-                float lon = (float)ew.GPSLongitude;
-                float alt = (float)ew.GPSAltitude;
-                if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
-                {
-                    DateTime time = this.EW.DateTimeOriginal;
-                    DateTime actStart = this.activity.GPSRoute.StartTime;
-                    DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds(this.activity.GPSRoute.TotalElapsedSeconds);
-                    if (time < actStart || time > actEnd)
-                    {
-                        System.IO.FileInfo fi = new System.IO.FileInfo(this.photosource);
-                        time = fi.CreationTimeUtc;
-                        if (time < actStart || time > actEnd)
-                        {
-                            //Try modification, could be better
-                            time = fi.LastWriteTimeUtc;
-                        }
-                    }
-                    else
-                    {
-                        //MinDate cannot be adjusted
-                        time = time.ToUniversalTime();
-                    }
-                    ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue(time);
-                    if (g != null)
-                    {
-                        return g.Value;
-                    }
-                }
-                return new GPSPoint( lat, lon, alt ); 
+            get
+            {
+                return GPS.GpsString(this.GpsPoint);
+                //return new GPS.GpsLoc(ew.GPSLatitude, ew.GPSLongitude).ToString();
             }
         }
 
-        //Two separate functions for now
+        //GPS info, Original time could come from the original Exif (transfered to the thumbnail)
+        //Original time are stored in exif for the thumbnail, but GPS may be calculated.
+        //As we do not want to keep track of how GPS is calculated when editing time on the image or
+        //the activity GPS, keep GPS "dynamic" but cacahed
+        //(GPS should be invalidated if activity is changed)
+        public IGPSPoint GpsPoint
+        {
+            get 
+            {
+                if (this.gpsPoint == null)
+                {
+                    float lat = (float)ew.GPSLatitude;
+                    float lon = (float)ew.GPSLongitude;
+                    float alt = (float)ew.GPSAltitude;
+                    if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
+                    {
+                        DateTime time = this.EW.DateTimeOriginal;
+                        DateTime actStart = this.activity.GPSRoute.StartTime;
+                        DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds(this.activity.GPSRoute.TotalElapsedSeconds);
+                        if (time < actStart || time > actEnd)
+                        {
+                            System.IO.FileInfo fi = new System.IO.FileInfo(this.photosource);
+                            time = fi.CreationTimeUtc;
+                            if (time < actStart || time > actEnd)
+                            {
+                                //Try modification, could be better
+                                time = fi.LastWriteTimeUtc;
+                            }
+                        }
+                        else
+                        {
+                            //MinDate cannot be adjusted
+                            time = time.ToUniversalTime();
+                        }
+                        ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue(time);
+                        if (g != null)
+                        {
+                            gpsPoint = g.Value;
+                        }
+                    }
+                    gpsPoint = new GPSPoint(lat, lon, alt);
+                }
+                return gpsPoint;
+            }
+        }
+
         public bool HasGps()
         {
             IGPSPoint g = this.GpsPoint;
             return !((g.LatitudeDegrees == 0) && (g.LongitudeDegrees == 0));
-        }
-
-        public bool HasExifGps()
-        {
-            return !((ew.GPSLatitude == 0) && (ew.GPSLongitude == 0));
         }
 
         public string KMLGPS
@@ -903,10 +921,10 @@ namespace ActivityPicturePlugin.Helper
                         retval = y2.EW.DateTimeOriginal.CompareTo(this.EW.DateTimeOriginal);
                         break;
                     case PictureAlbum.ImageSortMode.byExifGPSAscending:
-                        retval = this.GpsString().CompareTo(y2.GpsString());
+                        retval = GPS.Compare(this.GpsPoint, y2.GpsPoint);
                         break;
                     case PictureAlbum.ImageSortMode.byExifGPSDescending:
-                        retval = y2.GpsString().CompareTo(this.GpsString());
+                        retval = GPS.Compare(y2.GpsPoint, this.GpsPoint);
                         break;
                     case PictureAlbum.ImageSortMode.byPhotoSourceAscending:
                         retval = this.PhotoSource.CompareTo(y2.PhotoSource);
