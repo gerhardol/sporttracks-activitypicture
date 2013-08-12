@@ -56,8 +56,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-
-                // throw;
             }
         }
 
@@ -85,7 +83,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
     }

@@ -178,7 +178,6 @@ namespace ActivityPicturePlugin
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.Assert(false, ex.Message);
-                    //throw;
                     return "";
                 }
             }

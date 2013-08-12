@@ -734,7 +734,6 @@ namespace ActivityPicturePlugin.UI
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
         }
 
@@ -1072,27 +1071,28 @@ namespace ActivityPicturePlugin.UI
                     //if (img != null) lvImg.Images.Add(img);
 
                     //Image img = Image.FromFile( m_files[ixImage].FullName );
-                    Image img = Image.FromFile( strKey );
-                    lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, img );
-                    lvImgL.Images.SetKeyName( ixImage, strKey );
-                    lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, img );
-                    lvImgS.Images.SetKeyName( ixImage, strKey );
-                    img.Dispose();
+                    using (Image img = Image.FromFile(strKey))
+                    {
+                        lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder(lvImgL.ImageSize.Width, img);
+                        lvImgL.Images.SetKeyName(ixImage, strKey);
+                        lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder(lvImgS.ImageSize.Width, img);
+                        lvImgS.Images.SetKeyName(ixImage, strKey);
+                    }
                 }
                 else if ( dt == ImageData.DataTypes.Video )
                 {
-                    Image bmp = (Bitmap)( Resources.video ).Clone();
-                    lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgL.ImageSize.Width, bmp );
-                    lvImgL.Images.SetKeyName( ixImage, strKey );
-                    lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder( lvImgS.ImageSize.Width, bmp );
-                    lvImgS.Images.SetKeyName( ixImage, strKey );
-                    bmp.Dispose();
+                    using (Image bmp = (Bitmap)(Resources.video).Clone())
+                    {
+                        lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder(lvImgL.ImageSize.Width, bmp);
+                        lvImgL.Images.SetKeyName(ixImage, strKey);
+                        lvImgS.Images[ixImage] = Functions.getThumbnailWithBorder(lvImgS.ImageSize.Width, bmp);
+                        lvImgS.Images.SetKeyName(ixImage, strKey);
+                    }
                 }
             }
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
         }
 
@@ -1355,7 +1355,6 @@ namespace ActivityPicturePlugin.UI
                             {
                                 System.Diagnostics.Debug.Assert( false, ex.Message );
                                 System.Diagnostics.Debug.Print( ex.Message );
-                                //throw;
                             }
                             j++;
                             progressBar2.Value = j;
@@ -1421,7 +1420,6 @@ namespace ActivityPicturePlugin.UI
 
                 listViewAct.LargeImageList = null;
                 listViewAct.SmallImageList = null;
-                //throw;
             }
             finally
             {
@@ -2503,7 +2501,6 @@ namespace ActivityPicturePlugin.UI
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -3307,28 +3304,6 @@ namespace ActivityPicturePlugin.UI
             return string.Compare( strx, stry );
         }
     }
-
-    //public class FileSorter : System.Collections.IComparer
-    //{
-    //    public int Compare( object x, object y )
-    //    {
-    //        try
-    //        {                
-    //            FileInfo tx = x as FileInfo;
-    //            FileInfo ty = y as FileInfo;
-    //            string strx = Functions.GetFileTimeString( tx );  //Functions.NeutralDateTimeFormat
-    //            string stry = Functions.GetFileTimeString( ty );  //Functions.NeutralDateTimeFormat
-    //            return string.Compare( strx, stry );
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            System.Diagnostics.Debug.Assert(false, ex.Message);
-    //            return 0;
-    //            //throw;
-    //        }
-
-    //    }
-    //}
 
     public class FileExSorter : System.Collections.IComparer
     {

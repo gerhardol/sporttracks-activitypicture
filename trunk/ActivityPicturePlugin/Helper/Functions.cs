@@ -709,9 +709,6 @@ namespace ActivityPicturePlugin.Helper
                     //System.IO.File.Copy(id.ReferenceIDPath, picDir + "\\" + id.ReferenceID + ".jpg");
                 }
             }
-
-            //bmp.Dispose();
-            //bmp = null;
         }
 
         private static Bitmap CreateSmallThumbnail( ImageData id, int minSize )
@@ -967,7 +964,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
             Console.WriteLine("Press Enter to continue.");*/
         }
@@ -1111,7 +1107,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
         }
@@ -1244,47 +1239,6 @@ namespace ActivityPicturePlugin.Helper
             return ImageData.DataTypes.Nothing;
         }
 
-        //internal static ImageData AddImage( String ImageLocation, Boolean CreateThumbnail )
-        //{
-        //    ImageData ID = null;
-        //    try
-        //    {
-        //        ID = new ImageData();
-        //        ID.PhotoSource = ImageLocation;
-        //        ID.ReferenceID = Guid.NewGuid().ToString();
-        //        //Bitmap bmp = new Bitmap(ImageLocation);
-        //        //ID.Ratio = (Single)(bmp.Width) / (Single)(bmp.Height);
-        //        //bmp.Dispose();
-
-
-        //        ID.Type = ImageData.DataTypes.Image;
-        //        if ( CreateThumbnail )
-        //        {
-        //            ID.SetThumbnail();
-        //            ID.EW = new ExifWorks( ID.ThumbnailPath );
-        //        }
-        //        else
-        //        {
-        //            ID.EW = new ExifWorks( ID.PhotoSource );
-        //        }
-
-        //        ID.Ratio = (Single)( ID.EW.GetBitmap().Width ) / (Single)( ID.EW.GetBitmap().Height );
-
-        //        return ID;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.Assert(false, ex.Message);
-        //        if ( ID != null )
-        //        {
-        //            ID.Dispose();
-        //            ID = null;
-        //        }
-        //        return null;
-        //    }
-
-        //}
-
         internal static int CompareByDate( ImageData x, ImageData y )
         {
             int retval = 0;
@@ -1310,7 +1264,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
             return retval;

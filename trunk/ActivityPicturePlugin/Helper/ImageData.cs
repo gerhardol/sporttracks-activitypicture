@@ -531,7 +531,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
         }
@@ -540,7 +539,6 @@ namespace ActivityPicturePlugin.Helper
         #region Public Methods
         public void SetVideoThumbnail()
         {
-            Bitmap bmp = null;
             try
             {
                 string defpath = this.ThumbnailPath;
@@ -548,13 +546,13 @@ namespace ActivityPicturePlugin.Helper
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
                 {
-                    bmp = new Bitmap( defpath );
+                    using (Bitmap bmp = new Bitmap(defpath))
+                    {
                     //The thumbnail is being created
                     //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
                     //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
                     this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                    bmp.Dispose();
-                    bmp = null;
+                    }
                 }
                 //File has not yet been created
                 else
@@ -563,13 +561,13 @@ namespace ActivityPicturePlugin.Helper
                     if ( System.IO.File.Exists( this.PhotoSource ) )
                     {
                         // Create new image in the default folder
-                        bmp = (Bitmap)( Resources.video ).Clone();
-                        Functions.SaveThumbnailImage( bmp, defpath, 10 );
-                        //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                        //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                        bmp.Dispose();
-                        bmp = null;
+                        using (Bitmap bmp = (Bitmap)(Resources.video).Clone())
+                        {
+                            Functions.SaveThumbnailImage(bmp, defpath, 10);
+                            //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
+                            //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
+                            this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                        }
                     }
                 }
             }
@@ -577,12 +575,6 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
-            }
-            finally
-            {
-                if ( bmp != null )
-                    bmp.Dispose();
-                bmp = null;
             }
         }
 
@@ -652,7 +644,6 @@ namespace ActivityPicturePlugin.Helper
                         {
                             Functions.SaveThumbnailImage( bmp, defpath, 10 );
                             this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
-                            //bmp.Dispose();
                         }
                         bmpOrig.Dispose();
                         return true;
@@ -952,7 +943,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
             return retval;

@@ -56,7 +56,6 @@ namespace ActivityPicturePlugin.Settings
                         mem.Write( b, 0, b.Length );
                         mem.Position = 0;
                         data = dataRead = (SettingsData)xmlSer.Deserialize( mem );
-                        //mem.Dispose();
                     }
                     xmlSer = null;
                     b = null;
@@ -68,7 +67,6 @@ namespace ActivityPicturePlugin.Settings
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
