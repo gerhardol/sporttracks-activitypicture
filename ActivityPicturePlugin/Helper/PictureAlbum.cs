@@ -421,7 +421,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                // throw;
             }
             finally
             {
@@ -1026,7 +1025,6 @@ namespace ActivityPicturePlugin.Helper
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -1266,7 +1264,6 @@ namespace ActivityPicturePlugin.Helper
                 bRet = false;
                 if ( FilGrMan != null ) FilGrMan = null;
                 if ( MediaEventEx != null ) MediaEventEx = null;
-                // throw;
             }
 
             return bRet;

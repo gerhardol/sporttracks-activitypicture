@@ -239,7 +239,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -584,7 +583,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch ( Exception ex )
             {
                 System.Diagnostics.Debug.Assert( false, ex.Message );
-                //throw;
             }
         }
 
@@ -714,7 +712,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 if (tsmiRemove != null)
                     tsmiRemove.Dispose();
                 tsmiRemove = null;
-                //throw;
             }
         }
 
@@ -759,7 +756,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -960,7 +956,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -979,7 +974,6 @@ namespace ActivityPicturePlugin.UI.Activities
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.Assert(false, ex.Message);
-                    //throw;
                 }
             }
         }
@@ -1059,7 +1053,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                // throw;
             }
         }
 
@@ -1096,18 +1089,12 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             try
             {
-                //this.pictureAlbumView.ParentCtl = this;
                 this.ThemeChanged( m_theme );
                 InitializeDataGridView();
-                //RefreshPage();
-
-                //ReloadData();
-                //UpdateView();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
         }
 
@@ -1131,7 +1118,6 @@ namespace ActivityPicturePlugin.UI.Activities
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
-                //throw;
             }
 
         }
@@ -1164,73 +1150,6 @@ namespace ActivityPicturePlugin.UI.Activities
 #endif
             }
         }
-
-        //private void btnImpDir_Click(object sender, EventArgs e)
-        //    {
-        //    try
-        //        {
-        //        DialogResult dlg = this.folderBrowserDialogImport.ShowDialog();
-
-        //        if ((folderBrowserDialogImport.SelectedPath != null) & (dlg != DialogResult.Cancel))
-        //            {
-        //            ImportImages(System.IO.Directory.GetFiles(folderBrowserDialogImport.SelectedPath), true);
-
-        //            //sort by exif date
-        //            this.pictureAlbumView.ImageList.Sort(CompareByDate);
-
-        //            //save image locations
-        //            this.PluginExtensionData.GetImageDataSerializable(this.pictureAlbumView.ImageList);
-        //            Functions.WriteExtensionData(_Activity, this.PluginExtensionData);
-
-        //            if (this.Mode == ShowMode.Album)
-        //                {
-        //                //this.pictureAlbumView.Invalidate();
-        //                this.pictureAlbumView.PaintAlbumView(true);
-        //                }
-        //            else if (this.Mode == ShowMode.List)
-        //                {
-        //                UpdateDataGridView();
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            System.Diagnostics.Debug.Assert(false, ex.Message);
-        //            //throw;
-        //        }
-        //    }
-
-        //private void btnImpSel_Click(object sender, EventArgs e)
-        //    {
-        //    try
-        //        {
-        //        this.openFileDialogImport.FileName = "";
-        //        this.openFileDialogImport.Multiselect = true;
-        //        this.openFileDialogImport.Filter = "(*.bmp;*.jpg;*.gif;*.png)|*.bmp;*.jpg;*.gif;*.png|(*.avi;*.wmv)|*.avi;*.wmv|(*.*)|*.*";
-
-        //        //this.openFileDialog1.FilterIndex = 
-        //        this.openFileDialogImport.ShowDialog();
-        //        ImportImages(this.openFileDialogImport.FileNames, false);
-        //        //save image locations
-
-        //        this.PluginExtensionData.GetImageDataSerializable(this.pictureAlbumView.ImageList);
-        //        Functions.WriteExtensionData(_Activity, this.PluginExtensionData);
-
-        //        if (this.Mode == ShowMode.List)
-        //            {
-        //            UpdateDataGridView();
-        //            }
-        //        else if (this.Mode == ShowMode.Album)
-        //            {
-        //            this.pictureAlbumView.Invalidate();
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            System.Diagnostics.Debug.Assert(false, ex.Message);
-        //        throw;
-        //        }
-        //    }
 
         private void toolStripButtonPlay_Click( object sender, EventArgs e )
         {
