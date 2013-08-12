@@ -476,9 +476,9 @@ namespace ActivityPicturePlugin.Source
             pluginNode.SetAttribute( xmlTags.importSplitter1Offset, XmlConvert.ToString( importSplitter1Offset ) );
             pluginNode.SetAttribute( xmlTags.importSplitter2Offset, XmlConvert.ToString( importSplitter2Offset ) );
             pluginNode.SetAttribute( xmlTags.importSplitter3Offset, XmlConvert.ToString( importSplitter3Offset ) );
-            pluginNode.SetAttribute( xmlTags.settingsSplitter1Offset, XmlConvert.ToString( importSplitter1Offset ) );
-            pluginNode.SetAttribute( xmlTags.settingsSplitter2Offset, XmlConvert.ToString( importSplitter2Offset ) );
-            pluginNode.SetAttribute( xmlTags.settingsSplitter3Offset, XmlConvert.ToString( importSplitter3Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter1Offset, XmlConvert.ToString( settingsSplitter1Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter2Offset, XmlConvert.ToString( settingsSplitter2Offset ) );
+            pluginNode.SetAttribute( xmlTags.settingsSplitter3Offset, XmlConvert.ToString( settingsSplitter3Offset ) );
             pluginNode.SetAttribute( xmlTags.listDriveColThumbnailWidth, XmlConvert.ToString( listDriveColThumbnailWidth ) );
             pluginNode.SetAttribute( xmlTags.listDriveColDateTimeWidth, XmlConvert.ToString( listDriveColDateTimeWidth ) );
             pluginNode.SetAttribute( xmlTags.listDriveColGPSWidth, XmlConvert.ToString( listDriveColGPSWidth ) );

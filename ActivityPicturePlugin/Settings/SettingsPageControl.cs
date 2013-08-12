@@ -33,6 +33,7 @@ namespace ActivityPicturePlugin.Settings
         public SettingsPageControl()
         {
             InitializeComponent();
+            importControl1.InitComponent();
 
             // Setting Dock to Fill through Designer causes it to reformat
             // and marks it as 'changed' everytime you open it.
