@@ -51,7 +51,12 @@ namespace ActivityPicturePlugin.UI.Activities
             this.dateTimePicker1.CustomFormat = datePattern;
             try
             {
-                this.dateTimePicker1.Value = id.DateTimeOriginal;
+                if ( id.DateTimeOriginal != DateTime.MinValue )
+                    this.dateTimePicker1.Value = id.DateTimeOriginal;
+                else
+                {
+                    // TODO: Initialize dateTimePicker1 to activity date?
+                }
             }
             catch (Exception ex)
             {
