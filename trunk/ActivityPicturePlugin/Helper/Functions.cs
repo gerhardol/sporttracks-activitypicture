@@ -74,59 +74,93 @@ namespace ActivityPicturePlugin.Helper
             return culture;
         }
 
-        internal static DateTime GetFileTime(FileInfo file)
+        //Return exif original date time
+        internal static DateTime GetExifOriginalTime(FileInfo file)
         {
-            string fileTime = GetFileTimeString( file );
-            if ( !string.IsNullOrEmpty( fileTime ) )
+            ExifDirectory ex = null;
+            if (Functions.IsExifFileExt(file))
             {
-                IFormatProvider culture = CultureInfo.InvariantCulture;    //.CurrentUICulture;
-                DateTime dt = new DateTime();
+                ex = SimpleRun.ShowOneFileExifDirectory(file.FullName);
+            }
+            return GetExifOriginalTime(file, ex);
+        }
+
+        internal static DateTime GetExifOriginalTime(FileInfo file, ExifDirectory ex)
+        {
+            string fileTime = null;
+            if (ex != null)
+            {
+                // unspecified timezone
+                // ignores current timezone
+                // format yyyy:MM:dd HH:mm:ss
+                // this doesn't return in UTC.  Is there a way to distinguish which
+                // time zone it is?
+
+                //TODO:
+                // This may also return an invalid (non-null) date/time.  Do we check here or should the caller?
+                fileTime = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
+            }
+            if (!string.IsNullOrEmpty(fileTime))
+            {
+                IFormatProvider culture = CultureInfo.InvariantCulture;
+                DateTime dt;
 
                 // fileTime may not be a valid date time.
                 // The call above to GetFileTimeString may return in UTC or an unknown timezone
                 // If it's unknown it's probably best to assume it's in LocalTime
                 // Therefore... maybe it's better if GetFileTimeString returned in Local time
-                if ( DateTime.TryParseExact( fileTime, NeutralDateTimeFormat, culture, DateTimeStyles.None, out dt ) )
+                if (DateTime.TryParseExact(fileTime, NeutralDateTimeFormat, culture, DateTimeStyles.None, out dt))
                 {
                     // Ok, now we're returning in LocalTime
-                    dt = DateTime.SpecifyKind( dt, DateTimeKind.Local );
+                    dt = DateTime.SpecifyKind(dt, DateTimeKind.Local);
                     return dt;
                 }
             }
 
-            return new DateTime();
+            return DateTime.MinValue;
+        }
+
+        public static DateTime GetBestTime(FileInfo fi, DateTime exif, DateTime actStart, DateTime actEnd)
+        {
+            DateTime time = exif;
+
+            //DateTime actStart = DateTime.MinValue;
+            //                        DateTime actEnd = DateTime.MaxValue;
+            //            if (activity != null && activity.GPSRoute != null)
+            //                    {
+            //                        actStart = activity.GPSRoute.StartTime;
+            //                        actEnd = activity.GPSRoute.StartTime.AddSeconds(activity.GPSRoute.TotalElapsedSeconds);
+            //            }
+            if (time < actStart || time > actEnd)
+            {
+                time = fi.CreationTimeUtc;
+                if (time < actStart || time > actEnd)
+                {
+                    //Try modification, could be better
+                    time = fi.LastWriteTimeUtc;
+                }
+            }
+            else
+            {
+                //MinDate cannot be adjusted to UTC
+                time = time.ToUniversalTime();
+            }
+            return time;
         }
 
         //TODO: Merge these methods. However, the use slightly differs too...
         // Returns in format "yyyy:MM:dd HH:mm:ss", local time
-        internal static string GetFileTimeString(FileInfo file)
-        {
-            string strx = null;
-            if (Functions.IsExifFileExt(file))
-            {
-                ExifDirectory ex = SimpleRun.ShowOneFileExifDirectory(file.FullName);
-                if (ex != null)
-                {
-                    // unspecified timezone
-                    // ignores current timezone
-                    // format yyyy:MM:dd HH:mm:ss
-                    // this doesn't return in UTC.  Is there a way to distinguish which
-                    // time zone it is?
-
-                    //TODO:
-                    // This may also return an invalid (non-null) date/time.  Do we check here or should the caller?
-                    strx = ex.GetDescription(ExifDirectory.TAG_DATETIME_ORIGINAL);
-                }
-            }
-            if (string.IsNullOrEmpty(strx))
-            {
-                // LocalTime since SimpleRun returns an unspecified timezone
-                // and it's probably best to assume it's in Local time.
-                // We should be consistent.
-                strx = file.CreationTime.ToString( NeutralDateTimeFormat, CultureInfo.InvariantCulture );
-            }
-            return strx;
-        }
+        //internal static string GetFileTimeString(FileInfo file)
+        //{
+        //    if (string.IsNullOrEmpty(strx))
+        //    {
+        //        // LocalTime since SimpleRun returns an unspecified timezone
+        //        // and it's probably best to assume it's in Local time.
+        //        // We should be consistent.
+        //        strx = file.CreationTime.ToString( NeutralDateTimeFormat, CultureInfo.InvariantCulture );
+        //    }
+        //    return strx;
+        //}
 
         public static string DateTimeString(DateTime time)
         {
