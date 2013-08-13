@@ -279,8 +279,8 @@ namespace ActivityPicturePlugin.UI.Activities
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(216, 169);
-            this.ControlBox = false;
             this.Controls.Add(this.lblMonth);
             this.Controls.Add(this.nudMonth);
             this.Controls.Add(this.lblDay);

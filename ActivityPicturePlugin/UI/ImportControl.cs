@@ -2957,41 +2957,43 @@ namespace ActivityPicturePlugin.UI
             string dest = source;
             string tmpSource = source;
 
-            using ( System.Windows.Forms.Form p = new System.Windows.Forms.Form() )
-            using ( ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel() )
+            using ( System.Windows.Forms.Form formMigrate = new System.Windows.Forms.Form() )
+            using ( ZoneFiveSoftware.Common.Visuals.Panel panel = new ZoneFiveSoftware.Common.Visuals.Panel() )
             using ( ZoneFiveSoftware.Common.Visuals.TextBox SourcePath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox() )
             using ( ZoneFiveSoftware.Common.Visuals.TextBox DestPath_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox() )
-            using ( System.Windows.Forms.Button b = new System.Windows.Forms.Button() )
-            using ( System.Windows.Forms.Button c = new System.Windows.Forms.Button() )
+            //using ( System.Windows.Forms.Button b = new System.Windows.Forms.Button() )
+            //using ( System.Windows.Forms.Button c = new System.Windows.Forms.Button() )
+            using ( ZoneFiveSoftware.Common.Visuals.Button btnOK = new ZoneFiveSoftware.Common.Visuals.Button() )
+            using ( ZoneFiveSoftware.Common.Visuals.Button btnCancel = new ZoneFiveSoftware.Common.Visuals.Button() )
             using ( System.Windows.Forms.Label lblSource = new System.Windows.Forms.Label() )
             using ( System.Windows.Forms.Label lblDestination = new System.Windows.Forms.Label() )
             {
-                p.SuspendLayout();
+                formMigrate.SuspendLayout();
 
-                p.Size = new System.Drawing.Size( 370, 180 );
-                p.Text = Resources.MigrateSourcePath_Text;
-                p.Controls.Add( pa );
+                formMigrate.Size = new System.Drawing.Size( 370, 180 );
+                formMigrate.Text = Resources.MigrateSourcePath_Text;
+                formMigrate.Controls.Add( panel );
 
-                p.MaximizeBox = false;
-                p.MinimizeBox = false;
-                p.ShowIcon = false;
-                p.ShowInTaskbar = false;
-                p.SizeGripStyle = SizeGripStyle.Hide;
+                formMigrate.MaximizeBox = false;
+                formMigrate.MinimizeBox = false;
+                formMigrate.ShowIcon = false;
+                formMigrate.ShowInTaskbar = false;
+                formMigrate.SizeGripStyle = SizeGripStyle.Hide;
 
-                pa.Dock = DockStyle.Fill;
-                pa.Controls.Add( lblSource );
-                pa.Controls.Add( SourcePath_TextBox );
-                pa.Controls.Add( lblDestination );
-                pa.Controls.Add( DestPath_TextBox );
-                pa.Controls.Add( b );
-                pa.Controls.Add( c );
-                p.AcceptButton = b;
-                p.CancelButton = c;
+                panel.Dock = DockStyle.Fill;
+                panel.Controls.Add( lblSource );
+                panel.Controls.Add( SourcePath_TextBox );
+                panel.Controls.Add( lblDestination );
+                panel.Controls.Add( DestPath_TextBox );
+                panel.Controls.Add( btnOK );
+                panel.Controls.Add( btnCancel );
+                formMigrate.AcceptButton = btnOK;
+                formMigrate.CancelButton = btnCancel;
 
                 lblSource.Location = new System.Drawing.Point( 10, 10 );
                 lblSource.Text = Resources.Source_Text;
                 lblSource.AutoSize = true;
-                SourcePath_TextBox.Width = p.Width - 37;
+                SourcePath_TextBox.Width = formMigrate.Width - 37;
                 SourcePath_TextBox.Location = new System.Drawing.Point( lblSource.Left, lblSource.Bottom + 0 );
                 SourcePath_TextBox.ButtonImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Folder16;
                 SourcePath_TextBox.ButtonClick += new EventHandler( PathTextBox_ButtonClick );
@@ -3000,37 +3002,48 @@ namespace ActivityPicturePlugin.UI
                 lblDestination.Location = new System.Drawing.Point( lblSource.Left, SourcePath_TextBox.Bottom + 5 );
                 lblDestination.Text = Resources.Destination_Text;
                 lblDestination.AutoSize = true;
-                DestPath_TextBox.Width = p.Width - 37;
+                DestPath_TextBox.Width = formMigrate.Width - 37;
                 DestPath_TextBox.Location = new System.Drawing.Point( SourcePath_TextBox.Left, lblDestination.Bottom + 0 );
                 DestPath_TextBox.ButtonImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Folder16;
                 DestPath_TextBox.ButtonClick += new EventHandler( PathTextBox_ButtonClick );
 
-                b.Location = new System.Drawing.Point( p.Size.Width - 25 - b.Size.Width, p.Height - 45 - b.Height );
-                b.DialogResult = DialogResult.OK;
-                c.Location = new System.Drawing.Point( b.Location.X - 15 - c.Size.Width, p.Height - 45 - c.Height );
-                c.DialogResult = DialogResult.Cancel;
-                b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-                c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
-                pa.ThemeChanged( this.m_visualTheme );
-                //p.ThemeChanged(this.m_visualTheme);
-                SourcePath_TextBox.ThemeChanged( this.m_visualTheme );
-                DestPath_TextBox.ThemeChanged( this.m_visualTheme );
+                btnCancel.BackColor = System.Drawing.Color.Transparent;
+                btnCancel.BorderColor = System.Drawing.Color.FromArgb( ( (int)( ( (byte)( 100 ) ) ) ), ( (int)( ( (byte)( 40 ) ) ) ), ( (int)( ( (byte)( 50 ) ) ) ), ( (int)( ( (byte)( 120 ) ) ) ) );
+                btnCancel.DialogResult = DialogResult.Cancel;
+                btnCancel.Location = new System.Drawing.Point( formMigrate.Size.Width - 25 - btnCancel.Size.Width, formMigrate.Height - 45 - btnCancel.Height );
+                btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+                btnCancel.Click +=
+                    delegate( object sender2, EventArgs args )
+                    {
+                        formMigrate.Close();
+                    };
 
-                b.Click +=
+                btnOK.BackColor = System.Drawing.Color.Transparent;
+                btnOK.BorderColor = System.Drawing.Color.FromArgb( ( (int)( ( (byte)( 100 ) ) ) ), ( (int)( ( (byte)( 40 ) ) ) ), ( (int)( ( (byte)( 50 ) ) ) ), ( (int)( ( (byte)( 120 ) ) ) ) );
+                btnOK.DialogResult = DialogResult.OK;
+                btnOK.Location = new System.Drawing.Point( btnCancel.Location.X - 15 - btnOK.Size.Width, formMigrate.Height - 45 - btnOK.Height );
+                btnOK.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+                btnOK.Click +=
                     delegate( object sender2, EventArgs args )
                     {
                         tmpSource = SourcePath_TextBox.Text;
                         dest = DestPath_TextBox.Text;
+                        formMigrate.Close();
                     };
+
+                panel.ThemeChanged( this.m_visualTheme );
+                formMigrate.BackColor = this.m_visualTheme.Control;
+                SourcePath_TextBox.ThemeChanged( this.m_visualTheme );
+                DestPath_TextBox.ThemeChanged( this.m_visualTheme );
 
                 SourcePath_TextBox.Text = source;
                 DestPath_TextBox.Text = source;
 
-                p.ResumeLayout();
+                formMigrate.ResumeLayout();
 
                 //update is done in clicking OK/Enter
-                p.StartPosition = FormStartPosition.CenterParent;
-                p.ShowDialog( this );
+                formMigrate.StartPosition = FormStartPosition.CenterParent;
+                formMigrate.ShowDialog( this );
                 source = tmpSource;
             }
 
