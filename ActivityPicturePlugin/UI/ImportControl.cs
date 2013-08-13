@@ -187,7 +187,8 @@ namespace ActivityPicturePlugin.UI
         public class FileInfoEx
         {
             public FileInfo fi;
-            public string strDateTime;
+            public DateTime exif;
+            //public string strDateTime;
         }
         public class ActivityImagesChangedEventArgs : EventArgs
         {
@@ -1118,49 +1119,62 @@ namespace ActivityPicturePlugin.UI
                     }
 
                     // TODO: de-DE is used as en is default and cannot be set. Rewrite the use of culture
-                    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    if ( ed != null )
+                    DateTime exifTime = Functions.GetExifOriginalTime(file, ed);
+                    if (exifTime > DateTime.MinValue)
                     {
-                        string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
-                        if ( !string.IsNullOrEmpty( s ) )
-                        {
-                            DateTime dtTmp = new DateTime();
-                            // If we're hardcoding the format, we need to use an appropriate culture
-                            if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                            {
-                                string strDateTime = "";
-                                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
-                                if ( specificCulture != null )
-                                    strDateTime = dtTmp.ToString( specificCulture );
-                                else
-                                    strDateTime = dtTmp.ToString();
-                                lvi.SubItems.Add( strDateTime );
-                                //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
-                            }
-                        }
+                        string strDateTime = "";
+                        System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture(System.Globalization.CultureInfo.CurrentUICulture.Name);
+                        if (specificCulture != null)
+                            strDateTime = exifTime.ToString(specificCulture);
+                        else
+                            strDateTime = exifTime.ToString();
+                        lvi.SubItems.Add(strDateTime);
                     }
+                    //IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                    //if ( ed != null )
+                    //{
+                    //    string s = ed.GetDescription( ExifDirectory.TAG_DATETIME_ORIGINAL );
+                    //    if ( !string.IsNullOrEmpty( s ) )
+                    //    {
+                    //        DateTime dtTmp = new DateTime();
+                    //        // If we're hardcoding the format, we need to use an appropriate culture
+                    //        if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                    //        {
+                    //            string strDateTime = "";
+                    //            System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                    //            if ( specificCulture != null )
+                    //                strDateTime = dtTmp.ToString( specificCulture );
+                    //            else
+                    //                strDateTime = dtTmp.ToString();
+                    //            lvi.SubItems.Add( strDateTime );
+                    //            //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                    //        }
+                    //    }
+                    //}
                     // The first item is considered a SubItem.  We want to check to
                     // see if a second item was added (from just above).
-                    if ( lvi.SubItems.Count == 1 )
-                    {
-                        string s = Functions.GetFileTimeString( file );
-                        if ( !string.IsNullOrEmpty( s ) )
-                        {
-                            DateTime dtTmp = new DateTime();
-                            if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                            {
-                                string strDateTime = "";
-                                System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
-                                if ( specificCulture != null )
-                                    strDateTime = dtTmp.ToString( specificCulture );
-                                else
-                                    strDateTime = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
 
-                                lvi.SubItems.Add( strDateTime );
-                                //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
-                            }
-                        }
-                    }
+                    //TODO: needed?
+                    //if ( lvi.SubItems.Count == 1 )
+                    //{
+                    //    string s = Functions.GetFileTimeString( file );
+                    //    if ( !string.IsNullOrEmpty( s ) )
+                    //    {
+                    //        DateTime dtTmp = new DateTime();
+                    //        if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                    //        {
+                    //            string strDateTime = "";
+                    //            System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                    //            if ( specificCulture != null )
+                    //                strDateTime = dtTmp.ToString( specificCulture );
+                    //            else
+                    //                strDateTime = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
+
+                    //            lvi.SubItems.Add( strDateTime );
+                    //            //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                    //        }
+                    //    }
+                    //}
 
                     if ( gps != null )
                     {
@@ -1197,14 +1211,15 @@ namespace ActivityPicturePlugin.UI
             {
                 try
                 {
-                    string s = Functions.GetFileTimeString( file );
-                    if ( !string.IsNullOrEmpty( s ) )
-                    {
-                        DateTime dtTmp = new DateTime();
-                        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                        if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                            lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
-                    }
+                    lvi.SubItems.Add(file.CreationTime.ToString());   // ToString() returns date/time in culture of the current thread
+                    //string s = Functions.GetFileTimeString( file );
+                    //if ( !string.IsNullOrEmpty( s ) )
+                    //{
+                    //    DateTime dtTmp = new DateTime();
+                    //    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
+                    //    if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
+                    //        lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
+                    //}
                 }
                 catch ( Exception ex )
                 {
@@ -1504,7 +1519,9 @@ namespace ActivityPicturePlugin.UI
 
         }
 
-        private int FindAndImportImages(List<FileInfo> importFiles)
+        //TODO: This does not handle overlapping activities
+        //just loop over all images, once per activity instead
+        private int FindAndImportImages(List<FileInfoEx> fiexs)
         {
             int numFilesImported = 0;
             try
@@ -1539,21 +1556,21 @@ namespace ActivityPicturePlugin.UI
                 int i = 0;
                 DateTime FileTime = new DateTime();
                 ImportControlState state = new ImportControlState( m_Activities, this.Visible );
-                foreach ( FileInfo file in importFiles )
+                foreach (FileInfoEx file in fiexs)
                 {
                     Application.DoEvents();
                     if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
                         throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
                     i++;
-                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( importFiles.Count ) );
-                    this.lblProgress.Text = Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.FullName, 50 );
+                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( fiexs.Count ) );
+                    this.lblProgress.Text = Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.fi.FullName, 50 );
 
                     //TODO: Handle non-exif
                     // GetFileTime returns in LocalTime.  Kind is specified
-                    FileTime = Functions.GetFileTime( file );
+                    FileTime = Functions.GetBestTime( file.fi, file.exif, FirstStart, LastEnd );
 
-                    //{ //A valid EXIF metadata has been found                
+                    //{ //A valid date has been found                
                     if ( ( FileTime > FirstStart ) &
                         ( FileTime < LastEnd ) )
                     {//dateTime in picture is within the range of all activities
@@ -1583,12 +1600,12 @@ namespace ActivityPicturePlugin.UI
                                 PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
 
                                 //Check if Image does already exist in the current activity
-                                if ( !ImageAlreadyExistsInActivity( file.Name, data ) )
+                                if ( !ImageAlreadyExistsInActivity( file.fi.Name, data ) )
                                 {
                                     this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
                                     this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = ImageDataSerializable.FromFile( file );
+                                    ImageDataSerializable ids = ImageDataSerializable.FromFile( file.fi );
                                     if ( ids != null ) data.Images.Add( ids );
                                     Functions.WriteExtensionData( CurrentActivity, data );
                                     numFilesImported++;
@@ -1748,7 +1765,7 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private void SortFiles(List<FileInfo> importFiles)
+        private List<FileInfoEx> SortFiles(List<FileInfo> importFiles)
         {
             //start sorting
             Application.DoEvents();
@@ -1768,7 +1785,8 @@ namespace ActivityPicturePlugin.UI
                 progressBar2.Value = j;
                 FileInfoEx fiex = new FileInfoEx();
                 fiex.fi = fi;
-                fiex.strDateTime = Functions.GetFileTimeString(fi);
+                fiex.exif = Functions.GetExifOriginalTime(fi);
+                //fiex.strDateTime = Functions.GetFileTimeString(fi);
                 fiexs.Add( fiex );
 
                 Application.DoEvents();
@@ -1781,11 +1799,12 @@ namespace ActivityPicturePlugin.UI
             // Sort them
             fiexs.Sort( fs.Compare );
 
-            // Reassign the files to the original importFiles member.
-            for ( int i = 0; i < importFiles.Count; i++ )
-                importFiles[i] = fiexs[i].fi;
+            //// Reassign the files to the original importFiles member.
+            //for ( int i = 0; i < importFiles.Count; i++ )
+            //    importFiles[i] = fiexs[i].fi;
 
-            fiexs.Clear();
+            //fiexs.Clear();
+            return fiexs;
         }
 
         private ListViewItemSorter GetListViewSorter( int columnIndex, ListView lv )
@@ -2750,8 +2769,8 @@ namespace ActivityPicturePlugin.UI
 
                 List<FileInfo> importFiles = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
                 ThreadGetImages(importFiles); //collects images of all selected paths
-                SortFiles(importFiles);
-                int numFilesImported = FindAndImportImages(importFiles);
+                List<FileInfoEx> fiexs = SortFiles(importFiles);
+                int numFilesImported = FindAndImportImages(fiexs);
 
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
                 EnableControl( true );
@@ -3324,7 +3343,9 @@ namespace ActivityPicturePlugin.UI
         {
             ImportControl.FileInfoEx tx = x as ImportControl.FileInfoEx;
             ImportControl.FileInfoEx ty = y as ImportControl.FileInfoEx;
-            return string.Compare( tx.strDateTime, ty.strDateTime );
+            return DateTime.Compare(Functions.GetBestTime(tx.fi, tx.exif, DateTime.MinValue, DateTime.MaxValue),
+                Functions.GetBestTime(ty.fi, ty.exif, DateTime.MinValue, DateTime.MaxValue));
+            //return string.Compare(tx.strDateTime, ty.strDateTime);
         }
     }
 
