@@ -1145,6 +1145,27 @@ namespace ActivityPicturePlugin.Helper
 
         }
 
+        internal static void GeoTagWithActivity( string filepath, ZoneFiveSoftware.Common.Data.Fitness.IActivity act )
+        {
+            try
+            {
+                using ( ExifWorks EW = new ExifWorks( filepath ) )
+                {
+                    EW.GPSLatitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LatitudeDegrees;
+                    EW.GPSLongitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.LongitudeDegrees;
+                    EW.GPSAltitude = act.GPSRoute.GetInterpolatedValue( EW.DateTimeOriginal.ToUniversalTime() ).Value.ElevationMeters;
+                    // Save Image with new Exif data
+
+                    EW.GetBitmap().Save( filepath );
+                }
+            }
+            catch ( Exception ex )
+            {
+                System.Diagnostics.Debug.Assert( false, ex.Message );
+                //throw;
+            }
+        }
+
         //TODO: Avoid read the embedded thumbnail here?
         internal static Image getThumbnailWithBorder(int width, Image img)
         {

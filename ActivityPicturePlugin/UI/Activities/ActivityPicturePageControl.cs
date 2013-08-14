@@ -1003,7 +1003,8 @@ namespace ActivityPicturePlugin.UI.Activities
                 DataGridViewColumn oldcol = GetSortColumn( oldSortMode );
                 DataGridViewColumn col = this.dataGridViewImages.Columns[e.ColumnIndex];
 
-                if ( col.ValueType == typeof( string ) )
+                if ( ( col.ValueType == typeof( string ) ) ||
+                    ( col.ValueType == typeof( DateTime ) ) )
                 {
                     ActivityPicturePlugin.Source.Settings.SortMode = (int)GetSortMode( col );
 
@@ -1050,9 +1051,9 @@ namespace ActivityPicturePlugin.UI.Activities
             }
 
 
-            catch (Exception ex)
+            catch ( Exception ex )
             {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
+                System.Diagnostics.Debug.Assert( false, ex.Message );
             }
         }
 
@@ -1250,8 +1251,14 @@ namespace ActivityPicturePlugin.UI.Activities
                 {
                     //This writes the exif data if exists, otherwise estimates from activity
                     if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
+                    {
                         if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
-                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
+                        //TODO: If PhotoSource !IsExifFileExt, can id.GpsPoint contain valid gps point?
+                        if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
+                    }
+                    else
+                        if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
+
                 }
             }
             this.pictureAlbumView.ClearImageList();

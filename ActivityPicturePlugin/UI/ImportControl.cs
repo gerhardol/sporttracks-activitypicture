@@ -1155,26 +1155,23 @@ namespace ActivityPicturePlugin.UI
                     // see if a second item was added (from just above).
 
                     //TODO: needed?
-                    //if ( lvi.SubItems.Count == 1 )
-                    //{
-                    //    string s = Functions.GetFileTimeString( file );
-                    //    if ( !string.IsNullOrEmpty( s ) )
-                    //    {
-                    //        DateTime dtTmp = new DateTime();
-                    //        if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                    //        {
-                    //            string strDateTime = "";
-                    //            System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
-                    //            if ( specificCulture != null )
-                    //                strDateTime = dtTmp.ToString( specificCulture );
-                    //            else
-                    //                strDateTime = dtTmp.ToString();   // ToString() returns date/time in culture of the current thread
+                    // Adds DateTime to ListViewDrive items for files that do not have 
+                    // exif data, ie. bmp, etc.
+                    if ( lvi.SubItems.Count == 1 )
+                    {
+                        DateTime dtStart = m_Activities[0].StartTime;
+                        DateTime dtEnd = dtStart.AddSeconds( m_Activities[0].TotalTimeEntered.TotalSeconds );                            
+                        DateTime dtBest = Functions.GetBestTime( file, DateTime.MinValue, dtStart, dtEnd );
+                        dtBest = dtBest.ToLocalTime();
+                        string strDateTime = "";
+                        System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                        if ( specificCulture != null )
+                            strDateTime = dtBest.ToString( specificCulture );
+                        else
+                            strDateTime = dtBest.ToString();   // ToString() returns date/time in culture of the current thread
 
-                    //            lvi.SubItems.Add( strDateTime );
-                    //            //lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
-                    //        }
-                    //    }
-                    //}
+                        lvi.SubItems.Add( strDateTime );
+                    }
 
                     if ( gps != null )
                     {
