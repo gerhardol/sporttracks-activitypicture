@@ -42,9 +42,34 @@ namespace ActivityPicturePlugin.Helper
                 this.photosource = IDSer.PhotoSource;
                 this.referenceID = IDSer.ReferenceID;
                 this.SetThumbnail();
-                if (this.Thumbnail != null)
+                if ( this.Thumbnail != null )
                 {
-                    this.ew = new ExifWorks(this.ThumbnailPath);
+                    this.ew = new ExifWorks( this.ThumbnailPath );
+
+                    if ( this.DateTimeOriginal == DateTime.MinValue )
+                    {
+                        // No DateTimeOriginal property set for this thumbnail.  Use creation date of Original.
+                        System.IO.FileInfo file = new System.IO.FileInfo( this.photosource );
+                        if ( file.Exists )
+                        {
+                            //string strDate = Functions.GetFileTimeString( file );
+                            string strDate = file.CreationTime.ToString( Functions.NeutralDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture );
+
+                            //// Start=MaxValue and End=MinValue so that ExifDate, which we do not have, is not used;
+                            //DateTime dt = Functions.GetBestTime( file, DateTime.MinValue, DateTime.MaxValue, DateTime.MinValue );
+                            //string strDate = dt.ToString( Functions.NeutralDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture );
+
+                            if ( !string.IsNullOrEmpty( strDate ) )
+                            {
+                                this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), strDate );
+
+                                //Save Exif data to the thumbnail
+                                this.EW.GetBitmap().Save( this.ThumbnailPath );
+                                this.EW.Dispose();
+                                this.ew = new ExifWorks( this.ThumbnailPath );
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -400,7 +425,7 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-                if (m_thumbnailPath == null)
+                if ((m_thumbnailPath == null) && (this.referenceID!=null))
                 {
                     //Cached, as (ST3) call make fileIO
                     m_thumbnailPath = thumbnailPath(this.referenceID);
@@ -799,7 +824,6 @@ namespace ActivityPicturePlugin.Helper
                             }
                             using (Bitmap bmp = new Bitmap( bmpOrig, size ) )
                             {
-
                                 //copying the metadata of the original file into the new image
                                 foreach ( System.Drawing.Imaging.PropertyItem pItem in bmpOrig.PropertyItems )
                                 {
