@@ -1251,14 +1251,8 @@ namespace ActivityPicturePlugin.UI.Activities
                 {
                     //This writes the exif data if exists, otherwise estimates from activity
                     if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
-                    {
                         if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
-                        //TODO: If PhotoSource !IsExifFileExt, can id.GpsPoint contain valid gps point?
-                        if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
-                    }
-                    else
-                        if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagWithActivity( id.ThumbnailPath, this._Activity );
-
+                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
                 }
             }
             this.pictureAlbumView.ClearImageList();
