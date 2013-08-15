@@ -145,6 +145,11 @@ namespace ActivityPicturePlugin.Helper
                 //MinDate cannot be adjusted to UTC
                 time = time.ToUniversalTime();
             }
+
+            // Strip ticks less than a second
+            // Makes date comparisons possible
+            time = new DateTime( ( (long)( time.Ticks / 10000000 ) ) * 10000000 );
+
             return time;
         }
 
@@ -164,7 +169,8 @@ namespace ActivityPicturePlugin.Helper
 
         public static string DateTimeString(DateTime time)
         {
-            DateTime dt = new DateTime(1950, 1, 1);
+            //DateTime dt = new DateTime(1950, 1, 1);
+            DateTime dt = DateTime.MinValue;
             if (dt < time)
             {
                 string strShortDate = "";

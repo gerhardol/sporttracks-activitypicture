@@ -41,12 +41,49 @@ namespace ActivityPicturePlugin.Helper
                 this.type = IDSer.Type;
                 this.photosource = IDSer.PhotoSource;
                 this.referenceID = IDSer.ReferenceID;
-                this.SetThumbnail();
+                bool bNewThumb = this.SetThumbnail();
+
                 if ( this.Thumbnail != null )
                 {
                     this.ew = new ExifWorks( this.ThumbnailPath );
 
-                    if ( this.DateTimeOriginal == DateTime.MinValue )
+                    // Get the best time from photosource and assign it to thumbnail.
+                    // Only assign best time if a new thumbnail was created.  Otherwise, we might
+                    // overwrite whatever timeoffsets that may have already been performed on the 
+                    // thumbnail.
+                    if ( bNewThumb )
+                    {
+                        System.IO.FileInfo file = new System.IO.FileInfo( this.photosource );
+                        if ( file.Exists )
+                        {
+                            // Get photosource best time.
+                            ActivityInfo info = ActivityInfoCache.Instance.GetInfo( this.activity );
+                            DateTime dtBest = Functions.GetBestTime( file,
+                                DateTime.MinValue,
+                                this.activity.StartTime,
+                                info.EndTime );
+
+                            // Convert to Local Time
+                            dtBest = dtBest.ToLocalTime();
+
+                            // Save best time to thumbnail if it's different
+                            if ( this.DateTimeOriginal != dtBest )
+                            {
+                                string strDate = dtBest.ToString( Functions.NeutralDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture );
+                                if ( !string.IsNullOrEmpty( strDate ) )
+                                {
+                                    this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), strDate );
+
+                                    //Save Exif data to the thumbnail
+                                    this.EW.GetBitmap().Save( this.ThumbnailPath );
+                                    this.EW.Dispose();
+                                    this.ew = new ExifWorks( this.ThumbnailPath );
+                                }
+                            }
+                        }
+                    }
+
+                    /*if ( this.DateTimeOriginal == DateTime.MinValue )
                     {
                         // No DateTimeOriginal property set for this thumbnail.  Use creation date of Original.
                         System.IO.FileInfo file = new System.IO.FileInfo( this.photosource );
@@ -69,7 +106,7 @@ namespace ActivityPicturePlugin.Helper
                                 this.ew = new ExifWorks( this.ThumbnailPath );
                             }
                         }
-                    }
+                    }*/
                 }
                 else
                 {
@@ -356,7 +393,7 @@ namespace ActivityPicturePlugin.Helper
                     if ( lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null )
                     {
                         DateTime time = this.EW.DateTimeOriginal.ToUniversalTime();
-                        DateTime actStart = this.activity.GPSRoute.StartTime;
+                        /*DateTime actStart = this.activity.GPSRoute.StartTime;
                         DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds( this.activity.GPSRoute.TotalElapsedSeconds );
                         if ( time < actStart || time > actEnd )
                         {
@@ -372,7 +409,7 @@ namespace ActivityPicturePlugin.Helper
                         {
                             //MinDate cannot be adjusted
                             time = time.ToUniversalTime();
-                        }
+                        }*/
                         ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue( time );
                         if ( g != null )
                         {
@@ -567,8 +604,10 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region Public Methods
-        public void SetVideoThumbnail()
+        // Returns true if new thumbnail was created
+        public bool SetVideoThumbnail()
         {
+            bool bRet = false;
             try
             {
                 string defpath = this.ThumbnailPath;
@@ -598,6 +637,7 @@ namespace ActivityPicturePlugin.Helper
                             //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
                             this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
                         }
+                        bRet = true;
                     }
                 }
             }
@@ -606,6 +646,8 @@ namespace ActivityPicturePlugin.Helper
                 System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
             }
+
+            return bRet;
         }
 
         public void ResetVideoThumbnail()
@@ -778,20 +820,24 @@ namespace ActivityPicturePlugin.Helper
             return bmp;
         }
 
-        internal void SetThumbnail()
+        internal bool SetThumbnail()
         {
+            bool bRet = false;
             if (this.Type == ImageData.DataTypes.Image)
             {
-                this.SetImageThumbnail();
+                bRet = this.SetImageThumbnail();
             }
             else if (this.Type == ImageData.DataTypes.Video)
             {
-                this.SetVideoThumbnail();
+                bRet = this.SetVideoThumbnail();
             }
+            return bRet;
         }
 
-        internal void SetImageThumbnail()
+        // Returns true if new thumbnail was created
+        internal bool SetImageThumbnail()
         {
+            bool bRet = false;
             try
             {
                 string defpath = this.ThumbnailPath;
@@ -844,6 +890,7 @@ namespace ActivityPicturePlugin.Helper
                                 this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
                             }
                         }
+                        bRet = true;
                     }
                     // Thumbnail cannot be created, both target locations are invalid
                     else
@@ -860,6 +907,8 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
             }
+
+            return bRet;
         }
 
         internal ImageDataSerializable GetSerialzable(IList<ImageDataSerializable> images)

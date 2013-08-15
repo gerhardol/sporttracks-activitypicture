@@ -950,6 +950,26 @@ namespace ActivityPicturePlugin.UI.Activities
                     {
                         frm.ThemeChanged( m_theme );
                         frm.ShowDialog();
+
+                        // Save the referenceid of the selected row
+                        string strSelRefId = this.dataGridViewImages.Rows[e.RowIndex].Cells["cReferenceID"].Value as string;
+
+                        ReloadData();
+
+                        // Deselect all rows
+                        foreach ( DataGridViewRow row in this.dataGridViewImages.SelectedRows )
+                            row.Selected = false;
+
+                        // Reselect the previously selected row
+                        foreach ( DataGridViewRow row in this.dataGridViewImages.Rows )
+                        {
+                            if ( strSelRefId == row.Cells["cReferenceID"].Value as string )
+                            {
+                                row.Selected = true;
+                                this.dataGridViewImages.FirstDisplayedScrollingRowIndex = row.Index;
+                                break;
+                            }
+                        }
                     }
 
                 }
@@ -1251,9 +1271,14 @@ namespace ActivityPicturePlugin.UI.Activities
                 if ( ( id.Type == ImageData.DataTypes.Image ) || ( id.Type == ImageData.DataTypes.Video ) )
                 {
                     //This writes the exif data if exists, otherwise estimates from activity
-                    if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
-                        if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
-                    if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
+                    // TODO: Currently there's no way to change GPS data once it's been saved.
+                    //       Changing DateTimeOriginal is not sufficient. ie ModifyTimeStamp, TimeOffset.
+                    if ( id.HasGps() )
+                    {
+                        if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
+                            if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
+                        if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
+                    }
                 }
             }
             this.pictureAlbumView.ClearImageList();
@@ -1303,6 +1328,7 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 frm.ThemeChanged( m_theme );
                 frm.ShowDialog();
+                ReloadData();
             }
         }
 
