@@ -82,31 +82,6 @@ namespace ActivityPicturePlugin.Helper
                             }
                         }
                     }
-
-                    /*if ( this.DateTimeOriginal == DateTime.MinValue )
-                    {
-                        // No DateTimeOriginal property set for this thumbnail.  Use creation date of Original.
-                        System.IO.FileInfo file = new System.IO.FileInfo( this.photosource );
-                        if ( file.Exists )
-                        {
-                            //string strDate = Functions.GetFileTimeString( file );
-                            string strDate = file.CreationTime.ToString( Functions.NeutralDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture );
-
-                            //// Start=MaxValue and End=MinValue so that ExifDate, which we do not have, is not used;
-                            //DateTime dt = Functions.GetBestTime( file, DateTime.MinValue, DateTime.MaxValue, DateTime.MinValue );
-                            //string strDate = dt.ToString( Functions.NeutralDateTimeFormat, System.Globalization.CultureInfo.InvariantCulture );
-
-                            if ( !string.IsNullOrEmpty( strDate ) )
-                            {
-                                this.EW.SetPropertyString( (int)( ExifWorks.TagNames.ExifDTOrig ), strDate );
-
-                                //Save Exif data to the thumbnail
-                                this.EW.GetBitmap().Save( this.ThumbnailPath );
-                                this.EW.Dispose();
-                                this.ew = new ExifWorks( this.ThumbnailPath );
-                            }
-                        }
-                    }*/
                 }
                 else
                 {
@@ -379,7 +354,7 @@ namespace ActivityPicturePlugin.Helper
         //GPS info, Original time could come from the original Exif (transfered to the thumbnail)
         //Original time are stored in exif for the thumbnail, but GPS may be calculated.
         //As we do not want to keep track of how GPS is calculated when editing time on the image or
-        //the activity GPS, keep GPS "dynamic" but cacahed
+        //the activity GPS, keep GPS "dynamic" but cached
         //(GPS should be invalidated if activity is changed)
         public IGPSPoint GpsPoint
         {
@@ -393,23 +368,6 @@ namespace ActivityPicturePlugin.Helper
                     if ( lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null )
                     {
                         DateTime time = this.EW.DateTimeOriginal.ToUniversalTime();
-                        /*DateTime actStart = this.activity.GPSRoute.StartTime;
-                        DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds( this.activity.GPSRoute.TotalElapsedSeconds );
-                        if ( time < actStart || time > actEnd )
-                        {
-                            System.IO.FileInfo fi = new System.IO.FileInfo( this.photosource );
-                            time = fi.CreationTimeUtc;
-                            if ( time < actStart || time > actEnd )
-                            {
-                                //Try modification, could be better
-                                time = fi.LastWriteTimeUtc;
-                            }
-                        }
-                        else
-                        {
-                            //MinDate cannot be adjusted
-                            time = time.ToUniversalTime();
-                        }*/
                         ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue( time );
                         if ( g != null )
                         {
@@ -423,6 +381,14 @@ namespace ActivityPicturePlugin.Helper
 
                 return gpsPoint;
             }
+        }
+
+        public void FlushGpsPoint()
+        {
+            this.gpsPoint = null;
+            this.ew.GPSLatitude = 0;
+            this.ew.GPSLongitude = 0;
+            this.ew.GPSAltitude = 0;
         }
 
         public bool HasGps()
