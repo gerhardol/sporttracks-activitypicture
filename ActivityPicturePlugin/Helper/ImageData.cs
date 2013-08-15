@@ -353,16 +353,16 @@ namespace ActivityPicturePlugin.Helper
                     float lat = (float)ew.GPSLatitude;
                     float lon = (float)ew.GPSLongitude;
                     float alt = (float)ew.GPSAltitude;
-                    if (lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null)
+                    if ( lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null )
                     {
-                        DateTime time = this.EW.DateTimeOriginal;
+                        DateTime time = this.EW.DateTimeOriginal.ToUniversalTime();
                         DateTime actStart = this.activity.GPSRoute.StartTime;
-                        DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds(this.activity.GPSRoute.TotalElapsedSeconds);
-                        if (time < actStart || time > actEnd)
+                        DateTime actEnd = this.activity.GPSRoute.StartTime.AddSeconds( this.activity.GPSRoute.TotalElapsedSeconds );
+                        if ( time < actStart || time > actEnd )
                         {
-                            System.IO.FileInfo fi = new System.IO.FileInfo(this.photosource);
+                            System.IO.FileInfo fi = new System.IO.FileInfo( this.photosource );
                             time = fi.CreationTimeUtc;
-                            if (time < actStart || time > actEnd)
+                            if ( time < actStart || time > actEnd )
                             {
                                 //Try modification, could be better
                                 time = fi.LastWriteTimeUtc;
@@ -373,14 +373,17 @@ namespace ActivityPicturePlugin.Helper
                             //MinDate cannot be adjusted
                             time = time.ToUniversalTime();
                         }
-                        ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue(time);
-                        if (g != null)
+                        ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue( time );
+                        if ( g != null )
                         {
                             gpsPoint = g.Value;
                         }
                     }
-                    gpsPoint = new GPSPoint(lat, lon, alt);
+
+                    if ( gpsPoint == null )
+                        gpsPoint = new GPSPoint( lat, lon, alt );
                 }
+
                 return gpsPoint;
             }
         }
@@ -490,6 +493,8 @@ namespace ActivityPicturePlugin.Helper
                     Length.Units units = Plugin.GetApplication().SystemPreferences.ElevationUnits;
                     string strFormat = String.Format( "N{0}u", Length.DefaultDecimalPrecision( units ) );
                     double Alt = Length.Convert( ew.GPSAltitude, Length.Units.Meter, units );
+                    if ( Alt == 0 && this.HasGps() )
+                        Alt = this.gpsPoint.ElevationMeters;
                     string AltStr = Length.ToString( Alt, units, strFormat );
 
                     return AltStr;
