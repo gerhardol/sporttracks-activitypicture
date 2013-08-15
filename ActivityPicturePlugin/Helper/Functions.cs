@@ -288,6 +288,7 @@ namespace ActivityPicturePlugin.Helper
                     {
                         foreach ( ImageData id in images )
                         {
+                            // TODO: Need to also check if KMLGPS is valid or change implementation
                             if (id.HasGps())
                             {
                                 //stylemaps
@@ -305,6 +306,7 @@ namespace ActivityPicturePlugin.Helper
 
                     foreach ( ImageData id in images )
                     {
+                        // TODO: Need to also check if KMLGPS is valid or change implementation
                         if (id.HasGps())
                         {
                             string KMZfilesource; //source of image (which will be embedded in case of kmz)
@@ -559,6 +561,7 @@ namespace ActivityPicturePlugin.Helper
                         {
                             foreach ( ImageData id in images )
                             {
+                                // TODO: Need to also check if KMLGPS is valid or change implementation
                                 if (id.HasGps())
                                 {
                                     //stylemaps
@@ -576,6 +579,7 @@ namespace ActivityPicturePlugin.Helper
 
                         foreach ( ImageData id in images )
                         {
+                            // TODO: Need to also check if KMLGPS is valid or change implementation
                             if (id.HasGps())
                             {
                                 string KMZfilesource; //source of image (which will be embedded in case of kmz)
