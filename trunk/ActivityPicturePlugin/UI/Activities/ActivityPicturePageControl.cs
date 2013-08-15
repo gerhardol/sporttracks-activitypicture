@@ -191,6 +191,7 @@ namespace ActivityPicturePlugin.UI.Activities
 
             toolStripMenuFitToWindow.Checked = ActivityPicturePlugin.Source.Settings.MaxImageSize == (int)PictureAlbum.MaxImageSize.FitToWindow;
 
+            //TODO: Add a field to notify users which files have exif data SAVED?
             dataGridViewImages.Columns["cTypeImage"].Visible = ActivityPicturePlugin.Source.Settings.CTypeImage;
             dataGridViewImages.Columns["cExifGPS"].Visible = ActivityPicturePlugin.Source.Settings.CExifGPS;
             dataGridViewImages.Columns["cAltitude"].Visible = ActivityPicturePlugin.Source.Settings.CAltitude;
