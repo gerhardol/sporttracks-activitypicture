@@ -1159,9 +1159,18 @@ namespace ActivityPicturePlugin.UI
                     // exif data, ie. bmp, etc.
                     if ( lvi.SubItems.Count == 1 )
                     {
-                        DateTime dtStart = m_Activities[0].StartTime;
-                        DateTime dtEnd = dtStart.AddSeconds( m_Activities[0].TotalTimeEntered.TotalSeconds );                            
-                        DateTime dtBest = Functions.GetBestTime( file, DateTime.MinValue, dtStart, dtEnd );
+                        DateTime dtBest;
+                        if ( !m_showallactivities && m_Activities != null && m_Activities.Count > 0 )
+                        {
+                            DateTime dtEnd = GetActivityEndTime( m_Activities[0] ).ToUniversalTime();
+                            dtBest = Functions.GetBestTime( file, 
+                                DateTime.MinValue, 
+                                m_Activities[0].StartTime, 
+                                dtEnd );
+                        }
+                        else
+                            dtBest = file.CreationTime;
+
                         dtBest = dtBest.ToLocalTime();
                         string strDateTime = "";
                         System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
