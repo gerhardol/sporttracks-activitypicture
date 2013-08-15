@@ -952,13 +952,16 @@ namespace ActivityPicturePlugin.UI.Activities
                         frm.ShowDialog();
 
                         // Save the referenceid of the selected row
-                        string strSelRefId = this.dataGridViewImages.Rows[e.RowIndex].Cells["cReferenceID"].Value as string;
+                        List<string> listSelected = GetDataGridViewImagesSelectedRefIDs();
+                        //string strSelRefId = this.dataGridViewImages.Rows[e.RowIndex].Cells["cReferenceID"].Value as string;
 
                         ReloadData();
 
-                        // Deselect all rows
-                        foreach ( DataGridViewRow row in this.dataGridViewImages.SelectedRows )
-                            row.Selected = false;
+                        SetDataGridViewSelectedRows( listSelected );
+
+                        /*// Deselect the automatically selected row
+                        if ( this.dataGridViewImages.SelectedRows.Count == 0 )
+                            this.dataGridViewImages.SelectedRows[0].Selected = false;
 
                         // Reselect the previously selected row
                         foreach ( DataGridViewRow row in this.dataGridViewImages.Rows )
@@ -969,7 +972,7 @@ namespace ActivityPicturePlugin.UI.Activities
                                 this.dataGridViewImages.FirstDisplayedScrollingRowIndex = row.Index;
                                 break;
                             }
-                        }
+                        }*/
                     }
 
                 }
@@ -1275,15 +1278,23 @@ namespace ActivityPicturePlugin.UI.Activities
                     //       Changing DateTimeOriginal is not sufficient. ie ModifyTimeStamp, TimeOffset.
                     if ( id.HasGps() )
                     {
+                        // Flush the Gps point.  We're overriding previos detection mechanisms.
+                        id.FlushGpsPoint(); // May not be the best way to go about it.
                         if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
                             if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
                         if ( System.IO.File.Exists( id.ThumbnailPath ) ) Functions.GeoTagFromGps( id.ThumbnailPath, id.GpsPoint );
                     }
                 }
             }
+
+            // Save the referenceid of the selected row
+            List<string> listSelected = GetDataGridViewImagesSelectedRefIDs();
+            
             this.pictureAlbumView.ClearImageList();
             ReloadData();
-            UpdateView();
+            //UpdateView();     //Needed?
+
+            SetDataGridViewSelectedRows( listSelected );
 
             this.UseWaitCursor = false;
             Cursor.Position = Cursor.Position;  // Trigger cursor update: UseWaitCursor = false
@@ -1291,6 +1302,42 @@ namespace ActivityPicturePlugin.UI.Activities
             btnGeoTag.Enabled = true;
             btnKML.Enabled = true;
             btnTimeOffset.Enabled = true;
+        }
+
+        private List<string> GetDataGridViewImagesSelectedRefIDs()
+        {
+            List<string> listSelected = new List<string>();
+            foreach ( DataGridViewRow row in this.dataGridViewImages.SelectedRows )
+                listSelected.Add( row.Cells["cReferenceID"].Value as string );
+            return listSelected;
+        }
+
+        private void SetDataGridViewSelectedRows( List<string> RefIds )
+        {
+            // Deselect the automatically selected row
+            if ( this.dataGridViewImages.SelectedRows.Count == 1 )
+                this.dataGridViewImages.SelectedRows[0].Selected = false;
+
+            // Reselect the previously selected rows
+            int nFirstIndex = int.MaxValue; // Index of first selected item
+            foreach ( DataGridViewRow row in this.dataGridViewImages.Rows )
+            {
+                foreach ( string sRefId in RefIds )
+                {
+                    if ( sRefId == row.Cells["cReferenceID"].Value as string )
+                    {
+                        row.Selected = true;
+                        nFirstIndex = row.Index < nFirstIndex ? row.Index : nFirstIndex;
+                        RefIds.Remove( sRefId );
+                        break;
+                    }
+                }
+            }
+
+            // Scroll to the first selected item.
+            if ( nFirstIndex != int.MaxValue )
+                this.dataGridViewImages.FirstDisplayedScrollingRowIndex = nFirstIndex;
+
         }
 
         private void btnKML_Click( object sender, EventArgs e )
@@ -1328,7 +1375,10 @@ namespace ActivityPicturePlugin.UI.Activities
             {
                 frm.ThemeChanged( m_theme );
                 frm.ShowDialog();
+
+                List<string> listSelected = GetDataGridViewImagesSelectedRefIDs();
                 ReloadData();
+                SetDataGridViewSelectedRows( listSelected );
             }
         }
 
