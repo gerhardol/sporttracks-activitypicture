@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ActivityPicturePage_Title" xml:space="preserve">
     <value>Bilder</value>
   </data>
@@ -86,7 +86,7 @@
   <data name="GoogleEarthExport_Title" xml:space="preserve">
     <value>Bilder nach Google Earth</value>
   </data>
-  <data name="goupBoxListOptions_Text" xml:space="preserve">
+  <data name="groupBoxListOptions_Text" xml:space="preserve">
     <value>Optionen (für ausgewählte Bilder)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">

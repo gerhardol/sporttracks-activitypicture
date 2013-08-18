@@ -129,7 +129,7 @@
   <data name="btnGeoTag_Text" xml:space="preserve">
     <value>Geotag</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnimage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/btnimage.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -154,7 +154,7 @@
   <data name="GoogleEarthExport_Title" xml:space="preserve">
     <value>Photos to Google Earth</value>
   </data>
-  <data name="goupBoxListOptions_Text" xml:space="preserve">
+  <data name="groupBoxListOptions_Text" xml:space="preserve">
     <value>Options (for selected photos)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">
@@ -181,6 +181,7 @@
   </data>
   <data name="ImportControl_searchingActivity" xml:space="preserve">
     <value>Searching matching activity for</value>
+    <comment>unused</comment>
   </data>
   <data name="labelImageSize_Text" xml:space="preserve">
     <value>Size</value>
@@ -268,12 +269,8 @@
     <value>Checking for duplicate images and videos. {0} of {1} checked.</value>
     <comment>added</comment>
   </data>
-  <data name="SortingXImages" xml:space="preserve">
-    <value>Sorting {0} images</value>
-    <comment>added</comment>
-  </data>
-  <data name="SortingXofYImages" xml:space="preserve">
-    <value>Sorting {0} of {1} images</value>
+  <data name="ExifTimeXImages" xml:space="preserve">
+    <value>Getting EXIF time from {0} images</value>
     <comment>added</comment>
   </data>
   <data name="Camera" type="System.Resources.ResXFileRef, System.Windows.Forms">

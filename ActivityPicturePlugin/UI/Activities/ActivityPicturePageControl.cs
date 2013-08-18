@@ -367,7 +367,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.waypointDataGridViewTextBoxColumn.HeaderText = Resources.waypointDataGridViewTextBoxColumn_HeaderText;
             this.groupBoxVideo.Text = Resources.groupBoxVideo_Text;
             this.groupBoxImage.Text = CommonResources.Text.LabelPhoto;
-            this.groupBoxListOptions.Text = Resources.goupBoxListOptions_Text;
+            this.groupBoxListOptions.Text = Resources.groupBoxListOptions_Text;
             this.toolStripButtonPause.ToolTipText = Resources.toolStripButtonPause_ToolTipText;
             this.toolStripButtonPlay.ToolTipText = Resources.toolStripButtonPlay_ToolTipText;
             this.toolStripButtonStop.ToolTipText = Resources.toolStripButtonStop_ToolTipText;
