@@ -46,12 +46,7 @@ namespace ActivityPicturePlugin.Helper
             this.VolumeChanged += new VolumeChangedEventHandler( VolumeSlider_VolumeChanged );
             // At this point, CurrVol gets assigned the volume
             uint CurrVol = 0;
-            try
-            {
-                //Mono TODO:
-                SafeNativeMethods.waveOutGetVolume( IntPtr.Zero, out CurrVol );
-            }
-            catch { }
+            SafeNativeMethods.waveOutGetVolume( IntPtr.Zero, out CurrVol );
             ushort CalcVol = (ushort)( CurrVol & 0x0000ffff );
             // Get the volume on a scale of 1 to 100
             Volume = (uint)( CalcVol / ( ushort.MaxValue / 100 ) );
@@ -110,12 +105,7 @@ namespace ActivityPicturePlugin.Helper
             // Set the same volume for both the left and the right channels
             uint NewVolumeAllChannels = ( ( (uint)NewVolume & 0x0000ffff ) | ( (uint)NewVolume << 16 ) );
             // Set the volume
-            try
-            {
-                //Mono TODO:
-                SafeNativeMethods.waveOutSetVolume( IntPtr.Zero, NewVolumeAllChannels );
-            }
-            catch { }
+            SafeNativeMethods.waveOutSetVolume( IntPtr.Zero, NewVolumeAllChannels );
 
             this.Invalidate();
         }
