@@ -38,9 +38,7 @@ namespace ActivityPicturePlugin.Helper
             {
                 this.activity = activity;
                 System.Diagnostics.Debug.Assert(IDSer.Type != DataTypes.Nothing, "No type set for " + IDSer.PhotoSource );
-                this.type = IDSer.Type;
-                this.photosource = IDSer.PhotoSource;
-                this.referenceID = IDSer.ReferenceID;
+                this.IDser = IDSer;
                 bool bNewThumb = this.SetThumbnail();
 
                 if ( this.Thumbnail != null )
@@ -53,7 +51,7 @@ namespace ActivityPicturePlugin.Helper
                     // thumbnail.
                     if ( bNewThumb )
                     {
-                        System.IO.FileInfo file = new System.IO.FileInfo( this.photosource );
+                        System.IO.FileInfo file = new System.IO.FileInfo( this.PhotoSource );
                         if ( file.Exists )
                         {
                             // Get photosource best time.
@@ -103,15 +101,16 @@ namespace ActivityPicturePlugin.Helper
         }
 
         private IActivity activity;
-        private DataTypes type;
-        private bool selected;
-        private string photosource;
-        private string referenceID;
+        //private DataTypes type;
+        //private string photosource;
+        //private string referenceID;
+        private ImageDataSerializable IDser;
         private ExifWorks ew;
         private Image thumbnailImage;
         private Single? ratio=null;
         private string m_thumbnailPath;
         private IGPSPoint gpsPoint;
+        private bool selected;
 
 #if ST_2_1
         private static string ImageFilesFolder = System.IO.Path.GetFullPath( ActivityPicturePlugin.Plugin.GetApplication().SystemPreferences.WebFilesFolder + "\\Images\\" );
@@ -177,19 +176,19 @@ namespace ActivityPicturePlugin.Helper
 
         public DataTypes Type
         {
-            get { return type; }
+            get { return this.IDser.Type; }
             //set { type = value; }
         }
 
         public String PhotoSource
         {
-            get { return photosource; }
+            get { return this.IDser.PhotoSource; }
             //set { photosource = value; }
         }
 
         public string ReferenceID
         {
-            get { return referenceID; }
+            get { return this.IDser.ReferenceID; }
             //set { referenceID = value; }
         }
 
@@ -215,7 +214,7 @@ namespace ActivityPicturePlugin.Helper
 
         public void SetPhotoSource(string s)
         {
-            this.photosource = s;
+            this.IDser.PhotoSource = s;
         }
 
         public void SetDateTimeOriginal(DateTime dt)
@@ -436,10 +435,10 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-                if ((m_thumbnailPath == null) && (this.referenceID!=null))
+                if ((m_thumbnailPath == null) && (this.ReferenceID!=null))
                 {
                     //Cached, as (ST3) call make fileIO
-                    m_thumbnailPath = thumbnailPath(this.referenceID);
+                    m_thumbnailPath = thumbnailPath(this.ReferenceID);
                 }
                 return m_thumbnailPath;
             }
@@ -519,8 +518,8 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-                int i = photosource.LastIndexOf( @"\" );
-                if ( i > 0 ) return photosource.Substring( i + 1 );
+                int i = this.PhotoSource.LastIndexOf( @"\" );
+                if (i > 0) return this.PhotoSource.Substring(i + 1);
                 else return "";
             }
         }
@@ -531,10 +530,10 @@ namespace ActivityPicturePlugin.Helper
         {
             try
             {
-                if ( ( System.IO.File.Exists( this.photosource ) ) && (Functions.IsExifFileExt(new System.IO.FileInfo(this.photosource)  ) ))
+                if ((System.IO.File.Exists(this.PhotoSource)) && (Functions.IsExifFileExt(new System.IO.FileInfo(this.PhotoSource))))
                 // Save Exif data to the original source
                 {
-                    using ( ExifWorks EWPhotoSource = new ExifWorks( this.photosource ) )
+                    using ( ExifWorks EWPhotoSource = new ExifWorks( this.PhotoSource ) )
                     {
                         switch ( prop )
                         {
@@ -557,7 +556,7 @@ namespace ActivityPicturePlugin.Helper
                                 EWPhotoSource.GPSLatitude = ew.GPSLatitude;
                                 break;
                         }
-                        EWPhotoSource.GetBitmap().Save( this.photosource );
+                        EWPhotoSource.GetBitmap().Save( this.PhotoSource );
                     }
                 }
 
