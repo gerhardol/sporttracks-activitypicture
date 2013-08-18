@@ -201,7 +201,7 @@ namespace ActivityPicturePlugin.Helper
         public Image Thumbnail
         {
             get { return this.thumbnailImage; }
-            set { this.thumbnailImage = value; }
+            //set { this.thumbnailImage = value; }
         }
 
         public DateTime DateTimeOriginal
@@ -587,10 +587,8 @@ namespace ActivityPicturePlugin.Helper
                 {
                     using (Bitmap bmp = new Bitmap(defpath))
                     {
-                    //The thumbnail is being created
-                    //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                    //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                        //The thumbnail is being created
+                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                     }
                 }
                 //File has not yet been created
@@ -603,9 +601,7 @@ namespace ActivityPicturePlugin.Helper
                         using (Bitmap bmp = (Bitmap)(Resources.video).Clone())
                         {
                             Functions.SaveThumbnailImage(bmp, defpath, 10);
-                            //int width = (int)((double)(bmp.Width) / (double)(bmp.Height) * 50);
-                            //this.Thumbnail = bmp.GetThumbnailImage(width, 50, null, new IntPtr());
-                            this.Thumbnail = Functions.getThumbnailWithBorder(50, bmp);
+                            this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                         }
                         bRet = true;
                     }
@@ -631,7 +627,7 @@ namespace ActivityPicturePlugin.Helper
                 using ( Bitmap bmp = (Bitmap)( Resources.video ).Clone() )
                 {
                     Functions.SaveThumbnailImage( bmp, defpath, 10 );
-                    this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                    this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                 }
             }
         }
@@ -685,7 +681,7 @@ namespace ActivityPicturePlugin.Helper
                         using ( Bitmap bmp = new Bitmap( bmpOrig, newsize ) )
                         {
                             Functions.SaveThumbnailImage( bmp, defpath, 10 );
-                            this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                            this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                         }
                         bmpOrig.Dispose();
                         return true;
@@ -817,11 +813,11 @@ namespace ActivityPicturePlugin.Helper
                 {
                     using (Bitmap bmp = new Bitmap( defpath ) )
                     {
-                        //The thumbnail is being created
-                        this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                        //Create Image
+                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                     }
                 }
-                //File has not yet been created
+                //Thumbnail file has not yet been created
                 else
                 {
                     //Check if image at specified PhotoSource location exists
@@ -857,7 +853,7 @@ namespace ActivityPicturePlugin.Helper
                                 }
 
                                 Functions.SaveThumbnailImage( bmp, defpath, 10 );
-                                this.Thumbnail = Functions.getThumbnailWithBorder( 50, bmp );
+                                this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                             }
                         }
                         bRet = true;
@@ -866,9 +862,7 @@ namespace ActivityPicturePlugin.Helper
                     else
                     {
                         //TODO: implement a way to work when images are not found!
-
                         // Works when no images are found.
-
                         //MessageBox.Show("both paths not found");
                     }
                 }
@@ -912,10 +906,10 @@ namespace ActivityPicturePlugin.Helper
             {
                 this.EW.Dispose();
             }
-            if ((disposing) && (this.Thumbnail != null))
+            if ((disposing) && (this.thumbnailImage != null))
             {
-                this.Thumbnail.Dispose();
-                this.Thumbnail = null;
+                this.thumbnailImage.Dispose();
+                this.thumbnailImage = null;
             }
         }
         #endregion
