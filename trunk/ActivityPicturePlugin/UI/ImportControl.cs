@@ -1689,6 +1689,7 @@ namespace ActivityPicturePlugin.UI
                         return;
                     }
 
+                    this.lblProgress.Text = dir.FullName;
                     ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                     foreach ( FileInfo file in dirfiles )
                     {
@@ -2963,7 +2964,7 @@ namespace ActivityPicturePlugin.UI
                             foreach (ActivityTreeViewInfo a in ims)
                             {
                                 ImageData im = a.image;
-                                im.PhotoSource = im.PhotoSource.Replace(current, dest);
+                                im.SetPhotoSource (im.PhotoSource.Replace(current, dest));
                                 PluginData data = Helper.Functions.ReadExtensionData(a.Activity);
                                 listViewAct.SuspendLayout();
 
