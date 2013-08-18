@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnCollapseAll_Text" xml:space="preserve">
     <value>Minimera alla</value>
   </data>
@@ -83,7 +83,7 @@
   <data name="GoogleEarthExport_Title" xml:space="preserve">
     <value>Foto till Google Earth</value>
   </data>
-  <data name="goupBoxListOptions_Text" xml:space="preserve">
+  <data name="groupBoxListOptions_Text" xml:space="preserve">
     <value>Alternativ (för valda bilder)</value>
   </data>
   <data name="groupBoxVideo_Text" xml:space="preserve">
@@ -175,13 +175,9 @@
     <comment>added</comment>
     <value>Söker efter duplikata bilder och videor. {0} av {1} kontrollerade.</value>
   </data>
-  <data name="SortingXImages" xml:space="preserve">
+  <data name="ExifTimeXImages" xml:space="preserve">
     <comment>added</comment>
-    <value>Sorterar {0} bilder</value>
-  </data>
-  <data name="SortingXofYImages" xml:space="preserve">
-    <comment>added</comment>
-    <value>Sorterar {0} av {1} bilder</value>
+    <value>Tar fram EXIF tid från {0} bilder</value>
   </data>
   <data name="FitImagesToView_Text" xml:space="preserve">
     <comment>added</comment>
