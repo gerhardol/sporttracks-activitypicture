@@ -45,10 +45,8 @@ namespace ActivityPicturePlugin.UI
         public ImportControl()
         {
             InitializeComponent();
-
             InitComponent();
-            //InitializeListViewDrive();
-            onImagesComplete = new EventHandler( OnImagesComplete );
+
             this.ActivityImagesChanged += new ActivityImagesChangedEventHandler( ImportControl_ActivityImagesChanged );
             treeViewActivities.TreeViewNodeSorter = new NodeSorter();
             this.m_CheckedDirNodes = new List<TreeNode>();
@@ -1521,117 +1519,70 @@ namespace ActivityPicturePlugin.UI
             {
                 this.lblProgress.Text = text;
             }
-            //Application.DoEvents();
-
         }
 
-        //TODO: This does not handle overlapping activities
-        //just loop over all images, once per activity instead
         private int FindAndImportImages(List<FileInfoEx> fiexs)
         {
             int numFilesImported = 0;
             try
             {
-                NodeSorter ns = new NodeSorter();
-                this.m_ActivityNodes.Sort( ns.Compare );
-
-                DateTime FirstStart = new DateTime();
-                DateTime LastEnd = new DateTime();
-                IActivity FirstAct, LastAct;
-
-                if ( this.m_ActivityNodes[0].Tag is IActivity )
-                {
-                    FirstAct = (IActivity)( this.m_ActivityNodes[0].Tag );
-                    FirstStart = FirstAct.StartTime.ToLocalTime();
-                }
-
-                if ( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag is IActivity )
-                {
-                    LastAct = (IActivity)( this.m_ActivityNodes[this.m_ActivityNodes.Count - 1].Tag );
-                    LastEnd = GetActivityEndTime( LastAct );
-                }
-
-                IActivity CurrentActivity;
-                int CurrentIndex = 0;
-                CurrentActivity = (IActivity)( this.m_ActivityNodes[0].Tag );
-
                 this.progressBar2.Style = ProgressBarStyle.Continuous;
                 this.progressBar2.Minimum = 0;
-                this.progressBar2.Maximum = 100;
+                this.progressBar2.Maximum = fiexs.Count * this.m_ActivityNodes.Count;
                 this.ResetProgressBar();
-                int i = 0;
-                DateTime FileTime = new DateTime();
-                ImportControlState state = new ImportControlState( m_Activities, this.Visible );
-                foreach (FileInfoEx file in fiexs)
+
+                ImportControlState state = new ImportControlState(m_Activities, this.Visible);
+                foreach (TreeNode node in this.m_ActivityNodes)
                 {
-                    Application.DoEvents();
-                    if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                        throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                    IActivity activity = (IActivity)node.Tag;
+                    DateTime actStart = activity.StartTime.ToLocalTime();
+                    DateTime actEnd = GetActivityEndTime(activity);
+                    this.lblProgress.Text = actStart.ToString()+" "+activity.Name;
+                    foreach (FileInfoEx file in fiexs)
+                    {
+                        Application.DoEvents();
+                        if (!state.Equals(new ImportControlState(m_Activities, this.Visible)))
+                            throw new ImportControlException(ImportControlException.Error_ActivityChanged);
 
-                    i++;
-                    this.progressBar2.Value = (int)( 100 * (double)( i ) / (double)( fiexs.Count ) );
-                    this.lblProgress.Text = Resources.ImportControl_searchingActivity + " " + Functions.TruncatePath( file.fi.FullName, 50 );
+                        this.progressBar2.Value++;
+                        
+                        DateTime FileTime = Functions.GetBestTime(file.fi, file.exif, actStart, actEnd);
 
-                    //TODO: Handle non-exif
-                    // GetFileTime returns in LocalTime.  Kind is specified
-                    FileTime = Functions.GetBestTime( file.fi, file.exif, FirstStart, LastEnd );
+                        if ((FileTime > actStart) &
+                            (FileTime < actEnd))
+                        {                                    
+                            //the picture has been taken during the activity
+                            PluginData data = Helper.Functions.ReadExtensionData(activity);
 
-                    //{ //A valid date has been found                
-                    if ( ( FileTime > FirstStart ) &
-                        ( FileTime < LastEnd ) )
-                    {//dateTime in picture is within the range of all activities
-
-                        // LocalTime is best since we're assuming SimpleRun
-                        // returns in Local Time.  No way to tell for sure.
-                        if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
-                        {
-                            if ( FileTime > GetActivityEndTime( CurrentActivity ) )
+                            //Check if Image does already exist in the current activity
+                            if (!ImageAlreadyExistsInActivity(file.fi.Name, data))
                             {
-                                //picture has been taken later => cycle to next activity
-                                while ( CurrentIndex < this.m_ActivityNodes.Count )
-                                {
-                                    CurrentIndex++;
-                                    CurrentActivity = (IActivity)( this.m_ActivityNodes[CurrentIndex].Tag );
-                                    if ( FileTime < GetActivityEndTime( CurrentActivity ) ) break;
-                                }
-                                if ( !( CurrentIndex < this.m_ActivityNodes.Count ) ) //cycled through all activities, no match found
-                                {
-                                    break;//break foreach file loop
-                                }
-                            }
+                                //activity node plus parents will be marked yellow to track acts to which images have been added
+                                node.BackColor = Color.Yellow;
+                                node.Parent.BackColor = Color.Yellow;
+                                node.Parent.Parent.BackColor = Color.Yellow;
 
-                            if ( FileTime > CurrentActivity.StartTime.ToLocalTime() )
-                            {
-                                //the picture has been taken during the activity
-                                PluginData data = Helper.Functions.ReadExtensionData( CurrentActivity );
-
-                                //Check if Image does already exist in the current activity
-                                if ( !ImageAlreadyExistsInActivity( file.fi.Name, data ) )
+                                ImageDataSerializable ids = ImageDataSerializable.FromFile(file.fi);
+                                if (ids != null)
                                 {
-                                    this.m_ActivityNodes[CurrentIndex].BackColor = Color.Yellow;
-                                    this.m_ActivityNodes[CurrentIndex].Parent.BackColor = Color.Yellow;
-                                    this.m_ActivityNodes[CurrentIndex].Parent.Parent.BackColor = Color.Yellow; //activity node plus parents will be marked yellow to track acts to which images have been added
-                                    ImageDataSerializable ids = ImageDataSerializable.FromFile( file.fi );
-                                    if ( ids != null ) data.Images.Add( ids );
-                                    Functions.WriteExtensionData( CurrentActivity, data );
+                                    data.Images.Add(ids);
+                                    Functions.WriteExtensionData(activity, data);
                                     numFilesImported++;
 
                                     ActivityPicturePlugin.Source.Settings.NewThumbnailsCreated += ImageData.thumbnailPath(ids.ReferenceID) + "\t";
-                                    
-                                    continue; //proceed to next file
                                 }
                             }
                         }
                     }
                 }
             }
-            catch ( ImportControlException )
+            catch (ImportControlException)
             {
                 throw;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                System.Diagnostics.Debug.Assert( false, ex.Message );
+                System.Diagnostics.Debug.Assert(false, ex.Message);
             }
             finally
             {
@@ -1684,8 +1635,6 @@ namespace ActivityPicturePlugin.UI
             {                
                 GetImageFiles( n, first, importFiles );
             }
-            //BeginInvoke(onImagesComplete, new object[] { this, importFiles.Count });
-            this.lblProgress.Text = String.Format(Resources.SortingXImages, importFiles.Count);
             this.HideProgressBar();
         }
 
@@ -1771,51 +1720,64 @@ namespace ActivityPicturePlugin.UI
             }
         }
 
-        private List<FileInfoEx> SortFiles(List<FileInfo> importFiles)
+        // Get exif data for all files once and only one for sort (slow operation)
+        //This is separated from finding files and add to activities to have a separate progress bar
+        private List<FileInfoEx> GetExifFileTimes(List<FileInfo> importFiles)
         {
-            //start sorting
             Application.DoEvents();
-            FileExSorter fs = new FileExSorter();
             List<FileInfoEx> fiexs = new List<FileInfoEx>();
-            int j = 0;
             this.progressBar2.Style = ProgressBarStyle.Continuous;
             this.progressBar2.Maximum = importFiles.Count;
             this.ResetProgressBar();
+            this.lblProgress.Text = string.Format(Resources.ExifTimeXImages, importFiles.Count);
 
             ImportControlState state = new ImportControlState( m_Activities, this.Visible );
 
-            // Get exif data for all files once and only one for sort (slow operation)
-            foreach ( FileInfo fi in importFiles )
-            {
-                lblProgress.Text = string.Format( Resources.SortingXofYImages, ++j, importFiles.Count );
-                progressBar2.Value = j;
-                FileInfoEx fiex = new FileInfoEx();
-                fiex.fi = fi;
-                fiex.exif = Functions.GetExifOriginalTime(fi);
-                //fiex.strDateTime = Functions.GetFileTimeString(fi);
-                fiexs.Add( fiex );
+            DateTime FirstStart = DateTime.MaxValue;
+            DateTime LastEnd = DateTime.MinValue;
 
+            foreach (TreeNode node in this.m_ActivityNodes)
+            {
+                IActivity activity = (IActivity)(node.Tag);
+                DateTime start = activity.StartTime.ToLocalTime();
+                DateTime end = GetActivityEndTime(activity);
+                if (start < FirstStart)
+                {
+                    FirstStart = start;
+                }
+                if (end > LastEnd)
+                {
+                    LastEnd = end;
+                }
+            }
+
+            int j = 0;
+            foreach (FileInfo fi in importFiles)
+            {
+                progressBar2.Value = j++;
+                DateTime exif = Functions.GetExifOriginalTime(fi);
+                //Find if image time is relevant
+                //This is not necessary for single activities, but minimizes the list for multi activities
+                DateTime time = Functions.GetBestTime(fi, exif, FirstStart, LastEnd);
+                if (FirstStart <= time && time <= LastEnd)
+                {
+                    FileInfoEx fiex = new FileInfoEx();
+                    fiex.fi = fi;
+                    fiex.exif = exif;
+                    fiexs.Add(fiex);
+                }
                 Application.DoEvents();
-                if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                if (!state.Equals(new ImportControlState(m_Activities, this.Visible)))
+                    throw new ImportControlException(ImportControlException.Error_ActivityChanged);
             }
 
             this.HideProgressBar();
 
-            // Sort them
-            fiexs.Sort( fs.Compare );
-
-            //// Reassign the files to the original importFiles member.
-            //for ( int i = 0; i < importFiles.Count; i++ )
-            //    importFiles[i] = fiexs[i].fi;
-
-            //fiexs.Clear();
             return fiexs;
         }
 
         private ListViewItemSorter GetListViewSorter( int columnIndex, ListView lv )
         {
-            //ListViewItemSorter sorter = (ListViewItemSorter)lv.ListViewItemSorter;
             ListViewItemSorter sorter = (ListViewItemSorter)lv.ListViewItemSorter;
             if ( sorter == null )
                 sorter = new ListViewItemSorter();
@@ -2161,10 +2123,6 @@ namespace ActivityPicturePlugin.UI
         #endregion
 
         #region Eventhandlers
-        private void OnImagesComplete( object sender, EventArgs e )
-        {
-            //this.lblProgress.Text = String.Format( Resources.SortingXImages, importFiles.Count );
-        }
 
         #region treeViewImages
         private void treeViewImages_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -2773,11 +2731,14 @@ namespace ActivityPicturePlugin.UI
                 if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
                     throw new ImportControlException( ImportControlException.Error_ActivityChanged );
 
+                DateTime t = DateTime.Now;
                 List<FileInfo> importFiles = new List<FileInfo>(); //List of all images files of selected folders (for automatic import)
                 ThreadGetImages(importFiles); //collects images of all selected paths
-                List<FileInfoEx> fiexs = SortFiles(importFiles);
+                List<FileInfoEx> fiexs = GetExifFileTimes(importFiles);
                 int numFilesImported = FindAndImportImages(fiexs);
-
+                DateTime t2 = DateTime.Now;
+                TimeSpan d = t2 - t;
+                
                 AddImagesToListViewAct( this.treeViewActivities.SelectedNode, true );
                 EnableControl( true );
 
