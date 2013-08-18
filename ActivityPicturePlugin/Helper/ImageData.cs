@@ -172,26 +172,25 @@ namespace ActivityPicturePlugin.Helper
                     return Resources.btnvideo;
                 }
                 return null;
-
             }
         }
 
         public DataTypes Type
         {
             get { return type; }
-            set { type = value; }
+            //set { type = value; }
         }
 
         public String PhotoSource
         {
             get { return photosource; }
-            set { photosource = value; }
+            //set { photosource = value; }
         }
 
         public string ReferenceID
         {
             get { return referenceID; }
-            set { referenceID = value; }
+            //set { referenceID = value; }
         }
 
         private ExifWorks EW
@@ -213,6 +212,12 @@ namespace ActivityPicturePlugin.Helper
                 return this.EW.DateTimeOriginal;
             }
         }
+
+        public void SetPhotoSource(string s)
+        {
+            this.photosource = s;
+        }
+
         public void SetDateTimeOriginal(DateTime dt)
         {
             this.EW.SetPropertyString((int)(ExifWorks.TagNames.ExifDTOrig), dt.ToString(Functions.NeutralDateTimeFormat));
@@ -314,7 +319,7 @@ namespace ActivityPicturePlugin.Helper
                 } 
                 return (Single)ratio;
             }
-            set { ratio = value; }
+            //set { ratio = value; }
         }
 
         static String CleanInput( string strIn )
