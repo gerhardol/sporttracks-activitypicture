@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.GPS;
@@ -51,13 +52,15 @@ namespace ActivityPicturePlugin.Helper
                     // thumbnail.
                     if ( bNewThumb )
                     {
-                        System.IO.FileInfo file = new System.IO.FileInfo( this.PhotoSource );
+                        FileInfo file = new FileInfo( this.PhotoSource );
                         if ( file.Exists )
                         {
                             // Get photosource best time.
                             ActivityInfo info = ActivityInfoCache.Instance.GetInfo( this.activity );
+                            DateTime exif = DateTime.MinValue;
+                            ExifWorks eWorks = new ExifWorks(this.PhotoSource);
                             DateTime dtBest = Functions.GetBestTime( file,
-                                DateTime.MinValue,
+                                eWorks.DateTimeOriginal,
                                 this.activity.StartTime,
                                 info.EndTime );
 
@@ -150,7 +153,6 @@ namespace ActivityPicturePlugin.Helper
                 //this.ReferenceIDPath.Equals(pd1.ReferenceIDPath) &&
                 //this.Title.Equals(pd1.Title) &&
                 //this.TypeImage.Equals(pd1.TypeImage) &&
-                //this.Waypoint.Equals(pd1.Waypoint) &&
                 this.Type.Equals( pd1.Type ) )
             {
                 return true;
@@ -477,7 +479,7 @@ namespace ActivityPicturePlugin.Helper
                     {
                         path = this.ThumbnailPath;
                     }
-                    // if both locations are not found, nothing will happen
+                    // if no location is not found, nothing will happen
                 }
             }
             catch (Exception ex)
@@ -574,8 +576,9 @@ namespace ActivityPicturePlugin.Helper
         #endregion
 
         #region Public Methods
+
         // Returns true if new thumbnail was created
-        public bool SetVideoThumbnail()
+        private bool SetVideoThumbnail()
         {
             bool bRet = false;
             try
@@ -585,10 +588,11 @@ namespace ActivityPicturePlugin.Helper
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
                 {
-                    using (Bitmap bmp = new Bitmap(defpath))
+                    using (FileStream fs = new FileStream(defpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (Image img = Image.FromStream(fs, true, false))
                     {
                         //The thumbnail is being created
-                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
+                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, img);
                     }
                 }
                 //File has not yet been created
@@ -695,7 +699,7 @@ namespace ActivityPicturePlugin.Helper
             return false;
         }
 
-        internal Bitmap GetDexterAviBmp( string VideoFile, int iFrame, Size frameSize, double dblTimePerFrame )
+        private Bitmap GetDexterAviBmp( string VideoFile, int iFrame, Size frameSize, double dblTimePerFrame )
         {
             Bitmap bitmap = null;
 
@@ -801,7 +805,7 @@ namespace ActivityPicturePlugin.Helper
         }
 
         // Returns true if new thumbnail was created
-        internal bool SetImageThumbnail()
+        private bool SetImageThumbnail()
         {
             bool bRet = false;
             try
@@ -811,10 +815,11 @@ namespace ActivityPicturePlugin.Helper
                 //Check if image on the WebFiles folder exists
                 if ( System.IO.File.Exists( defpath ) )
                 {
-                    using (Bitmap bmp = new Bitmap( defpath ) )
+                    using (FileStream fs = new FileStream(defpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (Image img = Image.FromStream(fs, true, false)) 
                     {
                         //Create Image
-                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
+                        this.thumbnailImage = Functions.getThumbnailWithBorder(50, img);
                     }
                 }
                 //Thumbnail file has not yet been created
@@ -823,12 +828,12 @@ namespace ActivityPicturePlugin.Helper
                     //Check if image at specified PhotoSource location exists
                     if ( System.IO.File.Exists( this.PhotoSource ) )
                     {
-                        // Create new image in the default folder
-                        Size size = new Size();
-                        using ( Bitmap bmpOrig = new Bitmap( this.PhotoSource ) )
+                        using (FileStream fs = new FileStream(this.PhotoSource, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        using (Image bmpOrig = Image.FromStream(fs, true, false))
                         {
-                            int UpperPixelLimit = 500;
-                            Double ratio = (double)( bmpOrig.Width ) / (double)( bmpOrig.Height );
+                            const int UpperPixelLimit = 500;
+                            Size size = new Size();
+                            Double ratio = (double)(bmpOrig.Width) / (double)(bmpOrig.Height);
                             if ( ratio > 1 )
                             {
                                 size.Width = UpperPixelLimit;
@@ -852,7 +857,8 @@ namespace ActivityPicturePlugin.Helper
                                     catch { }
                                 }
 
-                                Functions.SaveThumbnailImage( bmp, defpath, 10 );
+                                // Create new image in the default folder
+                                Functions.SaveThumbnailImage(bmp, defpath, 10);
                                 this.thumbnailImage = Functions.getThumbnailWithBorder(50, bmp);
                             }
                         }
@@ -886,7 +892,7 @@ namespace ActivityPicturePlugin.Helper
                     break;
                 }
             }
-            System.Diagnostics.Debug.Assert(res != null, "xxx not found" + this.PhotoSource);
+            System.Diagnostics.Debug.Assert(res != null, "ImageDataSerializable not found" + this.PhotoSource);
             return res;
         }
 
@@ -897,9 +903,8 @@ namespace ActivityPicturePlugin.Helper
         {
             Dispose( true );
             GC.SuppressFinalize( this );
-            //if ( this.Thumbnail != null ) this.Thumbnail.Dispose();
-            // this.Waypoint.Dispose():
         }
+
         protected virtual void Dispose( bool disposing )
         {
             if (this.EW != null)
