@@ -741,7 +741,7 @@ namespace ActivityPicturePlugin.Helper
             //create small thumbnail
             using ( Bitmap bmp = CreateSmallThumbnail( id, 108 ) )
             {
-                Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
+                Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + "_small.jpg", ActivityPicturePlugin.Source.Settings.GEQuality );
             }
 
             if ( !File.Exists( picDir + "\\" + id.ReferenceID + ".jpg" ) )
@@ -749,63 +749,50 @@ namespace ActivityPicturePlugin.Helper
             {
                 using ( Bitmap bmp = CreateSmallThumbnail( id, (int)( ActivityPicturePlugin.Source.Settings.GESize * 50 * 0.75 ) ) )
                 {
-                    Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	// ActivityPicturePageControl.PluginSettingsData.data.Quality );
-                    //System.IO.File.Copy(id.ReferenceIDPath, picDir + "\\" + id.ReferenceID + ".jpg");
+                    Functions.SaveThumbnailImage( bmp, picDir + "\\" + id.ReferenceID + ".jpg", ActivityPicturePlugin.Source.Settings.GEQuality );	
                 }
             }
         }
 
         private static Bitmap CreateSmallThumbnail( ImageData id, int minSize )
         {
-            Bitmap bmp = null;
             Bitmap bmpNew = null;
-            //if (minSize > 150)
-            //{
-            //    if (File.Exists(id.PhotoSource)) bmp = new Bitmap(id.PhotoSource);
-            //}
 
             try
             {
-                //minsize<=150 or original image not found
-                if ( bmp == null )
-                    bmp = new Bitmap( id.ThumbnailPath );
-
-                int Swidth, Sheight;
-                double ratio = (double)( bmp.Width ) / (double)( bmp.Height );
-                if ( ratio > 1 )
+                using (Bitmap bmp = new Bitmap(id.ThumbnailPath))
                 {
-                    Swidth = (int)( minSize * ratio );
-                    Sheight = minSize;
-                }
-                else
-                {
-                    Swidth = minSize;
-                    Sheight = (int)( minSize / ratio );
-                }
-                Size size = new Size( Swidth, Sheight );
-                bmpNew = new Bitmap( bmp, size );
-
-                //copying the metadata of the original file into the new image
-                foreach ( System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems )
-                {
-                    try
+                    int Swidth, Sheight;
+                    double ratio = (double)(bmp.Width) / (double)(bmp.Height);
+                    if (ratio > 1)
                     {
-                        //Mono TODO: NotImplemented
-                        bmpNew.SetPropertyItem( pItem );
+                        Swidth = (int)(minSize * ratio);
+                        Sheight = minSize;
                     }
-                    catch { }
+                    else
+                    {
+                        Swidth = minSize;
+                        Sheight = (int)(minSize / ratio);
+                    }
+                    Size size = new Size(Swidth, Sheight);
+                    bmpNew = new Bitmap(bmp, size);
+
+                    //copying the metadata of the original file into the new image
+                    foreach (System.Drawing.Imaging.PropertyItem pItem in bmp.PropertyItems)
+                    {
+                        try
+                        {
+                            //Mono TODO: NotImplemented
+                            bmpNew.SetPropertyItem(pItem);
+                        }
+                        catch { }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
                 throw;
-            }
-            finally
-            {
-                if ( bmp != null )
-                    bmp.Dispose();
-                bmp = null;
             }
 
             //quality too bad
@@ -925,24 +912,14 @@ namespace ActivityPicturePlugin.Helper
             bool ret = true;
             if ( im.Type == ImageData.DataTypes.Image )
             {
-                try
-                {
-                    string sPath = im.GetBestImage();
-                    if ( sPath != null ) System.Diagnostics.Process.Start( sPath );
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    ret = false;
-                }
+                string sPath = im.GetBestImage();
+                OpenExternal(sPath);
             }
             else if ( im.Type == ImageData.DataTypes.Video )
             {
                 try
                 {
-                    //Functions.OpenVideoInExternalWindow( im.PhotoSource );
                     System.Diagnostics.Process.Start( im.PhotoSource );
-
                 }
                 catch (Exception ex)
                 {
@@ -964,24 +941,6 @@ namespace ActivityPicturePlugin.Helper
                 Functions.OpenVideoInExternalWindow(path);
             }
         }
-
-        //private static void OpenImageWithWindowsViewer( string ImageLocation )
-        //{
-        //    try
-        //    {
-        //        //show picture with windows
-        //        string sys = System.Environment.GetFolderPath( Environment.SpecialFolder.System );
-        //        System.Diagnostics.ProcessStartInfo f = new System.Diagnostics.ProcessStartInfo
-        //        ( sys + "\\rundll32.exe",
-        //        sys + "\\shimgvw.dll,ImageView_Fullscreen " +
-        //        ImageLocation );
-        //        System.Diagnostics.Process.Start( f );
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.Assert(false, ex.Message);
-        //    }
-        //}
 
         private static void OpenVideoInExternalWindow( string p )
         {
@@ -1165,59 +1124,50 @@ namespace ActivityPicturePlugin.Helper
                 thumb = new Bitmap( width, width );
                 tmp = null;
                 //If the original image is small than the Thumbnail size, just draw in the center
-                if ( img.Width < width && img.Height < width )
+                if (img.Width < width && img.Height < width)
                 {
-                    using ( Graphics g = Graphics.FromImage( thumb ) )
+                    using (Graphics g = Graphics.FromImage(thumb))
                     {
-                        int xoffset = (int)( ( width - img.Width ) / 2 );
-                        int yoffset = (int)( ( width - img.Height ) / 2 );
-                        g.DrawImage( img, xoffset, yoffset, img.Width, img.Height );
+                        int xoffset = (int)((width - img.Width) / 2);
+                        int yoffset = (int)((width - img.Height) / 2);
+                        g.DrawImage(img, xoffset, yoffset, img.Width, img.Height);
                     }
                 }
                 else //Otherwise we have to get the thumbnail for drawing
                 {
                     Image.GetThumbnailImageAbort myCallback = new
-                        Image.GetThumbnailImageAbort( ThumbnailCallback );
-                    if ( img.Width == img.Height )
+                        Image.GetThumbnailImageAbort(ThumbnailCallback);
+
+                    if (img.Width == img.Height)
                     {
-                        if ( thumb != null )
-                            thumb.Dispose();
-                        thumb = null;
-                        thumb = img.GetThumbnailImage(
-                                 width, width,
-                                 myCallback, IntPtr.Zero );
+                        thumb = img.GetThumbnailImage(width, width, myCallback, IntPtr.Zero);
                     }
                     else
                     {
                         int k = 0;
                         int xoffset = 0;
                         int yoffset = 0;
-                        if ( img.Width < img.Height )
+                        if (img.Width < img.Height)
                         {
-                            k = (int)( width * img.Width / img.Height );
-                            tmp = img.GetThumbnailImage( k, width, myCallback, IntPtr.Zero );
-                            xoffset = (int)( ( width - k ) / 2 );
+                            k = (int)(width * img.Width / img.Height);
+                            tmp = img.GetThumbnailImage(k, width, myCallback, IntPtr.Zero);
+                            xoffset = (int)((width - k) / 2);
                         }
-                        if ( img.Width > img.Height )
+                        if (img.Width > img.Height)
                         {
-                            k = (int)( width * img.Height / img.Width );
-                            tmp = img.GetThumbnailImage( width, k, myCallback, IntPtr.Zero );
-                            yoffset = (int)( ( width - k ) / 2 );
+                            k = (int)(width * img.Height / img.Width);
+                            tmp = img.GetThumbnailImage(width, k, myCallback, IntPtr.Zero);
+                            yoffset = (int)((width - k) / 2);
                         }
-                        using ( Graphics g = Graphics.FromImage( thumb ) )
+                        using (Graphics g = Graphics.FromImage(thumb))
                         {
-                            g.DrawImage( tmp, xoffset, yoffset, tmp.Width, tmp.Height );
+                            g.DrawImage(tmp, xoffset, yoffset, tmp.Width, tmp.Height);
                         }
                     }
                 }
                 using ( Graphics g = Graphics.FromImage( thumb ) )
                 {
                     g.DrawRectangle( Pens.Black, 0, 0, thumb.Width - 1, thumb.Height - 1 );
-                }
-                if (tmp != null)
-                {
-                    tmp.Dispose();
-                    tmp = null;
                 }
             }
             catch (Exception ex)
@@ -1228,14 +1178,14 @@ namespace ActivityPicturePlugin.Helper
                     thumb.Dispose();
                     thumb = null;
                 }
-
+            }
+            finally
+            {
                 if (tmp != null)
                 {
                     tmp.Dispose();
                     tmp = null;
                 }
-
-                return null;
             }
             return thumb;
         }
