@@ -175,14 +175,10 @@ namespace ActivityPicturePlugin.UI.Activities
         public void LoadSettings()
         {
             Mode = (ShowMode)ActivityPicturePlugin.Source.Settings.ActivityMode; //Activity Picture Mode (Album, List, Import)
-            //sliderImageSize.Value = ActivityPicturePlugin.Source.Settings.ImageZoom;
-
-            //pictureAlbumView.MaximumImageSize = (PictureAlbum.MaxImageSize)ActivityPicturePlugin.Source.Settings.MaxImageSize;
             toolStripMenuTypeImage.Checked = ActivityPicturePlugin.Source.Settings.CTypeImage;
             toolStripMenuExifGPS.Checked = ActivityPicturePlugin.Source.Settings.CExifGPS;
             toolStripMenuAltitude.Checked = ActivityPicturePlugin.Source.Settings.CAltitude;
             toolStripMenuComment.Checked = ActivityPicturePlugin.Source.Settings.CComment;
-            //toolStripMenuThumbnail.Checked = ActivityPicturePlugin.Source.Settings.CThumbnail;
             toolStripMenuDateTime.Checked = ActivityPicturePlugin.Source.Settings.CDateTimeOriginal;
             toolStripMenuTitle.Checked = ActivityPicturePlugin.Source.Settings.CPhotoTitle;
             toolStripMenuCamera.Checked = ActivityPicturePlugin.Source.Settings.CCamera;
@@ -281,9 +277,6 @@ namespace ActivityPicturePlugin.UI.Activities
 
             this.panelViews.ThemeChanged( visualTheme );
             this.panelViews.HeadingBackColor = visualTheme.Control;
-            //this.panelViews.BackColor = visualTheme.Control;
-            //this.panelViews.ForeColor = visualTheme.ControlText;
-
 
             this.importControl1.ThemeChanged( visualTheme );
             // I do not know why the ImportControl is so hard to resize.  
@@ -322,7 +315,6 @@ namespace ActivityPicturePlugin.UI.Activities
             this.volumeSlider2.ThemeChanged( visualTheme );
 
             this.dataGridViewImages.ForeColor = visualTheme.ControlText;
-            //this.dataGridViewImages.BackgroundColor = visualTheme.Control;
             this.dataGridViewImages.BackgroundColor = visualTheme.Window;
             this.dataGridViewImages.GridColor = visualTheme.Border;
             this.dataGridViewImages.DefaultCellStyle.BackColor = visualTheme.Window;
@@ -342,8 +334,6 @@ namespace ActivityPicturePlugin.UI.Activities
 
         public void UICultureChanged( System.Globalization.CultureInfo culture )
         {
-            //if (m_Active) RefreshPage();
-
             if ( this.Mode == ShowMode.Album )
                 this.actionBannerViews.Text = Resources.pictureAlbumToolStripMenuItem_Text;
             else if ( this.Mode == ShowMode.List )
@@ -396,12 +386,10 @@ namespace ActivityPicturePlugin.UI.Activities
             this.sliderImageSize.Location = new Point( this.labelImageSize.Width + this.labelImageSize.Left + 20, this.sliderImageSize.Top );
             this.groupBoxImage.Width = this.sliderImageSize.Width + this.sliderImageSize.Left + 10;
             this.groupBoxVideo.Left = this.groupBoxImage.Left + this.groupBoxImage.Width + 10;
-            //this.groupBoxVideo.Width = this.Width - this.groupBoxVideo.Left - 10;
             this.groupBoxVideo.Width = this.panelViews.Width - this.groupBoxVideo.Left - 10;
 
             this.toolStripMenuFitToWindow.Text = Resources.FitImagesToView_Text;
 
-            //this.toolStripMenuCopy.Text = Resources.CopyToClipboard_Text;
             this.toolStripMenuCopy.Text = CommonResources.Text.ActionCopy;
             this.toolStripMenuNone.Text = Resources.HideAllColumns_Text;
             this.toolStripMenuAll.Text = Resources.ShowAllColumns_Text;
@@ -507,7 +495,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 if ( this.Mode == ShowMode.Album )
                 {
                     this.actionBannerViews.Text = Resources.pictureAlbumToolStripMenuItem_Text;
-                    this.groupBoxVideo.Enabled = true;	// ( this.pictureAlbumView.CurrentStatus != PictureAlbum.MediaStatus.None );
+                    this.groupBoxVideo.Enabled = true;
                     this.groupBoxImage.Visible = true;
                     this.groupBoxImage.Enabled = true;
                     this.groupBoxVideo.Visible = true;
@@ -573,12 +561,10 @@ namespace ActivityPicturePlugin.UI.Activities
             }
             catch ( ActivityPicturePageControlException ex )
             {
-                // Alert user?
                 System.Diagnostics.Debug.Print( ex.Message );
             }
             catch ( ImportControl.ImportControlException ex )
             {
-                // Nothing to do?  Rethrow?
                 System.Diagnostics.Debug.Print( ex.Message );
             }
             catch ( Exception ex )
@@ -769,7 +755,6 @@ namespace ActivityPicturePlugin.UI.Activities
 
         private void SortListView()
         {
-            //DataGridViewColumn col = GetSortColumn( ActivityPicturePageControl.PluginSettingsData.data.SortMode );
             PictureAlbum.ImageSortMode ism = (PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode;
             DataGridViewColumn col = GetSortColumn( ism );
             if (this.pictureAlbumView.ImageList != null)
@@ -953,28 +938,9 @@ namespace ActivityPicturePlugin.UI.Activities
 
                         // Save the referenceid of the selected row
                         List<string> listSelected = GetDataGridViewImagesSelectedRefIDs();
-                        //string strSelRefId = this.dataGridViewImages.Rows[e.RowIndex].Cells["cReferenceID"].Value as string;
-
                         ReloadData();
-
                         SetDataGridViewSelectedRows( listSelected );
-
-                        /*// Deselect the automatically selected row
-                        if ( this.dataGridViewImages.SelectedRows.Count == 0 )
-                            this.dataGridViewImages.SelectedRows[0].Selected = false;
-
-                        // Reselect the previously selected row
-                        foreach ( DataGridViewRow row in this.dataGridViewImages.Rows )
-                        {
-                            if ( strSelRefId == row.Cells["cReferenceID"].Value as string )
-                            {
-                                row.Selected = true;
-                                this.dataGridViewImages.FirstDisplayedScrollingRowIndex = row.Index;
-                                break;
-                            }
-                        }*/
                     }
-
                 }
             }
             catch (Exception ex)
@@ -1042,7 +1008,6 @@ namespace ActivityPicturePlugin.UI.Activities
                     {
                         this.pictureAlbumView.ImageList.Sort();
                         UpdateDataGridView();
-                        //ActivityPicturePageControl.PluginSettingsData.WriteSettings();
                     }
                     else
                     {
@@ -1278,7 +1243,7 @@ namespace ActivityPicturePlugin.UI.Activities
                     //       Changing DateTimeOriginal is not sufficient. ie ModifyTimeStamp, TimeOffset.
                     if ( id.HasGps() )
                     {
-                        // Flush the Gps point.  We're overriding previos detection mechanisms.
+                        // Flush the Gps point.  We're overriding previous detection mechanisms.
                         id.FlushGpsPoint(); // May not be the best way to go about it.
                         if ( Functions.IsExifFileExt( new FileInfo( id.PhotoSource ) ) )
                             if ( System.IO.File.Exists( id.PhotoSource ) ) Functions.GeoTagFromGps( id.PhotoSource, id.GpsPoint );
@@ -1292,6 +1257,7 @@ namespace ActivityPicturePlugin.UI.Activities
             
             this.pictureAlbumView.ClearImageList();
             ReloadData();
+
             //UpdateView();     //Needed?
 
             SetDataGridViewSelectedRows( listSelected );
@@ -1498,7 +1464,6 @@ namespace ActivityPicturePlugin.UI.Activities
             toolStripMenuExifGPS.Checked = true;
             toolStripMenuAltitude.Checked = true;
             toolStripMenuComment.Checked = true;
-            //toolStripMenuThumbnail.Checked = true;
             toolStripMenuDateTime.Checked = true;
             toolStripMenuTitle.Checked = true;
             toolStripMenuCamera.Checked = true;
@@ -1511,7 +1476,6 @@ namespace ActivityPicturePlugin.UI.Activities
             toolStripMenuExifGPS.Checked = false;
             toolStripMenuAltitude.Checked = false;
             toolStripMenuComment.Checked = false;
-            //toolStripMenuThumbnail.Checked = false;
             toolStripMenuDateTime.Checked = false;
             toolStripMenuTitle.Checked = false;
             toolStripMenuCamera.Checked = false;
@@ -1608,7 +1572,6 @@ namespace ActivityPicturePlugin.UI.Activities
 
         private void btnGEList_Click( object sender, EventArgs e )
         {
-            //contextMenuListGE.Show( btnGEList, new Point( -( contextMenuListGE.Width + 5 ), 0 ) );
             contextMenuListGE.Show( btnGEList, new Point( 0, btnGEList.Height + 5 ) );
         }
 
@@ -1733,8 +1696,6 @@ namespace ActivityPicturePlugin.UI.Activities
         private void panelViews_Resize( object sender, EventArgs e )
         {
             // Not doing anything here but we may need to.
-            /*importControl1.Height = panelViews.Height - ( importControl1.Top + 6 );
-            importControl1.Width = panelViews.Width - ( importControl1.Left * 2 );*/
         }
 
         private void dataGridViewImages_KeyDown( object sender, KeyEventArgs e )

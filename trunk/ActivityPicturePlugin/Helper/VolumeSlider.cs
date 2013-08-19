@@ -81,21 +81,11 @@ namespace ActivityPicturePlugin.Helper
         public void ThemeChanged( ITheme visualTheme )
         {
             m_theme = visualTheme;
-            //barBackColor = visualTheme.Control;
-            //barForeColor = visualTheme.ControlText;
-            //this.BackColor = visualTheme.Control;
-            //this.ForeColor = visualTheme.ControlText;
-
             barBackColor = System.Drawing.SystemColors.GrayText;
             barForeColor = visualTheme.MainHeader;
             barTextColor = visualTheme.ControlText;
             this.BackColor = visualTheme.Control;
             this.ForeColor = visualTheme.Window;
-        }
-
-        private void VolumeSlider_Load( object sender, EventArgs e )
-        {
-            //this.volume = 80;
         }
 
         private void VolumeSlider_VolumeChanged( System.Object sender, System.EventArgs e )
@@ -142,28 +132,6 @@ namespace ActivityPicturePlugin.Helper
         protected override void OnPaint( PaintEventArgs e )
         {
             base.OnPaint( e );
-
-            //double imax = 10000;
-            //Pen p = new Pen(BarBackColor, 1);
-            //for (int i = 0; i <= imax; i++)
-            //{
-            //    int x = (int)(horMargin + (double)(i) / imax * (this.Width - 2 * horMargin));
-            //    int y1 = (int)(verMargin + (1 - (double)(i) / imax) * (this.Height - 2 * verMargin));
-            //    int y2 = this.Height - (int)(verMargin);
-            //    if ((double)(i) * 100 / imax >= volume)
-            //        p.Color = barBackColor;
-            //    else
-            //        p.Color = barForeColor;
-            //    e.Graphics.DrawLine(p, x, y1, x, y2);
-            //}
-            /*int x = (int)( horMargin + (double)( volume ) / 100 * ( this.Width - 2 * horMargin ) );
-            Point p1 = new Point( horMargin, this.Height - verMargin );
-            Point p2 = new Point( x, this.Height - verMargin );
-            Point p3 = new Point( x, (int)( verMargin + ( 1 - (double)( volume ) / 100 ) * ( this.Height - 2 * verMargin ) ) );
-            Point p4 = new Point( this.Width - horMargin, verMargin );
-            Point p5 = new Point( this.Width - horMargin, this.Height - verMargin );
-            Point[] vol = { p1, p2, p3 };
-            Point[] full = { p2, p3, p4, p5 };*/
 
             int offsetNoVolume = 2;	//slightly widens the low end of the volume graphic.
             int x = (int)( horMargin + (double)( volume ) / 100 * ( this.Width - 2 * horMargin ) );

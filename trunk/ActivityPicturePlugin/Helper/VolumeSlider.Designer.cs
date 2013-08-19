@@ -55,7 +55,6 @@ namespace ActivityPicturePlugin.Helper
             this.Margin = new System.Windows.Forms.Padding( 4 );
             this.Name = "VolumeSlider";
             this.Size = new System.Drawing.Size( 200, 42 );
-            this.Load += new System.EventHandler( this.VolumeSlider_Load );
             this.MouseDown += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseDown );
             this.MouseMove += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseMove );
             this.MouseUp += new System.Windows.Forms.MouseEventHandler( this.VolumeSlider_MouseUp );

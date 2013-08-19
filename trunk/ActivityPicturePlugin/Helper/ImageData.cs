@@ -60,7 +60,7 @@ namespace ActivityPicturePlugin.Helper
                             DateTime exif = DateTime.MinValue;
                             ExifWorks eWorks = new ExifWorks(this.PhotoSource);
                             DateTime dtBest = Functions.GetBestTime( file,
-                                eWorks.DateTimeOriginal,
+                                eWorks.DateTimeOriginal.ToUniversalTime(),
                                 this.activity.StartTime,
                                 info.EndTime );
 
@@ -932,7 +932,6 @@ namespace ActivityPicturePlugin.Helper
 
                 // ...and y is not null, compare the dates
                 switch ((PictureAlbum.ImageSortMode)ActivityPicturePlugin.Source.Settings.SortMode)
-                //switch ( ActivityPicturePageControl.PluginSettingsData.data.SortMode )
                 {
                     case PictureAlbum.ImageSortMode.byAltitudeAscending:
                         retval = this.EW.GPSAltitude.CompareTo(y2.EW.GPSAltitude);

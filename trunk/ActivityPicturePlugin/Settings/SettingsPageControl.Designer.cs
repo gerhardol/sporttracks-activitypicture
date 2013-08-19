@@ -214,7 +214,6 @@ namespace ActivityPicturePlugin.Settings
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "SettingsPageControl";
             this.Size = new System.Drawing.Size(783, 562);
-            this.Load += new System.EventHandler(this.SettingsPageControl_Load);
             this.groupBoxImport.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
