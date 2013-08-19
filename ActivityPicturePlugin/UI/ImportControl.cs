@@ -186,7 +186,6 @@ namespace ActivityPicturePlugin.UI
         {
             public FileInfo fi;
             public DateTime exif;
-            //public string strDateTime;
         }
         public class ActivityImagesChangedEventArgs : EventArgs
         {
@@ -578,8 +577,6 @@ namespace ActivityPicturePlugin.UI
                     lvImgL.Dispose();
                 lvImgL = null;
 
-                // Apparently we need to set these to null after 
-                // disposing BOTH of the above imagelists.
                 listViewDrive.SmallImageList = null;
                 listViewDrive.LargeImageList = null;
 
@@ -697,7 +694,6 @@ namespace ActivityPicturePlugin.UI
                             }
                             catch ( UnauthorizedAccessException )
                             {
-                                //Nothing to do
                                 // Folder is inaccessible for whatever reason
                                 // Don't add the node
                                 i = 0;
@@ -797,11 +793,7 @@ namespace ActivityPicturePlugin.UI
                             strShortTime + " "
                             + Resources.ImportControl_in + " " + act.Location);
 
-                        /*dayNode = new TreeNode( localTime.ToLongDateString() + " " +
-                            localTime.ToShortTimeString() + " "
-                            + Resources.Resources.ImportControl_in + " " + act.Location );*/
-
-                        dayNode.Name = localTime.ToString("u");//??? act.StartTime.ToString("u");
+                        dayNode.Name = localTime.ToString("u");
                         dayNode.Tag = act; //treeViewAct
                         this.m_ActivityNodes.Add(dayNode);
                         monthNode.Nodes.Add(dayNode);
@@ -832,7 +824,7 @@ namespace ActivityPicturePlugin.UI
                     break;
                 }
             }
-            if ( !foundimages ) node.BackColor = node.TreeView.BackColor;   // Color.White;
+            if ( !foundimages ) node.BackColor = node.TreeView.BackColor;
         }
 
         private TreeNode GetNodeFromPath( TreeView tv, string sPath )
@@ -1058,7 +1050,6 @@ namespace ActivityPicturePlugin.UI
         {
             try
             {
-                //ImageData.DataTypes dt = Functions.GetMediaType( files[j].Extension );
                 if ( dt == ImageData.DataTypes.Image )
                 {
                     //Test: try showing thumbnail without opening whole image
@@ -1068,7 +1059,6 @@ namespace ActivityPicturePlugin.UI
                     //Image img = Image.FromStream(stream);
                     //if (img != null) lvImg.Images.Add(img);
 
-                    //Image img = Image.FromFile( m_files[ixImage].FullName );
                     using (Image img = Image.FromFile(strKey))
                     {
                         lvImgL.Images[ixImage] = Functions.getThumbnailWithBorder(lvImgL.ImageSize.Width, img);
@@ -1148,9 +1138,9 @@ namespace ActivityPicturePlugin.UI
                     //        }
                     //    }
                     //}
+
                     // The first item is considered a SubItem.  We want to check to
                     // see if a second item was added (from just above).
-
                     //TODO: needed?
                     // Adds DateTime to ListViewDrive items for files that do not have 
                     // exif data, ie. bmp, etc.
@@ -1160,13 +1150,15 @@ namespace ActivityPicturePlugin.UI
                         if ( !m_showallactivities && m_Activities != null && m_Activities.Count > 0 )
                         {
                             DateTime dtEnd = GetActivityEndTime( m_Activities[0] );
-                            dtBest = Functions.GetBestTime( file, 
-                                DateTime.MinValue, 
-                                m_Activities[0].StartTime, 
+                            dtBest = Functions.GetBestTime( file,
+                                DateTime.MinValue,
+                                m_Activities[0].StartTime,
                                 dtEnd );
                         }
                         else
-                            dtBest = file.CreationTime;
+                        {
+                            dtBest = Functions.GetBestTime( file, file.CreationTimeUtc, DateTime.MinValue, DateTime.MaxValue );
+                        }
 
                         dtBest = dtBest.ToLocalTime();
                         string strDateTime = "";
@@ -1214,15 +1206,16 @@ namespace ActivityPicturePlugin.UI
             {
                 try
                 {
-                    lvi.SubItems.Add(file.CreationTime.ToString());   // ToString() returns date/time in culture of the current thread
-                    //string s = Functions.GetFileTimeString( file );
-                    //if ( !string.IsNullOrEmpty( s ) )
-                    //{
-                    //    DateTime dtTmp = new DateTime();
-                    //    IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                    //    if ( DateTime.TryParseExact( s, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.AssumeLocal, out dtTmp ) )
-                    //        lvi.SubItems.Add( dtTmp.ToString() );   // ToString() returns date/time in culture of the current thread
-                    //}
+                    DateTime dtBest = Functions.GetBestTime( file, file.CreationTimeUtc, DateTime.MinValue, DateTime.MaxValue );
+                    dtBest = dtBest.ToLocalTime();
+
+                    string strDateTime = "";
+                    System.Globalization.CultureInfo specificCulture = Functions.NeutralToSpecificCulture( System.Globalization.CultureInfo.CurrentUICulture.Name );
+                    if ( specificCulture != null )
+                        strDateTime = dtBest.ToString( specificCulture );
+                    else
+                        strDateTime = dtBest.ToString();   // ToString() returns date/time in culture of the current thread
+                    lvi.SubItems.Add( strDateTime );   // ToString() returns date/time in culture of the current thread
                 }
                 catch ( Exception ex )
                 {
@@ -1834,7 +1827,6 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
 
@@ -1900,7 +1892,6 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
@@ -1952,7 +1943,6 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
@@ -2003,7 +1993,6 @@ namespace ActivityPicturePlugin.UI
                     img.Height );
 
                 System.Drawing.Bitmap bmpSelected = (Bitmap)img;
-                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectImage );
@@ -2047,7 +2036,6 @@ namespace ActivityPicturePlugin.UI
             if ( ( il != null ) && ( il.Images.Keys.Contains( e.Item.ImageKey ) ) )
             {
                 System.Drawing.Bitmap bmpSelected = (Bitmap)il.Images[e.Item.ImageKey];
-                //if ( ( e.Item.Selected ) && ( e.Item.ListView.Focused ) )
                 if ( ( e.State & ListViewItemStates.Selected ) != 0 )
                     bmpSelected = MakeSelectedBitmap( bmpSelected, backBrush.Color );
                 e.Graphics.DrawImage( bmpSelected, rectIcon );

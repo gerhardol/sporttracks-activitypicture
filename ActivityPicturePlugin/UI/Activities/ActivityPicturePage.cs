@@ -136,7 +136,6 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if ( control != null )
             {
-                //return;
                 control.ShowPage( bookmark );
             }
         }
@@ -163,7 +162,6 @@ namespace ActivityPicturePlugin.UI.Activities
         {
             if ( control != null )
             {
-                //control.RefreshPage();	//Note:  If you must call RefreshPage, check _showPage first.
                 control.Refresh();
             }
         }

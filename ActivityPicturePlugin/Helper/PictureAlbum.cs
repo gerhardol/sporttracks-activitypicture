@@ -345,15 +345,8 @@ namespace ActivityPicturePlugin.Helper
             Image img = null;
             try
             {
-                //int ZoomLevel = this.parentctl.GetZoom();
-                //int NewHeight = (int)(30 + 5 * ZoomLevel);
-                //int NewWidth = 120; //reference width
-                //int left = 0, top = 0, row = 0;
-
-                //List<ImageData> imgList = this.ImageList;//.parentctl.Images;
                 if ( this.ImageList.Count > 0 )
                 {
-                    //ImageRectangles = new Rectangle[imgList.Count];
                     Graphics g = e.Graphics;
                     int ixSelected = -1;
                     for ( int i = 0; i < this.ImageList.Count; i++ )
@@ -368,7 +361,6 @@ namespace ActivityPicturePlugin.Helper
                                 //Image is missing.  Load the 'delete' image
                                 img = (Image)ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16.Clone();
                             }
-                            //    NewWidth = (int)((double)(img.Width) / (double)(img.Height) * NewHeight);
                         }
 
                         //draw the images
@@ -391,8 +383,6 @@ namespace ActivityPicturePlugin.Helper
                             r.Xor( ImageRectangles[i] );
                         }
 
-                        //Rectangle rect = new Rectangle(new Point(0, 0), this.panel1.Size);
-                        ////r.Complement(rect);
                         using ( SolidBrush sb = new SolidBrush( this.BackColor ) )
                         {
                             g.FillRegion( sb, r );
@@ -410,7 +400,6 @@ namespace ActivityPicturePlugin.Helper
                     //draw yellow border around selected image
                     if ( ixSelected != -1 )
                     {
-                        //using ( Pen p2 = new Pen( Brushes.Blue, 2 ) )
                         using ( Pen p2 = new Pen( Brushes.Yellow, 2 ) )
                         {
                             g.DrawRectangle( p2, ImageRectangles[ixSelected] );
@@ -533,7 +522,6 @@ namespace ActivityPicturePlugin.Helper
             {
                 string tooltip = GenerateToolTipText();
                 this.toolTip1.SetToolTip( this, tooltip );
-                //this.toolTip1.Show( tooltip, this );
             }
             else
                 this.toolTip1.Hide( this );
@@ -795,7 +783,6 @@ namespace ActivityPicturePlugin.Helper
 
             selectedIndex = ixNew;
             SelectedIndex = ixNew;
-            //this.SelectedChanged( this, new SelectedChangedEventArgs( ixNew, this.ImageRectangles[ixNew] ) );
             this.Invalidate();
 
         }
@@ -906,7 +893,6 @@ namespace ActivityPicturePlugin.Helper
             }
             selectedIndex = ixNew;
             SelectedIndex = ixNew;
-            //this.SelectedChanged( this, new SelectedChangedEventArgs( ixNew, this.ImageRectangles[ixNew] ) );
             this.Invalidate();
 
         }
@@ -1129,7 +1115,6 @@ namespace ActivityPicturePlugin.Helper
         }
 
         // Returns true if video is an avi.
-        // Currently only avis support taking snapshots
         public bool IsAvi()
         {
             if ( ( CurrentVideoIndex != -1 ) && ( this.ImageList != null ) )
@@ -1209,7 +1194,6 @@ namespace ActivityPicturePlugin.Helper
             bool bRet = true;
             try
             {
-                //int ZoomLevel = this.parentctl.GetZoom();
                 int height = (int)( 30 + 3 * Zoom );
 
                 CurrentVideoIndex = imageNumber;
@@ -1235,11 +1219,6 @@ namespace ActivityPicturePlugin.Helper
 
                     FilGrMan.SetWindowPosition( ImageRectangles[imageNumber].Left,
                         r.Top, r.Width, r.Height );
-
-                    /*FilGrMan.SetWindowPosition( ImageRectangles[imageNumber].Left,
-                        ImageRectangles[imageNumber].Top,
-                        ImageRectangles[imageNumber].Width,
-                        ImageRectangles[imageNumber].Height );*/
                 }
                 catch (Exception ex)
                 {
@@ -1333,8 +1312,6 @@ namespace ActivityPicturePlugin.Helper
                         else
                             this.ImageList[SelectedIndex].Selected = false;
 
-                        //for ( int j = 0; j < this.ImageList.Count; j++ )
-                        //this.ImageList[j].Selected = false;
                         selectedIndex = e.SelectedIndex;
                         this.ImageList[e.SelectedIndex].Selected = true;
 #if !ST_2_1
@@ -1362,16 +1339,3 @@ namespace ActivityPicturePlugin.Helper
         #endregion
     }
 }
-
-//public void SaveFirstFrame( string VideoFile, string BitmapFile )
-//{
-//    AviManager aviManager = new AviManager( VideoFile, true );
-//    VideoStream stream = aviManager.GetVideoStream();
-//    stream.GetFrameOpen();
-//    stream.ExportBitmap( 1, BitmapFile );
-//    Bitmap bmp = stream.GetBitmap( 1 );
-//    stream.GetFrameClose();
-//    aviManager.Close();
-//    Functions.SaveThumbnailImage( bmp, BitmapFile + ".jpg", 10 );
-//}
-

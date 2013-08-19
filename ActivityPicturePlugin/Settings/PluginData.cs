@@ -141,26 +141,6 @@ namespace ActivityPicturePlugin.Settings
             for (int i = 0; i < this.NumberOfImages; i++)
             {
                 ID = new ImageData(IDSer[i], activity);
-                //TODO: Why was this added?
-                //This would read data from source files and save to the original and thumbnails
-                //There should not be a need to update the originals (this makes other detection difficult)
-
-                //string strDate = Functions.DateTimeString(ID.DateTimeOriginal());
-                //if ( String.IsNullOrEmpty( strDate ) )
-                //{
-                //    System.IO.FileInfo file = new System.IO.FileInfo( ID.PhotoSource );
-                //    if ( file.Exists )
-                //    {
-                //        IFormatProvider culture = new System.Globalization.CultureInfo( "de-DE", true );
-                //        strDate = Functions.GetFileTimeString( file );
-                //        if ( !string.IsNullOrEmpty( strDate ) )
-                //        {
-                //            DateTime dtTmp = new DateTime();
-                //            if ( DateTime.TryParseExact( strDate, Functions.NeutralDateTimeFormat, culture, System.Globalization.DateTimeStyles.None, out dtTmp ) )
-                //                ID.SetDateTimeOriginal( dtTmp );
-                //        }
-                //    }
-                //}
                 IDList.Add(ID);
             }
             return IDList;

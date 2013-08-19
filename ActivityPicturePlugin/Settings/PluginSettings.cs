@@ -82,7 +82,6 @@ namespace ActivityPicturePlugin.Settings
                         xmlSer.Serialize( mem, data );
                         log.SetExtensionData( ActivityPicturePlugin.GUIDs.PluginMain, mem.ToArray() );
                         log.SetExtensionText( ActivityPicturePlugin.GUIDs.PluginMain, "Picture Plugin" );
-                        //mem.Close();
                     }
                     log.Modified = true;
                 }

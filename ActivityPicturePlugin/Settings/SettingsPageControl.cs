@@ -35,11 +35,6 @@ namespace ActivityPicturePlugin.Settings
             InitializeComponent();
             importControl1.InitComponent();
 
-            // Setting Dock to Fill through Designer causes it to reformat
-            // and marks it as 'changed' everytime you open it.
-            // Workaround until I figure out what's going on.
-            //this.importControl1.Dock = DockStyle.Fill;
-
             trackBarQuality.Value = ActivityPicturePlugin.Source.Settings.GEQuality;
             trackBarSize.Value = ActivityPicturePlugin.Source.Settings.GESize;
             cbOpenGE.Checked = ActivityPicturePlugin.Source.Settings.GEAutoOpen;
@@ -75,7 +70,6 @@ namespace ActivityPicturePlugin.Settings
             get
             {
                 return Resources.ActivityPicturePlugin_Text;
-                //return "Activity Picture Plugin"; 
             }
         }
         public void ShowPage( string bookmark )
@@ -140,11 +134,6 @@ namespace ActivityPicturePlugin.Settings
         #endregion
 
         #region Eventhandlers
-        private void SettingsPageControl_Load( object sender, EventArgs e )
-        {
-            //UpdateControls();
-        }
-
         private void trackBarSize_ValueChanged( object sender, EventArgs e )
         {
             lblSizeValue.Text = trackBarSize.Value * baseNum + " x " + trackBarSize.Value * baseNum * 3 / 4;

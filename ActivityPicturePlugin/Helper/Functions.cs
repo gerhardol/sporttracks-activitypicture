@@ -724,7 +724,6 @@ namespace ActivityPicturePlugin.Helper
                             s.Write( buffer, 0, buffer.Length );
                         }
                         s.Finish();
-                        //s.Close();
                     }
                     File.Delete( Path.GetFileName( docFile ) );
                 }
@@ -952,23 +951,6 @@ namespace ActivityPicturePlugin.Helper
             {
                 System.Diagnostics.Debug.Assert(false, ex.Message);
             }
-
-            /*try
-            {
-                FilgraphManager graphManager = new FilgraphManager();
-                // QueryInterface for the IMediaControl interface:
-                IMediaControl mc = (IMediaControl)graphManager;
-                // Call some methods on a COM interface 
-                // Pass in file to RenderFile method on COM object. 
-                mc.RenderFile(p);
-                // Show file. 
-                mc.Run();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.Assert(false, ex.Message);
-            }
-            Console.WriteLine("Press Enter to continue.");*/
         }
 
         public static void WriteExtensionData( ZoneFiveSoftware.Common.Data.Fitness.IActivity act, PluginData pd )
@@ -1218,15 +1200,12 @@ namespace ActivityPicturePlugin.Helper
             if ( !string.IsNullOrEmpty( p ) )
             {
                 System.IO.FileInfo fi = new FileInfo( p );
-                //if ( p.Length > 4 ) p = p.Substring( p.Length - 4 );
                 foreach ( string str in ImageExt )
                 {
-                    //if ( str == p.ToLower() ) return ImageData.DataTypes.Image;
                     if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Image;
                 }
                 foreach ( string str in VideoExt )
                 {
-                    //if ( str == p.ToLower() ) return ImageData.DataTypes.Video;
                     if ( str == fi.Extension.ToLower() ) return ImageData.DataTypes.Video;
                 }
             }
