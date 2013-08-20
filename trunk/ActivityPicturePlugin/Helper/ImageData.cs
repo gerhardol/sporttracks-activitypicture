@@ -410,7 +410,9 @@ namespace ActivityPicturePlugin.Helper
                 string kml = "";
 
                 System.Globalization.CultureInfo ci = new System.Globalization.CultureInfo( "en-US" );
-                kml = ew.GPSLongitude.ToString( "0.00000000", ci ) + "," + ew.GPSLatitude.ToString( "0.00000000", ci ) + "," + ew.GPSAltitude.ToString( "0.00", ci );
+                kml = this.GpsPoint.LatitudeDegrees.ToString( "0.00000000", ci ) + "," + 
+                    this.GpsPoint.LongitudeDegrees.ToString( "0.00000000", ci ) + "," + 
+                this.GpsPoint.ElevationMeters.ToString( "0.00", ci );
                 return kml;
             }
         }
