@@ -1099,13 +1099,10 @@ namespace ActivityPicturePlugin.Helper
         //TODO: Avoid read the embedded thumbnail here?
         internal static Image getThumbnailWithBorder(int width, Image img)
         {
-            Image thumb = null;
-            Image tmp = null;
+            Image thumb = new Bitmap( width, width );
             try
             {
-                thumb = new Bitmap( width, width );
-                tmp = null;
-                //If the original image is small than the Thumbnail size, just draw in the center
+                //If the original image is smaller than the requested size, just draw in the center
                 if (img.Width < width && img.Height < width)
                 {
                     using (Graphics g = Graphics.FromImage(thumb))
@@ -1117,34 +1114,26 @@ namespace ActivityPicturePlugin.Helper
                 }
                 else //Otherwise we have to get the thumbnail for drawing
                 {
-                    Image.GetThumbnailImageAbort myCallback = new
-                        Image.GetThumbnailImageAbort(ThumbnailCallback);
-
-                    if (img.Width == img.Height)
+                    int xoffset = 0;
+                    int yoffset = 0;
+                    int x = width;
+                    int y = width;
+                    //Ignore case of width==height
+                    if (img.Width < img.Height)
                     {
-                        thumb = img.GetThumbnailImage(width, width, myCallback, IntPtr.Zero);
+                        x = (int)(y * img.Width / img.Height);
+                        xoffset = (int)((y - x) / 2);
                     }
                     else
                     {
-                        int k = 0;
-                        int xoffset = 0;
-                        int yoffset = 0;
-                        if (img.Width < img.Height)
-                        {
-                            k = (int)(width * img.Width / img.Height);
-                            tmp = img.GetThumbnailImage(k, width, myCallback, IntPtr.Zero);
-                            xoffset = (int)((width - k) / 2);
-                        }
-                        if (img.Width > img.Height)
-                        {
-                            k = (int)(width * img.Height / img.Width);
-                            tmp = img.GetThumbnailImage(width, k, myCallback, IntPtr.Zero);
-                            yoffset = (int)((width - k) / 2);
-                        }
-                        using (Graphics g = Graphics.FromImage(thumb))
-                        {
-                            g.DrawImage(tmp, xoffset, yoffset, tmp.Width, tmp.Height);
-                        }
+                        y = (int)(x * img.Height / img.Width);
+                        yoffset = (int)((x - y) / 2);
+                    }
+
+                    using(Image tmp = img.GetThumbnailImage(x, y, null, IntPtr.Zero))
+                    using (Graphics g = Graphics.FromImage(thumb))
+                    {
+                        g.DrawImage(tmp, xoffset, yoffset, tmp.Width, tmp.Height);
                     }
                 }
                 using ( Graphics g = Graphics.FromImage( thumb ) )
@@ -1161,20 +1150,8 @@ namespace ActivityPicturePlugin.Helper
                     thumb = null;
                 }
             }
-            finally
-            {
-                if (tmp != null)
-                {
-                    tmp.Dispose();
-                    tmp = null;
-                }
-            }
-            return thumb;
-        }
 
-        internal static bool ThumbnailCallback()
-        {
-            return true;
+            return thumb;
         }
 
         internal static List<string> GetThumbnailPathsAllActivities()
