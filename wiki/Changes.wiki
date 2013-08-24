@@ -3,10 +3,64 @@
 
 <wiki:toc max_depth="3" />
 
-This page describes the changes between plugins. See the SVN change log for details.
+This page describes the changes between plugins. The SVN change log contains further details.
 
 ===Changes===
 
+2.0.168 2013-08-25 (beta)
+
+Major update.
+This release reimplements alot of the functionality, there are many tweaks.
+
+See the updated plugin documentation for further description.
+
+Todo:
+ * Translations
+ * GeoTag update/removal
+ * Refresh documentation further. There are more changes to describe.
+ * It should be possible to import to several activities if more than one selected.
+ *?
+
+Album View:
+ * Reduced image flickering while resizing
+ * Reduced tooltip flickering
+ * Replaced trackbar sliders with custom sliders to reduce flickering
+ * Improved trackbar image size vs panel size behaviour
+ * Improved video playback/stopping.
+ * Saves Image size slider to settings
+ * Improved behaviour of volume slider
+ * Saves volume to settings.
+ * Corrected scrolling behaviour when losing/regaining focus
+ * Doubleclicked images now open in default windows image application. (ie. Picasa, Photoshop, etc)
+ * Video thumbnail frame capture for avi files
+ * Delayed tooltip so it isn't 'in your face'.
+ * Keyboard navigation
+
+ListView:
+ * Doubleclicked images and videos open in windows default applications.
+ * Resized button controls (size calculated @ runtime depending on culture)
+ * Added sort glyph to column headers
+ * Corrected date column sorting
+ * Configurable columns via context menu. (Settings saved)
+ * Copy data to clipboard
+ * Added .tif, tiff and .mov to supported media types and corrected .mpg.
+
+Import:
+ * No longer shows hidden or system folders
+ * Fixed bug in Folders View while drilling to an inaccessible folder.
+ * Corrected sizing issues
+ * Listview modes saved to settings
+ * Improved Theme usage
+ * Changed behaviour of progressbar.
+ * Sped up file sorting during auto-import. Removed 400 file limit.
+ * Removes thumbail files that were added but not saved to logbook.
+ * Added ability to Refresh folder nodes.
+ * Possible to migrate paths if i.e. the original source file have been moved.
+
+Map:
+ * Click on an image to send it to the back, i.e. view other images it covers.
+ * Double click opens a picture/video (similar to doulble click in the list)
+ 
 1.2.41 2011-02-27
  * Some minor translation issues fixed
  * Italian translation update
