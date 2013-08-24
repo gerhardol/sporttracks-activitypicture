@@ -1,4 +1,5 @@
 ﻿#summary Features of this Plugin.
+#labels Featured
 
 <wiki:toc max_depth="3" />
 
@@ -188,4 +189,3 @@ Currently the languages English, German, French, Spanish, Swedish, and Dutch are
 ==Data storage==
 
 When a picture is added, a unique referenceID will be created and an thumbnail image of reduced size (&lt;150kb) will be saved. 
-
