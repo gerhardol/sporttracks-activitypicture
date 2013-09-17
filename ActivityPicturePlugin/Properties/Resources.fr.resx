@@ -1,16 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <xsd:schema id="root" xmlns="" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element msdata:IsDataSet="true" name="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" name="value" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
               <xsd:attribute ref="xml:space" />
@@ -25,19 +84,19 @@
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
-                <xsd:element minOccurs="0" msdata:Ordinal="2" name="comment" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute msdata:Ordinal="1" name="name" type="xsd:string" use="required" />
-              <xsd:attribute msdata:Ordinal="3" name="type" type="xsd:string" />
-              <xsd:attribute msdata:Ordinal="4" name="mimetype" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
               <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
               <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
@@ -58,7 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ActivityPicturePage_Title" xml:space="preserve">
     <value>Photos</value>
   </data>
@@ -96,8 +154,8 @@
     <value>Ajout de fichier</value>
   </data>
   <data name="ImportControl_changeView" xml:space="preserve">
-    <comment>changed</comment>
     <value>Vue</value>
+    <comment>changed</comment>
   </data>
   <data name="ImportControl_importing" xml:space="preserve">
     <value>Importer des images</value>
@@ -154,7 +212,112 @@
     <value>Seulement les images sélectionnées</value>
   </data>
   <data name="ImportControl_scanDone" xml:space="preserve">
-    <comment>changed</comment>
     <value>Recherche terminée: un total de {0} images ont été trouvés</value>
+    <comment>changed</comment>
+  </data>
+  <data name="ActionImport_Text" xml:space="preserve">
+    <value>Transfert des données</value>
+  </data>
+  <data name="ActivityChanged_Text" xml:space="preserve">
+    <value>Activité modifiée</value>
+  </data>
+  <data name="ActivityPicturePlugin_Text" xml:space="preserve">
+    <value>Module pour photos</value>
+  </data>
+  <data name="AutoImportFromFolders_Text" xml:space="preserve">
+    <value>Importer les données des dossiers sélectionnés</value>
+  </data>
+  <data name="ChangeFileListview_Text" xml:space="preserve">
+    <value>Changer la liste déroulante du fichier</value>
+  </data>
+  <data name="ChangeImageListview_Text" xml:space="preserve">
+    <value>Changer la liste déroulante de l'image</value>
+  </data>
+  <data name="CheckingForDuplicates_Text" xml:space="preserve">
+    <value>Détection des doublons d'images ou de vidéos.  {0} sur {1} vérifiées</value>
+  </data>
+  <data name="ConfirmDeleteLong_Text" xml:space="preserve">
+    <value>Etes-vous sur de vouloir supprimer les fichiers séléctionnés?</value>
+  </data>
+  <data name="ConfirmDeleteShort_Text" xml:space="preserve">
+    <value>Veuillez confirmer la suppression</value>
+  </data>
+  <data name="CreatedWithXForSportTracks_Text" xml:space="preserve">
+    <value>Crée avec {0} pour SportTracks</value>
+  </data>
+  <data name="Destination_Text" xml:space="preserve">
+    <value>Destination du fichier</value>
+  </data>
+  <data name="ExifTimeXImages" xml:space="preserve">
+    <value>Télécharger le temps EXIF de  {0} image(s)</value>
+  </data>
+  <data name="FileNotFound_Text" xml:space="preserve">
+    <value>Fichier non trouvé</value>
+  </data>
+  <data name="FilePath_Text" xml:space="preserve">
+    <value>Chemin d'accès</value>
+  </data>
+  <data name="FitImagesToView_Text" xml:space="preserve">
+    <value>Redimensionnement auto des images</value>
+  </data>
+  <data name="FoundImagesInActivity_Text" xml:space="preserve">
+    <value>{0} images ou vidéos actives ont été détectées</value>
+  </data>
+  <data name="FoundImagesInFolder_Text" xml:space="preserve">
+    <value>Le dossier contient {0} images ou vidéos</value>
+  </data>
+  <data name="FromXActivities_Text" xml:space="preserve">
+    <value>de {0} activités</value>
+  </data>
+  <data name="HideAllColumns_Text" xml:space="preserve">
+    <value>Masquer toutes les colonnes</value>
+  </data>
+  <data name="labelDay_Text" xml:space="preserve">
+    <value>Jour</value>
+  </data>
+  <data name="labelMinute_Text" xml:space="preserve">
+    <value>Minute</value>
+  </data>
+  <data name="labelSecond_Text" xml:space="preserve">
+    <value>Seconde</value>
+  </data>
+  <data name="MigratePaths_Text" xml:space="preserve">
+    <value>Changer le chemin d'accès</value>
+  </data>
+  <data name="OpenContainingFolder_Text" xml:space="preserve">
+    <value>Ouvrir le dossier</value>
+  </data>
+  <data name="OpenInGoogleEarthWhenCreated_Text" xml:space="preserve">
+    <value>Ouvrir dans Google Earth une fois crée</value>
+  </data>
+  <data name="OperationAborted_Text" xml:space="preserve">
+    <value>Opération interrompue</value>
+  </data>
+  <data name="RemoveFromList_Text" xml:space="preserve">
+    <value>Retirer de la liste?</value>
+  </data>
+  <data name="ResetSnapshot_Text" xml:space="preserve">
+    <value>Réinitialiser la capture d'écran</value>
+  </data>
+  <data name="SelectFolder_Text" xml:space="preserve">
+    <value>Sélectionner le dossier</value>
+  </data>
+  <data name="ShowAllColumns_Text" xml:space="preserve">
+    <value>Afficher toutes les colonnes</value>
+  </data>
+  <data name="Source_Text" xml:space="preserve">
+    <value>Origine</value>
+  </data>
+  <data name="SportTracksImagesExportedWith_Text" xml:space="preserve">
+    <value>Exporter les images SportTracks avec</value>
+  </data>
+  <data name="StoreGEFileLocations_Text" xml:space="preserve">
+    <value>Enregistrer la destination des fichiers kmz/kml</value>
+  </data>
+  <data name="toolStripButtonSnapshot_ToolTipText" xml:space="preserve">
+    <value>Capture d'écran</value>
+  </data>
+  <data name="ViewChanged_Text" xml:space="preserve">
+    <value>Apparence modifiée</value>
   </data>
 </root>
