@@ -42,7 +42,7 @@ namespace ActivityPicturePlugin.Helper
                 this.IDser = IDSer;
                 bool bNewThumb = this.SetThumbnail();
 
-                if ( this.Thumbnail != null )
+                if (this.thumbnailImage != null)
                 {
                     this.ew = new ExifWorks( this.ThumbnailPath );
 
@@ -182,12 +182,6 @@ namespace ActivityPicturePlugin.Helper
         {
             get { return ew; }
             //set { ew = value; }
-        }
-
-        public Image Thumbnail
-        {
-            get { return this.thumbnailImage; }
-            //set { this.thumbnailImage = value; }
         }
 
         public void SetPhotoSource(string s)
@@ -394,6 +388,11 @@ namespace ActivityPicturePlugin.Helper
         #region Reflection Members
         //Used in Image List
         //PhotoSource, ReferenceID
+
+        public Image Thumbnail
+        {
+            get { return this.thumbnailImage; }
+        }
 
         public Image TypeImage
         {
