@@ -1440,45 +1440,51 @@ namespace ActivityPicturePlugin.UI.Activities
             dataGridViewImages.Columns["cDateTimeOriginal"].Visible = toolStripMenuDateTime.Checked;
 
         }
+
         private void toolStripMenuTitle_Click( object sender, EventArgs e )
         {
             toolStripMenuTitle.Checked = !toolStripMenuTitle.Checked;
         }
+
         private void toolStripMenuTitle_CheckStateChanged( object sender, EventArgs e )
         {
             ActivityPicturePlugin.Source.Settings.CPhotoTitle = toolStripMenuTitle.Checked;
             dataGridViewImages.Columns["cPhotoTitle"].Visible = toolStripMenuTitle.Checked;
-
         }
+
         private void toolStripMenuCamera_Click( object sender, EventArgs e )
         {
             toolStripMenuCamera.Checked = !toolStripMenuCamera.Checked;
         }
+
         private void toolStripMenuCamera_CheckStateChanged( object sender, EventArgs e )
         {
             ActivityPicturePlugin.Source.Settings.CCamera = toolStripMenuCamera.Checked;
             dataGridViewImages.Columns["cCamera"].Visible = toolStripMenuCamera.Checked;
-
         }
+
         private void toolStripMenuPhotoSource_Click( object sender, EventArgs e )
         {
             toolStripMenuPhotoSource.Checked = !toolStripMenuPhotoSource.Checked;
         }
+
         private void toolStripMenuPhotoSource_CheckStateChanged( object sender, EventArgs e )
         {
             ActivityPicturePlugin.Source.Settings.CPhotoSource = toolStripMenuPhotoSource.Checked;
             dataGridViewImages.Columns["cPhotoSource"].Visible = toolStripMenuPhotoSource.Checked;
-
         }
+
         private void toolStripMenuReferenceID_Click( object sender, EventArgs e )
         {
             toolStripMenuReferenceID.Checked = !toolStripMenuReferenceID.Checked;
         }
+
         private void toolStripMenuReferenceID_CheckStateChanged( object sender, EventArgs e )
         {
             ActivityPicturePlugin.Source.Settings.CReferenceID = toolStripMenuReferenceID.Checked;
             dataGridViewImages.Columns["cReferenceID"].Visible = toolStripMenuReferenceID.Checked;
         }
+
         private void toolStripMenuAll_Click( object sender, EventArgs e )
         {
             toolStripMenuTypeImage.Checked = true;
@@ -1491,6 +1497,7 @@ namespace ActivityPicturePlugin.UI.Activities
             toolStripMenuPhotoSource.Checked = true;
             toolStripMenuReferenceID.Checked = true;
         }
+
         private void toolStripMenuNone_Click( object sender, EventArgs e )
         {
             toolStripMenuTypeImage.Checked = false;
@@ -1503,6 +1510,18 @@ namespace ActivityPicturePlugin.UI.Activities
             toolStripMenuPhotoSource.Checked = false;
             toolStripMenuReferenceID.Checked = false;
         }
+
+        private void toolStripMenuExifGps_Click(object sender, EventArgs e)
+        {
+            //List<ImageData> iList = GetSelectedImageData();
+            //foreach (ImageData id in iList)
+            //{
+            //    if (id.HasExifGps)
+            //    {
+            //    }
+            //}
+        }
+
         private void toolStripMenuCopy_Click( object sender, EventArgs e )
         {
             StringBuilder s = new StringBuilder();
