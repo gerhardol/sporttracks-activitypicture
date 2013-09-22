@@ -229,7 +229,6 @@ namespace ActivityPicturePlugin.UI.Activities
             this.dataGridViewImages.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellDoubleClick);
             this.dataGridViewImages.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewImages_CellValueChanged);
             this.dataGridViewImages.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridViewImages_ColumnHeaderMouseClick);
-            this.dataGridViewImages.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dataGridViewImages_DataError);
             this.dataGridViewImages.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridViewImages_RowsRemoved);
             this.dataGridViewImages.SelectionChanged += new System.EventHandler(this.dataGridViewImages_SelectionChanged);
             this.dataGridViewImages.BindingContextChanged += new System.EventHandler(this.dataGridViewImages_BindingContextChanged);

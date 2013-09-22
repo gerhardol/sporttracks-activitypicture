@@ -234,7 +234,14 @@ namespace ActivityPicturePlugin.Helper
             return System.Text.RegularExpressions.Regex.Replace( strIn, @"[^ -ÿ]", "" );
         }
 
-        public bool HasExifGps = false;
+        private bool _HasExifGps = false;
+        public bool HasExifGps
+        {
+            get
+            {
+                return _HasExifGps;
+            }
+        }
         //GPS info, Original time could come from the original Exif (transfered to the thumbnail)
         //Original time are stored in exif for the thumbnail, but GPS may be calculated.
         //As we do not want to keep track of how GPS is calculated when editing time on the image or
@@ -251,9 +258,9 @@ namespace ActivityPicturePlugin.Helper
                     float alt = (float)ew.GPSAltitude;
                     if (lat != 0 || lon != 0)
                     {
-                        HasExifGps = true;
+                        _HasExifGps = true;
                     }
-                    if (!HasExifGps && this.activity != null && this.activity.GPSRoute != null)
+                    if (!_HasExifGps && this.activity != null && this.activity.GPSRoute != null)
                     {
                         DateTime time = this.EW.DateTimeOriginal.ToUniversalTime();
                         ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue( time );
@@ -414,6 +421,10 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
+                if (!HasGps())
+                {
+                    return "";
+                }
                 return GPS.GpsString(this.GpsPoint);
             }
         }
