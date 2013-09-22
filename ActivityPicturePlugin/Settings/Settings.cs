@@ -210,6 +210,18 @@ namespace ActivityPicturePlugin.Source
             get { return geStoreFileLocations; }
             set { geStoreFileLocations = value; }
         }
+        private static string _LastGeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        public static string LastGeDirectory
+        {
+            get { return _LastGeDirectory; }
+            set { _LastGeDirectory = value; }
+        }
+        private static string _LastImportDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+        public static string LastImportDirectory
+        {
+            get { return _LastImportDirectory; }
+            set { _LastImportDirectory = value; }
+        }
 
         // ImportControl Settings
         private static int importSplitter1Offset = 224;
@@ -406,6 +418,10 @@ namespace ActivityPicturePlugin.Source
             if ( attr.Length > 0 ) { geAutoOpen = XmlConvert.ToBoolean( attr ); }
             attr = pluginNode.GetAttribute( xmlTags.geStoreFileLocations );
             if ( attr.Length > 0 ) { geStoreFileLocations = XmlConvert.ToBoolean( attr ); }
+            attr = pluginNode.GetAttribute(xmlTags.LastGeDirectory);
+            if (attr.Length > 0) { LastGeDirectory = attr; }
+            attr = pluginNode.GetAttribute(xmlTags.LastImportDirectory);
+            if (attr.Length > 0) { LastImportDirectory = attr; }
 
             //ImportControl Settings
             attr = pluginNode.GetAttribute( xmlTags.importSplitter1Offset );
@@ -440,8 +456,6 @@ namespace ActivityPicturePlugin.Source
             if ( attr.Length > 0 ) { listActColTitleWidth = XmlConvert.ToInt32( attr ); }
             attr = pluginNode.GetAttribute( xmlTags.listActColCommentWidth );
             if ( attr.Length > 0 ) { listActColCommentWidth = XmlConvert.ToInt32( attr ); }
-
-
         }
 
         public static void WriteOptions( XmlDocument xmlDoc, XmlElement pluginNode )
@@ -470,7 +484,9 @@ namespace ActivityPicturePlugin.Source
             pluginNode.SetAttribute( xmlTags.geQuality, XmlConvert.ToString( geQuality ) );
             pluginNode.SetAttribute( xmlTags.sortMode, XmlConvert.ToString( sortMode ) );
             pluginNode.SetAttribute( xmlTags.geAutoOpen, XmlConvert.ToString( geAutoOpen ) );
-            pluginNode.SetAttribute( xmlTags.geStoreFileLocations, XmlConvert.ToString( geStoreFileLocations ) );
+            pluginNode.SetAttribute(xmlTags.geStoreFileLocations, XmlConvert.ToString(geStoreFileLocations));
+            pluginNode.SetAttribute(xmlTags.LastGeDirectory, LastGeDirectory);
+            pluginNode.SetAttribute(xmlTags.LastImportDirectory, LastImportDirectory);
 
             //ImportControl Settings
             pluginNode.SetAttribute( xmlTags.importSplitter1Offset, XmlConvert.ToString( importSplitter1Offset ) );
@@ -520,6 +536,8 @@ namespace ActivityPicturePlugin.Source
             public const string sortMode = "sortMode";
             public const string geAutoOpen = "geAutoOpen";
             public const string geStoreFileLocations = "geStoreFileLocations";
+            public const string LastGeDirectory = "LastGeDirectory";
+            public const string LastImportDirectory = "LastImportDirectory";
 
             public const string importSplitter1Offset = "importSplitter1Offset";
             public const string importSplitter2Offset = "importSplitter2Offset";
