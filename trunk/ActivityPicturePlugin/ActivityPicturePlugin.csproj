@@ -119,6 +119,7 @@
     <Compile Include="UI\MapLayers\PicturesProvider.cs" />
     <Compile Include="UI\MapLayers\PicturesLayer.cs" />
     <Compile Include="Utils\GPS.cs" />
+    <Compile Include="Utils\UnitUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Helper\ColorSlider.resx">

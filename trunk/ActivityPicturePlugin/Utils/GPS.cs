@@ -65,6 +65,11 @@ namespace ActivityPicturePlugin
             }
             return "";
         }
+        //While this is possible, dont bother...
+        //public static GPSLocation ParseGpsLoc(string str)
+        //{
+        //    return null;
+        //}
 
         public static string GpsFormat()
         {

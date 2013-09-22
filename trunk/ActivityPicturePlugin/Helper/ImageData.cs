@@ -353,10 +353,10 @@ namespace ActivityPicturePlugin.Helper
             get
             {
                 return GPS.GpsString(this.GpsPoint);
-                //return new GPS.GpsLoc(ew.GPSLatitude, ew.GPSLongitude).ToString();
             }
         }
 
+        public bool HasExifGps = false;
         //GPS info, Original time could come from the original Exif (transfered to the thumbnail)
         //Original time are stored in exif for the thumbnail, but GPS may be calculated.
         //As we do not want to keep track of how GPS is calculated when editing time on the image or
@@ -371,7 +371,11 @@ namespace ActivityPicturePlugin.Helper
                     float lat = (float)ew.GPSLatitude;
                     float lon = (float)ew.GPSLongitude;
                     float alt = (float)ew.GPSAltitude;
-                    if ( lat == 0 && lon == 0 && this.activity != null && this.activity.GPSRoute != null )
+                    if (lat != 0 || lon != 0)
+                    {
+                        HasExifGps = true;
+                    }
+                    if (!HasExifGps && this.activity != null && this.activity.GPSRoute != null)
                     {
                         DateTime time = this.EW.DateTimeOriginal.ToUniversalTime();
                         ZoneFiveSoftware.Common.Data.ITimeValueEntry<IGPSPoint> g = this.activity.GPSRoute.GetInterpolatedValue( time );
@@ -496,25 +500,11 @@ namespace ActivityPicturePlugin.Helper
         {
             get
             {
-                try
+                if (!HasGps())
                 {
-                    // A valid image was not found... No valid Exif data exists
-                    if ( this.thumbnailImage == null ) return "";   
-
-                    Length.Units units = Plugin.GetApplication().SystemPreferences.ElevationUnits;
-                    string strFormat = String.Format( "N{0}u", Length.DefaultDecimalPrecision( units ) );
-                    double Alt = Length.Convert( ew.GPSAltitude, Length.Units.Meter, units );
-                    if ( Alt == 0 && this.HasGps() )
-                        Alt = this.gpsPoint.ElevationMeters;
-                    string AltStr = Length.ToString( Alt, units, strFormat );
-
-                    return AltStr;
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
                     return "";
                 }
+                return GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(this.GpsPoint.ElevationMeters);
             }
         }
 
