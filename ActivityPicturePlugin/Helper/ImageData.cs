@@ -160,22 +160,6 @@ namespace ActivityPicturePlugin.Helper
             return false;
         }
 
-        public Image TypeImage
-        {
-            get
-            {
-                if ( this.Type == DataTypes.Image )
-                {
-                    return Resources.btnimage;
-                }
-                else if ( this.Type == DataTypes.Video )
-                {
-                    return Resources.btnvideo;
-                }
-                return null;
-            }
-        }
-
         public DataTypes Type
         {
             get { return this.IDser.Type; }
@@ -206,14 +190,6 @@ namespace ActivityPicturePlugin.Helper
             //set { this.thumbnailImage = value; }
         }
 
-        public DateTime DateTimeOriginal
-        {
-            get
-            {
-                return this.EW.DateTimeOriginal;
-            }
-        }
-
         public void SetPhotoSource(string s)
         {
             this.IDser.PhotoSource = s;
@@ -228,71 +204,6 @@ namespace ActivityPicturePlugin.Helper
         public Bitmap ExifBitmap()
         {
             return this.EW.GetBitmap();
-        }
-
-        public string Title
-        {
-            get
-            {
-                try
-                {
-                    if ( this.EW.FileExplorerTitle != null )
-                    {
-                        return CleanInput( this.EW.FileExplorerTitle );
-                    }
-                    else return "";
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    return "";
-                }
-            }
-            set
-            {
-                try
-                {
-                    this.EW.FileExplorerTitle = value;
-                    SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerTitle );
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    throw;
-                }
-            }
-        }
-
-        public string Comments
-        {
-            get
-            {
-                try
-                {
-                    if ( this.EW.FileExplorerComments != null )
-                        return CleanInput( this.EW.FileExplorerComments );
-                    else return "";
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    return "";
-                }
-
-            }
-            set
-            {
-                try
-                {
-                    this.EW.FileExplorerComments = value;
-                    SavePhotoSourceProperty( ExifWorks.TagNames.FileExplorerComments );
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    throw;
-                }
-            }
         }
 
         public bool Selected
@@ -327,33 +238,6 @@ namespace ActivityPicturePlugin.Helper
         {
             // Replace invalid characters with empty strings.
             return System.Text.RegularExpressions.Regex.Replace( strIn, @"[^ -ÿ]", "" );
-        }
-
-        public string EquipmentModel
-        {
-            get
-            {
-                try
-                {
-                    if ( this.EW.EquipmentModel != null )
-                        return CleanInput( this.EW.EquipmentModel );
-                    else return "";
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.Assert(false, ex.Message);
-                    return "";
-                }
-            }
-        }
-
-        //Used in Image List
-        public string ExifGps
-        {
-            get
-            {
-                return GPS.GpsString(this.GpsPoint);
-            }
         }
 
         public bool HasExifGps = false;
@@ -496,6 +380,45 @@ namespace ActivityPicturePlugin.Helper
             return path;
         }
 
+        public string PhotoSourceFileName
+        {
+            get
+            {
+                int i = this.PhotoSource.LastIndexOf( @"\" );
+                if (i > 0) return this.PhotoSource.Substring(i + 1);
+                else return "";
+            }
+        }
+        #endregion
+
+        #region Reflection Members
+        //Used in Image List
+        //PhotoSource, ReferenceID
+
+        public Image TypeImage
+        {
+            get
+            {
+                if (this.Type == DataTypes.Image)
+                {
+                    return Resources.btnimage;
+                }
+                else if (this.Type == DataTypes.Video)
+                {
+                    return Resources.btnvideo;
+                }
+                return null;
+            }
+        }
+
+        public string ExifGps
+        {
+            get
+            {
+                return GPS.GpsString(this.GpsPoint);
+            }
+        }
+
         public string Altitude
         {
             get
@@ -508,15 +431,97 @@ namespace ActivityPicturePlugin.Helper
             }
         }
 
-        public string PhotoSourceFileName
+        public DateTime DateTimeOriginal
         {
             get
             {
-                int i = this.PhotoSource.LastIndexOf( @"\" );
-                if (i > 0) return this.PhotoSource.Substring(i + 1);
-                else return "";
+                return this.EW.DateTimeOriginal;
             }
         }
+
+        public string Title
+        {
+            get
+            {
+                try
+                {
+                    if (this.EW.FileExplorerTitle != null)
+                    {
+                        return CleanInput(this.EW.FileExplorerTitle);
+                    }
+                    else return "";
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                    return "";
+                }
+            }
+            set
+            {
+                try
+                {
+                    this.EW.FileExplorerTitle = value;
+                    SavePhotoSourceProperty(ExifWorks.TagNames.FileExplorerTitle);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                    throw;
+                }
+            }
+        }
+
+        public string Comments
+        {
+            get
+            {
+                try
+                {
+                    if (this.EW.FileExplorerComments != null)
+                        return CleanInput(this.EW.FileExplorerComments);
+                    else return "";
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                    return "";
+                }
+
+            }
+            set
+            {
+                try
+                {
+                    this.EW.FileExplorerComments = value;
+                    SavePhotoSourceProperty(ExifWorks.TagNames.FileExplorerComments);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                    throw;
+                }
+            }
+        }
+
+        public string EquipmentModel
+        {
+            get
+            {
+                try
+                {
+                    if (this.EW.EquipmentModel != null)
+                        return CleanInput(this.EW.EquipmentModel);
+                    else return "";
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.Assert(false, ex.Message);
+                    return "";
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
