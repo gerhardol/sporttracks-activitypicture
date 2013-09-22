@@ -159,10 +159,11 @@ namespace ActivityPicturePlugin.UI.Activities
                 sfd.AddExtension = true;
                 sfd.CheckPathExists = true;
                 sfd.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
-                sfd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+                sfd.InitialDirectory = ActivityPicturePlugin.Source.Settings.LastGeDirectory;
                 DialogResult dres = sfd.ShowDialog();
                 if ( dres == DialogResult.OK && sfd.FileName != "" )
                 {
+                    ActivityPicturePlugin.Source.Settings.LastGeDirectory = (new System.IO.FileInfo(sfd.FileName)).DirectoryName;
                     Functions.PerformMultipleExportToGoogleEarth( activities, sfd.FileName );
                 }
                 if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )

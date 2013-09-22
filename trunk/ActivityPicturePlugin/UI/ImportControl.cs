@@ -613,7 +613,7 @@ namespace ActivityPicturePlugin.UI
                 this.m_CheckedDirNodes.Clear();
 
                 string[] drives = Environment.GetLogicalDrives();
-                DirectoryInfo startdir = new DirectoryInfo( Environment.GetFolderPath( Environment.SpecialFolder.MyPictures ) );
+                DirectoryInfo startdir = new DirectoryInfo(ActivityPicturePlugin.Source.Settings.LastImportDirectory);
 
                 foreach ( string rootDir in drives )
                 {
@@ -631,10 +631,6 @@ namespace ActivityPicturePlugin.UI
                     {
                         ndRoot.Nodes.Add( gDummyFolder );
                     }
-                }
-                if ( this.treeViewImages.Nodes.Count == 0 )
-                {
-                    //TODO: Expand standardpath?
                 }
             }
             catch ( ImportControlException )
@@ -2136,6 +2132,8 @@ namespace ActivityPicturePlugin.UI
             {
                 DirectoryInfo driveDir = currentNode.Tag as DirectoryInfo;
 
+                //Directory selected
+                ActivityPicturePlugin.Source.Settings.LastImportDirectory = driveDir.FullName;
                 ShowFolderPics(driveDir);
                 if (currentNode.Nodes.Count > 0)
                 {
@@ -3078,12 +3076,15 @@ namespace ActivityPicturePlugin.UI
                 ZoneFiveSoftware.Common.Visuals.TextBox txtFolderSelect = sender as ZoneFiveSoftware.Common.Visuals.TextBox;
                 using ( FolderSelect.FolderSelectDialog fsd = new FolderSelect.FolderSelectDialog() )
                 {
+                    //Use ActivityPicturePlugin.Source.Settings.LastImportDirectory also here, 
+                    //more likely better than  Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
                     if ( !String.IsNullOrEmpty( txtFolderSelect.Text ) )
                     {
                         fsd.InitialDirectory = txtFolderSelect.Text;
+                        ActivityPicturePlugin.Source.Settings.LastImportDirectory = fsd.InitialDirectory;
                     }
                     else
-                        fsd.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+                        fsd.InitialDirectory = ActivityPicturePlugin.Source.Settings.LastImportDirectory;
 
                     fsd.Title = Resources.SelectFolder_Text;
                     if ( fsd.ShowDialog() )

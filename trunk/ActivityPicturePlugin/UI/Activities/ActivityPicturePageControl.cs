@@ -1313,10 +1313,11 @@ namespace ActivityPicturePlugin.UI.Activities
             this.saveFileDialog.AddExtension = true;
             this.saveFileDialog.CheckPathExists = true;
             this.saveFileDialog.Filter = "Google Earth compressed (*.kmz)|*.kmz|Google Earth KML (*.kml)|*.kml";
-            this.saveFileDialog.InitialDirectory = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments );
+            this.saveFileDialog.InitialDirectory = ActivityPicturePlugin.Source.Settings.LastGeDirectory;
             DialogResult dres = this.saveFileDialog.ShowDialog();
             if ( dres == DialogResult.OK & this.saveFileDialog.FileName != "" )
             {
+                ActivityPicturePlugin.Source.Settings.LastGeDirectory = (new System.IO.FileInfo(this.saveFileDialog.FileName)).DirectoryName;
                 Functions.PerformExportToGoogleEarth( GetSelectedImageData(), this._Activity, this.saveFileDialog.FileName );
                 if ( ActivityPicturePlugin.Source.Settings.GEAutoOpen )
                     Functions.OpenExternal( this.saveFileDialog.FileName );
