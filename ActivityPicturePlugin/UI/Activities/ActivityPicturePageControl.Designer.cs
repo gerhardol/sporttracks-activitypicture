@@ -67,6 +67,7 @@ namespace ActivityPicturePlugin.UI.Activities
             this.cReferenceID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuListImages = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuRemoveExifGps = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuNone = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuAll = new System.Windows.Forms.ToolStripMenuItem();
@@ -331,6 +332,7 @@ namespace ActivityPicturePlugin.UI.Activities
             // 
             this.contextMenuListImages.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuCopy,
+            this.toolStripMenuRemoveExifGps,
             this.toolStripSeparator2,
             this.toolStripMenuNone,
             this.toolStripMenuAll,
@@ -353,6 +355,14 @@ namespace ActivityPicturePlugin.UI.Activities
             this.toolStripMenuCopy.Size = new System.Drawing.Size(188, 22);
             this.toolStripMenuCopy.Text = "Copy";
             this.toolStripMenuCopy.Click += new System.EventHandler(this.toolStripMenuCopy_Click);
+            // 
+            // toolStripMenuRemoveExifGps
+            // 
+            this.toolStripMenuRemoveExifGps.Name = "toolStripMenuRemoveExifGps";
+            this.toolStripMenuRemoveExifGps.Size = new System.Drawing.Size(188, 22);
+            this.toolStripMenuRemoveExifGps.Text = "<Remove Exif GPS";
+            this.toolStripMenuRemoveExifGps.Click += new System.EventHandler(this.toolStripMenuExifGps_Click);
+            this.toolStripMenuRemoveExifGps.Visible = false;
             // 
             // toolStripSeparator2
             // 
@@ -1011,6 +1021,7 @@ namespace ActivityPicturePlugin.UI.Activities
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuAll;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuNone;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuRemoveExifGps;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.DataGridViewImageColumn cThumbnail;
