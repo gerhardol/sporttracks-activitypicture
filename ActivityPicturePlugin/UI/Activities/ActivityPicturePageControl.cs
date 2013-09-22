@@ -738,6 +738,7 @@ namespace ActivityPicturePlugin.UI.Activities
                 SetSortGlyph();
 
                 //Could be done with format updater too...
+                //Exif GPS
                 if (this.dataGridViewImages.Columns[this.cExifGPS.DisplayIndex].Visible)
                 {
                     for (int i = 0; i < this.dataGridViewImages.Rows.Count; i++)
@@ -749,7 +750,7 @@ namespace ActivityPicturePlugin.UI.Activities
                             {
                                 f2 = System.Windows.Forms.DataGridView.DefaultFont;
                             }
-                            this.dataGridViewImages.Rows[i].Cells[this.cExifGPS.DisplayIndex].Style.Font = 
+                            this.dataGridViewImages.Rows[i].Cells[this.cExifGPS.DisplayIndex].Style.Font =
                                 new System.Drawing.Font(f2, System.Drawing.FontStyle.Italic);
                         }
                         else
@@ -758,6 +759,19 @@ namespace ActivityPicturePlugin.UI.Activities
                         }
                     }
 
+                }
+
+                //Original
+                if (this.dataGridViewImages.Columns[this.cPhotoSource.DisplayIndex].Visible)
+                {
+                    for (int i = 0; i < this.dataGridViewImages.Rows.Count; i++)
+                    {
+                        String filePath = this.pictureAlbumView.ImageList[this.dataGridViewImages.Rows[i].Index].PhotoSource;
+                        if (!(new System.IO.FileInfo(filePath)).Exists)
+                        {
+                            this.dataGridViewImages.Rows[i].Cells[this.cPhotoSource.DisplayIndex].Style.BackColor = Color.Red;
+                        }
+                    }
                 }
 
                 this.dataGridViewImages.Invalidate();
