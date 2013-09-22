@@ -60,6 +60,7 @@ In the List View, thumbnails &amp; metadata of the image are displayed. It has t
  * Some of the data is editable and will be saved with the image file: Title, Comment.
  * When double-clicking on a thumbnail, it will be opened using the default application for the media.
  * There are three buttons in the toolstrip: Geotag, Time offset, and Export to Google Earth.
+ * If the original location for a picture/video no longer exist, the photo source cell is set to red.
 
 [http://sporttracks-activitypicture.googlecode.com/svn/wiki/Images/List-Toolstrip.jpg]
 
@@ -180,12 +181,17 @@ The plugin selects the first of the following time that is in the activity:
 It is therefore possible that an image matches more than one activity when importing.
  
 ==GPS==
-If the image has GPS in Exif, that is used. Otherwise the GPS position is estimated from the time an GPS track.
+If the image has GPS in Exif, that is used. Otherwise the GPS position is estimated from the time an GPS track. The latitude/longitude is then in italics.
 
 ==Localization==
-
-Currently the languages English, German, French, Spanish, Swedish, and Dutch are supported. Further languages will be added on request. See link in the Developers wiki page.
+Currently the languages English, German, French, Spanish, Swedish, and Dutch are supported, but all are not completete. Further languages will be added on request. See link in the Developers wiki page for the procedure to update the online spreadsheet.
 
 ==Data storage==
 
-When a picture is added, a unique referenceID will be created and an thumbnail image of reduced size (&lt;150kb) will be saved. 
+When a picture is added, a unique referenceID will be created and an thumbnail image of reduced size (&lt;150kb) will be saved.
+
+==Possible enhancements==
+ * All translations are not complete
+ * It could be possible to import to several activities if more than one selected in Activity Detail/Reports.
+ * It could be possible to import pictures automatically after importing activities.
+

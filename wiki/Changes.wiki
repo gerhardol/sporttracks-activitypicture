@@ -7,19 +7,18 @@ This page describes the changes between plugins. The SVN change log contains fur
 
 ===Changes===
 
-2.0.168 2013-08-25 (beta)
+2.0.181 2013-09-22 
+ * Updated French Translation
+ * Use previously selected directory as defualt directory when importing pictures and exporting to Google Earth.
+ * Mark if GPS is derived from GPS track by displaying latitude/longitude in italics.
+ * Set a red background if the original source for a picture does no longer exist.
+
+2.0.168 2013-08-25
 
 Major update.
-This release reimplements alot of the functionality, there are many tweaks.
+This release reimplements a lot of the functionality, there are many changes.
 
 See the updated plugin documentation for further description.
-
-Todo:
- * Translations
- * GeoTag update/removal
- * Refresh documentation further. There are more changes to describe.
- * It should be possible to import to several activities if more than one selected.
- *?
 
 Album View:
  * Reduced image flickering while resizing
