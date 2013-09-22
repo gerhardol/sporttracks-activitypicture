@@ -188,16 +188,16 @@ namespace ActivityPicturePlugin.UI.Activities
             toolStripMenuFitToWindow.Checked = ActivityPicturePlugin.Source.Settings.MaxImageSize == (int)PictureAlbum.MaxImageSize.FitToWindow;
 
             //TODO: Add a field to notify users which files have exif data SAVED?
-            dataGridViewImages.Columns["cTypeImage"].Visible = ActivityPicturePlugin.Source.Settings.CTypeImage;
-            dataGridViewImages.Columns["cExifGPS"].Visible = ActivityPicturePlugin.Source.Settings.CExifGPS;
-            dataGridViewImages.Columns["cAltitude"].Visible = ActivityPicturePlugin.Source.Settings.CAltitude;
-            dataGridViewImages.Columns["cComment"].Visible = ActivityPicturePlugin.Source.Settings.CComment;
-            dataGridViewImages.Columns["cThumbnail"].Visible = ActivityPicturePlugin.Source.Settings.CThumbnail;
-            dataGridViewImages.Columns["cDateTimeOriginal"].Visible = ActivityPicturePlugin.Source.Settings.CDateTimeOriginal;
-            dataGridViewImages.Columns["cPhotoTitle"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoTitle;
-            dataGridViewImages.Columns["cCamera"].Visible = ActivityPicturePlugin.Source.Settings.CCamera;
-            dataGridViewImages.Columns["cPhotoSource"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoSource;
-            dataGridViewImages.Columns["cReferenceID"].Visible = ActivityPicturePlugin.Source.Settings.CReferenceID;
+            this.dataGridViewImages.Columns["cTypeImage"].Visible = ActivityPicturePlugin.Source.Settings.CTypeImage;
+            this.dataGridViewImages.Columns["cExifGPS"].Visible = ActivityPicturePlugin.Source.Settings.CExifGPS;
+            this.dataGridViewImages.Columns["cAltitude"].Visible = ActivityPicturePlugin.Source.Settings.CAltitude;
+            this.dataGridViewImages.Columns["cComment"].Visible = ActivityPicturePlugin.Source.Settings.CComment;
+            this.dataGridViewImages.Columns["cThumbnail"].Visible = ActivityPicturePlugin.Source.Settings.CThumbnail;
+            this.dataGridViewImages.Columns["cDateTimeOriginal"].Visible = ActivityPicturePlugin.Source.Settings.CDateTimeOriginal;
+            this.dataGridViewImages.Columns["cPhotoTitle"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoTitle;
+            this.dataGridViewImages.Columns["cCamera"].Visible = ActivityPicturePlugin.Source.Settings.CCamera;
+            this.dataGridViewImages.Columns["cPhotoSource"].Visible = ActivityPicturePlugin.Source.Settings.CPhotoSource;
+            this.dataGridViewImages.Columns["cReferenceID"].Visible = ActivityPicturePlugin.Source.Settings.CReferenceID;
 
             volumeSlider2.Volume = ActivityPicturePlugin.Source.Settings.VolumeValue;
         }
@@ -322,11 +322,11 @@ namespace ActivityPicturePlugin.UI.Activities
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.BackColor = visualTheme.SubHeader;
             this.dataGridViewImages.ColumnHeadersDefaultCellStyle.ForeColor = visualTheme.SubHeaderText;
 
-            dataGridViewImages.RowsDefaultCellStyle.SelectionBackColor = visualTheme.Selected;
-            dataGridViewImages.RowsDefaultCellStyle.SelectionForeColor = visualTheme.SelectedText;
+            this.dataGridViewImages.RowsDefaultCellStyle.SelectionBackColor = visualTheme.Selected;
+            this.dataGridViewImages.RowsDefaultCellStyle.SelectionForeColor = visualTheme.SelectedText;
 
-            dataGridViewImages.RowsDefaultCellStyle.BackColor = visualTheme.Window;
-            dataGridViewImages.AlternatingRowsDefaultCellStyle.BackColor = GridAltRowColor( visualTheme.Window );
+            this.dataGridViewImages.RowsDefaultCellStyle.BackColor = visualTheme.Window;
+            this.dataGridViewImages.AlternatingRowsDefaultCellStyle.BackColor = GridAltRowColor(visualTheme.Window);
 
             this.progressBar1.BackColor = this.BackColor;
             this.progressBar1.ForeColor = visualTheme.Selected;
@@ -737,6 +737,29 @@ namespace ActivityPicturePlugin.UI.Activities
                 PreventRowsRemoved = false;
                 SetSortGlyph();
 
+                //Could be done with format updater too...
+                if (this.dataGridViewImages.Columns[this.cExifGPS.DisplayIndex].Visible)
+                {
+                    for (int i = 0; i < this.dataGridViewImages.Rows.Count; i++)
+                    {
+                        if (!this.pictureAlbumView.ImageList[this.dataGridViewImages.Rows[i].Index].HasExifGps)
+                        {
+                            Font f2 = this.dataGridViewImages.Rows[i].Cells[this.cExifGPS.DisplayIndex].Style.Font;
+                            if (f2 == null)
+                            {
+                                f2 = System.Windows.Forms.DataGridView.DefaultFont;
+                            }
+                            this.dataGridViewImages.Rows[i].Cells[this.cExifGPS.DisplayIndex].Style.Font = 
+                                new System.Drawing.Font(f2, System.Drawing.FontStyle.Italic);
+                        }
+                        else
+                        {
+                            this.dataGridViewImages.Rows[i].Cells[this.cExifGPS.DisplayIndex].Style.Font = null;
+                        }
+                    }
+
+                }
+
                 this.dataGridViewImages.Invalidate();
 
             }
@@ -913,10 +936,6 @@ namespace ActivityPicturePlugin.UI.Activities
         #endregion
 
         #region Event handler methods
-        void dataGridViewImages_DataError( object sender, DataGridViewDataErrorEventArgs e )
-        {
-        }
-
         void dataGridViewImages_CellDoubleClick( object sender, DataGridViewCellEventArgs e )
         {
             try
@@ -1026,6 +1045,7 @@ namespace ActivityPicturePlugin.UI.Activities
                                 true ) == 0 )
                             {
                                 dataGridViewImages.Rows[i].Selected = true;
+
                                 if ( i < nFirstSelectedRow ) nFirstSelectedRow = i;
                                 break;
                             }
@@ -1492,12 +1512,12 @@ namespace ActivityPicturePlugin.UI.Activities
                 {
                     string ss = column.HeaderText;
                     ss = ss.Replace( "\t", " " );
-                    ss = ss.Replace( "\r\n", " " );
+                    ss = ss.Replace(System.Environment.NewLine, " " );
 
                     s.Append( ss + "\t" );
                 }
             }
-            s.Append( "\r\n" );
+            s.Append(System.Environment.NewLine);
             int rowIndex = 0;
             foreach ( DataGridViewRow row in dataGridViewImages.Rows )
             {
@@ -1509,12 +1529,12 @@ namespace ActivityPicturePlugin.UI.Activities
                         {
                             string ss = cell.Value + "";
                             ss = ss.Replace( "\t", " " );
-                            ss = ss.Replace( "\r\n", " " );
+                            ss = ss.Replace(System.Environment.NewLine, " " );
 
                             s.Append( ss + "\t" );
                         }
                     }
-                    s.Append( "\r\n" );
+                    s.Append(System.Environment.NewLine);
                 }
                 rowIndex++;
             }
