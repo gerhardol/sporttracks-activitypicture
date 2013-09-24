@@ -360,11 +360,12 @@ namespace GpsRunningPlugin.Util
                     ZoneFiveSoftware.Common.Data.Measurement.Temperature.Units.Celsius, Unit);
             }
 
+#if !ST_2_1
             public static double Parse(string p)
             {
                 return ZoneFiveSoftware.Common.Data.Measurement.Temperature.ParseTemperatureCelsiusText(p, Unit);
             }
-
+#endif
             public static String Label
             {
                 get
@@ -404,6 +405,7 @@ namespace GpsRunningPlugin.Util
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
             public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units SmallUnit(ZoneFiveSoftware.Common.Data.Measurement.Weight.Units unit)
             {
+#if !ST_2_1
                 if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Kilogram)
                 {
                     unit = ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Gram;
@@ -418,6 +420,10 @@ namespace GpsRunningPlugin.Util
                     //gram, oz
                     //do not name to allow for new units without strange effects
                 }
+#else
+                //TODO: if used in ST2.1
+#endif
+
                 return unit;
             }
 
@@ -437,6 +443,8 @@ namespace GpsRunningPlugin.Util
                 {
                     p = ZoneFiveSoftware.Common.Data.Measurement.Weight.Convert(p, Unit, unit);
                 }
+
+#if !ST_2_1
                 if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Gram)
                 {
                     dfmt = "F0";
@@ -445,6 +453,9 @@ namespace GpsRunningPlugin.Util
                 {
                     dfmt = "F1";
                 }
+#else
+                // TODO: If used in ST2.1
+#endif
                 if (fmt.ToLower().Equals("u") || string.IsNullOrEmpty(fmt)) { fmt = dfmt + fmt; }
                 return ZoneFiveSoftware.Common.Data.Measurement.Weight.ToString(ConvertFrom(p), unit, fmt);
             }
@@ -1006,6 +1017,8 @@ namespace GpsRunningPlugin.Util
             private static Length.Units Unit { get { return getDistUnit(false); } }
             public static int DefaultDecimalPrecision { get { return 1; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
+
+#if !ST_2_1
             public static Length GetLength(IActivity activity)
             {
                 Length du;
@@ -1019,7 +1032,9 @@ namespace GpsRunningPlugin.Util
                 }
                 return du;
             }
-
+#else
+            //TODO: If used in ST2.1
+#endif
             public static string ToString(double p)
             {
                 return ToString(p, DefFmt);
@@ -1139,6 +1154,7 @@ namespace GpsRunningPlugin.Util
             private static Length.Units Unit { get { return getDistUnit(true); } }
             public static int DefaultDecimalPrecision { get { return 1; } } //Not really applicable
             private static string DefFmt { get { return "g"; } } //Same tweaks as for duration/time
+#if !ST_2_1
             public static Length GetLength(IActivity activity)
             {
                 Length du;
@@ -1152,7 +1168,9 @@ namespace GpsRunningPlugin.Util
                 }
                 return du;
             }
-
+#else
+            //TODO: If used in ST2.1
+#endif
             public static string ToString(double p)
             {
                 return ToString(p, DefFmt);
