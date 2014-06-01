@@ -1158,19 +1158,22 @@ namespace ActivityPicturePlugin.UI.Activities
 
         private void sliderImageSize_ValueChanged( object sender, EventArgs e )
         {
-            if ( this.Mode == ShowMode.Album )
+            if ( this.Mode == ShowMode.Album && sender == sliderImageSize )
             {
-                MB.Controls.ColorSlider tb = (MB.Controls.ColorSlider)( sender );
-                this.pictureAlbumView.Zoom = tb.Value;
+                this.pictureAlbumView.Zoom = this.sliderImageSize.Value;
 
-                ActivityPicturePlugin.Source.Settings.ImageZoom = tb.Value;
-                this.PluginExtensionData.ImageZoom = tb.Value;
+                ActivityPicturePlugin.Source.Settings.ImageZoom = this.sliderImageSize.Value;
+                this.PluginExtensionData.ImageZoom = this.sliderImageSize.Value;
                 Helper.Functions.WriteExtensionData( _Activity, this.PluginExtensionData );
 
                 this.pictureAlbumView.Invalidate();
 #if !ST_2_1
-                this.m_layer.PictureSize = tb.Value;
-                this.m_layer.Refresh();
+                //Race condition?
+                if (this.m_layer != null)
+                {
+                    this.m_layer.PictureSize = this.sliderImageSize.Value;
+                    this.m_layer.Refresh();
+                }
 #endif
             }
         }

@@ -69,19 +69,23 @@ namespace ActivityPicturePlugin.UI.MapLayers
         public static PicturesLayer Instance(IView view)
         {
             PicturesLayer result = null;
-            if (view != null && m_layers != null && m_layers.ContainsKey(view.Id))
+            if (m_layers != null)
             {
-                result = m_layers[view.Id];
-            }
-            else if (m_layers.Count > 0)
-            {
-                foreach (PicturesLayer l in m_layers.Values)
+                if (view != null && m_layers.ContainsKey(view.Id))
                 {
-                    //Just any layer - the first should be the best
-                    result = l;
-                    break;
+                    result = m_layers[view.Id];
+                }
+                else if (m_layers.Count > 0)
+                {
+                    foreach (PicturesLayer l in m_layers.Values)
+                    {
+                        //Just any layer - the first should be the best
+                        result = l;
+                        break;
+                    }
                 }
             }
+            System.Diagnostics.Debug.Assert(result != null, "Unexpected no picture layer instance for " + view.Id);
             return result;
         }
 
