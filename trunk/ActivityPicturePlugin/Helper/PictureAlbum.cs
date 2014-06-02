@@ -391,10 +391,12 @@ namespace ActivityPicturePlugin.Helper
 
                     if ( ( this.FilGrMan != null ) & ( currentVideoIndex != -1 ) )
                     {
-                        FilGrMan.SetWindowPosition( ImageRectangles[currentVideoIndex].Left,
+                        /*xxx
+                         * FilGrMan.SetWindowPosition( ImageRectangles[currentVideoIndex].Left,
                             ImageRectangles[currentVideoIndex].Top,
                             ImageRectangles[currentVideoIndex].Width,
                             ImageRectangles[currentVideoIndex].Height );
+                         * */
                     }
 
                     //draw yellow border around selected image
