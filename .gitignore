@@ -1,0 +1,9 @@
+*.suo
+*.csproj.user
+/*.wiki
+*.stplugin
+*.st3plugin
+/ActivityPicturePlugin/bin
+/ActivityPicturePlugin/obj
+/MetaDataExtractor/bin
+/MetaDataExtractor/obj
