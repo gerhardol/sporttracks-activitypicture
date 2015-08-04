@@ -244,8 +244,6 @@ namespace ActivityPicturePlugin.UI
         [Serializable()]
         public class ImportControlException : Exception
         {
-            public static readonly string Error_ActivityChanged = Properties.Resources.ActivityChanged_Text;
-
             public ImportControlException() : base() { }
             public ImportControlException( string message ) : base( message ) { }
             public ImportControlException( string message, Exception inner ) : base( message, inner ) { }
@@ -551,7 +549,7 @@ namespace ActivityPicturePlugin.UI
 
                         Application.DoEvents();
                         if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                            throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-001");
                     }
 
                     // The last image for the last listitem doesn't always get drawn so
@@ -900,7 +898,7 @@ namespace ActivityPicturePlugin.UI
                         ImportControlState state = new ImportControlState( m_Activities, this.Visible );
                         Application.DoEvents();
                         if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                            throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-002");
                         //Show Thumbs if called from activity
                         if ( day.Tag is IActivity ) AddImagesToListViewAct( day, !this.m_showallactivities );
                     }
@@ -982,7 +980,7 @@ namespace ActivityPicturePlugin.UI
                     }
                     Application.DoEvents();
                     if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                        throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                        throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-003");
                 }
 
                 //to refresh the ListView
@@ -1318,7 +1316,7 @@ namespace ActivityPicturePlugin.UI
                         listViewAct.Items.AddRange( (ListViewItem[])lvItems.ToArray( typeof( ListViewItem ) ) );
                         Application.DoEvents();
                         if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                            throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                            throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-004");
 
                         // Add the images
                         for ( int i = 0; i < listViewAct.Items.Count; i++ )
@@ -1349,7 +1347,7 @@ namespace ActivityPicturePlugin.UI
 
                                 Application.DoEvents();
                                 if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                                    throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-005");
 
                                 img.Dispose();
                                 img = null;
@@ -1553,7 +1551,7 @@ namespace ActivityPicturePlugin.UI
                     {
                         Application.DoEvents();
                         if (!state.Equals(new ImportControlState(m_Activities, this.Visible)))
-                            throw new ImportControlException(ImportControlException.Error_ActivityChanged);
+                            throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-006");
 
                         this.progressBar2.Value++;
                         
@@ -1692,7 +1690,7 @@ namespace ActivityPicturePlugin.UI
                             SetLabelText( Resources.ImportControl_addingFile + " " + file.Name );
                             Application.DoEvents();
                             if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                                throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                                throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-007");
                         }
                     }
                 }
@@ -1743,7 +1741,7 @@ namespace ActivityPicturePlugin.UI
                 }
                 Application.DoEvents();
                 if (!state.Equals(new ImportControlState(m_Activities, this.Visible)))
-                    throw new ImportControlException(ImportControlException.Error_ActivityChanged);
+                    throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-008");
             }
 
             this.HideProgressBar();
@@ -2741,7 +2739,7 @@ namespace ActivityPicturePlugin.UI
                 this.progressBar2.Style = ProgressBarStyle.Marquee;
                 Application.DoEvents();
                 if ( !state.Equals( new ImportControlState( m_Activities, this.Visible ) ) )
-                    throw new ImportControlException( ImportControlException.Error_ActivityChanged );
+                    throw new ImportControlException(Properties.Resources.ActivityChanged_Text + "-009");
 
                 IList<IActivity> selActs = this.GetTreeSelectedActivities();
                 DateTime FirstStart = DateTime.MaxValue;
